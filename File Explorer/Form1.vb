@@ -1,4 +1,4 @@
-﻿' File Explorer - A simple file explorer in VB.NET
+﻿' File Explorer - A simple file explorer.
 
 ' MIT License
 ' Copyright(c) 2025 Joseph W. Lumbley
