@@ -42,6 +42,7 @@ Public Class Form1
         cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
         cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
         cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
 
         lvFiles.ContextMenuStrip = cmsFiles
 
@@ -100,22 +101,20 @@ Public Class Form1
     End Sub
 
     Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
+        GoToFolderOrOpenFile(txtPath.Text)
+    End Sub
 
-        ' If file path then open file and return.
-        'If File.Exists(txtPath.Text) Then
-        '    ' open file.
+    Private Sub GoToFolderOrOpenFile(Path As String)
+        ' Navigate to folder or open file.
 
-
-        'Else
-        '    NavigateTo(txtPath.Text)
-        'End If
-
-
-        If Directory.Exists(txtPath.Text) Then
-            NavigateTo(txtPath.Text)
-        ElseIf File.Exists(txtPath.Text) Then
+        ' If folder exists go there
+        If Directory.Exists(Path) Then
+            NavigateTo(Path)
+            ' If file exists open it
+        ElseIf File.Exists(Path) Then
+            ' Open file with default application.
             Try
-                Process.Start(New ProcessStartInfo(txtPath.Text) With {.UseShellExecute = True})
+                Process.Start(New ProcessStartInfo(Path) With {.UseShellExecute = True})
             Catch ex As Exception
                 MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End Try
@@ -247,23 +246,10 @@ Public Class Form1
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Dim sel = lvFiles.SelectedItems(0)
         Dim fullPath = CStr(sel.Tag)
-        If Directory.Exists(fullPath) Then
-            NavigateTo(fullPath)
-        ElseIf File.Exists(fullPath) Then
-            Try
-                Process.Start(New ProcessStartInfo(fullPath) With {.UseShellExecute = True})
-            Catch ex As Exception
-                MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            End Try
-        End If
+
+        GoToFolderOrOpenFile(fullPath)
+
     End Sub
-
-
-
-
-
-
-
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
         If e.Label Is Nothing Then Return ' user cancelled
@@ -288,9 +274,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-
-
     Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Clipboard.SetText(lvFiles.SelectedItems(0).Text)
@@ -306,5 +289,10 @@ Public Class Form1
         lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
     End Sub
 
+    Private Sub Open_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+        GoToFolderOrOpenFile(fullPath)
+    End Sub
 
 End Class
