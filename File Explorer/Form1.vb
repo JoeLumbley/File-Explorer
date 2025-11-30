@@ -228,4 +228,33 @@ Public Class Form1
     End Sub
 
 
+
+
+
+
+
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
+        If e.Label Is Nothing Then Return ' user cancelled
+
+        Dim item = lvFiles.Items(e.Item)
+        Dim oldPath = CStr(item.Tag)
+        Dim newName = e.Label
+        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
+
+        If oldPath = newPath Then Return ' no change
+
+        Try
+            If Directory.Exists(oldPath) Then
+                Directory.Move(oldPath, newPath)
+            ElseIf File.Exists(oldPath) Then
+                File.Move(oldPath, newPath)
+            End If
+            item.Tag = newPath
+        Catch ex As Exception
+            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            e.CancelEdit = True
+        End Try
+    End Sub
+
 End Class

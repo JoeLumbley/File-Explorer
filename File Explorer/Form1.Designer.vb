@@ -43,6 +43,7 @@ Partial Class Form1
         ' 
         SplitContainer1.Dock = DockStyle.Fill
         SplitContainer1.Location = New Point(0, 0)
+        SplitContainer1.Margin = New Padding(4, 5, 4, 5)
         SplitContainer1.Name = "SplitContainer1"
         ' 
         ' SplitContainer1.Panel1
@@ -52,16 +53,18 @@ Partial Class Form1
         ' SplitContainer1.Panel2
         ' 
         SplitContainer1.Panel2.Controls.Add(TableLayoutPanel1)
-        SplitContainer1.Size = New Size(800, 712)
-        SplitContainer1.SplitterDistance = 266
+        SplitContainer1.Size = New Size(1143, 1050)
+        SplitContainer1.SplitterDistance = 380
+        SplitContainer1.SplitterWidth = 6
         SplitContainer1.TabIndex = 0
         ' 
         ' tvFolders
         ' 
         tvFolders.Dock = DockStyle.Fill
         tvFolders.Location = New Point(0, 0)
+        tvFolders.Margin = New Padding(4, 5, 4, 5)
         tvFolders.Name = "tvFolders"
-        tvFolders.Size = New Size(266, 712)
+        tvFolders.Size = New Size(380, 1050)
         tvFolders.TabIndex = 0
         ' 
         ' TableLayoutPanel1
@@ -73,19 +76,22 @@ Partial Class Form1
         TableLayoutPanel1.Controls.Add(Panel1, 0, 0)
         TableLayoutPanel1.Dock = DockStyle.Fill
         TableLayoutPanel1.Location = New Point(0, 0)
+        TableLayoutPanel1.Margin = New Padding(4, 5, 4, 5)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 2
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 40F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 67F))
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.Size = New Size(530, 712)
+        TableLayoutPanel1.Size = New Size(757, 1050)
         TableLayoutPanel1.TabIndex = 0
         ' 
         ' lvFiles
         ' 
         lvFiles.Dock = DockStyle.Fill
-        lvFiles.Location = New Point(3, 43)
+        lvFiles.LabelEdit = True
+        lvFiles.Location = New Point(4, 72)
+        lvFiles.Margin = New Padding(4, 5, 4, 5)
         lvFiles.Name = "lvFiles"
-        lvFiles.Size = New Size(524, 666)
+        lvFiles.Size = New Size(749, 973)
         lvFiles.TabIndex = 0
         lvFiles.UseCompatibleStateImageBehavior = False
         ' 
@@ -96,26 +102,29 @@ Partial Class Form1
         Panel1.Controls.Add(btnBack)
         Panel1.Controls.Add(btnGo)
         Panel1.Dock = DockStyle.Fill
-        Panel1.Location = New Point(3, 3)
+        Panel1.Location = New Point(4, 5)
+        Panel1.Margin = New Padding(4, 5, 4, 5)
         Panel1.Name = "Panel1"
-        Panel1.Size = New Size(524, 34)
+        Panel1.Size = New Size(749, 57)
         Panel1.TabIndex = 1
         ' 
         ' txtPath
         ' 
         txtPath.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         txtPath.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        txtPath.Location = New Point(72, 3)
+        txtPath.Location = New Point(103, 5)
+        txtPath.Margin = New Padding(4, 5, 4, 5)
         txtPath.Name = "txtPath"
-        txtPath.Size = New Size(383, 29)
+        txtPath.Size = New Size(545, 39)
         txtPath.TabIndex = 3
         ' 
         ' btnForward
         ' 
         btnForward.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnForward.Location = New Point(36, 3)
+        btnForward.Location = New Point(51, 5)
+        btnForward.Margin = New Padding(4, 5, 4, 5)
         btnForward.Name = "btnForward"
-        btnForward.Size = New Size(30, 30)
+        btnForward.Size = New Size(43, 50)
         btnForward.TabIndex = 2
         btnForward.Text = "⏵"
         btnForward.UseVisualStyleBackColor = True
@@ -123,9 +132,10 @@ Partial Class Form1
         ' btnBack
         ' 
         btnBack.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnBack.Location = New Point(3, 3)
+        btnBack.Location = New Point(4, 5)
+        btnBack.Margin = New Padding(4, 5, 4, 5)
         btnBack.Name = "btnBack"
-        btnBack.Size = New Size(30, 30)
+        btnBack.Size = New Size(43, 50)
         btnBack.TabIndex = 1
         btnBack.Text = "⏴"
         btnBack.UseVisualStyleBackColor = True
@@ -134,19 +144,21 @@ Partial Class Form1
         ' 
         btnGo.Anchor = AnchorStyles.Top Or AnchorStyles.Right
         btnGo.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnGo.Location = New Point(461, 3)
+        btnGo.Location = New Point(659, 5)
+        btnGo.Margin = New Padding(4, 5, 4, 5)
         btnGo.Name = "btnGo"
-        btnGo.Size = New Size(60, 30)
+        btnGo.Size = New Size(86, 50)
         btnGo.TabIndex = 0
         btnGo.Text = "Go"
         btnGo.UseVisualStyleBackColor = True
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(10F, 25F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(800, 712)
+        ClientSize = New Size(1143, 1050)
         Controls.Add(SplitContainer1)
+        Margin = New Padding(4, 5, 4, 5)
         Name = "Form1"
         Text = "Form1"
         SplitContainer1.Panel1.ResumeLayout(False)
