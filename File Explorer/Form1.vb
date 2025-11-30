@@ -29,11 +29,22 @@ Public Class Form1
     Private ReadOnly _history As New List(Of String)
     Private _historyIndex As Integer = -1
 
-    Private Sub ExplorerForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    ' Context menu for files
+    Private cmsFiles As New ContextMenuStrip()
+
+    Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Text = "File Explorer - Code with Joe"
         InitListView()
         InitTreeRoots()
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+        ' Context menu setup
+        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
+        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+
+        lvFiles.ContextMenuStrip = cmsFiles
+
     End Sub
 
     ' -------- UI init --------
@@ -89,7 +100,27 @@ Public Class Form1
     End Sub
 
     Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
-        NavigateTo(txtPath.Text)
+
+        ' If file path then open file and return.
+        'If File.Exists(txtPath.Text) Then
+        '    ' open file.
+
+
+        'Else
+        '    NavigateTo(txtPath.Text)
+        'End If
+
+
+        If Directory.Exists(txtPath.Text) Then
+            NavigateTo(txtPath.Text)
+        ElseIf File.Exists(txtPath.Text) Then
+            Try
+                Process.Start(New ProcessStartInfo(txtPath.Text) With {.UseShellExecute = True})
+            Catch ex As Exception
+                MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End Try
+        End If
+
     End Sub
 
     Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
@@ -256,5 +287,24 @@ Public Class Form1
             e.CancelEdit = True
         End Try
     End Sub
+
+
+
+
+    Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Clipboard.SetText(lvFiles.SelectedItems(0).Text)
+    End Sub
+
+    Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+    End Sub
+
+    Private Sub RenameFile_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
+    End Sub
+
 
 End Class
