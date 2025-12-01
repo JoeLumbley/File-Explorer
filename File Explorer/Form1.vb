@@ -44,6 +44,7 @@ Public Class Form1
         cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
         cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
 
 
         lvFiles.ContextMenuStrip = cmsFiles
@@ -313,6 +314,32 @@ Public Class Form1
             lvFiles.Items.Remove(item)
         Catch ex As Exception
             MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+
+    Private Sub NewFolder_Click(sender As Object, e As EventArgs)
+        Dim currentPath = txtPath.Text
+        Dim newFolderName = "New Folder"
+        Dim newFolderPath = Path.Combine(currentPath, newFolderName)
+        Dim count = 1
+        While Directory.Exists(newFolderPath)
+            newFolderName = $"New Folder ({count})"
+            newFolderPath = Path.Combine(currentPath, newFolderName)
+            count += 1
+        End While
+        Try
+            Directory.CreateDirectory(newFolderPath)
+            Dim di = New DirectoryInfo(newFolderPath)
+            Dim item = New ListViewItem(di.Name)
+            item.SubItems.Add("Folder")
+            item.SubItems.Add("") ' size blank for folders
+            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+            item.Tag = di.FullName
+            lvFiles.Items.Add(item)
+            item.BeginEdit() ' allow user to rename immediately
+        Catch ex As Exception
+            MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
