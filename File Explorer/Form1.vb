@@ -343,4 +343,11 @@ Public Class Form1
         End Try
     End Sub
 
+    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.SuppressKeyPress = True
+            NavigateTo(txtPath.Text)
+        End If
+    End Sub
+
 End Class

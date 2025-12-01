@@ -118,7 +118,7 @@ Partial Class Form1
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 30)
         btnForward.TabIndex = 2
-        btnForward.Text = "⏵"
+        btnForward.Text = ""
         btnForward.UseVisualStyleBackColor = True
         ' 
         ' btnBack
@@ -128,7 +128,7 @@ Partial Class Form1
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(30, 30)
         btnBack.TabIndex = 1
-        btnBack.Text = "⏴"
+        btnBack.Text = ""
         btnBack.UseVisualStyleBackColor = True
         ' 
         ' btnGo
