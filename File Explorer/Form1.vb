@@ -39,10 +39,12 @@ Public Class Form1
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
         ' Context menu setup
+        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
         cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
         cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
         cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
-        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
+        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+
 
         lvFiles.ContextMenuStrip = cmsFiles
 
@@ -293,6 +295,25 @@ Public Class Form1
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
         GoToFolderOrOpenFile(fullPath)
+    End Sub
+
+
+    Private Sub Delete_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim item = lvFiles.SelectedItems(0)
+        Dim fullPath = CStr(item.Tag)
+        Dim result = MessageBox.Show("Are you sure you want to delete '" & item.Text & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+        If result <> DialogResult.Yes Then Exit Sub
+        Try
+            If Directory.Exists(fullPath) Then
+                Directory.Delete(fullPath, recursive:=True)
+            ElseIf File.Exists(fullPath) Then
+                File.Delete(fullPath)
+            End If
+            lvFiles.Items.Remove(item)
+        Catch ex As Exception
+            MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
 End Class
