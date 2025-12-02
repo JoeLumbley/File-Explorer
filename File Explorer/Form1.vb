@@ -350,4 +350,10 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+
+        Delete_Click(sender, e)
+
+    End Sub
+
 End Class
