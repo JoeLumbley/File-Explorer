@@ -108,7 +108,7 @@ Partial Class Form1
         ' 
         btnDelete.Anchor = AnchorStyles.Right
         btnDelete.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnDelete.Location = New Point(492, 3)
+        btnDelete.Location = New Point(492, 4)
         btnDelete.Name = "btnDelete"
         btnDelete.Size = New Size(30, 30)
         btnDelete.TabIndex = 4
@@ -119,16 +119,16 @@ Partial Class Form1
         ' 
         txtPath.Anchor = AnchorStyles.Left Or AnchorStyles.Right
         txtPath.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        txtPath.Location = New Point(72, 3)
+        txtPath.Location = New Point(75, 4)
         txtPath.Name = "txtPath"
-        txtPath.Size = New Size(348, 29)
+        txtPath.Size = New Size(365, 29)
         txtPath.TabIndex = 3
         ' 
         ' btnForward
         ' 
         btnForward.Anchor = AnchorStyles.Left
         btnForward.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnForward.Location = New Point(36, 3)
+        btnForward.Location = New Point(39, 4)
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 30)
         btnForward.TabIndex = 2
@@ -139,7 +139,7 @@ Partial Class Form1
         ' 
         btnBack.Anchor = AnchorStyles.Left
         btnBack.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnBack.Location = New Point(3, 3)
+        btnBack.Location = New Point(3, 4)
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(30, 30)
         btnBack.TabIndex = 1
@@ -150,9 +150,9 @@ Partial Class Form1
         ' 
         btnGo.Anchor = AnchorStyles.Right
         btnGo.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnGo.Location = New Point(426, 3)
+        btnGo.Location = New Point(446, 4)
         btnGo.Name = "btnGo"
-        btnGo.Size = New Size(60, 30)
+        btnGo.Size = New Size(40, 30)
         btnGo.TabIndex = 0
         btnGo.Text = "Go"
         btnGo.UseVisualStyleBackColor = True
