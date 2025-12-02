@@ -32,21 +32,23 @@ Public Class Form1
     ' Context menu for files
     Private cmsFiles As New ContextMenuStrip()
 
+    Private lblStatus As New ToolStripStatusLabel()
+
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Text = "File Explorer - Code with Joe"
         InitListView()
         InitTreeRoots()
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
+        InitStatusBar()
+
         ' Context menu setup
         cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
         cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
         cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
-
-
         lvFiles.ContextMenuStrip = cmsFiles
 
     End Sub
@@ -74,6 +76,13 @@ Public Class Form1
             tvFolders.Nodes.Add(rootNode)
         Next
     End Sub
+
+    Private Sub InitStatusBar()
+        Dim statusStrip As New StatusStrip()
+        statusStrip.Items.Add(lblStatus)
+        Me.Controls.Add(statusStrip)
+    End Sub
+
 
     ' -------- Navigation --------
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
