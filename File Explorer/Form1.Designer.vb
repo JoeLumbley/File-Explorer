@@ -108,6 +108,7 @@ Partial Class Form1
         ' 
         btnDelete.Anchor = AnchorStyles.Right
         btnDelete.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        btnDelete.ForeColor = Color.Red
         btnDelete.Location = New Point(492, 4)
         btnDelete.Name = "btnDelete"
         btnDelete.Size = New Size(30, 30)

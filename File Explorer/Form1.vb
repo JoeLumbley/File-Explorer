@@ -65,6 +65,18 @@ Public Class Form1
         lvFiles.Columns.Add("Modified", 160)
     End Sub
 
+    'Private Sub InitTreeRoots()
+    '    tvFolders.Nodes.Clear()
+    '    tvFolders.ShowRootLines = True
+
+    '    ' Add drives as roots
+    '    For Each di In DriveInfo.GetDrives()
+    '        Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
+    '        rootNode.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '        tvFolders.Nodes.Add(rootNode)
+    '    Next
+    'End Sub
+
     Private Sub InitTreeRoots()
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
@@ -75,6 +87,14 @@ Public Class Form1
             rootNode.Nodes.Add("Loading...") ' placeholder for lazy-load
             tvFolders.Nodes.Add(rootNode)
         Next
+
+        ' Add Documents as a root
+        Dim docsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+        If Directory.Exists(docsPath) Then
+            Dim docsNode = New TreeNode("Documents") With {.Tag = docsPath}
+            docsNode.Nodes.Add("Loading...") ' placeholder for lazy-load
+            tvFolders.Nodes.Add(docsNode)
+        End If
     End Sub
 
     Private Sub InitStatusBar()
