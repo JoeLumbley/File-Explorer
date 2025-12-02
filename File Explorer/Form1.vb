@@ -97,6 +97,42 @@ Public Class Form1
     '    End If
     'End Sub
 
+    'Private Sub InitTreeRoots()
+    '    tvFolders.Nodes.Clear()
+    '    tvFolders.ShowRootLines = True
+
+    '    ' Add drives as roots
+    '    For Each di In DriveInfo.GetDrives()
+    '        Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
+    '        rootNode.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '        tvFolders.Nodes.Add(rootNode)
+    '    Next
+
+    '    ' Add special folders as roots
+    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '    ("Desktop", Environment.SpecialFolder.Desktop),
+    '    ("Downloads", Environment.SpecialFolder.UserProfile) ' Downloads is not a direct SpecialFolder, so we combine
+    '}
+
+    '    For Each sf In specialFolders
+    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        ' Handle Downloads manually (it's usually under UserProfile\Downloads)
+    '        If sf.Item1 = "Downloads" Then
+    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        End If
+
+    '        If Directory.Exists(specialFolderPath) Then
+    '            Dim node = New TreeNode(sf.Item1) With {.Tag = specialFolderPath}
+    '            node.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '            tvFolders.Nodes.Add(node)
+    '        End If
+
+    '    Next
+
+    'End Sub
+
     Private Sub InitTreeRoots()
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
@@ -112,12 +148,16 @@ Public Class Form1
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
         ("Documents", Environment.SpecialFolder.MyDocuments),
         ("Desktop", Environment.SpecialFolder.Desktop),
-        ("Downloads", Environment.SpecialFolder.UserProfile) ' Downloads is not a direct SpecialFolder, so we combine
+        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+        ("Music", Environment.SpecialFolder.MyMusic),
+        ("Pictures", Environment.SpecialFolder.MyPictures),
+        ("Videos", Environment.SpecialFolder.MyVideos)
     }
 
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
-            ' Handle Downloads manually (it's usually under UserProfile\Downloads)
+
+            ' Handle Downloads manually (UserProfile\Downloads)
             If sf.Item1 = "Downloads" Then
                 specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
             End If
