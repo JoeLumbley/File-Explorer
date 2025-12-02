@@ -60,6 +60,7 @@ Partial Class Form1
         ' tvFolders
         ' 
         tvFolders.Dock = DockStyle.Fill
+        tvFolders.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tvFolders.Location = New Point(0, 0)
         tvFolders.Name = "tvFolders"
         tvFolders.Size = New Size(265, 630)
@@ -84,6 +85,7 @@ Partial Class Form1
         ' lvFiles
         ' 
         lvFiles.Dock = DockStyle.Fill
+        lvFiles.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lvFiles.LabelEdit = True
         lvFiles.Location = New Point(3, 43)
         lvFiles.Name = "lvFiles"
