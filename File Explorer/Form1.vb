@@ -23,6 +23,8 @@
 
 Imports System.IO
 
+
+
 Public Class Form1
 
     ' Simple navigation history
@@ -65,18 +67,51 @@ Public Class Form1
         lvFiles.Columns.Add("Modified", 160)
     End Sub
 
+    'Private Sub InitTreeRoots()
+    '    tvFolders.Nodes.Clear()
+    '    tvFolders.ShowRootLines = True
+
+    '    ' Add drives as roots
+    '    For Each di In DriveInfo.GetDrives()
+    '        Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
+    '        rootNode.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '        tvFolders.Nodes.Add(rootNode)
+    '    Next
+
+    '    ' Add special folders as roots
+    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '    ("Desktop", Environment.SpecialFolder.Desktop),
+    '    ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+    '    ("Music", Environment.SpecialFolder.MyMusic),
+    '    ("Pictures", Environment.SpecialFolder.MyPictures),
+    '    ("Videos", Environment.SpecialFolder.MyVideos)
+    '}
+
+    '    For Each sf In specialFolders
+    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        ' Handle Downloads manually (UserProfile\Downloads)
+    '        If sf.Item1 = "Downloads" Then
+    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        End If
+
+    '        If Directory.Exists(specialFolderPath) Then
+    '            Dim node = New TreeNode(sf.Item1) With {.Tag = specialFolderPath}
+    '            node.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '            tvFolders.Nodes.Add(node)
+    '        End If
+    '    Next
+    'End Sub
+
     Private Sub InitTreeRoots()
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
 
-        ' Add drives as roots
-        For Each di In DriveInfo.GetDrives()
-            Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
-            rootNode.Nodes.Add("Loading...") ' placeholder for lazy-load
-            tvFolders.Nodes.Add(rootNode)
-        Next
+        ' --- Easy Access node ---
+        Dim easyAccessNode As New TreeNode("Easy Access")
 
-        ' Add special folders as roots
+        ' Define special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
         ("Documents", Environment.SpecialFolder.MyDocuments),
         ("Desktop", Environment.SpecialFolder.Desktop),
@@ -97,10 +132,26 @@ Public Class Form1
             If Directory.Exists(specialFolderPath) Then
                 Dim node = New TreeNode(sf.Item1) With {.Tag = specialFolderPath}
                 node.Nodes.Add("Loading...") ' placeholder for lazy-load
-                tvFolders.Nodes.Add(node)
+                easyAccessNode.Nodes.Add(node)
             End If
         Next
+
+        ' Add Quick Access to tree
+        tvFolders.Nodes.Add(easyAccessNode)
+
+        ' --- Drives as separate roots ---
+        For Each di In DriveInfo.GetDrives()
+            Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
+            rootNode.Nodes.Add("Loading...")
+            tvFolders.Nodes.Add(rootNode)
+        Next
     End Sub
+
+
+
+
+
+
 
     Private Sub InitStatusBar()
         Dim statusStrip As New StatusStrip()
