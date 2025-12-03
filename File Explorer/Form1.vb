@@ -57,7 +57,7 @@ Public Class Form1
     Private Sub InitListView()
         lvFiles.View = View.Details
         lvFiles.FullRowSelect = True
-        lvFiles.MultiSelect = False
+        lvFiles.MultiSelect = True
         lvFiles.Columns.Clear()
         lvFiles.Columns.Add("Name", 280)
         lvFiles.Columns.Add("Type", 120)
