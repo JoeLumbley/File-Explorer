@@ -390,4 +390,9 @@ Public Class Form1
 
     End Sub
 
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
+
+        RenameFile_Click(sender, e)
+
+    End Sub
 End Class
