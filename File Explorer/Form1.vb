@@ -69,11 +69,17 @@ Public Class Form1
         imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
         imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
+        imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
+
         tvFolders.ImageList = imgList
+        lvFiles.SmallImageList = imgList
     End Sub
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
         Me.Text = "File Explorer - Code with Joe"
+
+        ShowStatus("Loading...")
 
         InitImageList()
 
@@ -92,6 +98,7 @@ Public Class Form1
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
         lvFiles.ContextMenuStrip = cmsFiles
 
+        ShowStatus("Ready")
 
     End Sub
 
@@ -185,7 +192,7 @@ Public Class Form1
             Exit Sub
         End If
 
-        ShowStatus("Navigated To Folder: " & path)
+        ShowStatus("Navigated To: " & path)
 
         txtPath.Text = path
         PopulateFiles(path)
@@ -295,7 +302,9 @@ Public Class Form1
                 item.SubItems.Add("") ' size blank for folders
                 item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = di.FullName
-                item.ImageIndex = -1 ' add folder icon if using ImageList
+                'item.ImageIndex = -1 ' add folder icon if using ImageList
+                item.ImageKey = "Folder"
+                'item.SelectedImageKey = "Folder"
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
@@ -311,7 +320,41 @@ Public Class Form1
                 item.SubItems.Add(FormatSize(fi.Length))
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
-                item.ImageIndex = -1 ' set based on extension if you add icons
+
+                ' Assign image based on file type
+                Select Case fi.Extension.ToLowerInvariant()
+                    ' Music Files
+                    Case ".mp3", ".wav", ".flac"
+                        item.ImageKey = "Music"
+
+                    ' Image Files
+                    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"
+                        item.ImageKey = "Pictures"
+
+                    ' Document Files
+                    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx"
+                        item.ImageKey = "Documents"
+
+                    ' Video Files
+                    Case ".mp4", ".avi", ".mov", ".wmv"
+                        item.ImageKey = "Videos"
+
+                    ' Downloaded Files (generic)
+                    Case ".zip", ".rar", ".iso"
+                        item.ImageKey = "Downloads"
+
+                    ' Executable Files
+                    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
+                         ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
+                        item.ImageKey = "Executable"
+
+
+
+                        ' Other file types can be categorized as needed
+                    Case Else
+                        item.ImageKey = "Documents" ' Default icon for unrecognized file types
+                End Select
+
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
@@ -376,12 +419,15 @@ Public Class Form1
         Try
             If Directory.Exists(oldPath) Then
                 Directory.Move(oldPath, newPath)
+                ShowStatus("Renamed Folder to: " & newName)
             ElseIf File.Exists(oldPath) Then
                 File.Move(oldPath, newPath)
+                ShowStatus("Renamed File to: " & newName)
             End If
             item.Tag = newPath
         Catch ex As Exception
             MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Rename failed: " & ex.Message)
             e.CancelEdit = True
         End Try
     End Sub
@@ -389,11 +435,15 @@ Public Class Form1
     Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Clipboard.SetText(lvFiles.SelectedItems(0).Text)
+        ShowStatus("Copied File Name " & lvFiles.SelectedItems(0).Text)
+
     End Sub
 
     Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+        ShowStatus("Copied File Path " & lvFiles.SelectedItems(0).Tag)
+
     End Sub
 
     Private Sub RenameFile_Click(sender As Object, e As EventArgs)
@@ -473,8 +523,10 @@ Public Class Form1
             item.Tag = di.FullName
             lvFiles.Items.Add(item)
             item.BeginEdit() ' allow user to rename immediately
+            ShowStatus("Created folder: " & di.Name)
         Catch ex As Exception
             MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Failed to create folder: " & ex.Message)
         End Try
     End Sub
 
