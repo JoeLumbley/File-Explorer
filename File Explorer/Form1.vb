@@ -93,8 +93,8 @@ Public Class Form1
         lvFiles.Columns.Add("Modified", 160)
     End Sub
 
-
     Private Sub InitTreeRoots()
+
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
 
@@ -149,6 +149,7 @@ Public Class Form1
             rootNode.Nodes.Add("Loading...")
             tvFolders.Nodes.Add(rootNode)
         Next
+
     End Sub
 
     Private Sub InitStatusBar()
