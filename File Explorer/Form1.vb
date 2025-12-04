@@ -36,8 +36,37 @@ Public Class Form1
 
     Private lblStatus As New ToolStripStatusLabel()
 
+    Private imgList As New ImageList()
+
+    Private Sub InitImageList()
+        imgList.ImageSize = New Size(16, 16)
+        imgList.ColorDepth = ColorDepth.Depth32Bit
+
+        ' Load icons (replace with actual file paths or resources)
+        imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
+        imgList.Images.Add("Drive", My.Resources.Resource1.Drive_16X16)
+        imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
+
+        imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
+        imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
+        imgList.Images.Add("EasyAccess", My.Resources.Resource1.Easy_Access_16X16)
+
+        imgList.Images.Add("Music", My.Resources.Resource1.Music_16X16)
+        imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
+        imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
+
+        tvFolders.ImageList = imgList
+    End Sub
+
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Text = "File Explorer - Code with Joe"
+
+        InitImageList()
+
+
+
+
+
         InitListView()
         InitTreeRoots()
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
@@ -53,6 +82,7 @@ Public Class Form1
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
         lvFiles.ContextMenuStrip = cmsFiles
 
+
     End Sub
 
     ' -------- UI init --------
@@ -67,12 +97,96 @@ Public Class Form1
         lvFiles.Columns.Add("Modified", 160)
     End Sub
 
+    '    Private Sub InitTreeRoots()
+    '        tvFolders.Nodes.Clear()
+    '        tvFolders.ShowRootLines = True
+
+    '        '    ' --- Easy Access node ---
+    '        '    Dim easyAccessNode As New TreeNode("Easy Access")
+
+    '        '    ' Define special folders
+    '        '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '        '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '        '    ("Desktop", Environment.SpecialFolder.Desktop),
+    '        '    ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+    '        '    ("Music", Environment.SpecialFolder.MyMusic),
+    '        '    ("Pictures", Environment.SpecialFolder.MyPictures),
+    '        '    ("Videos", Environment.SpecialFolder.MyVideos)
+    '        '}
+
+    '        '    For Each sf In specialFolders
+    '        '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        '        ' Handle Downloads manually (UserProfile\Downloads)
+    '        '        If sf.Item1 = "Downloads" Then
+    '        '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        '        End If
+
+    '        '        If Directory.Exists(specialFolderPath) Then
+    '        '            Dim node = New TreeNode(sf.Item1) With {
+    '        '            .Tag = specialFolderPath,
+    '        '            .ImageKey = sf.Item1,
+    '        '            .SelectedImageKey = sf.Item1
+    '        '            }
+    '        '            node.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '        '            easyAccessNode.Nodes.Add(node)
+    '        '        End If
+    '        '    Next
+
+    '        '    ' Add Easy Access to tree
+    '        '    tvFolders.Nodes.Add(easyAccessNode)
+
+
+    '        Dim quickAccessNode As New TreeNode("Quick Access")
+
+    '        Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '    ("Desktop", Environment.SpecialFolder.Desktop),
+    '    ("Downloads", Environment.SpecialFolder.UserProfile),
+    '    ("Music", Environment.SpecialFolder.MyMusic),
+    '    ("Pictures", Environment.SpecialFolder.MyPictures),
+    '    ("Videos", Environment.SpecialFolder.MyVideos)
+    '}
+
+    '        For Each sf In specialFolders
+    '            Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+    '            If sf.Item1 = "Downloads" Then
+    '                specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '            End If
+
+    '            If Directory.Exists(specialFolderPath) Then
+    '                Dim node = New TreeNode(sf.Item1) With {
+    '            .Tag = specialFolderPath,
+    '            .ImageKey = sf.Item1,
+    '            .SelectedImageKey = sf.Item1
+    '        }
+    '                node.Nodes.Add("Loading...")
+    '                quickAccessNode.Nodes.Add(node)
+    '            End If
+    '        Next
+
+    '        tvFolders.Nodes.Add(quickAccessNode)
+
+    '        ' --- Drives as separate roots ---
+    '        For Each di In DriveInfo.GetDrives()
+    '            Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
+    '            rootNode.Nodes.Add("Loading...")
+    '            tvFolders.Nodes.Add(rootNode)
+    '        Next
+
+    '    End Sub
+
+
+
     Private Sub InitTreeRoots()
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
 
-        ' --- Easy Access node ---
-        Dim easyAccessNode As New TreeNode("Easy Access")
+        ' --- Quick Access node ---
+        Dim quickAccessNode As New TreeNode("Quick Access") With {
+            .ImageKey = "EasyAccess",
+                .SelectedImageKey = "EasyAccess"
+            }
 
         ' Define special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
@@ -93,22 +207,29 @@ Public Class Form1
             End If
 
             If Directory.Exists(specialFolderPath) Then
-                Dim node = New TreeNode(sf.Item1) With {.Tag = specialFolderPath}
+                Dim node = New TreeNode(sf.Item1) With {
+                .Tag = specialFolderPath,
+                .ImageKey = sf.Item1,
+                .SelectedImageKey = sf.Item1
+            }
                 node.Nodes.Add("Loading...") ' placeholder for lazy-load
-                easyAccessNode.Nodes.Add(node)
+                quickAccessNode.Nodes.Add(node)
             End If
         Next
 
-        ' Add Easy Access to tree
-        tvFolders.Nodes.Add(easyAccessNode)
+        ' Add Quick Access to tree
+        tvFolders.Nodes.Add(quickAccessNode)
 
         ' --- Drives as separate roots ---
         For Each di In DriveInfo.GetDrives()
-            Dim rootNode = New TreeNode(di.Name) With {.Tag = di.RootDirectory.FullName}
+            Dim rootNode = New TreeNode(di.Name) With {
+                .Tag = di.RootDirectory.FullName,
+                .ImageKey = "Drive",
+                .SelectedImageKey = "Drive"
+                }
             rootNode.Nodes.Add("Loading...")
             tvFolders.Nodes.Add(rootNode)
         Next
-
     End Sub
 
     Private Sub InitStatusBar()
@@ -188,7 +309,10 @@ Public Class Form1
             node.Nodes.Clear()
             Try
                 For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-                    Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath}
+                    Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath,
+                        .ImageKey = "Folder",
+                .SelectedImageKey = "Folder"
+                        }
                     ' Add placeholder only if it has subdirectories
                     If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
                     node.Nodes.Add(child)
