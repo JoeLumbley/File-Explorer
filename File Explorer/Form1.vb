@@ -38,6 +38,20 @@ Public Class Form1
 
     Private imgList As New ImageList()
 
+    Private statusTimer As New Timer() With {.Interval = 5000}
+
+    Private Sub ShowStatus(message As String)
+        lblStatus.Text = message
+        statusTimer.Stop()
+        AddHandler statusTimer.Tick, AddressOf ClearStatus
+        statusTimer.Start()
+    End Sub
+
+    Private Sub ClearStatus(sender As Object, e As EventArgs)
+        lblStatus.Text = ""
+        statusTimer.Stop()
+    End Sub
+
     Private Sub InitImageList()
         imgList.ImageSize = New Size(16, 16)
         imgList.ColorDepth = ColorDepth.Depth32Bit
@@ -158,14 +172,20 @@ Public Class Form1
         Me.Controls.Add(statusStrip)
     End Sub
 
+    'Private Sub ShowStatus(message As String)
+    '    lblStatus.Text = message
+    'End Sub
 
     ' -------- Navigation --------
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
         If Not Directory.Exists(path) Then
             MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ShowStatus("Folder not found: " & path)
             Exit Sub
         End If
+
+        ShowStatus("Navigated To Folder: " & path)
 
         txtPath.Text = path
         PopulateFiles(path)
@@ -202,8 +222,10 @@ Public Class Form1
             ' Open file with default application.
             Try
                 Process.Start(New ProcessStartInfo(Path) With {.UseShellExecute = True})
+                ShowStatus("Opened " & Path)
             Catch ex As Exception
                 MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                ShowStatus("Cannot open: " & ex.Message)
             End Try
         End If
 
@@ -385,7 +407,6 @@ Public Class Form1
         GoToFolderOrOpenFile(fullPath)
     End Sub
 
-
     Private Sub Delete_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Dim item = lvFiles.SelectedItems(0)
@@ -395,14 +416,41 @@ Public Class Form1
         Try
             If Directory.Exists(fullPath) Then
                 Directory.Delete(fullPath, recursive:=True)
+                ShowStatus("Deleted folder " & item.Text)
             ElseIf File.Exists(fullPath) Then
                 File.Delete(fullPath)
+                ShowStatus("Deleted file " & item.Text)
             End If
             lvFiles.Items.Remove(item)
         Catch ex As Exception
             MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Delete failed: " & ex.Message)
         End Try
     End Sub
+
+
+    'Private Sub DeleteSelectedItem()
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    Dim sel = lvFiles.SelectedItems(0)
+    '    Dim fullPath = CStr(sel.Tag)
+
+    '    If MessageBox.Show("Delete '" & sel.Text & "'?", "Confirm Delete",
+    '                   MessageBoxButtons.YesNo, MessageBoxIcon.Warning) = DialogResult.Yes Then
+    '        Try
+    '            If File.Exists(fullPath) Then
+    '                File.Delete(fullPath)
+    '                ShowStatus("Deleted file " & sel.Text)
+    '            ElseIf Directory.Exists(fullPath) Then
+    '                Directory.Delete(fullPath, recursive:=True)
+    '                ShowStatus("Deleted folder " & sel.Text)
+    '            End If
+    '            PopulateFiles(txtPath.Text)
+    '        Catch ex As Exception
+    '            MessageBox.Show("Delete failed: " & ex.Message, "Error",
+    '                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        End Try
+    '    End If
+    'End Sub
 
 
     Private Sub NewFolder_Click(sender As Object, e As EventArgs)
