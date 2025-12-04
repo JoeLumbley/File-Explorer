@@ -302,9 +302,7 @@ Public Class Form1
                 item.SubItems.Add("") ' size blank for folders
                 item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = di.FullName
-                'item.ImageIndex = -1 ' add folder icon if using ImageList
                 item.ImageKey = "Folder"
-                'item.SelectedImageKey = "Folder"
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
@@ -324,31 +322,34 @@ Public Class Form1
                 ' Assign image based on file type
                 Select Case fi.Extension.ToLowerInvariant()
                     ' Music Files
-                    Case ".mp3", ".wav", ".flac"
+                    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
+                         ".m4a", ".alac", ".aiff", ".dsd"
                         item.ImageKey = "Music"
 
                     ' Image Files
-                    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"
+                    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
+                         ".raw", ".cr2", ".nef", ".orf", ".sr2"
                         item.ImageKey = "Pictures"
 
                     ' Document Files
-                    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx"
+                    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
+                         ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
                         item.ImageKey = "Documents"
 
                     ' Video Files
-                    Case ".mp4", ".avi", ".mov", ".wmv"
+                    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
+                         ".3gp", ".vob", ".ogv", ".ts"
                         item.ImageKey = "Videos"
 
                     ' Downloaded Files (generic)
-                    Case ".zip", ".rar", ".iso"
+                    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
+                         ".epub", ".mobi", ".apk", ".crx"
                         item.ImageKey = "Downloads"
 
                     ' Executable Files
                     Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
                          ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
                         item.ImageKey = "Executable"
-
-
 
                         ' Other file types can be categorized as needed
                     Case Else
