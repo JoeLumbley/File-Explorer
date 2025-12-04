@@ -136,6 +136,9 @@ Public Class Form1
         ' Add Easy Access to tree
         tvFolders.Nodes.Add(easyAccessNode)
 
+        ' Expand the Easy Access node
+        easyAccessNode.Expand()
+
         ' --- Drives as separate roots ---
         For Each di In DriveInfo.GetDrives()
             Dim rootNode = New TreeNode(di.Name) With {
