@@ -23,8 +23,6 @@
 
 Imports System.IO
 
-
-
 Public Class Form1
 
     ' Simple navigation history
@@ -178,10 +176,6 @@ Public Class Form1
         statusStrip.Items.Add(lblStatus)
         Me.Controls.Add(statusStrip)
     End Sub
-
-    'Private Sub ShowStatus(message As String)
-    '    lblStatus.Text = message
-    'End Sub
 
     ' -------- Navigation --------
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
