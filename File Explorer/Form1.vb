@@ -108,7 +108,7 @@ Public Class Form1
         lvFiles.FullRowSelect = True
         lvFiles.MultiSelect = True
         lvFiles.Columns.Clear()
-        lvFiles.Columns.Add("Name", 280)
+        lvFiles.Columns.Add("Name", 475)
         lvFiles.Columns.Add("Type", 120)
         lvFiles.Columns.Add("Size", 100)
         lvFiles.Columns.Add("Modified", 160)
@@ -128,11 +128,11 @@ Public Class Form1
         ' Define special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
         ("Documents", Environment.SpecialFolder.MyDocuments),
-        ("Desktop", Environment.SpecialFolder.Desktop),
-        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
         ("Music", Environment.SpecialFolder.MyMusic),
         ("Pictures", Environment.SpecialFolder.MyPictures),
-        ("Videos", Environment.SpecialFolder.MyVideos)
+        ("Videos", Environment.SpecialFolder.MyVideos),
+        ("Downloads", Environment.SpecialFolder.UserProfile), ' Downloads handled separately
+        ("Desktop", Environment.SpecialFolder.Desktop)
     }
 
         For Each sf In specialFolders
@@ -522,6 +522,8 @@ Public Class Form1
             item.SubItems.Add("") ' size blank for folders
             item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
             item.Tag = di.FullName
+            item.ImageKey = "Folder"
+
             lvFiles.Items.Add(item)
             item.BeginEdit() ' allow user to rename immediately
             ShowStatus("Created folder: " & di.Name)
@@ -549,4 +551,17 @@ Public Class Form1
         RenameFile_Click(sender, e)
 
     End Sub
+
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
+
+        NewFolder_Click(sender, e)
+
+    End Sub
+
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
+
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+    End Sub
+
 End Class
