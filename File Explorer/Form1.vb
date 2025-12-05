@@ -479,31 +479,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-    'Private Sub DeleteSelectedItem()
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-    '    Dim sel = lvFiles.SelectedItems(0)
-    '    Dim fullPath = CStr(sel.Tag)
-
-    '    If MessageBox.Show("Delete '" & sel.Text & "'?", "Confirm Delete",
-    '                   MessageBoxButtons.YesNo, MessageBoxIcon.Warning) = DialogResult.Yes Then
-    '        Try
-    '            If File.Exists(fullPath) Then
-    '                File.Delete(fullPath)
-    '                ShowStatus("Deleted file " & sel.Text)
-    '            ElseIf Directory.Exists(fullPath) Then
-    '                Directory.Delete(fullPath, recursive:=True)
-    '                ShowStatus("Deleted folder " & sel.Text)
-    '            End If
-    '            PopulateFiles(txtPath.Text)
-    '        Catch ex As Exception
-    '            MessageBox.Show("Delete failed: " & ex.Message, "Error",
-    '                        MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        End Try
-    '    End If
-    'End Sub
-
-
     Private Sub NewFolder_Click(sender As Object, e As EventArgs)
         Dim currentPath = txtPath.Text
         Dim newFolderName = "New Folder"
