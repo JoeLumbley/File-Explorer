@@ -78,7 +78,7 @@ Partial Class Form1
         TableLayoutPanel1.Location = New Point(0, 0)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 2
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 60F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 45F))
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.Size = New Size(849, 681)
         TableLayoutPanel1.TabIndex = 0
@@ -88,9 +88,9 @@ Partial Class Form1
         lvFiles.Dock = DockStyle.Fill
         lvFiles.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lvFiles.LabelEdit = True
-        lvFiles.Location = New Point(3, 63)
+        lvFiles.Location = New Point(3, 48)
         lvFiles.Name = "lvFiles"
-        lvFiles.Size = New Size(843, 615)
+        lvFiles.Size = New Size(843, 630)
         lvFiles.TabIndex = 0
         lvFiles.UseCompatibleStateImageBehavior = False
         ' 
@@ -105,16 +105,16 @@ Partial Class Form1
         Panel1.Dock = DockStyle.Fill
         Panel1.Location = New Point(3, 3)
         Panel1.Name = "Panel1"
-        Panel1.Size = New Size(843, 54)
+        Panel1.Size = New Size(843, 39)
         Panel1.TabIndex = 1
         ' 
         ' btnRename
         ' 
         btnRename.Anchor = AnchorStyles.Right
-        btnRename.Font = New Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnRename.Location = New Point(753, 9)
+        btnRename.Font = New Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        btnRename.Location = New Point(753, 1)
         btnRename.Name = "btnRename"
-        btnRename.Size = New Size(42, 42)
+        btnRename.Size = New Size(42, 36)
         btnRename.TabIndex = 5
         btnRename.Text = ""
         btnRename.UseVisualStyleBackColor = True
@@ -122,11 +122,11 @@ Partial Class Form1
         ' btnDelete
         ' 
         btnDelete.Anchor = AnchorStyles.Right
-        btnDelete.Font = New Font("Segoe UI Symbol", 14.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        btnDelete.Font = New Font("Segoe UI Symbol", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         btnDelete.ForeColor = Color.Red
-        btnDelete.Location = New Point(801, 9)
+        btnDelete.Location = New Point(801, 1)
         btnDelete.Name = "btnDelete"
-        btnDelete.Size = New Size(42, 42)
+        btnDelete.Size = New Size(42, 36)
         btnDelete.TabIndex = 4
         btnDelete.Text = ""
         btnDelete.UseVisualStyleBackColor = True
@@ -134,19 +134,19 @@ Partial Class Form1
         ' txtPath
         ' 
         txtPath.Anchor = AnchorStyles.Left Or AnchorStyles.Right
-        txtPath.Font = New Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        txtPath.Location = New Point(96, 8)
+        txtPath.Font = New Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        txtPath.Location = New Point(96, 2)
         txtPath.Name = "txtPath"
-        txtPath.Size = New Size(603, 39)
+        txtPath.Size = New Size(603, 33)
         txtPath.TabIndex = 3
         ' 
         ' btnForward
         ' 
         btnForward.Anchor = AnchorStyles.Left
         btnForward.Font = New Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnForward.Location = New Point(48, 7)
+        btnForward.Location = New Point(48, 1)
         btnForward.Name = "btnForward"
-        btnForward.Size = New Size(42, 42)
+        btnForward.Size = New Size(42, 36)
         btnForward.TabIndex = 2
         btnForward.Text = ""
         btnForward.UseVisualStyleBackColor = True
@@ -155,9 +155,9 @@ Partial Class Form1
         ' 
         btnBack.Anchor = AnchorStyles.Left
         btnBack.Font = New Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnBack.Location = New Point(0, 7)
+        btnBack.Location = New Point(0, 1)
         btnBack.Name = "btnBack"
-        btnBack.Size = New Size(42, 42)
+        btnBack.Size = New Size(42, 36)
         btnBack.TabIndex = 1
         btnBack.Text = ""
         btnBack.UseVisualStyleBackColor = True
@@ -166,9 +166,9 @@ Partial Class Form1
         ' 
         btnGo.Anchor = AnchorStyles.Right
         btnGo.Font = New Font("Segoe UI", 12.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        btnGo.Location = New Point(705, 8)
+        btnGo.Location = New Point(705, 1)
         btnGo.Name = "btnGo"
-        btnGo.Size = New Size(42, 42)
+        btnGo.Size = New Size(42, 36)
         btnGo.TabIndex = 0
         btnGo.Text = "Go"
         btnGo.UseVisualStyleBackColor = True
