@@ -29,6 +29,10 @@ Public Class Form1
     Private ReadOnly _history As New List(Of String)
     Private _historyIndex As Integer = -1
 
+    ' Clipboard for copy/paste
+    Private _clipboardPath As String = String.Empty
+
+
     ' Context menu for files
     Private cmsFiles As New ContextMenuStrip()
 
@@ -37,6 +41,80 @@ Public Class Form1
     Private imgList As New ImageList()
 
     Private statusTimer As New Timer() With {.Interval = 5000}
+
+
+
+
+    Private Sub CopyFile(sourcePath As String, destPath As String)
+        Try
+            File.Copy(sourcePath, destPath, overwrite:=False) ' set overwrite:=True if you want to replace
+            MessageBox.Show("File copied successfully!", "Copy", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            MessageBox.Show("Copy failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub CopyDirectory(sourceDir As String, destDir As String)
+        Dim dirInfo As New DirectoryInfo(sourceDir)
+        If Not dirInfo.Exists Then Throw New DirectoryNotFoundException("Source not found: " & sourceDir)
+
+        Directory.CreateDirectory(destDir)
+
+        ' Copy files
+        For Each file In dirInfo.GetFiles()
+            Dim targetFilePath = Path.Combine(destDir, file.Name)
+            file.CopyTo(targetFilePath, overwrite:=True)
+        Next
+
+        ' Copy subdirectories recursively
+        For Each subDir In dirInfo.GetDirectories()
+            Dim newDest = Path.Combine(destDir, subDir.Name)
+            CopyDirectory(subDir.FullName, newDest)
+        Next
+    End Sub
+
+    Private Sub CopySelectedFile_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+
+        ' Example: copy to Desktop
+        Dim destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Path.GetFileName(fullPath))
+
+        If File.Exists(fullPath) Then
+            CopyFile(fullPath, destPath)
+        ElseIf Directory.Exists(fullPath) Then
+            CopyDirectory(fullPath, destPath)
+        End If
+    End Sub
+
+    Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrEmpty(_clipboardPath) Then
+            MessageBox.Show("Clipboard is empty.", "Paste", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Exit Sub
+        End If
+
+        Dim destDir = txtPath.Text
+        Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+        Try
+            If File.Exists(_clipboardPath) Then
+                File.Copy(_clipboardPath, destPath, overwrite:=False)
+            ElseIf Directory.Exists(_clipboardPath) Then
+                CopyDirectory(_clipboardPath, destPath) ' use the recursive helper we wrote earlier
+            End If
+
+            ' Refresh view
+            PopulateFiles(destDir)
+        Catch ex As Exception
+            MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub CopySelected_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+        ShowStatus("Copied to clipboard: " & _clipboardPath)
+    End Sub
 
     Private Sub ShowStatus(message As String)
         lblStatus.Text = message
@@ -88,12 +166,19 @@ Public Class Form1
         InitStatusBar()
 
         ' Context menu setup
+        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
+        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
+
         cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+
+
         cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
         cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+
         lvFiles.ContextMenuStrip = cmsFiles
 
         ShowStatus("Ready")
