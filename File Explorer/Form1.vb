@@ -31,6 +31,8 @@ Public Class Form1
 
     ' Clipboard for copy/paste
     Private _clipboardPath As String = String.Empty
+    Private _clipboardIsCut As Boolean = False
+
 
 
     ' Context menu for files
@@ -87,33 +89,97 @@ Public Class Form1
         End If
     End Sub
 
+    'Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
+    '    If String.IsNullOrEmpty(_clipboardPath) Then
+    '        MessageBox.Show("Clipboard is empty.", "Paste", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    '        Exit Sub
+    '    End If
+
+    '    Dim destDir = txtPath.Text
+    '    Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+    '    Try
+    '        If File.Exists(_clipboardPath) Then
+    '            File.Copy(_clipboardPath, destPath, overwrite:=False)
+    '        ElseIf Directory.Exists(_clipboardPath) Then
+    '            CopyDirectory(_clipboardPath, destPath) ' use the recursive helper we wrote earlier
+    '        End If
+
+    '        ' Refresh view
+    '        PopulateFiles(destDir)
+    '    Catch ex As Exception
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus("Paste failed: " & ex.Message)
+
+    '    End Try
+    'End Sub
+
     Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
-        If String.IsNullOrEmpty(_clipboardPath) Then
-            MessageBox.Show("Clipboard is empty.", "Paste", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Exit Sub
-        End If
+        If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
 
         Dim destDir = txtPath.Text
         Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
 
         Try
             If File.Exists(_clipboardPath) Then
-                File.Copy(_clipboardPath, destPath, overwrite:=False)
+                If _clipboardIsCut Then
+                    File.Move(_clipboardPath, destPath)
+                Else
+                    File.Copy(_clipboardPath, destPath, overwrite:=False)
+                End If
             ElseIf Directory.Exists(_clipboardPath) Then
-                CopyDirectory(_clipboardPath, destPath) ' use the recursive helper we wrote earlier
+                If _clipboardIsCut Then
+                    Directory.Move(_clipboardPath, destPath)
+                Else
+                    CopyDirectory(_clipboardPath, destPath)
+                End If
             End If
 
-            ' Refresh view
+            ' Clear cut state
+            _clipboardPath = Nothing
+            _clipboardIsCut = False
+
+            ' Refresh current folder view
             PopulateFiles(destDir)
+            ResetCutVisuals()
+
+            ShowStatus("Pasted into " & txtPath.Text)
+
         Catch ex As Exception
             MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Paste failed: " & ex.Message)
+
         End Try
+    End Sub
+
+    Private Sub ResetCutVisuals()
+        For Each item As ListViewItem In lvFiles.Items
+            item.ForeColor = SystemColors.WindowText
+            item.Font = New Font(lvFiles.Font, FontStyle.Regular)
+        Next
     End Sub
 
     Private Sub CopySelected_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
         ShowStatus("Copied to clipboard: " & _clipboardPath)
+    End Sub
+
+    'Private Sub CutSelected_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+    '    _clipboardIsCut = True
+    'End Sub
+
+    Private Sub CutSelected_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+        _clipboardIsCut = True
+
+        ' Fade the item to indicate "cut"
+        Dim sel = lvFiles.SelectedItems(0)
+        sel.ForeColor = Color.Gray
+        sel.Font = New Font(sel.Font, FontStyle.Italic)
     End Sub
 
     Private Sub ShowStatus(message As String)
@@ -166,6 +232,7 @@ Public Class Form1
         InitStatusBar()
 
         ' Context menu setup
+        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
         cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
         cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
 
