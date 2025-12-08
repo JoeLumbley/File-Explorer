@@ -45,6 +45,18 @@ Public Class Form1
     Private statusTimer As New Timer() With {.Interval = 5000}
 
 
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
+
+        ' Toggle between ascending and descending
+        Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
+
+        ' Sort the ListView
+        lvFiles.Sorting = sortOrder
+        lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
+        lvFiles.Sort()
+
+    End Sub
+
 
 
     Private Sub CopyFile(sourcePath As String, destPath As String)
@@ -89,31 +101,6 @@ Public Class Form1
         End If
     End Sub
 
-    'Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
-    '    If String.IsNullOrEmpty(_clipboardPath) Then
-    '        MessageBox.Show("Clipboard is empty.", "Paste", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '        Exit Sub
-    '    End If
-
-    '    Dim destDir = txtPath.Text
-    '    Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
-
-    '    Try
-    '        If File.Exists(_clipboardPath) Then
-    '            File.Copy(_clipboardPath, destPath, overwrite:=False)
-    '        ElseIf Directory.Exists(_clipboardPath) Then
-    '            CopyDirectory(_clipboardPath, destPath) ' use the recursive helper we wrote earlier
-    '        End If
-
-    '        ' Refresh view
-    '        PopulateFiles(destDir)
-    '    Catch ex As Exception
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus("Paste failed: " & ex.Message)
-
-    '    End Try
-    'End Sub
-
     Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
         If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
 
@@ -141,6 +128,7 @@ Public Class Form1
 
             ' Refresh current folder view
             PopulateFiles(destDir)
+
             ResetCutVisuals()
 
             ShowStatus("Pasted into " & txtPath.Text)
@@ -684,5 +672,29 @@ Public Class Form1
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
     End Sub
+
+End Class
+
+' Custom comparer class
+Public Class ListViewItemComparer
+    Implements IComparer
+
+    Private col As Integer
+    Private sortOrder As SortOrder
+
+    Public Sub New(column As Integer, order As SortOrder)
+        col = column
+        sortOrder = order
+    End Sub
+
+    Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+        Dim returnVal As Integer = String.Compare(CType(x, ListViewItem).SubItems(col).Text, CType(y, ListViewItem).SubItems(col).Text)
+
+        If sortOrder = SortOrder.Descending Then
+            returnVal *= -1
+        End If
+
+        Return returnVal
+    End Function
 
 End Class
