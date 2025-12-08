@@ -54,8 +54,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub CopyFile(sourcePath As String, destPath As String)
         Try
             File.Copy(sourcePath, destPath, overwrite:=False) ' set overwrite:=True if you want to replace
