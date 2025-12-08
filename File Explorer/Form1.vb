@@ -55,50 +55,6 @@ Public Class Form1
         End If
     End Sub
 
-    'Private Sub ExecuteCommand(command As String)
-    '    Dim parts As String() = command.Split(" "c)
-    '    Dim cmd As String = parts(0).ToLower()
-
-    '    Select Case cmd
-    '        Case "cd"
-    '            If parts.Length > 1 Then
-    '                Dim newPath As String = parts(1)
-    '                NavigateTo(newPath)
-    '            Else
-    '                ShowStatus("Usage: cd [directory]")
-    '            End If
-
-    '        Case "copy"
-    '            If parts.Length > 2 Then
-    '                Dim source As String = parts(1)
-    '                Dim destination As String = parts(2)
-    '                CopyFile(source, destination)
-    '            Else
-    '                ShowStatus("Usage: copy [source] [destination]")
-    '            End If
-
-    '        Case "move"
-    '            If parts.Length > 2 Then
-    '                Dim source As String = parts(1)
-    '                Dim destination As String = parts(2)
-    '                MoveFile(source, destination)
-    '            Else
-    '                ShowStatus("Usage: move [source] [destination]")
-    '            End If
-
-    '        Case "delete"
-    '            If parts.Length > 1 Then
-    '                Dim pathToDelete As String = parts(1)
-    '                DeleteFileOrDirectory(pathToDelete)
-    '            Else
-    '                ShowStatus("Usage: delete [file_or_directory]")
-    '            End If
-
-    '        Case Else
-    '            ShowStatus("Unknown command: " & cmd)
-    '    End Select
-    'End Sub
-
     Private Sub ExecuteCommand(command As String)
         Dim parts As String() = command.Split(" "c)
         Dim cmd As String = parts(0).ToLower()
