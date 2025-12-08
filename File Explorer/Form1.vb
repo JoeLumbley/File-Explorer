@@ -235,7 +235,7 @@ Public Class Form1
         lvFiles.FullRowSelect = True
         lvFiles.MultiSelect = True
         lvFiles.Columns.Clear()
-        lvFiles.Columns.Add("Name", 475)
+        lvFiles.Columns.Add("Name", 550)
         lvFiles.Columns.Add("Type", 120)
         lvFiles.Columns.Add("Size", 100)
         lvFiles.Columns.Add("Modified", 160)
