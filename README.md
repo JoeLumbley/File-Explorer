@@ -1,6 +1,6 @@
 # File Explorer
 
 
-<img width="1920" height="1080" alt="007" src="https://github.com/user-attachments/assets/dfeaef7f-7aec-4135-9def-3669ba2c75cb" />
+<img width="1920" height="1080" alt="008" src="https://github.com/user-attachments/assets/d707d184-54f2-474a-aa75-8211b759d46b" />
 
 
