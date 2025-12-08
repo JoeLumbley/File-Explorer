@@ -42,6 +42,154 @@ Public Class Form1
 
     Private statusTimer As New Timer() With {.Interval = 5000}
 
+
+
+
+
+
+    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.SuppressKeyPress = True
+            Dim command As String = txtPath.Text.Trim()
+            ExecuteCommand(command)
+        End If
+    End Sub
+
+    'Private Sub ExecuteCommand(command As String)
+    '    Dim parts As String() = command.Split(" "c)
+    '    Dim cmd As String = parts(0).ToLower()
+
+    '    Select Case cmd
+    '        Case "cd"
+    '            If parts.Length > 1 Then
+    '                Dim newPath As String = parts(1)
+    '                NavigateTo(newPath)
+    '            Else
+    '                ShowStatus("Usage: cd [directory]")
+    '            End If
+
+    '        Case "copy"
+    '            If parts.Length > 2 Then
+    '                Dim source As String = parts(1)
+    '                Dim destination As String = parts(2)
+    '                CopyFile(source, destination)
+    '            Else
+    '                ShowStatus("Usage: copy [source] [destination]")
+    '            End If
+
+    '        Case "move"
+    '            If parts.Length > 2 Then
+    '                Dim source As String = parts(1)
+    '                Dim destination As String = parts(2)
+    '                MoveFile(source, destination)
+    '            Else
+    '                ShowStatus("Usage: move [source] [destination]")
+    '            End If
+
+    '        Case "delete"
+    '            If parts.Length > 1 Then
+    '                Dim pathToDelete As String = parts(1)
+    '                DeleteFileOrDirectory(pathToDelete)
+    '            Else
+    '                ShowStatus("Usage: delete [file_or_directory]")
+    '            End If
+
+    '        Case Else
+    '            ShowStatus("Unknown command: " & cmd)
+    '    End Select
+    'End Sub
+
+    Private Sub ExecuteCommand(command As String)
+        Dim parts As String() = command.Split(" "c)
+        Dim cmd As String = parts(0).ToLower()
+
+        Select Case cmd
+            Case "cd"
+                If parts.Length > 1 Then
+                    Dim newPath As String = parts(1)
+                    NavigateTo(newPath)
+                Else
+                    ShowStatus("Usage: cd [directory]")
+                End If
+
+            Case "copy"
+                If parts.Length > 2 Then
+                    Dim source As String = parts(1)
+                    Dim destination As String = parts(2)
+                    CopyFile(source, destination)
+                Else
+                    ShowStatus("Usage: copy [source] [destination]")
+                End If
+
+            Case "move"
+                If parts.Length > 2 Then
+                    Dim source As String = parts(1)
+                    Dim destination As String = parts(2)
+                    MoveFile(source, destination)
+                Else
+                    ShowStatus("Usage: move [source] [destination]")
+                End If
+
+            Case "delete"
+                If parts.Length > 1 Then
+                    Dim pathToDelete As String = parts(1)
+                    DeleteFileOrDirectory(pathToDelete)
+                Else
+                    ShowStatus("Usage: delete [file_or_directory]")
+                End If
+
+            Case Else
+                ' Check if the input is a valid file or folder path
+                If Directory.Exists(command) Then
+                    NavigateTo(command)
+                ElseIf File.Exists(command) Then
+                    GoToFolderOrOpenFile(command)
+                Else
+                    ShowStatus("Unknown command: " & cmd)
+                End If
+        End Select
+    End Sub
+
+
+    Private Sub MoveFile(source As String, destination As String)
+        Try
+            If File.Exists(source) Then
+                File.Move(source, destination)
+                ShowStatus("Moved file to: " & destination)
+            ElseIf Directory.Exists(source) Then
+                Directory.Move(source, destination)
+                ShowStatus("Moved directory to: " & destination)
+            Else
+                ShowStatus("Source not found.")
+            End If
+        Catch ex As Exception
+            ShowStatus("Move failed: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub DeleteFileOrDirectory(path As String)
+        Try
+            If File.Exists(path) Then
+                File.Delete(path)
+                ShowStatus("Deleted file: " & path)
+            ElseIf Directory.Exists(path) Then
+                Directory.Delete(path, recursive:=True)
+                ShowStatus("Deleted directory: " & path)
+            Else
+                ShowStatus("Path not found.")
+            End If
+        Catch ex As Exception
+            ShowStatus("Delete failed: " & ex.Message)
+        End Try
+    End Sub
+
+
+
+
+
+
+
+
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
         ' Toggle between ascending and descending
@@ -631,12 +779,6 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
-        If e.KeyCode = Keys.Enter Then
-            e.SuppressKeyPress = True
-            NavigateTo(txtPath.Text)
-        End If
-    End Sub
 
     Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
 
@@ -661,6 +803,7 @@ Public Class Form1
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
     End Sub
+
 
 End Class
 
