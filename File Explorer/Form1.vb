@@ -33,8 +33,6 @@ Public Class Form1
     Private _clipboardPath As String = String.Empty
     Private _clipboardIsCut As Boolean = False
 
-
-
     ' Context menu for files
     Private cmsFiles As New ContextMenuStrip()
 
@@ -43,7 +41,6 @@ Public Class Form1
     Private imgList As New ImageList()
 
     Private statusTimer As New Timer() With {.Interval = 5000}
-
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
@@ -152,12 +149,6 @@ Public Class Form1
         _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
         ShowStatus("Copied to clipboard: " & _clipboardPath)
     End Sub
-
-    'Private Sub CutSelected_Click(sender As Object, e As EventArgs)
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-    '    _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
-    '    _clipboardIsCut = True
-    'End Sub
 
     Private Sub CutSelected_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
