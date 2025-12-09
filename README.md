@@ -1,4 +1,4 @@
-# File Explorer
+# 📁 File Explorer
 
 **File Explorer** is a simple and user-friendly file management application designed to provide an intuitive interface for navigating, copying, moving, and deleting files and directories.
 
