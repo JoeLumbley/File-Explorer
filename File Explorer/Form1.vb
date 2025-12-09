@@ -405,14 +405,7 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub CopyFile(sourcePath As String, destPath As String)
-    '    Try
-    '        File.Copy(sourcePath, destPath, overwrite:=False) ' set overwrite:=True if you want to replace
-    '        MessageBox.Show("File copied successfully!", "Copy", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '    Catch ex As Exception
-    '        MessageBox.Show("Copy failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
+
 
     Private Sub CopyDirectory(sourceDir As String, destDir As String)
         Dim dirInfo As New DirectoryInfo(sourceDir)
