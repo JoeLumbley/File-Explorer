@@ -126,24 +126,24 @@ Partial Class Form1
         ' btnNewFolder
         ' 
         btnNewFolder.Anchor = AnchorStyles.Right
-        btnNewFolder.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnNewFolder.Font = New Font("Segoe UI Symbol", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnNewFolder.ForeColor = Color.Orange
         btnNewFolder.Location = New Point(914, 0)
         btnNewFolder.Name = "btnNewFolder"
         btnNewFolder.Size = New Size(30, 28)
         btnNewFolder.TabIndex = 6
-        btnNewFolder.Text = ""
+        btnNewFolder.Text = ""
         btnNewFolder.UseVisualStyleBackColor = True
         ' 
         ' btnRename
         ' 
         btnRename.Anchor = AnchorStyles.Right
-        btnRename.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnRename.Font = New Font("Segoe UI Symbol", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnRename.Location = New Point(950, 0)
         btnRename.Name = "btnRename"
         btnRename.Size = New Size(30, 28)
         btnRename.TabIndex = 5
-        btnRename.Text = ""
+        btnRename.Text = ""
         btnRename.UseVisualStyleBackColor = True
         ' 
         ' btnDelete
