@@ -59,23 +59,26 @@ Public Class Form1
         Dim cmd As String = parts(0).ToLower()
 
         Select Case cmd
+
             Case "cd"
+
                 If parts.Length > 1 Then
                     Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
                     NavigateTo(newPath)
                 Else
-                    ShowStatus("Usage: cd [directory]")
+                    ShowStatus("Change Directory Usage: cd [directory] - cd C:\ ")
                 End If
 
             Case "copy"
+
                 If parts.Length > 2 Then
                     Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
                     Dim destination As String = parts(parts.Length - 1).Trim()
 
                     ' Check if source file exists
                     If Not File.Exists(source) Then
-                        ' Show error message
 
+                        ' Show error message
                         ShowStatus("Copy Failed - Source file: ''" & source & "'' does not exist.")
 
                         ' Challenging to recover from this error, so just
@@ -85,8 +88,8 @@ Public Class Form1
 
                     ' Check if destination directory exists
                     If Not Directory.Exists(destination) Then
-                        ' Show error message
 
+                        ' Show error message
                         ShowStatus("Copy Failed - Destination folder: ''" & destination & "'' does not exist.")
 
                         ' Challenging to recover from this error, so just
@@ -97,8 +100,11 @@ Public Class Form1
                     CopyFile(source, destination)
 
                 Else
+
                     ShowStatus("Command Copy Usage: copy [source] [destination] - copy C:\folder1\file.doc C:\folder2 ")
+
                 End If
+
             Case "move"
                 If parts.Length > 2 Then
                     Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
@@ -223,13 +229,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-
-
-
-
-
-
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
         ' Toggle between ascending and descending
@@ -241,8 +240,6 @@ Public Class Form1
         lvFiles.Sort()
 
     End Sub
-
-
 
     Private Sub CopyDirectory(sourceDir As String, destDir As String)
         Dim dirInfo As New DirectoryInfo(sourceDir)
