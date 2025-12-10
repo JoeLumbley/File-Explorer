@@ -129,7 +129,9 @@ Public Class Form1
             Case "help"
 
                 Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
-                                         "cd [directory] - Change directory" & Environment.NewLine & Environment.NewLine &
+                                         "cd [directory]" & Environment.NewLine &
+                                         "Change directory to the specified path" & Environment.NewLine &
+                                         "cd C:\" & Environment.NewLine & Environment.NewLine &
                                          "copy [source] [destination]" & Environment.NewLine &
                                          "Copy file or folder to destination folder" & Environment.NewLine &
                                          "copy C:\folderA\file.doc C:\folderB" & Environment.NewLine &
@@ -268,7 +270,7 @@ Public Class Form1
 
         Try
 
-            ShowStatus("Copying directory: " & destDir)
+            ShowStatus("Copying directory")
 
             ' Create destination directory
             Directory.CreateDirectory(destDir)
@@ -283,9 +285,9 @@ Public Class Form1
                 CopyDirectory(subDir.FullName, newDest)
             Next
 
-            ShowStatus("Copied into " & destDir)
+            'ShowStatus("Copied into " & destDir)
 
-            MessageBox.Show("Copied into " & destDir, "Copied Folder", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            'MessageBox.Show("Copied into " & destDir, "Copied Folder", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             NavigateTo(destDir)
 
