@@ -35,7 +35,7 @@ The CLI supports several basic commands that enable users to perform common file
 - **Change Directory (`cd`)**: 
   - Usage: `cd [directory]`
   - Changes the current working directory to the specified path.
-  - Example: `cd C:\Users\Documents`
+  - Example: `cd C:\`
 
 - **Copy Files (`copy`)**: 
   - Usage: `copy [source] [destination]`
