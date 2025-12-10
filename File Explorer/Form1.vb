@@ -131,7 +131,8 @@ Public Class Form1
                 Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
                                          "cd [directory]" & Environment.NewLine &
                                          "Change directory to the specified path" & Environment.NewLine &
-                                         "cd C:\" & Environment.NewLine & Environment.NewLine &
+                                         "cd C:\" & Environment.NewLine &
+                                         "cd C:\folder" & Environment.NewLine & Environment.NewLine &
                                          "copy [source] [destination]" & Environment.NewLine &
                                          "Copy file or folder to destination folder" & Environment.NewLine &
                                          "copy C:\folderA\file.doc C:\folderB" & Environment.NewLine &
@@ -142,7 +143,9 @@ Public Class Form1
                                          "move C:\folderA\file.doc C:\folderB\rename.doc" & Environment.NewLine &
                                          "move C:\folderA\folder C:\folderB\folder" & Environment.NewLine &
                                          "move C:\folderA\folder C:\folderB\rename" & Environment.NewLine & Environment.NewLine &
-                                         "delete [file_or_directory] - Delete file or directory" & Environment.NewLine & Environment.NewLine &
+                                         "delete [file or directory]" & Environment.NewLine &
+                                         "delete C:\file" & Environment.NewLine &
+                                         "delete C:\folder" & Environment.NewLine & Environment.NewLine &
                                          "help - Show this help message"
 
                 MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -239,9 +242,11 @@ Public Class Form1
             If File.Exists(path) Then
                 File.Delete(path)
                 ShowStatus("Deleted file: " & path)
+                NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
             ElseIf Directory.Exists(path) Then
                 Directory.Delete(path, recursive:=True)
                 ShowStatus("Deleted directory: " & path)
+                NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
             Else
                 ShowStatus("Path not found.")
             End If
