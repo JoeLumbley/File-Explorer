@@ -139,6 +139,7 @@ Partial Class Form1
         ' 
         btnRename.Anchor = AnchorStyles.Right
         btnRename.Font = New Font("Segoe UI Symbol", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnRename.ForeColor = SystemColors.ControlText
         btnRename.Location = New Point(950, 0)
         btnRename.Name = "btnRename"
         btnRename.Size = New Size(30, 28)
