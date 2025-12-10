@@ -29,7 +29,7 @@ The **Command Line Interface (CLI)** for File Explorer application provides user
 
 ## Key Features of the CLI
 
-### 1. Basic Commands
+###  Basic Commands
 The CLI supports several basic commands that enable users to perform common file operations:
 
 - **Change Directory (`cd`)**: 
@@ -59,22 +59,22 @@ The CLI supports several basic commands that enable users to perform common file
   - Displays a list of available commands and their usage.
   - Example: `help`
 
-### 2. Command Execution
+###  Command Execution
 - Users enter commands in a text box and press **Enter** to execute them.
 - The application parses the command input, using regular expressions to handle quoted strings and spaces correctly.
 
-### 3. Feedback and Status Messages
+###  Feedback and Status Messages
 - The CLI provides immediate feedback on command execution, displaying messages for success, errors, or usage instructions.
 - Example feedback messages include:
   - "No command entered."
   - "Copy Failed - Source does not exist."
   - "Deleted file: [file_path]"
 
-### 4. Navigation History
+###  Navigation History
 - The CLI maintains a simple navigation history, allowing users to move back and forth through their directory changes.
 - Users can navigate to previously accessed directories using the history feature, enhancing usability.
 
-### 5. Contextual Commands
+###  Contextual Commands
 - If a command does not match any predefined operation, the CLI checks if the input corresponds to an existing file or directory and attempts to navigate to it or open it accordingly.
 
 ### Example Usage
