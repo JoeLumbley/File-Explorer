@@ -227,8 +227,8 @@ Public Class Form1
             File.Copy(source, destDirFileName, overwrite:=True)
             'ShowStatus("Copied file: " & fileName & " to: " & destination)
             MsgBox("Copied file: " & fileName & " to: " & destination, MsgBoxStyle.Information, "File Copied")
-            Dim destDir As String = Path.GetDirectoryName(destination)
-            NavigateTo(destDir)
+            'Dim destDir As String = Path.Combine(destination, Path.GetFileName(source))
+            NavigateTo(destination)
 
         Catch ex As Exception
             ShowStatus("Copy Failed: " & ex.Message)
