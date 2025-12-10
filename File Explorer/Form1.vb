@@ -100,37 +100,6 @@ Public Class Form1
                     ShowStatus("Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
                 End If
 
-                'If parts.Length > 2 Then
-                '    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-                '    Dim destination As String = parts(parts.Length - 1).Trim()
-
-                '    ' Check if source file exists
-                '    If Not File.Exists(source) Then
-
-                '        ' Show error message
-                '        ShowStatus("Copy Failed - Source file: ''" & source & "'' does not exist.")
-
-                '        ' Challenging to recover from this error, so just
-                '        Return
-
-                '    End If
-
-                '    ' Check if destination directory exists
-                '    If Not Directory.Exists(destination) Then
-
-                '        ' Show error message
-                '        ShowStatus("Copy Failed - Destination folder: ''" & destination & "'' does not exist.")
-
-                '        ' Challenging to recover from this error, so just
-                '        Return
-
-                '    End If
-
-                '    CopyFile(source, destination)
-
-                'Else
-                '    ShowStatus("Usage: copy [source] [destination] - copy C:\folder1\file.doc C:\folder2 ")
-                'End If
 
             Case "move"
 
@@ -138,17 +107,6 @@ Public Class Form1
 
                     Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
                     Dim destination As String = parts(parts.Length - 1).Trim()
-
-
-
-
-
-
-
-
-
-
-
 
                     MoveFileOrDirectory(source, destination)
 
@@ -172,10 +130,10 @@ Public Class Form1
 
                 Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
                                          "cd [directory] - Change directory" & Environment.NewLine & Environment.NewLine &
-                                         "copy [source] [destination]" & Environment.NewLine & Environment.NewLine &
-                                         "Copy file to destination folder" & Environment.NewLine & Environment.NewLine &
+                                         "copy [source] [destination]" & Environment.NewLine &
+                                         "Copy file or folder to destination folder" & Environment.NewLine &
                                          "copy C:\folderA\file.doc C:\folderB" & Environment.NewLine &
-                                         "copy C:\folderA\file.doc C:\folderB\rename.doc" & Environment.NewLine &
+                                         "copy C:\folderA C:\folderB" & Environment.NewLine & Environment.NewLine &
                                          "move [source] [destination]" & Environment.NewLine &
                                          "Move file or folder to destination" & Environment.NewLine &
                                          "move C:\folderA\file.doc C:\folderB\file.doc" & Environment.NewLine &
@@ -206,9 +164,6 @@ Public Class Form1
         End If
     End Sub
 
-
-
-
     Private Sub CopyFile(source As String, destination As String)
         Try
             ' Check if the destination file already exists
@@ -225,6 +180,7 @@ Public Class Form1
             End If
 
             File.Copy(source, destDirFileName, overwrite:=True)
+
             'ShowStatus("Copied file: " & fileName & " to: " & destination)
             MsgBox("Copied file: " & fileName & " to: " & destination, MsgBoxStyle.Information, "File Copied")
             'Dim destDir As String = Path.Combine(destination, Path.GetFileName(source))
@@ -234,163 +190,6 @@ Public Class Form1
             ShowStatus("Copy Failed: " & ex.Message)
         End Try
     End Sub
-
-
-
-
-    'Private Sub CopyFile(sourcePath As String, destPath As String)
-
-    '    Try
-
-    '        ' Check if the destination file already exists
-    '        Dim fileName As String = Path.GetFileName(sourcePath)
-    '        Dim destDirFileName = Path.Combine(destPath, fileName)
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine & Environment.NewLine &
-    '                                "Do you want to overwrite it?"
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-    '            If result = DialogResult.No Then
-    '                ShowStatus("Copy operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        File.Copy(sourcePath, destDirFileName, overwrite:=True)
-
-    '        ShowStatus("Copied file: " & fileName & " to: " & destPath)
-
-    '        NavigateTo(destPath)
-
-    '    Catch ex As Exception
-
-    '        ShowStatus("Copy Failed: " & ex.Message)
-
-    '    End Try
-
-    'End Sub
-
-
-    'Private Sub MoveFile(sourcePath As String, destPath As String)
-
-    '    Try
-    '        Dim fileName As String = Path.GetFileName(sourcePath)
-    '        Dim destDirFileName As String
-
-    '        If Directory.Exists(destPath) Then
-    '            ' Destination is an existing directory
-    '            destDirFileName = Path.Combine(destPath, fileName)
-
-    '        ElseIf File.Exists(destPath) Then
-    '            ' Destination is an existing file
-    '            destDirFileName = destPath
-
-    '        ElseIf destPath.EndsWith(Path.DirectorySeparatorChar) OrElse destPath.EndsWith(Path.AltDirectorySeparatorChar) Then
-    '            ' Destination does not exist but ends with "\" → treat as directory
-    '            Directory.CreateDirectory(destPath)
-    '            destDirFileName = Path.Combine(destPath, fileName)
-
-    '        Else
-    '            ' Destination does not exist and does not end with "\" → treat as file
-    '            destDirFileName = destPath
-    '        End If
-
-    '        ' Ensure the destination directory exists
-    '        Dim destDir As String = Path.GetDirectoryName(destDirFileName)
-    '        If Not Directory.Exists(destDir) Then
-    '            Directory.CreateDirectory(destDir)
-    '        End If
-
-    '        ' Overwrite prompt if file exists
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String = "The file '" & Path.GetFileName(destDirFileName) & "' already exists." &
-    '                            Environment.NewLine & Environment.NewLine &
-    '                            "Do you want to overwrite it?"
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-    '            If result = DialogResult.No Then
-    '                ShowStatus("Move operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        ' Perform the move
-    '        If File.Exists(sourcePath) Then
-    '            File.Move(sourcePath, destDirFileName)
-    '            ShowStatus("Moved file to: " & destDirFileName)
-    '        ElseIf Directory.Exists(sourcePath) Then
-    '            Directory.Move(sourcePath, destPath)
-    '            ShowStatus("Moved directory to: " & destPath)
-    '        Else
-    '            ShowStatus("Source not found.")
-    '        End If
-
-    '        NavigateTo(destPath)
-
-    '    Catch ex As Exception
-    '        ShowStatus("Move failed: " & ex.Message)
-    '    End Try
-
-    'End Sub
-
-    'Private Sub MoveFile(sourcePath As String, destPath As String)
-
-    '    Try
-
-    '        ' Check if the destination file already exists
-    '        Dim fileName As String = Path.GetFileName(sourcePath)
-    '        Dim destDirFileName = Path.Combine(destPath, fileName)
-    '        If File.Exists(destPath) Then
-    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine & Environment.NewLine &
-    '                                "Do you want to overwrite it?"
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-    '            If result = DialogResult.No Then
-    '                ShowStatus("Move operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        If File.Exists(sourcePath) Then
-
-    '            File.Move(sourcePath, destDirFileName)
-
-    '            ShowStatus("Moved file to: " & destPath)
-
-    '        ElseIf Directory.Exists(sourcePath) Then
-
-    '            Directory.Move(sourcePath, destPath)
-
-    '            ShowStatus("Moved directory to: " & destPath)
-
-    '        Else
-    '            ShowStatus("Source not found.")
-    '        End If
-
-    '    Catch ex As Exception
-
-    '        ShowStatus("Move failed: " & ex.Message)
-
-    '    End Try
-
-    'End Sub
-
-
-    'Private Sub MoveFile(source As String, destination As String)
-    '    Try
-    '        If File.Exists(source) Then
-    '            File.Move(source, destination)
-    '            ShowStatus("Moved file to: " & destination)
-    '            NavigateTo(destination)
-
-    '        ElseIf Directory.Exists(source) Then
-    '            Directory.Move(source, destination)
-    '            ShowStatus("Moved directory to: " & destination)
-    '            NavigateTo(destination)
-    '        Else
-    '            ShowStatus("Source not found.")
-    '        End If
-    '    Catch ex As Exception
-    '        ShowStatus("Move failed: " & ex.Message)
-    '    End Try
-    'End Sub
 
     Private Sub MoveFileOrDirectory(source As String, destination As String)
         Try
@@ -461,46 +260,38 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub CopyDirectory(sourceDir As String, destDir As String)
-    '    Dim dirInfo As New DirectoryInfo(sourceDir)
-    '    If Not dirInfo.Exists Then Throw New DirectoryNotFoundException("Source not found: " & sourceDir)
-
-    '    Directory.CreateDirectory(destDir)
-
-    '    ' Copy files
-    '    For Each file In dirInfo.GetFiles()
-    '        Dim targetFilePath = Path.Combine(destDir, file.Name)
-    '        file.CopyTo(targetFilePath, overwrite:=True)
-    '    Next
-
-    '    ' Copy subdirectories recursively
-    '    For Each subDir In dirInfo.GetDirectories()
-    '        Dim newDest = Path.Combine(destDir, subDir.Name)
-    '        CopyDirectory(subDir.FullName, newDest)
-    '    Next
-    'End Sub
-
-
     Private Sub CopyDirectory(sourceDir As String, destDir As String)
 
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
         If Not dirInfo.Exists Then Throw New DirectoryNotFoundException("Source not found: " & sourceDir)
 
-        ' Create destination directory
-        Directory.CreateDirectory(destDir)
+        Try
 
-        ' Copy files
-        For Each file In dirInfo.GetFiles()
-            Dim targetFilePath = Path.Combine(destDir, file.Name)
-            file.CopyTo(targetFilePath, overwrite:=True)
-        Next
+            ShowStatus("Copying directory: " & destDir)
 
-        ' Copy subdirectories recursively
-        For Each subDir In dirInfo.GetDirectories()
-            Dim newDest = Path.Combine(destDir, subDir.Name)
-            CopyDirectory(subDir.FullName, newDest)
-        Next
+            ' Create destination directory
+            Directory.CreateDirectory(destDir)
+            ' Copy files
+            For Each file In dirInfo.GetFiles()
+                Dim targetFilePath = Path.Combine(destDir, file.Name)
+                file.CopyTo(targetFilePath, overwrite:=True)
+            Next
+            ' Copy subdirectories recursively
+            For Each subDir In dirInfo.GetDirectories()
+                Dim newDest = Path.Combine(destDir, subDir.Name)
+                CopyDirectory(subDir.FullName, newDest)
+            Next
+
+            ShowStatus("Copied into " & destDir)
+
+            MessageBox.Show("Copied into " & destDir, "Copied Folder", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            NavigateTo(destDir)
+
+        Catch ex As Exception
+            ShowStatus("Copy failed: " & ex.Message)
+        End Try
 
     End Sub
 
