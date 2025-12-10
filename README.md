@@ -44,3 +44,21 @@ To install and run the File Explorer application:
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
 
 For more details, check the source code and documentation within the repository.
+
+
+
+
+
+
+<img width="1920" height="1080" alt="010" src="https://github.com/user-attachments/assets/909d297d-8e29-4b8c-a07e-e8301898aae5" />
+
+
+
+
+
+
+<img width="1920" height="1080" alt="011" src="https://github.com/user-attachments/assets/0b1bff67-26a9-456d-9c42-0b96d4dd1bb8" />
+
+
+
+
