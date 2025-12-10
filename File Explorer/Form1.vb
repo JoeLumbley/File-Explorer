@@ -66,7 +66,7 @@ Public Class Form1
                     Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
                     NavigateTo(newPath)
                 Else
-                    ShowStatus("Change Directory Usage: cd [directory] - cd C:\ ")
+                    ShowStatus("Usage: cd [directory] - cd C:\ ")
                 End If
 
             Case "copy"
@@ -100,27 +100,58 @@ Public Class Form1
                     CopyFile(source, destination)
 
                 Else
-
-                    ShowStatus("Command Copy Usage: copy [source] [destination] - copy C:\folder1\file.doc C:\folder2 ")
-
+                    ShowStatus("Usage: copy [source] [destination] - copy C:\folder1\file.doc C:\folder2 ")
                 End If
 
             Case "move"
+
                 If parts.Length > 2 Then
+
                     Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
                     Dim destination As String = parts(parts.Length - 1).Trim()
-                    MoveFile(source, destination)
+
+
+
+
+
+
+
+
+
+
+
+
+                    MoveFileOrDirectory(source, destination)
+
                 Else
-                    ShowStatus("Usage: move [source] [destination]")
+                    ShowStatus("Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
                 End If
 
             Case "delete"
+
                 If parts.Length > 1 Then
+
                     Dim pathToDelete As String = String.Join(" ", parts.Skip(1)).Trim()
+
                     DeleteFileOrDirectory(pathToDelete)
+
                 Else
                     ShowStatus("Usage: delete [file_or_directory]")
                 End If
+
+            Case "help"
+
+                Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
+                                         "cd [directory] - Change directory" & Environment.NewLine & Environment.NewLine &
+                                         "copy [source] [destination] - Copy file to destination folder" & Environment.NewLine & Environment.NewLine &
+                                         "move [source] [destination]" & Environment.NewLine &
+                                         "Move file or folder to destination" & Environment.NewLine &
+                                         "move C:\folderA\folder2move C:\folderB\folder2move" & Environment.NewLine &
+                                         "move C:\folderA\folder2move C:\folderB\renameFolder" & Environment.NewLine & Environment.NewLine &
+                                         "delete [file_or_directory] - Delete file or directory" & Environment.NewLine & Environment.NewLine &
+                                         "help - Show this help message"
+
+                MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             Case Else
                 If Directory.Exists(command) Then
@@ -172,29 +203,108 @@ Public Class Form1
 
     End Sub
 
-    Private Sub MoveFile(sourcePath As String, destPath As String)
-        Try
-            ' Ensure the destination directory exists
-            Dim destDir As String = Path.GetDirectoryName(destPath)
-            If Not Directory.Exists(destDir) Then
-                Directory.CreateDirectory(destDir)
-            End If
 
-            ' Check if the destination file already exists
-            If File.Exists(destPath) Then
-                Dim result = MessageBox.Show("The file already exists. Do you want to overwrite it?", "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                If result = DialogResult.No Then
-                    ShowStatus("Move operation canceled.")
-                    Return
-                End If
-            End If
+    'Private Sub MoveFile(sourcePath As String, destPath As String)
 
-            File.Move(sourcePath, destPath)
-            MessageBox.Show("File moved successfully!", "Move", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Catch ex As Exception
-            MessageBox.Show("Move failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Sub
+    '    Try
+    '        Dim fileName As String = Path.GetFileName(sourcePath)
+    '        Dim destDirFileName As String
+
+    '        If Directory.Exists(destPath) Then
+    '            ' Destination is an existing directory
+    '            destDirFileName = Path.Combine(destPath, fileName)
+
+    '        ElseIf File.Exists(destPath) Then
+    '            ' Destination is an existing file
+    '            destDirFileName = destPath
+
+    '        ElseIf destPath.EndsWith(Path.DirectorySeparatorChar) OrElse destPath.EndsWith(Path.AltDirectorySeparatorChar) Then
+    '            ' Destination does not exist but ends with "\" → treat as directory
+    '            Directory.CreateDirectory(destPath)
+    '            destDirFileName = Path.Combine(destPath, fileName)
+
+    '        Else
+    '            ' Destination does not exist and does not end with "\" → treat as file
+    '            destDirFileName = destPath
+    '        End If
+
+    '        ' Ensure the destination directory exists
+    '        Dim destDir As String = Path.GetDirectoryName(destDirFileName)
+    '        If Not Directory.Exists(destDir) Then
+    '            Directory.CreateDirectory(destDir)
+    '        End If
+
+    '        ' Overwrite prompt if file exists
+    '        If File.Exists(destDirFileName) Then
+    '            Dim msg As String = "The file '" & Path.GetFileName(destDirFileName) & "' already exists." &
+    '                            Environment.NewLine & Environment.NewLine &
+    '                            "Do you want to overwrite it?"
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '            If result = DialogResult.No Then
+    '                ShowStatus("Move operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        ' Perform the move
+    '        If File.Exists(sourcePath) Then
+    '            File.Move(sourcePath, destDirFileName)
+    '            ShowStatus("Moved file to: " & destDirFileName)
+    '        ElseIf Directory.Exists(sourcePath) Then
+    '            Directory.Move(sourcePath, destPath)
+    '            ShowStatus("Moved directory to: " & destPath)
+    '        Else
+    '            ShowStatus("Source not found.")
+    '        End If
+
+    '        NavigateTo(destPath)
+
+    '    Catch ex As Exception
+    '        ShowStatus("Move failed: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+    'Private Sub MoveFile(sourcePath As String, destPath As String)
+
+    '    Try
+
+    '        ' Check if the destination file already exists
+    '        Dim fileName As String = Path.GetFileName(sourcePath)
+    '        Dim destDirFileName = Path.Combine(destPath, fileName)
+    '        If File.Exists(destPath) Then
+    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine & Environment.NewLine &
+    '                                "Do you want to overwrite it?"
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '            If result = DialogResult.No Then
+    '                ShowStatus("Move operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        If File.Exists(sourcePath) Then
+
+    '            File.Move(sourcePath, destDirFileName)
+
+    '            ShowStatus("Moved file to: " & destPath)
+
+    '        ElseIf Directory.Exists(sourcePath) Then
+
+    '            Directory.Move(sourcePath, destPath)
+
+    '            ShowStatus("Moved directory to: " & destPath)
+
+    '        Else
+    '            ShowStatus("Source not found.")
+    '        End If
+
+    '    Catch ex As Exception
+
+    '        ShowStatus("Move failed: " & ex.Message)
+
+    '    End Try
+
+    'End Sub
 
 
     'Private Sub MoveFile(source As String, destination As String)
@@ -202,9 +312,12 @@ Public Class Form1
     '        If File.Exists(source) Then
     '            File.Move(source, destination)
     '            ShowStatus("Moved file to: " & destination)
+    '            NavigateTo(destination)
+
     '        ElseIf Directory.Exists(source) Then
     '            Directory.Move(source, destination)
     '            ShowStatus("Moved directory to: " & destination)
+    '            NavigateTo(destination)
     '        Else
     '            ShowStatus("Source not found.")
     '        End If
@@ -212,6 +325,45 @@ Public Class Form1
     '        ShowStatus("Move failed: " & ex.Message)
     '    End Try
     'End Sub
+
+    Private Sub MoveFileOrDirectory(source As String, destination As String)
+        Try
+            ' Validate parameters
+            If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+                ShowStatus("Source or destination path is invalid.")
+                Return
+            End If
+
+            ' Check if the source is a file
+            If File.Exists(source) Then
+                If Not File.Exists(destination) Then
+                    File.Move(source, destination)
+                    ShowStatus("Moved file to: " & destination)
+                    NavigateTo(destination)
+                Else
+                    ShowStatus("Destination file already exists.")
+                End If
+
+                ' Check if the source is a directory
+            ElseIf Directory.Exists(source) Then
+                If Not Directory.Exists(destination) Then
+                    Directory.Move(source, destination)
+                    'ShowStatus("Moved directory to: " & destination)
+                    MsgBox("Moved directory to: " & destination)
+                    NavigateTo(destination)
+                Else
+                    ShowStatus("Destination directory already exists.")
+                End If
+
+                ' If neither a file nor a directory exists
+            Else
+                ShowStatus("Source not found.")
+            End If
+        Catch ex As Exception
+            ShowStatus("Move failed: " & ex.Message)
+        End Try
+    End Sub
+
 
     Private Sub DeleteFileOrDirectory(path As String)
         Try
@@ -516,7 +668,9 @@ Public Class Form1
     End Sub
 
     Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
-        GoToFolderOrOpenFile(txtPath.Text)
+        'GoToFolderOrOpenFile(txtPath.Text)
+        ExecuteCommand(txtPath.Text.Trim())
+
     End Sub
 
     Private Sub GoToFolderOrOpenFile(Path As String)
