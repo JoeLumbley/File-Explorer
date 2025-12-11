@@ -37,6 +37,18 @@ The CLI supports several basic commands that enable users to perform common file
   - Changes the current working directory to the specified path.
   - Example: `cd C:\`
 
+
+
+- **Make Directory (mkdir)**
+
+- Usage: `mkdir [directory_path]`
+- Creates a new directory at the specified path.
+- Example: `mkdir C:\newfolder`
+
+
+
+
+
 - **Copy Files (`copy`)**: 
   - Usage: `copy [source] [destination]`
   - Copies files or directories from a source to a destination.
