@@ -32,24 +32,24 @@ The **Command Line Interface (CLI)** for File Explorer application provides user
 ###  Basic Commands
 The CLI supports several basic commands that enable users to perform common file operations:
 
-- **Change Directory (`cd`)**: 
+- **Change Directory (`cd`)** : 
   - Usage: `cd [directory]`
   - Changes the current working directory to the specified path.
   - Example: `cd C:\`
 
 
 
-- **Make Directory (mkdir)**
+- **Make Directory (`mkdir`)** :
 
-- Usage: `mkdir [directory_path]`
-- Creates a new directory at the specified path.
-- Example: `mkdir C:\newfolder`
-
-
+  - Usage: `mkdir [directory_path]`
+  - Creates a new directory at the specified path.
+  - Example: `mkdir C:\newfolder`
 
 
 
-- **Copy Files (`copy`)**: 
+
+
+- **Copy Files (`copy`)** : 
   - Usage: `copy [source] [destination]`
   - Copies files or directories from a source to a destination.
   - Example: `copy C:\folder1\file.txt C:\folder2`
@@ -57,17 +57,17 @@ The CLI supports several basic commands that enable users to perform common file
 <img width="1920" height="1080" alt="010" src="https://github.com/user-attachments/assets/909d297d-8e29-4b8c-a07e-e8301898aae5" />
 
 
-- **Move Files (`move`)**: 
+- **Move Files (`move`)** : 
   - Usage: `move [source] [destination]`
   - Moves files or directories from one location to another.
   - Example: `move C:\folder1\file.txt C:\folder2\file.txt`
 
-- **Delete Files (`delete`)**: 
+- **Delete Files (`delete`)** : 
   - Usage: `delete [file_or_directory]`
   - Deletes the specified file or directory.
   - Example: `delete C:\folder1\file.txt`
 
-- **Help (`help`)**: 
+- **Help (`help`)** : 
   - Displays a list of available commands and their usage.
   - Example: `help`
 
