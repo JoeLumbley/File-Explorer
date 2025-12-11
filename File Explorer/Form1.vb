@@ -194,10 +194,6 @@ Public Class Form1
         End Try
     End Sub
 
-    'Private Sub ShowStatus(message As String)
-    '    ' This method should display the status message to the user
-    '    Console.WriteLine(message) ' Replace with appropriate UI handling
-    'End Sub
 
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
         If e.KeyCode = Keys.Enter Then
