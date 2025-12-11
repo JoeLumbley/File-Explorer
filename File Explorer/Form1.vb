@@ -22,6 +22,7 @@
 ' SOFTWARE.
 
 Imports System.IO
+Imports System.Runtime
 Imports System.Text.RegularExpressions
 
 Public Class Form1
@@ -42,6 +43,8 @@ Public Class Form1
     Private imgList As New ImageList()
 
     Private statusTimer As New Timer() With {.Interval = 10000}
+
+    Private currentFolder As String = String.Empty
 
     Private Sub ExecuteCommand(command As String)
 
@@ -171,7 +174,8 @@ Public Class Form1
                                          "cd C:\folder" & Environment.NewLine & Environment.NewLine &
                                          "mkdir [directory_path]" & Environment.NewLine &
                                          "Creates a new folder" & Environment.NewLine &
-                                         "mkdir C:\newfolder" & Environment.NewLine & Environment.NewLine &
+                                         "mkdir C:\newfolder" & Environment.NewLine &
+                                         "make C:\newfolder" & Environment.NewLine & Environment.NewLine &
                                          "copy [source] [destination]" & Environment.NewLine &
                                          "Copy file or folder to destination folder" & Environment.NewLine &
                                          "copy C:\folderA\file.doc C:\folderB" & Environment.NewLine &
@@ -185,6 +189,9 @@ Public Class Form1
                                          "delete [file or directory]" & Environment.NewLine &
                                          "delete C:\file" & Environment.NewLine &
                                          "delete C:\folder" & Environment.NewLine & Environment.NewLine &
+                                         "text [file]" & Environment.NewLine &
+                                         "Creates a new text file at the specified path." & Environment.NewLine &
+                                         "text C:\folder\example.txt" & Environment.NewLine & Environment.NewLine &
                                          "help - Show this help message"
 
                 MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -515,6 +522,33 @@ Public Class Form1
         sel.Font = New Font(sel.Font, FontStyle.Italic)
     End Sub
 
+
+
+
+
+
+    Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
+
+        ' Default to current folder with a generic name
+        Dim destDir As String = currentFolder
+        Dim newFilePath As String = Path.Combine(destDir, "New Text File.txt")
+
+        ' Ensure unique name if file already exists
+        Dim counter As Integer = 1
+        While File.Exists(newFilePath)
+            newFilePath = Path.Combine(destDir, $"New Text File ({counter}).txt")
+            counter += 1
+        End While
+
+        ' Create the file
+        CreateTextFile(newFilePath)
+    End Sub
+
+
+
+
+
+
     Private Sub ShowStatus(message As String)
         lblStatus.Text = message
         statusTimer.Stop()
@@ -576,6 +610,8 @@ Public Class Form1
         cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
 
         cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
+
         cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
 
@@ -673,6 +709,7 @@ Public Class Form1
 
         ShowStatus("Navigated To: " & path)
 
+        currentFolder = path
         txtPath.Text = path
         PopulateFiles(path)
         EnsureTreeSelection(path)
