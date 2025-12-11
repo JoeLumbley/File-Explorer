@@ -324,6 +324,7 @@ Public Class Form1
 
             ' Check if the path is in the protected list
             If IsProtectedPath(path) Then
+                ' The path is protected; prevent deletion
 
                 ShowStatus("Deletion prevented for protected path: " & path)
 
@@ -335,6 +336,7 @@ Public Class Form1
 
             End If
 
+            ' Check if it's a file
             If File.Exists(path) Then
 
                 File.Delete(path)
@@ -343,6 +345,7 @@ Public Class Form1
 
                 NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
 
+                ' Check if it's a directory
             ElseIf Directory.Exists(path) Then
 
                 Directory.Delete(path, recursive:=True)
