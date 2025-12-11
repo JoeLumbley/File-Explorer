@@ -126,6 +126,22 @@ Public Class Form1
                     ShowStatus("Usage: delete [file_or_directory]")
                 End If
 
+            Case "mkdir", "make" ' You can use "mkdir" or "make" as the command
+                If parts.Length > 1 Then
+                    Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
+
+                    ' Validate the directory path
+                    If String.IsNullOrWhiteSpace(directoryPath) Then
+                        ShowStatus("Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                        Return
+                    End If
+
+                    CreateDirectory(directoryPath)
+
+                Else
+                    ShowStatus("Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                End If
+
             Case "help"
 
                 Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
@@ -133,6 +149,9 @@ Public Class Form1
                                          "Change directory to the specified path" & Environment.NewLine &
                                          "cd C:\" & Environment.NewLine &
                                          "cd C:\folder" & Environment.NewLine & Environment.NewLine &
+                                         "mkdir [directory_path]" & Environment.NewLine &
+                                         "Creates a new folder" & Environment.NewLine &
+                                         "mkdir C:\newfolder" & Environment.NewLine & Environment.NewLine &
                                          "copy [source] [destination]" & Environment.NewLine &
                                          "Copy file or folder to destination folder" & Environment.NewLine &
                                          "copy C:\folderA\file.doc C:\folderB" & Environment.NewLine &
@@ -160,6 +179,25 @@ Public Class Form1
                 End If
         End Select
     End Sub
+
+    Private Sub CreateDirectory(directoryPath As String)
+        Try
+            ' Create the directory
+            Dim dirInfo As DirectoryInfo = Directory.CreateDirectory(directoryPath)
+
+            ShowStatus("Directory created: " & dirInfo.FullName)
+
+            NavigateTo(directoryPath)
+
+        Catch ex As Exception
+            ShowStatus("Failed to create directory: " & ex.Message)
+        End Try
+    End Sub
+
+    'Private Sub ShowStatus(message As String)
+    '    ' This method should display the status message to the user
+    '    Console.WriteLine(message) ' Replace with appropriate UI handling
+    'End Sub
 
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
         If e.KeyCode = Keys.Enter Then
