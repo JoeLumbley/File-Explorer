@@ -230,7 +230,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub CreateDirectory(directoryPath As String)
         Try
             ' Create the directory
@@ -244,7 +243,6 @@ Public Class Form1
             ShowStatus("Failed to create directory: " & ex.Message)
         End Try
     End Sub
-
 
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
         If e.KeyCode = Keys.Enter Then
@@ -271,9 +269,8 @@ Public Class Form1
 
             File.Copy(source, destDirFileName, overwrite:=True)
 
-            'ShowStatus("Copied file: " & fileName & " to: " & destination)
-            MsgBox("Copied file: " & fileName & " to: " & destination, MsgBoxStyle.Information, "File Copied")
-            'Dim destDir As String = Path.Combine(destination, Path.GetFileName(source))
+            ShowStatus("Copied file: " & fileName & " to: " & destination)
+
             NavigateTo(destination)
 
         Catch ex As Exception
