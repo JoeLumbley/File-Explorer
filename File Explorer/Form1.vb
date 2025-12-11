@@ -319,8 +319,35 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub DeleteFileOrDirectory(path As String)
+    '    Try
+    '        If File.Exists(path) Then
+    '            File.Delete(path)
+    '            ShowStatus("Deleted file: " & path)
+    '            NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+    '        ElseIf Directory.Exists(path) Then
+    '            Directory.Delete(path, recursive:=True)
+    '            ShowStatus("Deleted directory: " & path)
+    '            NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+    '        Else
+    '            ShowStatus("Path not found.")
+    '        End If
+    '    Catch ex As Exception
+    '        ShowStatus("Delete failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
     Private Sub DeleteFileOrDirectory(path As String)
         Try
+            ' Check if the path is in the protected list
+            If IsProtectedPath(path) Then
+                'ShowStatus("Deletion prevented for protected path: " & path)
+                Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path
+                MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
+
+                Return
+            End If
+
             If File.Exists(path) Then
                 File.Delete(path)
                 ShowStatus("Deleted file: " & path)
@@ -336,6 +363,33 @@ Public Class Form1
             ShowStatus("Delete failed: " & ex.Message)
         End Try
     End Sub
+
+    Private Function IsProtectedPath(path2Check As String) As Boolean
+        Dim protectedPaths As String() = {
+        "C:\Windows",
+        "C:\Program Files",
+        "C:\Program Files (x86)",
+        "C:\ProgramData",
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
+    }
+
+        ' Check if the path starts with any of the protected paths
+        For Each protectedPath In protectedPaths
+            If path2Check.StartsWith(protectedPath, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
