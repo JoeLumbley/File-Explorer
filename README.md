@@ -39,9 +39,9 @@ The CLI supports several basic commands that enable users to perform common file
 
 
 
-- **Make Directory (`mkdir`)** :
+- **Make Directory (`mkdir` or `make`)** :
 
-  - Usage: `mkdir [directory_path]`
+  - Usage: `mkdir [directory]`
   - Creates a new directory at the specified path.
   - Example: `mkdir C:\newfolder`
 
@@ -63,9 +63,14 @@ The CLI supports several basic commands that enable users to perform common file
   - Example: `move C:\folder1\file.txt C:\folder2\file.txt`
 
 - **Delete Files (`delete`)** : 
-  - Usage: `delete [file_or_directory]`
+  - Usage: `delete [file or directory]`
   - Deletes the specified file or directory.
   - Example: `delete C:\folder1\file.txt`
+ 
+- **Create Text File (`text` or `txt`)** :
+  - Usage: `text [file]`
+  - Creates a new text file at the specified path and opens it.
+  - Example: `text C:\folder\example.txt`
 
 - **Help (`help`)** : 
   - Displays a list of available commands and their usage.
