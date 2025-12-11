@@ -318,25 +318,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-    'Private Sub DeleteFileOrDirectory(path As String)
-    '    Try
-    '        If File.Exists(path) Then
-    '            File.Delete(path)
-    '            ShowStatus("Deleted file: " & path)
-    '            NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
-    '        ElseIf Directory.Exists(path) Then
-    '            Directory.Delete(path, recursive:=True)
-    '            ShowStatus("Deleted directory: " & path)
-    '            NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
-    '        Else
-    '            ShowStatus("Path not found.")
-    '        End If
-    '    Catch ex As Exception
-    '        ShowStatus("Delete failed: " & ex.Message)
-    '    End Try
-    'End Sub
-
     Private Sub DeleteFileOrDirectory(path As String)
         Try
             ' Check if the path is in the protected list
