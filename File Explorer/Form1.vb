@@ -142,6 +142,26 @@ Public Class Form1
                     ShowStatus("Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
                 End If
 
+            Case "text", "txt"
+
+                If parts.Length > 1 Then
+
+                    Dim filePath As String = String.Join(" ", parts.Skip(1)).Trim()
+
+                    ' Validate the file path
+                    If String.IsNullOrWhiteSpace(filePath) Then
+                        ShowStatus("Usage: text [file_path] - e.g., text C:\example.txt")
+                        Return
+                    End If
+
+                    ' Create or open the text file
+                    CreateTextFile(filePath)
+
+                Else
+                    ShowStatus("Usage: text [file_path] - e.g., text C:\example.txt")
+                End If
+
+
             Case "help"
 
                 Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
@@ -179,6 +199,37 @@ Public Class Form1
                 End If
         End Select
     End Sub
+
+    Sub CreateTextFile(filePath As String)
+
+        Try
+
+            ' Check if the file exists
+            If Not System.IO.File.Exists(filePath) Then
+
+                ' Create a new file if it doesn't exist
+                Using writer As New System.IO.StreamWriter(filePath)
+
+                    writer.WriteLine("Created on " & DateTime.Now.ToString())
+
+                    ShowStatus("Text file created: " & filePath)
+
+                    Dim destDir As String = Path.GetDirectoryName(filePath)
+
+                    NavigateTo(destDir)
+
+                    GoToFolderOrOpenFile(filePath)
+
+                End Using
+
+            End If
+
+        Catch ex As Exception
+            ShowStatus("Failed to create text file: " & ex.Message)
+        End Try
+
+    End Sub
+
 
     Private Sub CreateDirectory(directoryPath As String)
         Try
