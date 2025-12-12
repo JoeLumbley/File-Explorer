@@ -27,6 +27,7 @@ Partial Class Form1
         TableLayoutPanel1 = New TableLayoutPanel()
         lvFiles = New ListView()
         Panel1 = New Panel()
+        btnRefresh = New Button()
         bntHome = New Button()
         btnNewFolder = New Button()
         btnRename = New Button()
@@ -98,6 +99,7 @@ Partial Class Form1
         ' 
         ' Panel1
         ' 
+        Panel1.Controls.Add(btnRefresh)
         Panel1.Controls.Add(bntHome)
         Panel1.Controls.Add(btnNewFolder)
         Panel1.Controls.Add(btnRename)
@@ -112,11 +114,21 @@ Partial Class Form1
         Panel1.Size = New Size(1016, 28)
         Panel1.TabIndex = 1
         ' 
+        ' btnRefresh
+        ' 
+        btnRefresh.Font = New Font("Segoe UI Symbol", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnRefresh.Location = New Point(72, 0)
+        btnRefresh.Name = "btnRefresh"
+        btnRefresh.Size = New Size(30, 28)
+        btnRefresh.TabIndex = 8
+        btnRefresh.Text = ""
+        btnRefresh.UseVisualStyleBackColor = True
+        ' 
         ' bntHome
         ' 
         bntHome.Anchor = AnchorStyles.Left
-        bntHome.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        bntHome.Location = New Point(0, 0)
+        bntHome.Font = New Font("Segoe UI Symbol", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        bntHome.Location = New Point(108, 0)
         bntHome.Name = "bntHome"
         bntHome.Size = New Size(30, 28)
         bntHome.TabIndex = 7
@@ -163,16 +175,16 @@ Partial Class Form1
         ' 
         txtPath.Anchor = AnchorStyles.Left Or AnchorStyles.Right
         txtPath.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        txtPath.Location = New Point(110, 1)
+        txtPath.Location = New Point(144, 1)
         txtPath.Name = "txtPath"
-        txtPath.Size = New Size(759, 27)
+        txtPath.Size = New Size(725, 27)
         txtPath.TabIndex = 3
         ' 
         ' btnForward
         ' 
         btnForward.Anchor = AnchorStyles.Left
-        btnForward.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnForward.Location = New Point(72, 0)
+        btnForward.Font = New Font("Segoe UI Symbol", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnForward.Location = New Point(36, 0)
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 28)
         btnForward.TabIndex = 2
@@ -182,8 +194,8 @@ Partial Class Form1
         ' btnBack
         ' 
         btnBack.Anchor = AnchorStyles.Left
-        btnBack.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnBack.Location = New Point(36, 0)
+        btnBack.Font = New Font("Segoe UI Symbol", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnBack.Location = New Point(0, 0)
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(30, 28)
         btnBack.TabIndex = 1
@@ -232,5 +244,6 @@ Partial Class Form1
     Friend WithEvents btnRename As Button
     Friend WithEvents btnNewFolder As Button
     Friend WithEvents bntHome As Button
+    Friend WithEvents btnRefresh As Button
 
 End Class
