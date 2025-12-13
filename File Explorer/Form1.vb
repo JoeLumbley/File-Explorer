@@ -798,89 +798,6 @@ Public Class Form1
         End If
     End Sub
 
-
-
-
-    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-    '    ' First: check for newly mounted removable drives
-    '    RefreshRemovableDrives()
-
-    '    Dim node = e.Node
-    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-    '        node.Nodes.Clear()
-    '        Try
-    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {
-    '                .Tag = dirPath,
-    '                .ImageKey = "Folder",
-    '                .SelectedImageKey = "Folder"
-    '            }
-    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-    '                node.Nodes.Add(child)
-    '            Next
-    '        Catch ex As UnauthorizedAccessException
-    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.DarkRed})
-    '        Catch ex As IOException
-    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Red})
-    '        End Try
-    '    End If
-    'End Sub
-
-    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-    '    Dim node = e.Node
-
-    '    ' Always refresh removable drives
-    '    Dim isRemovableDrive As Boolean = False
-    '    Dim driveInfo As DriveInfo = Nothing
-    '    Try
-    '        driveInfo = New DriveInfo(CStr(node.Tag))
-    '        isRemovableDrive = (driveInfo.DriveType = DriveType.Removable)
-    '    Catch
-    '        ' Ignore if Tag isn't a drive root
-    '    End Try
-
-    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." OrElse isRemovableDrive Then
-    '        node.Nodes.Clear()
-    '        Try
-    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {
-    '                .Tag = dirPath,
-    '                .ImageKey = "Folder",
-    '                .SelectedImageKey = "Folder"
-    '            }
-    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-    '                node.Nodes.Add(child)
-    '            Next
-    '        Catch ex As UnauthorizedAccessException
-    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.DarkRed})
-    '        Catch ex As IOException
-    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Red})
-    '        End Try
-    '    End If
-    'End Sub
-
-    Private Sub RefreshRemovableDrives()
-        Dim existingDriveTags = tvFolders.Nodes.Cast(Of TreeNode)().
-        Select(Function(n) CStr(n.Tag)).ToHashSet()
-
-        For Each di In DriveInfo.GetDrives()
-            If di.DriveType = DriveType.Removable AndAlso di.IsReady Then
-                If Not existingDriveTags.Contains(di.RootDirectory.FullName) Then
-                    Dim driveNode As New TreeNode(di.Name) With {
-                    .Tag = di.RootDirectory.FullName,
-                    .ImageKey = "Drive",
-                    .SelectedImageKey = "Drive"
-                }
-                    ' Add placeholder if it has subdirectories
-                    If HasSubdirectories(di.RootDirectory.FullName) Then
-                        driveNode.Nodes.Add("Loading...")
-                    End If
-                    tvFolders.Nodes.Add(driveNode)
-                End If
-            End If
-        Next
-    End Sub
-
     Private Function HasSubdirectories(path As String) As Boolean
         Try
             Return Directory.EnumerateDirectories(path).Any()
@@ -987,15 +904,6 @@ Public Class Form1
         Return $"{size:0.##} {units(unitIdx)}"
     End Function
 
-    ' -------- Sync tree selection --------
-    Private Sub EnsureTreeSelection(path As String)
-        ' Simple sync: find node by tag
-        Dim match = FindNodeByTag(tvFolders.Nodes, path)
-        If match IsNot Nothing Then
-            tvFolders.SelectedNode = match
-            match.EnsureVisible()
-        End If
-    End Sub
 
     Private Function FindNodeByTag(nodes As TreeNodeCollection, path As String) As TreeNode
         For Each n As TreeNode In nodes
