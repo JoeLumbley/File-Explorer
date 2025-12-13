@@ -772,8 +772,6 @@ Public Class Form1
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
 
-        'RefreshRemovableDrives()
-
         Dim node = e.Node
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
             node.Nodes.Clear()
@@ -788,16 +786,14 @@ Public Class Form1
                     node.Nodes.Add(child)
                 Next
             Catch ex As UnauthorizedAccessException
-                node.Nodes.Add(New TreeNode("[Access denied]"))
-                'Catch ex As IOException
-                '    'node.Nodes.Add(New TreeNode("[Unavailable]")) ' Can we make this red text?
-
-                'End Try
+                node.Nodes.Add(New TreeNode("[Access denied]") With {
+                    .ForeColor = Color.Gray
+                })
             Catch ex As IOException
-                Dim errorNode As New TreeNode("[Unavailable]") With {
-                    .ForeColor = Color.Red
-                }
-                node.Nodes.Add(errorNode)
+                node.Nodes.Add(New TreeNode("[Unavailable]") With {
+                    .ForeColor = Color.Gray
+                })
+
             End Try
         End If
     End Sub
@@ -951,7 +947,9 @@ Public Class Form1
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
-            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {.ForeColor = Color.DarkRed})
+            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
+                              .ForeColor = Color.Gray
+            })
         End Try
 
         ' Files
@@ -1004,7 +1002,9 @@ Public Class Form1
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
-            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {.ForeColor = Color.DarkRed})
+            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
+                              .ForeColor = Color.Gray
+            })
         End Try
 
         lvFiles.EndUpdate()
