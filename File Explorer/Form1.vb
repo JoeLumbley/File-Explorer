@@ -799,40 +799,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-    '    Dim node = e.Node
-
-    '    ' Always refresh removable drives or any node you want "live"
-    '    Dim forceRefresh As Boolean = False
-    '    Try
-    '        Dim di As New DriveInfo(CStr(node.Tag))
-    '        If di.DriveType = DriveType.Removable Then
-    '            forceRefresh = True
-    '        End If
-    '    Catch
-    '        ' Ignore if Tag isn't a drive root
-    '    End Try
-
-    '    ' Refresh if placeholder OR if removable drive
-    '    If (node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading...") OrElse forceRefresh Then
-    '        node.Nodes.Clear()
-    '        Try
-    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {
-    '                .Tag = dirPath,
-    '                .ImageKey = "Folder",
-    '                .SelectedImageKey = "Folder"
-    '            }
-    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-    '                node.Nodes.Add(child)
-    '            Next
-    '        Catch ex As UnauthorizedAccessException
-    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.DarkRed})
-    '        Catch ex As IOException
-    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Red})
-    '        End Try
-    '    End If
-    'End Sub
 
 
     'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
