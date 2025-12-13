@@ -1061,14 +1061,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub tvFolders_Click(sender As Object, e As EventArgs) Handles tvFolders.Click
-    '    InitTreeRoots()
-    'End Sub
-
-    'Private Sub tvFolders_Enter(sender As Object, e As EventArgs) Handles tvFolders.Enter
-
-
-    'End Sub
 
 End Class
 
