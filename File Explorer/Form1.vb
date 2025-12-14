@@ -329,45 +329,61 @@ Public Class Form1
 
     Private Sub DeleteFileOrDirectory(path2Delete As String)
 
+        ' Check if the path is in the protected list
+        If IsProtectedPath(path2Delete) Then
+            ' The path is protected; prevent deletion
+
+            ShowStatus("Deletion prevented for protected path: " & path2Delete)
+
+            Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
+
+            MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
+
+            Return
+
+        End If
+
         Try
-
-            ' Check if the path is in the protected list
-            If IsProtectedPath(path2Delete) Then
-                ' The path is protected; prevent deletion
-
-                ShowStatus("Deletion prevented for protected path: " & path2Delete)
-
-                Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
-
-                MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
-
-                Return
-
-            End If
-
-            ' Confirm deletion
-            Dim result = MessageBox.Show("Are you sure you want to delete '" & path2Delete & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-            If result <> DialogResult.Yes Then Exit Sub
 
             ' Check if it's a file
             If File.Exists(path2Delete) Then
+
+                ' Goto the directory of the file to be deleted.
+                ' So the user can see what is about to be deleted.
+                Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
+                NavigateTo(destDir)
+
+                ' Make the user confirm deletion.
+                Dim result = MessageBox.Show("Are you sure you want to delete the file '" & path2Delete & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                If result <> DialogResult.Yes Then Exit Sub
 
                 File.Delete(path2Delete)
 
                 ShowStatus("Deleted file: " & path2Delete)
 
-                ' Goto the directory of the deleted file.
-                Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
+                ' Goto the directory of the file that was deleted.
+                ' So the user can see that it has been deleted.
                 NavigateTo(destDir)
 
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
 
+                ' Go to the directory to be deleted.
+                ' So the user can see what is about to be deleted.
+                NavigateTo(path2Delete)
+
+                ' Make the user confirm deletion.
+                ShowStatus("Are you sure you want to delete the folder '" & path2Delete & "'?")
+                Dim result = MessageBox.Show("Are you sure you want to delete the folder '" & path2Delete & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                If result <> DialogResult.Yes Then Exit Sub
+
                 Directory.Delete(path2Delete, recursive:=True)
 
-                ShowStatus("Deleted directory: " & path2Delete)
+                ' Go to the parent directory of the deleted directory.
+                Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
+                NavigateTo(parentDir, True)
 
-                NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+                ShowStatus("Deleted folder: " & path2Delete)
 
             Else
                 ShowStatus("Path not found.")
