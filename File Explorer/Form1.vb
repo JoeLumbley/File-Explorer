@@ -345,6 +345,13 @@ Public Class Form1
 
             End If
 
+            ' Confirm deletion
+            Dim result = MessageBox.Show("Are you sure you want to delete '" & path & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+            If result <> DialogResult.Yes Then Exit Sub
+
+
+
+
             ' Check if it's a file
             If File.Exists(path) Then
 
@@ -389,11 +396,16 @@ Public Class Form1
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
     }
 
-        ' Check if the path starts with any of the protected paths
+        '' Check if the path starts with any of the protected paths
+        'For Each protectedPath In protectedPaths
+        '    If path2Check.StartsWith(protectedPath, StringComparison.OrdinalIgnoreCase) Then
+        '        Return True
+        '    End If
+        'Next
+
+        ' Check if the path is protected
         For Each protectedPath In protectedPaths
-            If path2Check.StartsWith(protectedPath, StringComparison.OrdinalIgnoreCase) Then
-                Return True
-            End If
+            If path2Check = protectedPath Then Return True
         Next
 
         Return False
