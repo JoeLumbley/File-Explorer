@@ -333,10 +333,10 @@ Public Class Form1
         If IsProtectedPath(path2Delete) Then
             ' The path is protected; prevent deletion
 
+            ' Notify the user of the prevention
+            ' So the user knows why it didn't delete.
             ShowStatus("Deletion prevented for protected path: " & path2Delete)
-
             Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
-
             MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
 
             Return
@@ -387,7 +387,7 @@ Public Class Form1
                 ShowStatus("Deleted folder: " & path2Delete)
 
             Else
-                ShowStatus("Path not found.")
+                ShowStatus("Delete failed: Path not found.")
             End If
 
         Catch ex As Exception
