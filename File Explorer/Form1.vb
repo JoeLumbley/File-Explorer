@@ -46,6 +46,8 @@ Public Class Form1
 
     Private currentFolder As String = String.Empty
 
+    Private showHiddenFiles As Boolean = False
+
     Private Sub ExecuteCommand(command As String)
 
         ' Use regex to split by spaces but keep quoted substrings together
@@ -629,8 +631,8 @@ Public Class Form1
         lvFiles.Columns.Clear()
         lvFiles.Columns.Add("Name", 550)
         lvFiles.Columns.Add("Type", 120)
-        lvFiles.Columns.Add("Size", 100)
-        lvFiles.Columns.Add("Modified", 160)
+        lvFiles.Columns.Add("Size", 150)
+        lvFiles.Columns.Add("Modified", 200)
     End Sub
 
     Private Sub InitTreeRoots()
@@ -770,33 +772,70 @@ Public Class Form1
         UpdateNavButtons()
     End Sub
 
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
+    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
 
+    '    Dim node = e.Node
+    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+    '        node.Nodes.Clear()
+    '        Try
+    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath,
+    '                    .ImageKey = "Folder",
+    '            .SelectedImageKey = "Folder"
+    '                    }
+    '                ' Add placeholder only if it has subdirectories
+    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+    '                node.Nodes.Add(child)
+    '            Next
+    '        Catch ex As UnauthorizedAccessException
+    '            node.Nodes.Add(New TreeNode("[Access denied]") With {
+    '                .ForeColor = Color.Gray
+    '            })
+    '        Catch ex As IOException
+    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {
+    '                .ForeColor = Color.Gray
+    '            })
+
+    '        End Try
+    '    End If
+    'End Sub
+
+
+
+
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
         Dim node = e.Node
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
             node.Nodes.Clear()
             Try
                 For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-                    Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath,
-                        .ImageKey = "Folder",
-                .SelectedImageKey = "Folder"
-                        }
+                    Dim di As New DirectoryInfo(dirPath)
+
+                    ' Skip hidden/system folders unless you want them visible
+                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+
+                    Dim child As New TreeNode(di.Name) With {
+                    .Tag = dirPath,
+                    .ImageKey = "Folder",
+                    .SelectedImageKey = "Folder"
+                }
+
                     ' Add placeholder only if it has subdirectories
                     If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
                     node.Nodes.Add(child)
                 Next
             Catch ex As UnauthorizedAccessException
-                node.Nodes.Add(New TreeNode("[Access denied]") With {
-                    .ForeColor = Color.Gray
-                })
+                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
             Catch ex As IOException
-                node.Nodes.Add(New TreeNode("[Unavailable]") With {
-                    .ForeColor = Color.Gray
-                })
-
+                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
             End Try
         End If
     End Sub
+
+
+
 
     Private Function HasSubdirectories(path As String) As Boolean
         Try
@@ -812,7 +851,6 @@ Public Class Form1
         NavigateTo(CStr(node.Tag))
     End Sub
 
-    ' -------- Files population --------
     Private Sub PopulateFiles(path As String)
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
@@ -821,6 +859,13 @@ Public Class Form1
         Try
             For Each mDir In Directory.GetDirectories(path)
                 Dim di = New DirectoryInfo(mDir)
+
+                ' Skip hidden/system folders unless checkbox is checked
+                If Not showHiddenFiles AndAlso
+               (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                    Continue For
+                End If
+
                 Dim item = New ListViewItem(di.Name)
                 item.SubItems.Add("Folder")
                 item.SubItems.Add("") ' size blank for folders
@@ -830,68 +875,150 @@ Public Class Form1
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
-            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
-                              .ForeColor = Color.Gray
-            })
+            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {.ForeColor = Color.Gray})
         End Try
 
         ' Files
         Try
             For Each file In Directory.GetFiles(path)
                 Dim fi = New FileInfo(file)
+
+                ' Skip hidden/system files unless checkbox is checked
+                If Not showHiddenFiles AndAlso
+               (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                    Continue For
+                End If
+
                 Dim item = New ListViewItem(fi.Name)
                 item.SubItems.Add(fi.Extension.ToLowerInvariant())
                 item.SubItems.Add(FormatSize(fi.Length))
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
 
-                ' Assign image based on file type
+                ' Assign image based on file type (same as before)
                 Select Case fi.Extension.ToLowerInvariant()
-                    ' Music Files
                     Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
-                         ".m4a", ".alac", ".aiff", ".dsd"
+                     ".m4a", ".alac", ".aiff", ".dsd"
                         item.ImageKey = "Music"
-
-                    ' Image Files
                     Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
-                         ".raw", ".cr2", ".nef", ".orf", ".sr2"
+                     ".raw", ".cr2", ".nef", ".orf", ".sr2"
                         item.ImageKey = "Pictures"
-
-                    ' Document Files
                     Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
-                         ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
+                     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
                         item.ImageKey = "Documents"
-
-                    ' Video Files
                     Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
-                         ".3gp", ".vob", ".ogv", ".ts"
+                     ".3gp", ".vob", ".ogv", ".ts"
                         item.ImageKey = "Videos"
-
-                    ' Downloaded Files (generic)
                     Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
-                         ".epub", ".mobi", ".apk", ".crx"
+                     ".epub", ".mobi", ".apk", ".crx"
                         item.ImageKey = "Downloads"
-
-                    ' Executable Files
                     Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
-                         ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
+                     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
                         item.ImageKey = "Executable"
-
-                        ' Other file types can be categorized as needed
                     Case Else
-                        item.ImageKey = "Documents" ' Default icon for unrecognized file types
+                        item.ImageKey = "Documents"
                 End Select
 
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
-            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
-                              .ForeColor = Color.Gray
-            })
+            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {.ForeColor = Color.Gray})
         End Try
 
         lvFiles.EndUpdate()
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+    '' -------- Files population --------
+    'Private Sub PopulateFiles(path As String)
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.Items.Clear()
+
+    '    ' Folders first
+    '    Try
+    '        For Each mDir In Directory.GetDirectories(path)
+    '            Dim di = New DirectoryInfo(mDir)
+    '            Dim item = New ListViewItem(di.Name)
+    '            item.SubItems.Add("Folder")
+    '            item.SubItems.Add("") ' size blank for folders
+    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = di.FullName
+    '            item.ImageKey = "Folder"
+    '            lvFiles.Items.Add(item)
+    '        Next
+    '    Catch ex As UnauthorizedAccessException
+    '        lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
+    '                          .ForeColor = Color.Gray
+    '        })
+    '    End Try
+
+    '    ' Files
+    '    Try
+    '        For Each file In Directory.GetFiles(path)
+    '            Dim fi = New FileInfo(file)
+    '            Dim item = New ListViewItem(fi.Name)
+    '            item.SubItems.Add(fi.Extension.ToLowerInvariant())
+    '            item.SubItems.Add(FormatSize(fi.Length))
+    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = fi.FullName
+
+    '            ' Assign image based on file type
+    '            Select Case fi.Extension.ToLowerInvariant()
+    '                ' Music Files
+    '                Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
+    '                     ".m4a", ".alac", ".aiff", ".dsd"
+    '                    item.ImageKey = "Music"
+
+    '                ' Image Files
+    '                Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
+    '                     ".raw", ".cr2", ".nef", ".orf", ".sr2"
+    '                    item.ImageKey = "Pictures"
+
+    '                ' Document Files
+    '                Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
+    '                     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
+    '                    item.ImageKey = "Documents"
+
+    '                ' Video Files
+    '                Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
+    '                     ".3gp", ".vob", ".ogv", ".ts"
+    '                    item.ImageKey = "Videos"
+
+    '                ' Downloaded Files (generic)
+    '                Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
+    '                     ".epub", ".mobi", ".apk", ".crx"
+    '                    item.ImageKey = "Downloads"
+
+    '                ' Executable Files
+    '                Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
+    '                     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
+    '                    item.ImageKey = "Executable"
+
+    '                    ' Other file types can be categorized as needed
+    '                Case Else
+    '                    item.ImageKey = "Documents" ' Default icon for unrecognized file types
+    '            End Select
+
+    '            lvFiles.Items.Add(item)
+    '        Next
+    '    Catch ex As UnauthorizedAccessException
+    '        lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
+    '                          .ForeColor = Color.Gray
+    '        })
+    '    End Try
+
+    '    lvFiles.EndUpdate()
+    'End Sub
 
     Private Function FormatSize(bytes As Long) As String
         Dim units = New String() {"B", "KB", "MB", "GB", "TB"}
