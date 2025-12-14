@@ -361,7 +361,7 @@ Public Class Form1
 
                 ShowStatus("Deleted file: " & path2Delete)
 
-                ' Goto the directory of the file that was deleted.
+                ' Go to the directory of the file that was deleted.
                 ' So the user can see that it has been deleted.
                 NavigateTo(destDir)
 
@@ -380,6 +380,7 @@ Public Class Form1
                 Directory.Delete(path2Delete, recursive:=True)
 
                 ' Go to the parent directory of the deleted directory.
+                ' So the user can see that it has been deleted.
                 Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(parentDir, True)
 
