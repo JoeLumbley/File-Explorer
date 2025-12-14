@@ -327,17 +327,17 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub DeleteFileOrDirectory(path As String)
+    Private Sub DeleteFileOrDirectory(path2Delete As String)
 
         Try
 
             ' Check if the path is in the protected list
-            If IsProtectedPath(path) Then
+            If IsProtectedPath(path2Delete) Then
                 ' The path is protected; prevent deletion
 
-                ShowStatus("Deletion prevented for protected path: " & path)
+                ShowStatus("Deletion prevented for protected path: " & path2Delete)
 
-                Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path
+                Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
 
                 MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
 
@@ -346,27 +346,26 @@ Public Class Form1
             End If
 
             ' Confirm deletion
-            Dim result = MessageBox.Show("Are you sure you want to delete '" & path & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+            Dim result = MessageBox.Show("Are you sure you want to delete '" & path2Delete & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
             If result <> DialogResult.Yes Then Exit Sub
 
-
-
-
             ' Check if it's a file
-            If File.Exists(path) Then
+            If File.Exists(path2Delete) Then
 
-                File.Delete(path)
+                File.Delete(path2Delete)
 
-                ShowStatus("Deleted file: " & path)
+                ShowStatus("Deleted file: " & path2Delete)
 
-                NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+                ' Goto the directory of the deleted file.
+                Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
+                NavigateTo(destDir)
 
                 ' Check if it's a directory
-            ElseIf Directory.Exists(path) Then
+            ElseIf Directory.Exists(path2Delete) Then
 
-                Directory.Delete(path, recursive:=True)
+                Directory.Delete(path2Delete, recursive:=True)
 
-                ShowStatus("Deleted directory: " & path)
+                ShowStatus("Deleted directory: " & path2Delete)
 
                 NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
 
@@ -375,6 +374,7 @@ Public Class Form1
             End If
 
         Catch ex As Exception
+            MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus("Delete failed: " & ex.Message)
         End Try
 
@@ -1117,24 +1117,46 @@ Public Class Form1
     End Sub
 
     Private Sub Delete_Click(sender As Object, e As EventArgs)
+        ' Delete selected file or folder - Mouse right-click context menu for lvFiles
+
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
         Dim item = lvFiles.SelectedItems(0)
         Dim fullPath = CStr(item.Tag)
+
+        ' Check if the path is in the protected list
+        If IsProtectedPath(fullPath) Then
+            ' The path is protected; prevent deletion
+            ShowStatus("Deletion prevented for protected path: " & fullPath)
+            Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
+            MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
+            Exit Sub
+        End If
+
+        ' Confirm deletion
         Dim result = MessageBox.Show("Are you sure you want to delete '" & item.Text & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
         If result <> DialogResult.Yes Then Exit Sub
+
         Try
+            ' Check if it's a directory
             If Directory.Exists(fullPath) Then
                 Directory.Delete(fullPath, recursive:=True)
-                ShowStatus("Deleted folder " & item.Text)
+                lvFiles.Items.Remove(item)
+                ShowStatus("Deleted folder: " & item.Text)
+                ' Check if it's a file
             ElseIf File.Exists(fullPath) Then
                 File.Delete(fullPath)
-                ShowStatus("Deleted file " & item.Text)
+                lvFiles.Items.Remove(item)
+                ShowStatus("Deleted file: " & item.Text)
+            Else
+                ShowStatus("Path not found.")
             End If
-            lvFiles.Items.Remove(item)
         Catch ex As Exception
             MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus("Delete failed: " & ex.Message)
         End Try
+
     End Sub
 
     Private Sub NewFolder_Click(sender As Object, e As EventArgs)
