@@ -554,7 +554,8 @@ Public Class Form1
 
     Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
 
-        ' Default to current folder with a generic name
+        ' Go to the folder of the file to be created.
+        ' So the user can see where is about to be created.
         Dim destDir As String = currentFolder
         Dim newFilePath As String = Path.Combine(destDir, "New Text File.txt")
 
@@ -565,8 +566,32 @@ Public Class Form1
             counter += 1
         End While
 
-        ' Create the file
-        CreateTextFile(newFilePath)
+        Try
+
+            ' Check if the file exists
+            If Not System.IO.File.Exists(newFilePath) Then
+
+                ' Create a new file if it doesn't exist
+                Using writer As New System.IO.StreamWriter(newFilePath)
+
+                    writer.WriteLine("Created on " & DateTime.Now.ToString())
+
+                End Using
+
+                ShowStatus("Text file created: " & newFilePath)
+
+                ' Go to the folder of the file that was created.
+                ' So the user can see that it has been created.
+                NavigateTo(destDir)
+
+                ' Open the newly created text file.
+                GoToFolderOrOpenFile(newFilePath)
+
+            End If
+
+        Catch ex As Exception
+            ShowStatus("Failed to create text file: " & ex.Message)
+        End Try
 
     End Sub
 
