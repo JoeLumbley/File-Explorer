@@ -22,7 +22,6 @@
 ' SOFTWARE.
 
 Imports System.IO
-Imports System.Runtime
 Imports System.Text.RegularExpressions
 
 Public Class Form1
@@ -553,11 +552,6 @@ Public Class Form1
         sel.Font = New Font(sel.Font, FontStyle.Italic)
     End Sub
 
-
-
-
-
-
     Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
 
         ' Default to current folder with a generic name
@@ -573,12 +567,8 @@ Public Class Form1
 
         ' Create the file
         CreateTextFile(newFilePath)
+
     End Sub
-
-
-
-
-
 
     Private Sub ShowStatus(message As String)
         lblStatus.Text = message
