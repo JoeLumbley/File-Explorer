@@ -318,14 +318,22 @@ Public Class Form1
     End Sub
 
     Private Sub CutSelected_Click(sender As Object, e As EventArgs)
+
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        ' Store in internal clipboard
         _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+
         _clipboardIsCut = True
 
         ' Fade the item to indicate "cut"
         Dim sel = lvFiles.SelectedItems(0)
         sel.ForeColor = Color.Gray
         sel.Font = New Font(sel.Font, FontStyle.Italic)
+
+        ShowStatus("Cut to clipboard: " & _clipboardPath)
+
     End Sub
 
     Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
