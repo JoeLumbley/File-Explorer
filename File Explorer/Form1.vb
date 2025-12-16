@@ -331,9 +331,6 @@ Public Class Form1
         End If
     End Sub
 
-
-
-
     ' -------- Open on double-click --------
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
