@@ -163,6 +163,8 @@ Public Class Form1
 
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
+        ' -------- Rename file or folder --------
+
         If e.Label Is Nothing Then Return ' user cancelled
 
         Dim item = lvFiles.Items(e.Item)
@@ -186,6 +188,20 @@ Public Class Form1
             ShowStatus("Rename failed: " & ex.Message)
             e.CancelEdit = True
         End Try
+
+    End Sub
+
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
+        ' -------- Sort by column --------
+
+        ' Toggle between ascending and descending
+        Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
+
+        ' Sort the ListView
+        lvFiles.Sorting = sortOrder
+        lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
+        lvFiles.Sort()
+
     End Sub
 
     Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
@@ -242,33 +258,10 @@ Public Class Form1
     End Sub
 
 
-    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
-
-        ' Toggle between ascending and descending
-        Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
-
-        ' Sort the ListView
-        lvFiles.Sorting = sortOrder
-        lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
-        lvFiles.Sort()
-
-    End Sub
-
-    Private Sub CopySelectedFile_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
-
-        ' Example: copy to Desktop
-        Dim destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Path.GetFileName(fullPath))
-
-        If File.Exists(fullPath) Then
-            CopyFile(fullPath, destPath)
-        ElseIf Directory.Exists(fullPath) Then
-            CopyDirectory(fullPath, destPath)
-        End If
-    End Sub
 
     Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+        ' Is a file or folder selected?
         If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
 
         Dim destDir = txtPath.Text
@@ -308,9 +301,16 @@ Public Class Form1
     End Sub
 
     Private Sub CopySelected_Click(sender As Object, e As EventArgs)
+
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
         _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+
+        _clipboardIsCut = False
+
         ShowStatus("Copied to clipboard: " & _clipboardPath)
+
     End Sub
 
     Private Sub CutSelected_Click(sender As Object, e As EventArgs)
