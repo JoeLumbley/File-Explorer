@@ -105,7 +105,7 @@ Public Class Form1
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
-        Dim node = e.Node
+        Dim node As TreeNode = e.Node
 
         If node Is Nothing Then Exit Sub
 
@@ -116,17 +116,21 @@ Public Class Form1
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
         ' -------- Open on double-click --------
 
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim sel = lvFiles.SelectedItems(0)
-        Dim fullPath = CStr(sel.Tag)
+
+        Dim sel As ListViewItem = lvFiles.SelectedItems(0)
+
+        Dim fullPath As String = CStr(sel.Tag)
 
         GoToFolderOrOpenFile(fullPath)
 
     End Sub
 
-
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-        Dim node = e.Node
+        ' Load subdirectories on demand
+
+        Dim node As TreeNode = e.Node
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
             node.Nodes.Clear()
             Try
@@ -154,6 +158,7 @@ Public Class Form1
                 node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
             End Try
         End If
+
     End Sub
 
 
@@ -363,6 +368,8 @@ Public Class Form1
     End Sub
 
     Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
+        ' Copy selected file name to clipboard - Mouse right-click context menu for lvFiles
+
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Clipboard.SetText(lvFiles.SelectedItems(0).Text)
         ShowStatus("Copied File Name " & lvFiles.SelectedItems(0).Text)
@@ -370,6 +377,9 @@ Public Class Form1
     End Sub
 
     Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
+        ' Copy selected file path to clipboard - Mouse right-click context menu for lvFiles
+
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
         ShowStatus("Copied File Path " & lvFiles.SelectedItems(0).Tag)
@@ -377,11 +387,17 @@ Public Class Form1
     End Sub
 
     Private Sub RenameFile_Click(sender As Object, e As EventArgs)
+        ' Rename selected file or folder - Mouse right-click context menu for lvFiles
+
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
     End Sub
 
     Private Sub Open_Click(sender As Object, e As EventArgs)
+        ' Open selected file or folder - Mouse right-click context menu for lvFiles
+
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
         GoToFolderOrOpenFile(fullPath)
