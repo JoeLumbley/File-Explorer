@@ -47,13 +47,195 @@ Public Class Form1
 
     Private showHiddenFiles As Boolean = False
 
+    Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Me.Text = "File Explorer - Code with Joe"
+
+        ShowStatus("Loading...")
+
+        InitImageList()
+
+        InitListView()
+
+        InitTreeRoots()
+
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+        InitStatusBar()
+
+        ' Context menu setup
+        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
+        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
+        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
+
+        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
+
+
+        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
+        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
+
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+
+        lvFiles.ContextMenuStrip = cmsFiles
+
+        TestIsProtectedPath()
+
+        ShowStatus("Ready")
+
+    End Sub
+
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
+
+        ' Check for Enter key
         If e.KeyCode = Keys.Enter Then
+
             e.SuppressKeyPress = True
+
             Dim command As String = txtPath.Text.Trim()
+
             ExecuteCommand(command)
+
+        End If
+
+    End Sub
+
+    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
+
+        Dim node = e.Node
+
+        If node Is Nothing Then Exit Sub
+
+        NavigateTo(CStr(node.Tag))
+
+    End Sub
+
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
+        ' -------- Open on double-click --------
+
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim sel = lvFiles.SelectedItems(0)
+        Dim fullPath = CStr(sel.Tag)
+
+        GoToFolderOrOpenFile(fullPath)
+
+    End Sub
+
+
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
+        Dim node = e.Node
+        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+            node.Nodes.Clear()
+            Try
+                For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+                    Dim di As New DirectoryInfo(dirPath)
+
+                    ' Skip hidden/system folders unless you want them visible
+                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+
+                    Dim child As New TreeNode(di.Name) With {
+                    .Tag = dirPath,
+                    .ImageKey = "Folder",
+                    .SelectedImageKey = "Folder"
+                }
+
+                    ' Add placeholder only if it has subdirectories
+                    If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+                    node.Nodes.Add(child)
+                Next
+            Catch ex As UnauthorizedAccessException
+                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+            Catch ex As IOException
+                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+            End Try
         End If
     End Sub
+
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
+        If e.Label Is Nothing Then Return ' user cancelled
+
+        Dim item = lvFiles.Items(e.Item)
+        Dim oldPath = CStr(item.Tag)
+        Dim newName = e.Label
+        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
+
+        If oldPath = newPath Then Return ' no change
+
+        Try
+            If Directory.Exists(oldPath) Then
+                Directory.Move(oldPath, newPath)
+                ShowStatus("Renamed Folder to: " & newName)
+            ElseIf File.Exists(oldPath) Then
+                File.Move(oldPath, newPath)
+                ShowStatus("Renamed File to: " & newName)
+            End If
+            item.Tag = newPath
+        Catch ex As Exception
+            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Rename failed: " & ex.Message)
+            e.CancelEdit = True
+        End Try
+    End Sub
+
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+
+        Delete_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
+
+        RenameFile_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
+
+        NewFolder_Click(sender, e)
+
+    End Sub
+
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
+
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+    End Sub
+
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
+
+        InitTreeRoots()
+
+
+        NavigateTo(currentFolder, recordHistory:=False)
+
+    End Sub
+
+    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
+        'GoToFolderOrOpenFile(txtPath.Text)
+        ExecuteCommand(txtPath.Text.Trim())
+
+    End Sub
+
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
+        If _historyIndex <= 0 Then Exit Sub
+        _historyIndex -= 1
+        NavigateTo(_history(_historyIndex), recordHistory:=False)
+        UpdateNavButtons()
+    End Sub
+
+    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
+        If _historyIndex >= _history.Count - 1 Then Exit Sub
+        _historyIndex += 1
+        NavigateTo(_history(_historyIndex), recordHistory:=False)
+        UpdateNavButtons()
+    End Sub
+
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
@@ -180,132 +362,6 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        Me.Text = "File Explorer - Code with Joe"
-
-        ShowStatus("Loading...")
-
-        InitImageList()
-
-        InitListView()
-        InitTreeRoots()
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-        InitStatusBar()
-
-        ' Context menu setup
-        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
-        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
-        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
-
-        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
-
-
-        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
-        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
-
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
-        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
-
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
-        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
-
-        lvFiles.ContextMenuStrip = cmsFiles
-
-        TestIsProtectedPath()
-
-        ShowStatus("Ready")
-
-    End Sub
-
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
-        'GoToFolderOrOpenFile(txtPath.Text)
-        ExecuteCommand(txtPath.Text.Trim())
-
-    End Sub
-
-    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
-        If _historyIndex <= 0 Then Exit Sub
-        _historyIndex -= 1
-        NavigateTo(_history(_historyIndex), recordHistory:=False)
-        UpdateNavButtons()
-    End Sub
-
-    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
-        If _historyIndex >= _history.Count - 1 Then Exit Sub
-        _historyIndex += 1
-        NavigateTo(_history(_historyIndex), recordHistory:=False)
-        UpdateNavButtons()
-    End Sub
-
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-        Dim node = e.Node
-        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-            node.Nodes.Clear()
-            Try
-                For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-                    Dim di As New DirectoryInfo(dirPath)
-
-                    ' Skip hidden/system folders unless you want them visible
-                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                        Continue For
-                    End If
-
-                    Dim child As New TreeNode(di.Name) With {
-                    .Tag = dirPath,
-                    .ImageKey = "Folder",
-                    .SelectedImageKey = "Folder"
-                }
-
-                    ' Add placeholder only if it has subdirectories
-                    If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-                    node.Nodes.Add(child)
-                Next
-            Catch ex As UnauthorizedAccessException
-                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
-            Catch ex As IOException
-                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
-            End Try
-        End If
-    End Sub
-
-    ' -------- Open on double-click --------
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim sel = lvFiles.SelectedItems(0)
-        Dim fullPath = CStr(sel.Tag)
-
-        GoToFolderOrOpenFile(fullPath)
-
-    End Sub
-
-    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
-        If e.Label Is Nothing Then Return ' user cancelled
-
-        Dim item = lvFiles.Items(e.Item)
-        Dim oldPath = CStr(item.Tag)
-        Dim newName = e.Label
-        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
-
-        If oldPath = newPath Then Return ' no change
-
-        Try
-            If Directory.Exists(oldPath) Then
-                Directory.Move(oldPath, newPath)
-                ShowStatus("Renamed Folder to: " & newName)
-            ElseIf File.Exists(oldPath) Then
-                File.Move(oldPath, newPath)
-                ShowStatus("Renamed File to: " & newName)
-            End If
-            item.Tag = newPath
-        Catch ex As Exception
-            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus("Rename failed: " & ex.Message)
-            e.CancelEdit = True
-        End Try
-    End Sub
-
     Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Clipboard.SetText(lvFiles.SelectedItems(0).Text)
@@ -411,46 +467,6 @@ Public Class Form1
             ShowStatus("Failed to create folder: " & ex.Message)
         End Try
     End Sub
-
-
-    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
-
-        Delete_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
-
-        RenameFile_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
-
-        NewFolder_Click(sender, e)
-
-    End Sub
-
-    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
-
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-    End Sub
-
-    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
-
-        InitTreeRoots()
-
-
-        NavigateTo(currentFolder, recordHistory:=False)
-
-    End Sub
-
-
-
-
-
-
 
     Private Sub ExecuteCommand(command As String)
 
@@ -803,64 +819,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Function IsProtectedPath(path2Check As String) As Boolean
-    '    Dim protectedPaths As String() = {
-    '    "C:\Windows",
-    '    "C:\Program Files",
-    '    "C:\Program Files (x86)",
-    '    "C:\ProgramData",
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
-    '}
-
-    '    ' Check if the path is protected
-    '    For Each protectedPath In protectedPaths
-    '        If path2Check = protectedPath Then Return True
-    '    Next
-
-    '    Return False
-    'End Function
-
-
-    'Private Function IsProtectedPath(path2Check As String) As Boolean
-    '    If String.IsNullOrWhiteSpace(path2Check) Then Return False
-
-    '    ' Normalize the input path: full path, trim trailing slashes, case-insensitive
-    '    Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
-
-    '    ' Define protected paths (normalized)
-    '    Dim protectedPaths As String() = {
-    '    "C:\Windows",
-    '    "C:\Program Files",
-    '    "C:\Program Files (x86)",
-    '    "C:\ProgramData",
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
-    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
-    '}
-
-    '    ' Normalize protected paths too
-    '    For Each protectedPath In protectedPaths
-    '        Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
-    '        If String.Equals(normalizedInput, normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
-    '            Return True
-    '        End If
-    '    Next
-
-    '    Return False
-    'End Function
-
     Private Function IsProtectedPath(path2Check As String) As Boolean
 
         If String.IsNullOrWhiteSpace(path2Check) Then Return False
@@ -942,61 +900,6 @@ Public Class Form1
 
     End Sub
 
-
-
-    'Private Sub TestIsProtectedPath()
-    '    ' === Positive Tests (expected True) ===
-    '    Debug.Assert(IsProtectedPath("C:\Windows") = True, "Should detect Windows folder")
-    '    Debug.Assert(IsProtectedPath("C:\Program Files") = True, "Should detect Program Files")
-    '    Debug.Assert(IsProtectedPath("C:\Program Files (x86)") = True, "Should detect Program Files (x86)")
-    '    Debug.Assert(IsProtectedPath("C:\ProgramData") = True, "Should detect ProgramData")
-
-    '    Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents")) = True, "Should detect Documents")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop")) = True, "Should detect Desktop")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Downloads")) = True, "Should detect Downloads")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Pictures")) = True, "Should detect Pictures")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Music")) = True, "Should detect Music")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Videos")) = True, "Should detect Videos")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Local")) = True, "Should detect Local AppData")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Roaming")) = True, "Should detect Roaming AppData")
-
-    '    ' === Negative Tests (expected False) ===
-    '    Debug.Assert(IsProtectedPath("C:\Temp") = False, "Temp should not be protected")
-    '    Debug.Assert(IsProtectedPath("D:\Games") = False, "Games folder should not be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Users\Public") = False, "Public folder should not be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Windows\System32") = False, "Subfolder of Windows should not match exact path")
-
-    '    '' === Edge Case Tests ===
-    '    '' Case sensitivity
-    '    'Debug.Assert(IsProtectedPath("c:\windows") = False, "Case-insensitive path should fail unless normalized")
-
-    '    '' Trailing slash
-    '    'Debug.Assert(IsProtectedPath("C:\Windows\") = False, "Trailing slash should fail unless trimmed")
-
-    '    '' Relative path
-    '    'Debug.Assert(IsProtectedPath(".\Windows") = False, "Relative path should not match")
-
-    '    '' Similar but not exact
-    '    'Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = False, "Subfolder should not match exact protected path")
-
-    '    '' Empty string
-    '    'Debug.Assert(IsProtectedPath("") = False, "Empty path should not be protected")
-
-    '    '' Null check (optional safeguard)
-    '    'Debug.Assert(IsProtectedPath(Nothing) = False, "Nothing should not be protected")
-
-    '    ' === Edge Case Tests ===
-    '    Debug.Assert(IsProtectedPath("c:\windows") = True, "Case-insensitive path should be detected as protected")
-    '    Debug.Assert(IsProtectedPath("C:\Windows\") = True, "Trailing slash should still be detected as protected")
-    '    Debug.Assert(IsProtectedPath(".\Windows") = True, "Relative path resolves to Windows folder and should be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = False, "Subfolder should not match exact protected path")
-    '    Debug.Assert(IsProtectedPath("") = False, "Empty path should not be protected")
-    '    Debug.Assert(IsProtectedPath(Nothing) = False, "Nothing should not be protected")
-
-    '    Console.WriteLine("All IsProtectedPath tests executed.")
-    'End Sub
-
     Private Sub CopyDirectory(sourceDir As String, destDir As String)
 
         Dim dirInfo As New DirectoryInfo(sourceDir)
@@ -1051,28 +954,6 @@ Public Class Form1
         statusTimer.Stop()
     End Sub
 
-    Private Sub InitImageList()
-        imgList.ImageSize = New Size(16, 16)
-        imgList.ColorDepth = ColorDepth.Depth32Bit
-
-        ' Load icons (replace with actual file paths or resources)
-        imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
-        imgList.Images.Add("Drive", My.Resources.Resource1.Drive_16X16)
-        imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
-
-        imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
-        imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
-        imgList.Images.Add("EasyAccess", My.Resources.Resource1.Easy_Access_16X16)
-
-        imgList.Images.Add("Music", My.Resources.Resource1.Music_16X16)
-        imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
-        imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
-
-        imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
-
-        tvFolders.ImageList = imgList
-        lvFiles.SmallImageList = imgList
-    End Sub
 
     ' -------- UI init --------
     Private Sub InitListView()
@@ -1151,6 +1032,30 @@ Public Class Form1
         Me.Controls.Add(statusStrip)
     End Sub
 
+    Private Sub InitImageList()
+        imgList.ImageSize = New Size(16, 16)
+        imgList.ColorDepth = ColorDepth.Depth32Bit
+
+        ' Load icons (replace with actual file paths or resources)
+        imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
+        imgList.Images.Add("Drive", My.Resources.Resource1.Drive_16X16)
+        imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
+
+        imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
+        imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
+        imgList.Images.Add("EasyAccess", My.Resources.Resource1.Easy_Access_16X16)
+
+        imgList.Images.Add("Music", My.Resources.Resource1.Music_16X16)
+        imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
+        imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
+
+        imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
+
+        tvFolders.ImageList = imgList
+        lvFiles.SmallImageList = imgList
+    End Sub
+
+
     ' -------- Navigation --------
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
@@ -1210,12 +1115,6 @@ Public Class Form1
             Return False
         End Try
     End Function
-
-    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
-        Dim node = e.Node
-        If node Is Nothing Then Exit Sub
-        NavigateTo(CStr(node.Tag))
-    End Sub
 
     Private Sub PopulateFiles(path As String)
         lvFiles.BeginUpdate()
