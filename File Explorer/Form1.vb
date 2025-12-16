@@ -238,6 +238,9 @@ Public Class Form1
 
         ShowStatus("Ready")
 
+        TestIsProtectedPath()
+
+
     End Sub
 
 
@@ -400,6 +403,15 @@ Public Class Form1
 
         Dim item = lvFiles.SelectedItems(0)
         Dim fullPath = CStr(item.Tag)
+
+        ' Reject relative paths outright
+        If Not Path.IsPathRooted(fullPath) Then
+
+            ShowStatus("Delete failed: Path must be absolute. Example: C:\folder")
+
+            Exit Sub
+
+        End If
 
         ' Check if the path is in the protected list
         If IsProtectedPath(fullPath) Then
@@ -777,17 +789,27 @@ Public Class Form1
 
     Private Sub DeleteFileOrDirectory(path2Delete As String)
 
+        ' Reject relative paths outright
+        If Not Path.IsPathRooted(path2Delete) Then
+
+            ShowStatus("Delete failed: Path must be absolute. Example: C:\folder")
+
+            Exit Sub
+
+        End If
+
         ' Check if the path is in the protected list
         If IsProtectedPath(path2Delete) Then
             ' The path is protected; prevent deletion
 
-            ' Notify the user of the prevention
-            ' So the user knows why it didn't delete.
+            ' Notify the user of the prevention so the user knows why it didn't delete.
             ShowStatus("Deletion prevented for protected path: " & path2Delete)
             Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
             MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
 
-            Return
+            NavigateTo(path2Delete)
+
+            Exit Sub
 
         End If
 
@@ -845,7 +867,75 @@ Public Class Form1
 
     End Sub
 
+    'Private Function IsProtectedPath(path2Check As String) As Boolean
+    '    Dim protectedPaths As String() = {
+    '    "C:\Windows",
+    '    "C:\Program Files",
+    '    "C:\Program Files (x86)",
+    '    "C:\ProgramData",
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
+    '}
+
+    '    ' Check if the path is protected
+    '    For Each protectedPath In protectedPaths
+    '        If path2Check = protectedPath Then Return True
+    '    Next
+
+    '    Return False
+    'End Function
+
+
+    'Private Function IsProtectedPath(path2Check As String) As Boolean
+    '    If String.IsNullOrWhiteSpace(path2Check) Then Return False
+
+    '    ' Normalize the input path: full path, trim trailing slashes, case-insensitive
+    '    Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
+
+    '    ' Define protected paths (normalized)
+    '    Dim protectedPaths As String() = {
+    '    "C:\Windows",
+    '    "C:\Program Files",
+    '    "C:\Program Files (x86)",
+    '    "C:\ProgramData",
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
+    '    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
+    '}
+
+    '    ' Normalize protected paths too
+    '    For Each protectedPath In protectedPaths
+    '        Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
+    '        If String.Equals(normalizedInput, normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+    '    Next
+
+    '    Return False
+    'End Function
+
     Private Function IsProtectedPath(path2Check As String) As Boolean
+
+        If String.IsNullOrWhiteSpace(path2Check) Then Return False
+
+        ' Reject relative paths outright
+        If Not Path.IsPathRooted(path2Check) Then Return False
+
+        ' Normalize the input path: full path, trim trailing slashes
+        Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
+
+        ' Define protected paths (normalized)
         Dim protectedPaths As String() = {
         "C:\Windows",
         "C:\Program Files",
@@ -861,21 +951,115 @@ Public Class Form1
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
     }
 
-        '' Check if the path starts with any of the protected paths
-        'For Each protectedPath In protectedPaths
-        '    If path2Check.StartsWith(protectedPath, StringComparison.OrdinalIgnoreCase) Then
-        '        Return True
-        '    End If
-        'Next
-
-        ' Check if the path is protected
+        ' Normalize protected paths too
         For Each protectedPath In protectedPaths
-            If path2Check = protectedPath Then Return True
+            Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
+
+            ' Exact match OR subdirectory match
+            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) _
+           OrElse normalizedInput.StartsWith(normalizedProtected & "\", StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
         Next
 
         Return False
+
     End Function
 
+    Private Sub TestIsProtectedPath()
+
+        ' === Positive Tests (expected True) ===
+        Debug.Assert(IsProtectedPath("C:\Windows") = True, "Should detect Windows folder")
+        Debug.Assert(IsProtectedPath("C:\Program Files") = True, "Should detect Program Files")
+        Debug.Assert(IsProtectedPath("C:\Program Files (x86)") = True, "Should detect Program Files (x86)")
+        Debug.Assert(IsProtectedPath("C:\ProgramData") = True, "Should detect ProgramData")
+
+        Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents")) = True, "Should detect Documents")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop")) = True, "Should detect Desktop")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Downloads")) = True, "Should detect Downloads")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Pictures")) = True, "Should detect Pictures")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Music")) = True, "Should detect Music")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Videos")) = True, "Should detect Videos")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Local")) = True, "Should detect Local AppData")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Roaming")) = True, "Should detect Roaming AppData")
+
+        ' === New Positive Tests for Subdirectories (expected True) ===
+        Debug.Assert(IsProtectedPath("C:\Windows\System32") = True, "Subfolder of Windows should be protected")
+        Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = True, "Subfolder of Program Files should be protected")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents\MyProject")) = True, "Subfolder of Documents should be protected")
+        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop\TestFolder")) = True, "Subfolder of Desktop should be protected")
+
+        ' === Negative Tests (expected False) ===
+        Debug.Assert(IsProtectedPath("C:\Temp") = False, "Temp should not be protected")
+        Debug.Assert(IsProtectedPath("D:\Games") = False, "Games folder should not be protected")
+        Debug.Assert(IsProtectedPath("C:\Users\Public") = False, "Public folder should not be protected")
+
+        ' === Edge Case Tests ===
+        Debug.Assert(IsProtectedPath("c:\windows") = True, "Case-insensitive path should be detected as protected")
+        Debug.Assert(IsProtectedPath("C:\Windows\") = True, "Trailing slash should still be detected as protected")
+        Debug.Assert(IsProtectedPath(".\Windows") = False, "Relative path should not match protected directories")
+        Debug.Assert(IsProtectedPath("") = False, "Empty path should not be protected")
+        Debug.Assert(IsProtectedPath(Nothing) = False, "Nothing should not be protected")
+
+        Debug.WriteLine("All IsProtectedPath tests executed.")
+
+    End Sub
+
+
+
+    'Private Sub TestIsProtectedPath()
+    '    ' === Positive Tests (expected True) ===
+    '    Debug.Assert(IsProtectedPath("C:\Windows") = True, "Should detect Windows folder")
+    '    Debug.Assert(IsProtectedPath("C:\Program Files") = True, "Should detect Program Files")
+    '    Debug.Assert(IsProtectedPath("C:\Program Files (x86)") = True, "Should detect Program Files (x86)")
+    '    Debug.Assert(IsProtectedPath("C:\ProgramData") = True, "Should detect ProgramData")
+
+    '    Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents")) = True, "Should detect Documents")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop")) = True, "Should detect Desktop")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Downloads")) = True, "Should detect Downloads")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Pictures")) = True, "Should detect Pictures")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Music")) = True, "Should detect Music")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Videos")) = True, "Should detect Videos")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Local")) = True, "Should detect Local AppData")
+    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Roaming")) = True, "Should detect Roaming AppData")
+
+    '    ' === Negative Tests (expected False) ===
+    '    Debug.Assert(IsProtectedPath("C:\Temp") = False, "Temp should not be protected")
+    '    Debug.Assert(IsProtectedPath("D:\Games") = False, "Games folder should not be protected")
+    '    Debug.Assert(IsProtectedPath("C:\Users\Public") = False, "Public folder should not be protected")
+    '    Debug.Assert(IsProtectedPath("C:\Windows\System32") = False, "Subfolder of Windows should not match exact path")
+
+    '    '' === Edge Case Tests ===
+    '    '' Case sensitivity
+    '    'Debug.Assert(IsProtectedPath("c:\windows") = False, "Case-insensitive path should fail unless normalized")
+
+    '    '' Trailing slash
+    '    'Debug.Assert(IsProtectedPath("C:\Windows\") = False, "Trailing slash should fail unless trimmed")
+
+    '    '' Relative path
+    '    'Debug.Assert(IsProtectedPath(".\Windows") = False, "Relative path should not match")
+
+    '    '' Similar but not exact
+    '    'Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = False, "Subfolder should not match exact protected path")
+
+    '    '' Empty string
+    '    'Debug.Assert(IsProtectedPath("") = False, "Empty path should not be protected")
+
+    '    '' Null check (optional safeguard)
+    '    'Debug.Assert(IsProtectedPath(Nothing) = False, "Nothing should not be protected")
+
+    '    ' === Edge Case Tests ===
+    '    Debug.Assert(IsProtectedPath("c:\windows") = True, "Case-insensitive path should be detected as protected")
+    '    Debug.Assert(IsProtectedPath("C:\Windows\") = True, "Trailing slash should still be detected as protected")
+    '    Debug.Assert(IsProtectedPath(".\Windows") = True, "Relative path resolves to Windows folder and should be protected")
+    '    Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = False, "Subfolder should not match exact protected path")
+    '    Debug.Assert(IsProtectedPath("") = False, "Empty path should not be protected")
+    '    Debug.Assert(IsProtectedPath(Nothing) = False, "Nothing should not be protected")
+
+    '    Console.WriteLine("All IsProtectedPath tests executed.")
+    'End Sub
 
     Private Sub CopyDirectory(sourceDir As String, destDir As String)
 
