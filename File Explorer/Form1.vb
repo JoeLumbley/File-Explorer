@@ -47,6 +47,463 @@ Public Class Form1
 
     Private showHiddenFiles As Boolean = False
 
+
+
+
+
+
+    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.SuppressKeyPress = True
+            Dim command As String = txtPath.Text.Trim()
+            ExecuteCommand(command)
+        End If
+    End Sub
+
+
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
+
+        ' Toggle between ascending and descending
+        Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
+
+        ' Sort the ListView
+        lvFiles.Sorting = sortOrder
+        lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
+        lvFiles.Sort()
+
+    End Sub
+
+
+
+    Private Sub CopySelectedFile_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+
+        ' Example: copy to Desktop
+        Dim destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Path.GetFileName(fullPath))
+
+        If File.Exists(fullPath) Then
+            CopyFile(fullPath, destPath)
+        ElseIf Directory.Exists(fullPath) Then
+            CopyDirectory(fullPath, destPath)
+        End If
+    End Sub
+
+    Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
+        If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
+
+        Dim destDir = txtPath.Text
+        Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+        Try
+            If File.Exists(_clipboardPath) Then
+                If _clipboardIsCut Then
+                    File.Move(_clipboardPath, destPath)
+                Else
+                    File.Copy(_clipboardPath, destPath, overwrite:=False)
+                End If
+            ElseIf Directory.Exists(_clipboardPath) Then
+                If _clipboardIsCut Then
+                    Directory.Move(_clipboardPath, destPath)
+                Else
+                    CopyDirectory(_clipboardPath, destPath)
+                End If
+            End If
+
+            ' Clear cut state
+            _clipboardPath = Nothing
+            _clipboardIsCut = False
+
+            ' Refresh current folder view
+            PopulateFiles(destDir)
+
+            ResetCutVisuals()
+
+            ShowStatus("Pasted into " & txtPath.Text)
+
+        Catch ex As Exception
+            MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Paste failed: " & ex.Message)
+
+        End Try
+    End Sub
+
+
+
+
+
+
+
+
+    Private Sub CopySelected_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+        ShowStatus("Copied to clipboard: " & _clipboardPath)
+    End Sub
+
+    Private Sub CutSelected_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+        _clipboardIsCut = True
+
+        ' Fade the item to indicate "cut"
+        Dim sel = lvFiles.SelectedItems(0)
+        sel.ForeColor = Color.Gray
+        sel.Font = New Font(sel.Font, FontStyle.Italic)
+    End Sub
+
+    Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
+
+        ' Go to the folder of the file to be created.
+        ' So the user can see where is about to be created.
+        Dim destDir As String = currentFolder
+        Dim newFilePath As String = Path.Combine(destDir, "New Text File.txt")
+
+        ' Ensure unique name if file already exists
+        Dim counter As Integer = 1
+        While File.Exists(newFilePath)
+            newFilePath = Path.Combine(destDir, $"New Text File ({counter}).txt")
+            counter += 1
+        End While
+
+        Try
+
+            ' Check if the file exists
+            If Not System.IO.File.Exists(newFilePath) Then
+
+                ' Create a new file if it doesn't exist
+                Using writer As New System.IO.StreamWriter(newFilePath)
+
+                    writer.WriteLine("Created on " & DateTime.Now.ToString())
+
+                End Using
+
+                ShowStatus("Text file created: " & newFilePath)
+
+                ' Go to the folder of the file that was created.
+                ' So the user can see that it has been created.
+                NavigateTo(destDir)
+
+                ' Open the newly created text file.
+                GoToFolderOrOpenFile(newFilePath)
+
+            End If
+
+        Catch ex As Exception
+            ShowStatus("Failed to create text file: " & ex.Message)
+        End Try
+
+    End Sub
+
+
+
+
+
+
+
+
+
+    Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        Me.Text = "File Explorer - Code with Joe"
+
+        ShowStatus("Loading...")
+
+        InitImageList()
+
+        InitListView()
+        InitTreeRoots()
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+        InitStatusBar()
+
+        ' Context menu setup
+        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
+        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
+        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
+
+        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
+
+
+        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
+        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
+
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+
+        lvFiles.ContextMenuStrip = cmsFiles
+
+        ShowStatus("Ready")
+
+    End Sub
+
+
+
+    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
+        'GoToFolderOrOpenFile(txtPath.Text)
+        ExecuteCommand(txtPath.Text.Trim())
+
+    End Sub
+
+
+
+
+
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
+        If _historyIndex <= 0 Then Exit Sub
+        _historyIndex -= 1
+        NavigateTo(_history(_historyIndex), recordHistory:=False)
+        UpdateNavButtons()
+    End Sub
+
+    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
+        If _historyIndex >= _history.Count - 1 Then Exit Sub
+        _historyIndex += 1
+        NavigateTo(_history(_historyIndex), recordHistory:=False)
+        UpdateNavButtons()
+    End Sub
+
+    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
+
+    '    Dim node = e.Node
+    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+    '        node.Nodes.Clear()
+    '        Try
+    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath,
+    '                    .ImageKey = "Folder",
+    '            .SelectedImageKey = "Folder"
+    '                    }
+    '                ' Add placeholder only if it has subdirectories
+    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+    '                node.Nodes.Add(child)
+    '            Next
+    '        Catch ex As UnauthorizedAccessException
+    '            node.Nodes.Add(New TreeNode("[Access denied]") With {
+    '                .ForeColor = Color.Gray
+    '            })
+    '        Catch ex As IOException
+    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {
+    '                .ForeColor = Color.Gray
+    '            })
+
+    '        End Try
+    '    End If
+    'End Sub
+
+
+
+
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
+        Dim node = e.Node
+        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+            node.Nodes.Clear()
+            Try
+                For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+                    Dim di As New DirectoryInfo(dirPath)
+
+                    ' Skip hidden/system folders unless you want them visible
+                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+
+                    Dim child As New TreeNode(di.Name) With {
+                    .Tag = dirPath,
+                    .ImageKey = "Folder",
+                    .SelectedImageKey = "Folder"
+                }
+
+                    ' Add placeholder only if it has subdirectories
+                    If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+                    node.Nodes.Add(child)
+                Next
+            Catch ex As UnauthorizedAccessException
+                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+            Catch ex As IOException
+                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+            End Try
+        End If
+    End Sub
+
+
+
+
+    ' -------- Open on double-click --------
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim sel = lvFiles.SelectedItems(0)
+        Dim fullPath = CStr(sel.Tag)
+
+        GoToFolderOrOpenFile(fullPath)
+
+    End Sub
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
+        If e.Label Is Nothing Then Return ' user cancelled
+
+        Dim item = lvFiles.Items(e.Item)
+        Dim oldPath = CStr(item.Tag)
+        Dim newName = e.Label
+        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
+
+        If oldPath = newPath Then Return ' no change
+
+        Try
+            If Directory.Exists(oldPath) Then
+                Directory.Move(oldPath, newPath)
+                ShowStatus("Renamed Folder to: " & newName)
+            ElseIf File.Exists(oldPath) Then
+                File.Move(oldPath, newPath)
+                ShowStatus("Renamed File to: " & newName)
+            End If
+            item.Tag = newPath
+        Catch ex As Exception
+            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Rename failed: " & ex.Message)
+            e.CancelEdit = True
+        End Try
+    End Sub
+
+    Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Clipboard.SetText(lvFiles.SelectedItems(0).Text)
+        ShowStatus("Copied File Name " & lvFiles.SelectedItems(0).Text)
+
+    End Sub
+
+    Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+        ShowStatus("Copied File Path " & lvFiles.SelectedItems(0).Tag)
+
+    End Sub
+
+    Private Sub RenameFile_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
+    End Sub
+
+    Private Sub Open_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+        GoToFolderOrOpenFile(fullPath)
+    End Sub
+
+    Private Sub Delete_Click(sender As Object, e As EventArgs)
+        ' Delete selected file or folder - Mouse right-click context menu for lvFiles
+
+        ' Is a file or folder selected?
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim item = lvFiles.SelectedItems(0)
+        Dim fullPath = CStr(item.Tag)
+
+        ' Check if the path is in the protected list
+        If IsProtectedPath(fullPath) Then
+            ' The path is protected; prevent deletion
+            ShowStatus("Deletion prevented for protected path: " & fullPath)
+            Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
+            MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
+            Exit Sub
+        End If
+
+        ' Confirm deletion
+        Dim result = MessageBox.Show("Are you sure you want to delete '" & item.Text & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+        If result <> DialogResult.Yes Then Exit Sub
+
+        Try
+            ' Check if it's a directory
+            If Directory.Exists(fullPath) Then
+                Directory.Delete(fullPath, recursive:=True)
+                lvFiles.Items.Remove(item)
+                ShowStatus("Deleted folder: " & item.Text)
+                ' Check if it's a file
+            ElseIf File.Exists(fullPath) Then
+                File.Delete(fullPath)
+                lvFiles.Items.Remove(item)
+                ShowStatus("Deleted file: " & item.Text)
+            Else
+                ShowStatus("Path not found.")
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Delete failed: " & ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub NewFolder_Click(sender As Object, e As EventArgs)
+        Dim currentPath = txtPath.Text
+        Dim newFolderName = "New Folder"
+        Dim newFolderPath = Path.Combine(currentPath, newFolderName)
+        Dim count = 1
+        While Directory.Exists(newFolderPath)
+            newFolderName = $"New Folder ({count})"
+            newFolderPath = Path.Combine(currentPath, newFolderName)
+            count += 1
+        End While
+        Try
+            Directory.CreateDirectory(newFolderPath)
+            Dim di = New DirectoryInfo(newFolderPath)
+            Dim item = New ListViewItem(di.Name)
+            item.SubItems.Add("Folder")
+            item.SubItems.Add("") ' size blank for folders
+            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+            item.Tag = di.FullName
+            item.ImageKey = "Folder"
+
+            lvFiles.Items.Add(item)
+            item.BeginEdit() ' allow user to rename immediately
+            ShowStatus("Created folder: " & di.Name)
+        Catch ex As Exception
+            MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Failed to create folder: " & ex.Message)
+        End Try
+    End Sub
+
+
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+
+        Delete_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
+
+        RenameFile_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
+
+        NewFolder_Click(sender, e)
+
+    End Sub
+
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
+
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+    End Sub
+
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
+
+        InitTreeRoots()
+
+
+        NavigateTo(currentFolder, recordHistory:=False)
+
+    End Sub
+
+
+
+
+
+
+
     Private Sub ExecuteCommand(command As String)
 
         ' Use regex to split by spaces but keep quoted substrings together
@@ -252,14 +709,6 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
-        If e.KeyCode = Keys.Enter Then
-            e.SuppressKeyPress = True
-            Dim command As String = txtPath.Text.Trim()
-            ExecuteCommand(command)
-        End If
-    End Sub
-
     Private Sub CopyFile(source As String, destination As String)
         Try
             ' Check if the destination file already exists
@@ -428,18 +877,6 @@ Public Class Form1
     End Function
 
 
-    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
-
-        ' Toggle between ascending and descending
-        Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
-
-        ' Sort the ListView
-        lvFiles.Sorting = sortOrder
-        lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
-        lvFiles.Sort()
-
-    End Sub
-
     Private Sub CopyDirectory(sourceDir As String, destDir As String)
 
         Dim dirInfo As New DirectoryInfo(sourceDir)
@@ -475,124 +912,11 @@ Public Class Form1
 
     End Sub
 
-    Private Sub CopySelectedFile_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
-
-        ' Example: copy to Desktop
-        Dim destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), Path.GetFileName(fullPath))
-
-        If File.Exists(fullPath) Then
-            CopyFile(fullPath, destPath)
-        ElseIf Directory.Exists(fullPath) Then
-            CopyDirectory(fullPath, destPath)
-        End If
-    End Sub
-
-    Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
-        If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
-
-        Dim destDir = txtPath.Text
-        Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
-
-        Try
-            If File.Exists(_clipboardPath) Then
-                If _clipboardIsCut Then
-                    File.Move(_clipboardPath, destPath)
-                Else
-                    File.Copy(_clipboardPath, destPath, overwrite:=False)
-                End If
-            ElseIf Directory.Exists(_clipboardPath) Then
-                If _clipboardIsCut Then
-                    Directory.Move(_clipboardPath, destPath)
-                Else
-                    CopyDirectory(_clipboardPath, destPath)
-                End If
-            End If
-
-            ' Clear cut state
-            _clipboardPath = Nothing
-            _clipboardIsCut = False
-
-            ' Refresh current folder view
-            PopulateFiles(destDir)
-
-            ResetCutVisuals()
-
-            ShowStatus("Pasted into " & txtPath.Text)
-
-        Catch ex As Exception
-            MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus("Paste failed: " & ex.Message)
-
-        End Try
-    End Sub
-
     Private Sub ResetCutVisuals()
         For Each item As ListViewItem In lvFiles.Items
             item.ForeColor = SystemColors.WindowText
             item.Font = New Font(lvFiles.Font, FontStyle.Regular)
         Next
-    End Sub
-
-    Private Sub CopySelected_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
-        ShowStatus("Copied to clipboard: " & _clipboardPath)
-    End Sub
-
-    Private Sub CutSelected_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
-        _clipboardIsCut = True
-
-        ' Fade the item to indicate "cut"
-        Dim sel = lvFiles.SelectedItems(0)
-        sel.ForeColor = Color.Gray
-        sel.Font = New Font(sel.Font, FontStyle.Italic)
-    End Sub
-
-    Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
-
-        ' Go to the folder of the file to be created.
-        ' So the user can see where is about to be created.
-        Dim destDir As String = currentFolder
-        Dim newFilePath As String = Path.Combine(destDir, "New Text File.txt")
-
-        ' Ensure unique name if file already exists
-        Dim counter As Integer = 1
-        While File.Exists(newFilePath)
-            newFilePath = Path.Combine(destDir, $"New Text File ({counter}).txt")
-            counter += 1
-        End While
-
-        Try
-
-            ' Check if the file exists
-            If Not System.IO.File.Exists(newFilePath) Then
-
-                ' Create a new file if it doesn't exist
-                Using writer As New System.IO.StreamWriter(newFilePath)
-
-                    writer.WriteLine("Created on " & DateTime.Now.ToString())
-
-                End Using
-
-                ShowStatus("Text file created: " & newFilePath)
-
-                ' Go to the folder of the file that was created.
-                ' So the user can see that it has been created.
-                NavigateTo(destDir)
-
-                ' Open the newly created text file.
-                GoToFolderOrOpenFile(newFilePath)
-
-            End If
-
-        Catch ex As Exception
-            ShowStatus("Failed to create text file: " & ex.Message)
-        End Try
-
     End Sub
 
     Private Sub ShowStatus(message As String)
@@ -628,43 +952,6 @@ Public Class Form1
 
         tvFolders.ImageList = imgList
         lvFiles.SmallImageList = imgList
-    End Sub
-
-    Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        Me.Text = "File Explorer - Code with Joe"
-
-        ShowStatus("Loading...")
-
-        InitImageList()
-
-        InitListView()
-        InitTreeRoots()
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-        InitStatusBar()
-
-        ' Context menu setup
-        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
-        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
-        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
-
-        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
-
-
-        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
-        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
-
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
-        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
-
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
-        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
-
-        lvFiles.ContextMenuStrip = cmsFiles
-
-        ShowStatus("Ready")
-
     End Sub
 
     ' -------- UI init --------
@@ -776,12 +1063,6 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
-        'GoToFolderOrOpenFile(txtPath.Text)
-        ExecuteCommand(txtPath.Text.Trim())
-
-    End Sub
-
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
 
@@ -801,85 +1082,6 @@ Public Class Form1
         End If
 
     End Sub
-
-    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
-        If _historyIndex <= 0 Then Exit Sub
-        _historyIndex -= 1
-        NavigateTo(_history(_historyIndex), recordHistory:=False)
-        UpdateNavButtons()
-    End Sub
-
-    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
-        If _historyIndex >= _history.Count - 1 Then Exit Sub
-        _historyIndex += 1
-        NavigateTo(_history(_historyIndex), recordHistory:=False)
-        UpdateNavButtons()
-    End Sub
-
-    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-
-    '    Dim node = e.Node
-    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-    '        node.Nodes.Clear()
-    '        Try
-    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath,
-    '                    .ImageKey = "Folder",
-    '            .SelectedImageKey = "Folder"
-    '                    }
-    '                ' Add placeholder only if it has subdirectories
-    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-    '                node.Nodes.Add(child)
-    '            Next
-    '        Catch ex As UnauthorizedAccessException
-    '            node.Nodes.Add(New TreeNode("[Access denied]") With {
-    '                .ForeColor = Color.Gray
-    '            })
-    '        Catch ex As IOException
-    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {
-    '                .ForeColor = Color.Gray
-    '            })
-
-    '        End Try
-    '    End If
-    'End Sub
-
-
-
-
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-        Dim node = e.Node
-        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-            node.Nodes.Clear()
-            Try
-                For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-                    Dim di As New DirectoryInfo(dirPath)
-
-                    ' Skip hidden/system folders unless you want them visible
-                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                        Continue For
-                    End If
-
-                    Dim child As New TreeNode(di.Name) With {
-                    .Tag = dirPath,
-                    .ImageKey = "Folder",
-                    .SelectedImageKey = "Folder"
-                }
-
-                    ' Add placeholder only if it has subdirectories
-                    If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-                    node.Nodes.Add(child)
-                Next
-            Catch ex As UnauthorizedAccessException
-                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
-            Catch ex As IOException
-                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
-            End Try
-        End If
-    End Sub
-
-
-
 
     Private Function HasSubdirectories(path As String) As Boolean
         Try
@@ -972,98 +1174,6 @@ Public Class Form1
         lvFiles.EndUpdate()
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-    '' -------- Files population --------
-    'Private Sub PopulateFiles(path As String)
-    '    lvFiles.BeginUpdate()
-    '    lvFiles.Items.Clear()
-
-    '    ' Folders first
-    '    Try
-    '        For Each mDir In Directory.GetDirectories(path)
-    '            Dim di = New DirectoryInfo(mDir)
-    '            Dim item = New ListViewItem(di.Name)
-    '            item.SubItems.Add("Folder")
-    '            item.SubItems.Add("") ' size blank for folders
-    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '            item.Tag = di.FullName
-    '            item.ImageKey = "Folder"
-    '            lvFiles.Items.Add(item)
-    '        Next
-    '    Catch ex As UnauthorizedAccessException
-    '        lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
-    '                          .ForeColor = Color.Gray
-    '        })
-    '    End Try
-
-    '    ' Files
-    '    Try
-    '        For Each file In Directory.GetFiles(path)
-    '            Dim fi = New FileInfo(file)
-    '            Dim item = New ListViewItem(fi.Name)
-    '            item.SubItems.Add(fi.Extension.ToLowerInvariant())
-    '            item.SubItems.Add(FormatSize(fi.Length))
-    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '            item.Tag = fi.FullName
-
-    '            ' Assign image based on file type
-    '            Select Case fi.Extension.ToLowerInvariant()
-    '                ' Music Files
-    '                Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
-    '                     ".m4a", ".alac", ".aiff", ".dsd"
-    '                    item.ImageKey = "Music"
-
-    '                ' Image Files
-    '                Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
-    '                     ".raw", ".cr2", ".nef", ".orf", ".sr2"
-    '                    item.ImageKey = "Pictures"
-
-    '                ' Document Files
-    '                Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
-    '                     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
-    '                    item.ImageKey = "Documents"
-
-    '                ' Video Files
-    '                Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
-    '                     ".3gp", ".vob", ".ogv", ".ts"
-    '                    item.ImageKey = "Videos"
-
-    '                ' Downloaded Files (generic)
-    '                Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
-    '                     ".epub", ".mobi", ".apk", ".crx"
-    '                    item.ImageKey = "Downloads"
-
-    '                ' Executable Files
-    '                Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
-    '                     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
-    '                    item.ImageKey = "Executable"
-
-    '                    ' Other file types can be categorized as needed
-    '                Case Else
-    '                    item.ImageKey = "Documents" ' Default icon for unrecognized file types
-    '            End Select
-
-    '            lvFiles.Items.Add(item)
-    '        Next
-    '    Catch ex As UnauthorizedAccessException
-    '        lvFiles.Items.Add(New ListViewItem("[Access denied]") With {
-    '                          .ForeColor = Color.Gray
-    '        })
-    '    End Try
-
-    '    lvFiles.EndUpdate()
-    'End Sub
-
     Private Function FormatSize(bytes As Long) As String
         Dim units = New String() {"B", "KB", "MB", "GB", "TB"}
         Dim size = CDbl(bytes)
@@ -1074,7 +1184,6 @@ Public Class Form1
         End While
         Return $"{size:0.##} {units(unitIdx)}"
     End Function
-
 
     Private Function FindNodeByTag(nodes As TreeNodeCollection, path As String) As TreeNode
         For Each n As TreeNode In nodes
@@ -1087,172 +1196,6 @@ Public Class Form1
         Return Nothing
     End Function
 
-    ' -------- Open on double-click --------
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim sel = lvFiles.SelectedItems(0)
-        Dim fullPath = CStr(sel.Tag)
-
-        GoToFolderOrOpenFile(fullPath)
-
-    End Sub
-
-    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
-        If e.Label Is Nothing Then Return ' user cancelled
-
-        Dim item = lvFiles.Items(e.Item)
-        Dim oldPath = CStr(item.Tag)
-        Dim newName = e.Label
-        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
-
-        If oldPath = newPath Then Return ' no change
-
-        Try
-            If Directory.Exists(oldPath) Then
-                Directory.Move(oldPath, newPath)
-                ShowStatus("Renamed Folder to: " & newName)
-            ElseIf File.Exists(oldPath) Then
-                File.Move(oldPath, newPath)
-                ShowStatus("Renamed File to: " & newName)
-            End If
-            item.Tag = newPath
-        Catch ex As Exception
-            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus("Rename failed: " & ex.Message)
-            e.CancelEdit = True
-        End Try
-    End Sub
-
-    Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Clipboard.SetText(lvFiles.SelectedItems(0).Text)
-        ShowStatus("Copied File Name " & lvFiles.SelectedItems(0).Text)
-
-    End Sub
-
-    Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
-        ShowStatus("Copied File Path " & lvFiles.SelectedItems(0).Tag)
-
-    End Sub
-
-    Private Sub RenameFile_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
-    End Sub
-
-    Private Sub Open_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
-        GoToFolderOrOpenFile(fullPath)
-    End Sub
-
-    Private Sub Delete_Click(sender As Object, e As EventArgs)
-        ' Delete selected file or folder - Mouse right-click context menu for lvFiles
-
-        ' Is a file or folder selected?
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim item = lvFiles.SelectedItems(0)
-        Dim fullPath = CStr(item.Tag)
-
-        ' Check if the path is in the protected list
-        If IsProtectedPath(fullPath) Then
-            ' The path is protected; prevent deletion
-            ShowStatus("Deletion prevented for protected path: " & fullPath)
-            Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
-            MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
-            Exit Sub
-        End If
-
-        ' Confirm deletion
-        Dim result = MessageBox.Show("Are you sure you want to delete '" & item.Text & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-        If result <> DialogResult.Yes Then Exit Sub
-
-        Try
-            ' Check if it's a directory
-            If Directory.Exists(fullPath) Then
-                Directory.Delete(fullPath, recursive:=True)
-                lvFiles.Items.Remove(item)
-                ShowStatus("Deleted folder: " & item.Text)
-                ' Check if it's a file
-            ElseIf File.Exists(fullPath) Then
-                File.Delete(fullPath)
-                lvFiles.Items.Remove(item)
-                ShowStatus("Deleted file: " & item.Text)
-            Else
-                ShowStatus("Path not found.")
-            End If
-        Catch ex As Exception
-            MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus("Delete failed: " & ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub NewFolder_Click(sender As Object, e As EventArgs)
-        Dim currentPath = txtPath.Text
-        Dim newFolderName = "New Folder"
-        Dim newFolderPath = Path.Combine(currentPath, newFolderName)
-        Dim count = 1
-        While Directory.Exists(newFolderPath)
-            newFolderName = $"New Folder ({count})"
-            newFolderPath = Path.Combine(currentPath, newFolderName)
-            count += 1
-        End While
-        Try
-            Directory.CreateDirectory(newFolderPath)
-            Dim di = New DirectoryInfo(newFolderPath)
-            Dim item = New ListViewItem(di.Name)
-            item.SubItems.Add("Folder")
-            item.SubItems.Add("") ' size blank for folders
-            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-            item.Tag = di.FullName
-            item.ImageKey = "Folder"
-
-            lvFiles.Items.Add(item)
-            item.BeginEdit() ' allow user to rename immediately
-            ShowStatus("Created folder: " & di.Name)
-        Catch ex As Exception
-            MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus("Failed to create folder: " & ex.Message)
-        End Try
-    End Sub
-
-
-    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
-
-        Delete_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
-
-        RenameFile_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
-
-        NewFolder_Click(sender, e)
-
-    End Sub
-
-    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
-
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-    End Sub
-
-    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
-
-        InitTreeRoots()
-
-
-        NavigateTo(currentFolder, recordHistory:=False)
-
-    End Sub
 
 
 End Class
