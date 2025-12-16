@@ -305,6 +305,10 @@ Public Class Form1
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
+        ' Copy the full path stored in the Tag property to clipboard
+        Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+
+        ' Store in internal clipboard
         _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
 
         _clipboardIsCut = False
@@ -370,8 +374,11 @@ Public Class Form1
     Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
         ' Copy selected file name to clipboard - Mouse right-click context menu for lvFiles
 
+        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
         Clipboard.SetText(lvFiles.SelectedItems(0).Text)
+
         ShowStatus("Copied File Name " & lvFiles.SelectedItems(0).Text)
 
     End Sub
@@ -381,7 +388,10 @@ Public Class Form1
 
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        ' Copy the full path stored in the Tag property to clipboard
         Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+
         ShowStatus("Copied File Path " & lvFiles.SelectedItems(0).Tag)
 
     End Sub
