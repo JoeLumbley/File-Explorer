@@ -47,11 +47,6 @@ Public Class Form1
 
     Private showHiddenFiles As Boolean = False
 
-
-
-
-
-
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
         If e.KeyCode = Keys.Enter Then
             e.SuppressKeyPress = True
@@ -59,7 +54,6 @@ Public Class Form1
             ExecuteCommand(command)
         End If
     End Sub
-
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
@@ -72,8 +66,6 @@ Public Class Form1
         lvFiles.Sort()
 
     End Sub
-
-
 
     Private Sub CopySelectedFile_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
@@ -127,13 +119,6 @@ Public Class Form1
 
         End Try
     End Sub
-
-
-
-
-
-
-
 
     Private Sub CopySelected_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
@@ -195,14 +180,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         Me.Text = "File Explorer - Code with Joe"
@@ -236,24 +213,17 @@ Public Class Form1
 
         lvFiles.ContextMenuStrip = cmsFiles
 
-        ShowStatus("Ready")
-
         TestIsProtectedPath()
 
+        ShowStatus("Ready")
 
     End Sub
-
-
 
     Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
         'GoToFolderOrOpenFile(txtPath.Text)
         ExecuteCommand(txtPath.Text.Trim())
 
     End Sub
-
-
-
-
 
     Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
         If _historyIndex <= 0 Then Exit Sub
@@ -268,37 +238,6 @@ Public Class Form1
         NavigateTo(_history(_historyIndex), recordHistory:=False)
         UpdateNavButtons()
     End Sub
-
-    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-
-    '    Dim node = e.Node
-    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-    '        node.Nodes.Clear()
-    '        Try
-    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-    '                Dim child = New TreeNode(Path.GetFileName(dirPath)) With {.Tag = dirPath,
-    '                    .ImageKey = "Folder",
-    '            .SelectedImageKey = "Folder"
-    '                    }
-    '                ' Add placeholder only if it has subdirectories
-    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
-    '                node.Nodes.Add(child)
-    '            Next
-    '        Catch ex As UnauthorizedAccessException
-    '            node.Nodes.Add(New TreeNode("[Access denied]") With {
-    '                .ForeColor = Color.Gray
-    '            })
-    '        Catch ex As IOException
-    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {
-    '                .ForeColor = Color.Gray
-    '            })
-
-    '        End Try
-    '    End If
-    'End Sub
-
-
-
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
         Dim node = e.Node
