@@ -474,19 +474,28 @@ Public Class Form1
     End Sub
 
     Private Sub NewFolder_Click(sender As Object, e As EventArgs)
-        Dim currentPath = txtPath.Text
-        Dim newFolderName = "New Folder"
-        Dim newFolderPath = Path.Combine(currentPath, newFolderName)
-        Dim count = 1
+        ' Create new folder in current directory - Mouse right-click context menu for lvFiles
+
+        Dim currentPath As String = currentFolder
+        Dim newFolderName As String = "New Folder"
+        Dim newFolderPath As String = Path.Combine(currentPath, newFolderName)
+
+        ' Ensure unique folder name
+        Dim count As Integer = 1
         While Directory.Exists(newFolderPath)
             newFolderName = $"New Folder ({count})"
             newFolderPath = Path.Combine(currentPath, newFolderName)
             count += 1
         End While
+
         Try
+
             Directory.CreateDirectory(newFolderPath)
+
             Dim di = New DirectoryInfo(newFolderPath)
+
             Dim item = New ListViewItem(di.Name)
+
             item.SubItems.Add("Folder")
             item.SubItems.Add("") ' size blank for folders
             item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
@@ -494,12 +503,16 @@ Public Class Form1
             item.ImageKey = "Folder"
 
             lvFiles.Items.Add(item)
+
             item.BeginEdit() ' allow user to rename immediately
+
             ShowStatus("Created folder: " & di.Name)
+
         Catch ex As Exception
             MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus("Failed to create folder: " & ex.Message)
         End Try
+
     End Sub
 
     Private Sub ExecuteCommand(command As String)
