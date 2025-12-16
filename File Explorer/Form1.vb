@@ -707,17 +707,19 @@ Public Class Form1
     End Sub
 
     Private Sub CreateDirectory(directoryPath As String)
+
         Try
             ' Create the directory
             Dim dirInfo As DirectoryInfo = Directory.CreateDirectory(directoryPath)
 
             ShowStatus("Directory created: " & dirInfo.FullName)
 
-            NavigateTo(directoryPath)
+            NavigateTo(directoryPath, True)
 
         Catch ex As Exception
             ShowStatus("Failed to create directory: " & ex.Message)
         End Try
+
     End Sub
 
     Private Sub CopyFile(source As String, destination As String)
