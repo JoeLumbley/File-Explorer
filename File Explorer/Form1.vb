@@ -70,8 +70,11 @@ Public Class Form1
     End Sub
 
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
+        ' The ItemActivate event is raised when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
 
-        'GoToFolderOrOpenFile_DoubleClick(sender, e)
+        ' This event is triggered by double-click or Enter key
+        'GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick(sender, e)
         ' -------- Open on double-click --------
 
         ' Is a file or folder selected?
