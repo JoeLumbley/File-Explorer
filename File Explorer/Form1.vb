@@ -49,43 +49,17 @@ Public Class Form1
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        Me.Text = "File Explorer - Code with Joe"
-
-        ShowStatus("Loading...")
-
-        InitImageList()
-
-        InitListView()
-
-        InitTreeRoots()
-
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-        InitStatusBar()
-
-        InitContextMenu()
-
-        RunTests()
-
-        ShowStatus("Ready")
+        InitApp()
 
     End Sub
 
 
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
 
-        ' Check for Enter key
-        If e.KeyCode = Keys.Enter Then
-
-            e.SuppressKeyPress = True
-
-            Dim command As String = txtPath.Text.Trim()
-
-            ExecuteCommand(command)
-
-        End If
+        Path_KeyDown(e)
 
     End Sub
+
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
@@ -216,13 +190,12 @@ Public Class Form1
 
         InitTreeRoots()
 
-
         NavigateTo(currentFolder, recordHistory:=False)
 
     End Sub
 
     Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
-        'GoToFolderOrOpenFile(txtPath.Text)
+
         ExecuteCommand(txtPath.Text.Trim())
 
     End Sub
@@ -496,6 +469,22 @@ Public Class Form1
             MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus("Failed to create folder: " & ex.Message)
         End Try
+
+    End Sub
+
+    Private Sub Path_KeyDown(e As KeyEventArgs)
+        ' Path command input box key handling
+
+        ' Check for Enter key
+        If e.KeyCode = Keys.Enter Then
+
+            e.SuppressKeyPress = True
+
+            Dim command As String = txtPath.Text.Trim()
+
+            ExecuteCommand(command)
+
+        End If
 
     End Sub
 
@@ -918,6 +907,30 @@ Public Class Form1
     Private Sub ClearStatus(sender As Object, e As EventArgs)
         lblStatus.Text = ""
         statusTimer.Stop()
+    End Sub
+
+    Private Sub InitApp()
+
+        Me.Text = "File Explorer - Code with Joe"
+
+        ShowStatus("Loading...")
+
+        InitImageList()
+
+        InitListView()
+
+        InitTreeRoots()
+
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+        InitStatusBar()
+
+        InitContextMenu()
+
+        RunTests()
+
+        ShowStatus("Ready")
+
     End Sub
 
 
