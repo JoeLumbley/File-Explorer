@@ -53,13 +53,11 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
 
         Path_KeyDown(e)
 
     End Sub
-
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
@@ -72,6 +70,8 @@ Public Class Form1
     End Sub
 
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
+
+        'GoToFolderOrOpenFile_DoubleClick(sender, e)
         ' -------- Open on double-click --------
 
         ' Is a file or folder selected?
