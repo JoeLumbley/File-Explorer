@@ -63,30 +63,14 @@ Public Class Form1
 
         InitStatusBar()
 
-        ' Context menu setup
-        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
-        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
-        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
+        InitContextMenu()
 
-        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
-
-
-        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
-        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
-
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
-        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
-
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
-        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
-
-        lvFiles.ContextMenuStrip = cmsFiles
-
-        TestIsProtectedPath()
+        RunTests()
 
         ShowStatus("Ready")
 
     End Sub
+
 
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
 
@@ -1037,6 +1021,28 @@ Public Class Form1
         lvFiles.SmallImageList = imgList
     End Sub
 
+    Private Sub InitContextMenu()
+        ' Context menu setup
+
+        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
+        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
+        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
+
+        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
+
+
+        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
+        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
+
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+
+        lvFiles.ContextMenuStrip = cmsFiles
+
+    End Sub
 
     ' -------- Navigation --------
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
@@ -1215,6 +1221,16 @@ Public Class Form1
         Return False
 
     End Function
+
+    Private Sub RunTests()
+
+        Debug.WriteLine("Running tests...")
+
+        TestIsProtectedPath()
+
+        Debug.WriteLine("All tests executed.")
+
+    End Sub
 
     Private Sub TestIsProtectedPath()
 
