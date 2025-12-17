@@ -1131,23 +1131,21 @@ Public Class Form1
         ' If folder exists, go there
         If Directory.Exists(Path) Then
 
-            NavigateTo(Path)
-
-            ShowStatus("Navigated to folder: " & Path)
+            NavigateTo(Path, True)
 
             ' If file exists, open it
         ElseIf File.Exists(Path) Then
-            ' Open file with default application.
 
             Try
 
+                ' Open file with default application.
                 Dim processStartInfo As New ProcessStartInfo(Path) With {.UseShellExecute = True}
                 Dim process As Process = Process.Start(processStartInfo)
 
                 ShowStatus("Opened " & Path)
 
             Catch ex As Exception
-                MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                'MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 ShowStatus("Cannot open: " & ex.Message)
             End Try
 
