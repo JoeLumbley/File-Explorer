@@ -981,15 +981,36 @@ Public Class Form1
         easyAccessNode.Expand()
 
         ' --- Drives as separate roots ---
+        'For Each di In DriveInfo.GetDrives()
+        '    Dim rootNode = New TreeNode(di.Name & di.VolumeLabel) With {
+        '        .Tag = di.RootDirectory.FullName,
+        '        .ImageKey = "Drive",
+        '        .SelectedImageKey = "Drive"
+        '        }
+        '    rootNode.Nodes.Add("Loading...")
+        '    tvFolders.Nodes.Add(rootNode)
+        'Next
+
         For Each di In DriveInfo.GetDrives()
-            Dim rootNode = New TreeNode(di.Name) With {
+            If di.IsReady Then
+                Try
+                    Dim rootNode = New TreeNode(di.Name & " - " & di.VolumeLabel) With {
                 .Tag = di.RootDirectory.FullName,
                 .ImageKey = "Drive",
                 .SelectedImageKey = "Drive"
-                }
-            rootNode.Nodes.Add("Loading...")
-            tvFolders.Nodes.Add(rootNode)
+            }
+                    rootNode.Nodes.Add("Loading...")
+                    tvFolders.Nodes.Add(rootNode)
+                Catch ex As IOException
+                    ' Handle the exception (e.g., log it or show a message)
+                    Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+                End Try
+            Else
+                ' Optionally handle the case where the drive is not ready
+                Debug.WriteLine($"Drive {di.Name} is not ready.")
+            End If
         Next
+
 
     End Sub
 
@@ -1104,25 +1125,51 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub GoToFolderOrOpenFile(Path As String)
+    '    ' Navigate to folder or open file.
+
+    '    ' If folder exists go there
+    '    If Directory.Exists(Path) Then
+    '        NavigateTo(Path)
+    '        ' If file exists open it
+    '    ElseIf File.Exists(Path) Then
+    '        ' Open file with default application.
+    '        Try
+    '            Process.Start(New ProcessStartInfo(Path) With {.UseShellExecute = True})
+    '            ShowStatus("Opened " & Path)
+    '        Catch ex As Exception
+    '            MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+    '            ShowStatus("Cannot open: " & ex.Message)
+    '        End Try
+    '    End If
+
+    'End Sub
+
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
 
-        ' If folder exists go there
+        ' If folder exists, go there
         If Directory.Exists(Path) Then
             NavigateTo(Path)
-            ' If file exists open it
+            ShowStatus("Navigated to folder: " & Path)
+            ' If file exists, open it
         ElseIf File.Exists(Path) Then
             ' Open file with default application.
             Try
-                Process.Start(New ProcessStartInfo(Path) With {.UseShellExecute = True})
+                Dim processStartInfo As New ProcessStartInfo(Path) With {.UseShellExecute = True}
+                Dim process As Process = Process.Start(processStartInfo)
+
                 ShowStatus("Opened " & Path)
+
             Catch ex As Exception
                 MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 ShowStatus("Cannot open: " & ex.Message)
             End Try
+        Else
+            ShowStatus("Path does not exist: " & Path)
         End If
-
     End Sub
+
 
     Private Function HasSubdirectories(path As String) As Boolean
         Try
