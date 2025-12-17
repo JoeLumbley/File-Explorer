@@ -1112,7 +1112,7 @@ Public Class Form1
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
-        ' presses the Enter key when  a file or folder is selected.
+        ' presses the Enter key when a file or folder is selected.
 
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
@@ -1125,37 +1125,22 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub GoToFolderOrOpenFile(Path As String)
-    '    ' Navigate to folder or open file.
-
-    '    ' If folder exists go there
-    '    If Directory.Exists(Path) Then
-    '        NavigateTo(Path)
-    '        ' If file exists open it
-    '    ElseIf File.Exists(Path) Then
-    '        ' Open file with default application.
-    '        Try
-    '            Process.Start(New ProcessStartInfo(Path) With {.UseShellExecute = True})
-    '            ShowStatus("Opened " & Path)
-    '        Catch ex As Exception
-    '            MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-    '            ShowStatus("Cannot open: " & ex.Message)
-    '        End Try
-    '    End If
-
-    'End Sub
-
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
 
         ' If folder exists, go there
         If Directory.Exists(Path) Then
+
             NavigateTo(Path)
+
             ShowStatus("Navigated to folder: " & Path)
+
             ' If file exists, open it
         ElseIf File.Exists(Path) Then
             ' Open file with default application.
+
             Try
+
                 Dim processStartInfo As New ProcessStartInfo(Path) With {.UseShellExecute = True}
                 Dim process As Process = Process.Start(processStartInfo)
 
@@ -1165,11 +1150,12 @@ Public Class Form1
                 MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 ShowStatus("Cannot open: " & ex.Message)
             End Try
+
         Else
             ShowStatus("Path does not exist: " & Path)
         End If
-    End Sub
 
+    End Sub
 
     Private Function HasSubdirectories(path As String) As Boolean
         Try
