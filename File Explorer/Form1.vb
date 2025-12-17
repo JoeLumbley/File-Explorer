@@ -991,14 +991,42 @@ Public Class Form1
         '    tvFolders.Nodes.Add(rootNode)
         'Next
 
+        'For Each di In DriveInfo.GetDrives()
+        '    If di.IsReady Then
+        '        Try
+        '            Dim rootNode = New TreeNode(di.Name & " - " & di.VolumeLabel) With {
+        '        .Tag = di.RootDirectory.FullName,
+        '        .ImageKey = "Drive",
+        '        .SelectedImageKey = "Drive"
+        '    }
+        '            rootNode.Nodes.Add("Loading...")
+        '            tvFolders.Nodes.Add(rootNode)
+        '        Catch ex As IOException
+        '            ' Handle the exception (e.g., log it or show a message)
+        '            Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+        '        End Try
+        '    Else
+        '        ' Optionally handle the case where the drive is not ready
+        '        Debug.WriteLine($"Drive {di.Name} is not ready.")
+        '    End If
+        'Next
+
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-                    Dim rootNode = New TreeNode(di.Name & " - " & di.VolumeLabel) With {
-                .Tag = di.RootDirectory.FullName,
-                .ImageKey = "Drive",
-                .SelectedImageKey = "Drive"
+                    Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
+                .Tag = di.RootDirectory.FullName
             }
+
+                    ' Check if the drive is an optical drive
+                    If di.DriveType = DriveType.CDRom Then
+                        rootNode.ImageKey = "Optical"
+                        rootNode.SelectedImageKey = "Optical"
+                    Else
+                        rootNode.ImageKey = "Drive"
+                        rootNode.SelectedImageKey = "Drive"
+                    End If
+
                     rootNode.Nodes.Add("Loading...")
                     tvFolders.Nodes.Add(rootNode)
                 Catch ex As IOException
@@ -1010,7 +1038,6 @@ Public Class Form1
                 Debug.WriteLine($"Drive {di.Name} is not ready.")
             End If
         Next
-
 
     End Sub
 
@@ -1038,9 +1065,12 @@ Public Class Form1
         imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
         imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
+        imgList.Images.Add("Optical", My.Resources.Resource1.Optical_16X16)
 
+        ' Assign ImageList to controls
         tvFolders.ImageList = imgList
         lvFiles.SmallImageList = imgList
+
     End Sub
 
     Private Sub InitContextMenu()
@@ -1106,6 +1136,31 @@ Public Class Form1
 
         If node Is Nothing Then Exit Sub
 
+        ' Check if the node is a root drive
+        Dim driveInfo As DriveInfo = Nothing
+        Try
+            ' Attempt to get the DriveInfo for the selected node
+            driveInfo = New DriveInfo(CStr(node.Tag))
+
+            ' Check if the drive is a root drive and if it is not ready
+            If driveInfo.IsReady = False Then
+                ' Optionally, remove or prune the drive node from the TreeView
+
+                tvFolders.Nodes.Remove(node) ' This will remove the node from the TreeView
+
+                ShowStatus("Drive " & driveInfo.Name & " is not ready and has been removed.")
+
+                Return ' Exit the method since we can't navigate to this drive
+
+            End If
+
+        Catch ex As Exception
+            ' Handle any exceptions that may occur when accessing DriveInfo
+            ShowStatus("Error accessing drive: " & ex.Message)
+            Return
+        End Try
+
+        ' If the drive is ready, navigate to the folder
         NavigateTo(CStr(node.Tag))
 
     End Sub
@@ -1145,7 +1200,6 @@ Public Class Form1
                 ShowStatus("Opened " & Path)
 
             Catch ex As Exception
-                'MessageBox.Show("Cannot open: " & ex.Message, "Open", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 ShowStatus("Cannot open: " & ex.Message)
             End Try
 
