@@ -61,11 +61,7 @@ Public Class Form1
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
-        Dim node As TreeNode = e.Node
-
-        If node Is Nothing Then Exit Sub
-
-        NavigateTo(CStr(node.Tag))
+        NavigateToSelectedFolderTreeView_AfterSelect(e)
 
     End Sub
 
@@ -74,21 +70,6 @@ Public Class Form1
         ' presses the Enter key when an item is selected.
 
         GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
-
-    End Sub
-
-    Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
-        ' This event is triggered when the user double-clicks an item or
-        ' presses the Enter key when an item is selected.
-
-        ' Is a file or folder selected?
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim sel As ListViewItem = lvFiles.SelectedItems(0)
-
-        Dim fullPath As String = CStr(sel.Tag)
-
-        GoToFolderOrOpenFile(fullPath)
 
     End Sub
 
@@ -1094,6 +1075,33 @@ Public Class Form1
     Private Sub UpdateNavButtons()
         btnBack.Enabled = _historyIndex > 0
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
+    End Sub
+
+    Private Sub NavigateToSelectedFolderTreeView_AfterSelect(e As TreeViewEventArgs)
+        ' Navigate to the selected folder in the TreeView
+
+        ' Get the selected node
+        Dim node As TreeNode = e.Node
+
+        If node Is Nothing Then Exit Sub
+
+        NavigateTo(CStr(node.Tag))
+
+    End Sub
+
+    Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+        ' This event is triggered when the user double-clicks a file or folder in lvFiles or
+        ' presses the Enter key when  a file or folder is selected.
+
+        ' Is a file or folder selected?
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim sel As ListViewItem = lvFiles.SelectedItems(0)
+
+        Dim fullPath As String = CStr(sel.Tag)
+
+        GoToFolderOrOpenFile(fullPath)
+
     End Sub
 
     Private Sub GoToFolderOrOpenFile(Path As String)
