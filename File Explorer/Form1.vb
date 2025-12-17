@@ -73,9 +73,13 @@ Public Class Form1
         ' The ItemActivate event is raised when the user double-clicks an item or
         ' presses the Enter key when an item is selected.
 
-        ' This event is triggered by double-click or Enter key
-        'GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick(sender, e)
-        ' -------- Open on double-click --------
+        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+
+    End Sub
+
+    Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+        ' This event is triggered when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
 
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
