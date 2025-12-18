@@ -1416,17 +1416,6 @@ Public Class Form1
         Return $"{size:0.##} {units(unitIdx)}"
     End Function
 
-    Private Function FindNodeByTag(nodes As TreeNodeCollection, path As String) As TreeNode
-        For Each n As TreeNode In nodes
-            If String.Equals(CStr(n.Tag), path, StringComparison.OrdinalIgnoreCase) Then
-                Return n
-            End If
-            Dim child = FindNodeByTag(n.Nodes, path)
-            If child IsNot Nothing Then Return child
-        Next
-        Return Nothing
-    End Function
-
 End Class
 
 ' Custom comparer class
