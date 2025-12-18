@@ -1342,7 +1342,6 @@ Public Class Form1
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
         }
 
-
         ' Normalize protected paths too
         For Each protectedFolder In protectedFolders
             Dim normalizedProtected As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
@@ -1410,7 +1409,6 @@ Public Class Form1
 
         Debug.WriteLine("Subdirectory-inclusive tests executed.")
     End Sub
-
 
     Private Function FormatSize(bytes As Long) As String
         Dim units = New String() {"B", "KB", "MB", "GB", "TB"}
