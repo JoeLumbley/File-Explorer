@@ -3,8 +3,8 @@
 **File Explorer** is a simple and user-friendly file management app designed to provide an intuitive interface for navigating, copying, moving, and deleting files and directories.
 
 
+<img width="1265" height="660" alt="016" src="https://github.com/user-attachments/assets/afddac6e-e04b-43ba-9bb7-dfc48d9a37dc" />
 
-<img width="1264" height="697" alt="013" src="https://github.com/user-attachments/assets/aec72776-85de-45fe-991d-1f214ff2de05" />
 
 
 ## Features
@@ -147,6 +147,9 @@ To install and run the File Explorer application:
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
 
 For more details, check the source code and documentation within the repository.
+
+
+<img width="1920" height="1080" alt="015" src="https://github.com/user-attachments/assets/b936b9f4-1a73-4f2b-ba4c-eded97f51f58" />
 
 
 
