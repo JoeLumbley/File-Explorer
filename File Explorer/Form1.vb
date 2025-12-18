@@ -1129,44 +1129,6 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
-    'Private Sub NavigateToSelectedFolderTreeView_AfterSelect(e As TreeViewEventArgs)
-    '    ' Navigate to the selected folder in the TreeView
-
-    '    ' Get the selected node
-    '    Dim node As TreeNode = e.Node
-
-    '    If node Is Nothing Then Exit Sub
-
-    '    ' Check if the node is a root drive
-    '    Dim driveInfo As DriveInfo = Nothing
-    '    Try
-    '        ' Attempt to get the DriveInfo for the selected node
-    '        driveInfo = New DriveInfo(CStr(node.Tag))
-
-    '        ' Check if the drive is a root drive and if it is not ready
-    '        If driveInfo.IsReady = False Then
-    '            ' Optionally, remove or prune the drive node from the TreeView
-
-    '            tvFolders.Nodes.Remove(node) ' This will remove the node from the TreeView
-
-    '            ShowStatus("Drive is not ready and has been removed.")
-
-    '            Return ' Exit the method since we can't navigate to this drive
-
-    '        End If
-
-    '    Catch ex As Exception
-    '        ' Handle any exceptions that may occur when accessing DriveInfo
-    '        ShowStatus("Nav Error accessing drive: " & ex.Message)
-    '        Return
-    '    End Try
-
-    '    ' If the drive is ready, navigate to the folder
-    '    NavigateTo(CStr(node.Tag))
-
-    'End Sub
-
-
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
 
         ' Get the selected node
@@ -1198,7 +1160,6 @@ Public Class Form1
         NavigateTo(path2Nav)
 
     End Sub
-
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
