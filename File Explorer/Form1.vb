@@ -1358,15 +1358,10 @@ Public Class Form1
 
     End Function
 
-
-
-
-
     Private Sub RunTests()
 
         Debug.WriteLine("Running tests...")
 
-        'TestIsProtectedPathExactOnly()
         TestIsProtectedPath_ExactMode()
 
         TestIsProtectedPath_SubdirMode()
@@ -1374,44 +1369,6 @@ Public Class Form1
         Debug.WriteLine("All tests executed.")
 
     End Sub
-
-    'Private Sub TestIsProtectedPathExactOnly()
-
-    '    ' === Positive Tests (Exact Matches, expected True) ===
-    '    Debug.Assert(IsProtectedPath("C:\Windows") = True, "Exact Windows folder should be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Program Files") = True, "Exact Program Files folder should be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Program Files (x86)") = True, "Exact Program Files (x86) folder should be protected")
-    '    Debug.Assert(IsProtectedPath("C:\ProgramData") = True, "Exact ProgramData folder should be protected")
-
-    '    Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents")) = True, "Exact Documents folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop")) = True, "Exact Desktop folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Downloads")) = True, "Exact Downloads folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Pictures")) = True, "Exact Pictures folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Music")) = True, "Exact Music folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Videos")) = True, "Exact Videos folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Local")) = True, "Exact Local AppData folder should be protected")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "AppData\Roaming")) = True, "Exact Roaming AppData folder should be protected")
-
-    '    ' === Negative Tests (Similar but not exact, expected False) ===
-    '    Debug.Assert(IsProtectedPath("C:\Windows\System32") = False, "Subfolder should not be protected in exact-only mode")
-    '    Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = False, "Subfolder should not be protected in exact-only mode")
-    '    Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents\MyProject")) = False, "Subfolder should not be protected in exact-only mode")
-
-    '    Debug.Assert(IsProtectedPath("C:\Temp") = False, "Temp should not be protected")
-    '    Debug.Assert(IsProtectedPath("D:\Games") = False, "Games folder should not be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Users\Public") = False, "Public folder should not be protected")
-
-    '    ' === Edge Case Tests ===
-    '    Debug.Assert(IsProtectedPath("c:\windows") = True, "Case-insensitive exact match should be protected")
-    '    Debug.Assert(IsProtectedPath("C:\Windows\") = True, "Trailing slash exact match should be protected")
-    '    Debug.Assert(IsProtectedPath(".\Windows") = False, "Relative path should not match")
-    '    Debug.Assert(IsProtectedPath("") = False, "Empty path should not be protected")
-    '    Debug.Assert(IsProtectedPath(Nothing) = False, "Nothing should not be protected")
-
-    '    Debug.WriteLine("All exact-match IsProtectedPath tests executed.")
-
-    'End Sub
 
     Private Sub TestIsProtectedPath_ExactMode()
 
