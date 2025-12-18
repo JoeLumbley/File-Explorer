@@ -61,7 +61,7 @@ Public Class Form1
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
-        NavigateToSelectedFolderTreeView_AfterSelect(e)
+        NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
 
     End Sub
 
@@ -915,7 +915,7 @@ Public Class Form1
 
         InitContextMenu()
 
-        RunTests()
+        'RunTests()
 
         ShowStatus("Ready")
 
@@ -1129,42 +1129,76 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
-    Private Sub NavigateToSelectedFolderTreeView_AfterSelect(e As TreeViewEventArgs)
-        ' Navigate to the selected folder in the TreeView
+    'Private Sub NavigateToSelectedFolderTreeView_AfterSelect(e As TreeViewEventArgs)
+    '    ' Navigate to the selected folder in the TreeView
+
+    '    ' Get the selected node
+    '    Dim node As TreeNode = e.Node
+
+    '    If node Is Nothing Then Exit Sub
+
+    '    ' Check if the node is a root drive
+    '    Dim driveInfo As DriveInfo = Nothing
+    '    Try
+    '        ' Attempt to get the DriveInfo for the selected node
+    '        driveInfo = New DriveInfo(CStr(node.Tag))
+
+    '        ' Check if the drive is a root drive and if it is not ready
+    '        If driveInfo.IsReady = False Then
+    '            ' Optionally, remove or prune the drive node from the TreeView
+
+    '            tvFolders.Nodes.Remove(node) ' This will remove the node from the TreeView
+
+    '            ShowStatus("Drive is not ready and has been removed.")
+
+    '            Return ' Exit the method since we can't navigate to this drive
+
+    '        End If
+
+    '    Catch ex As Exception
+    '        ' Handle any exceptions that may occur when accessing DriveInfo
+    '        ShowStatus("Nav Error accessing drive: " & ex.Message)
+    '        Return
+    '    End Try
+
+    '    ' If the drive is ready, navigate to the folder
+    '    NavigateTo(CStr(node.Tag))
+
+    'End Sub
+
+
+    Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
 
         ' Get the selected node
         Dim node As TreeNode = e.Node
-
         If node Is Nothing Then Exit Sub
 
-        ' Check if the node is a root drive
-        Dim driveInfo As DriveInfo = Nothing
+        ' Ensure the Tag is a string path
+        Dim path2Nav As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path2Nav) Then Exit Sub
+
+        ' Check if the node represents a drive root
         Try
-            ' Attempt to get the DriveInfo for the selected node
-            driveInfo = New DriveInfo(CStr(node.Tag))
+            Dim driveInfo As New DriveInfo(IO.Path.GetPathRoot(path2Nav))
 
-            ' Check if the drive is a root drive and if it is not ready
             If driveInfo.IsReady = False Then
-                ' Optionally, remove or prune the drive node from the TreeView
-
-                tvFolders.Nodes.Remove(node) ' This will remove the node from the TreeView
-
-                ShowStatus("Drive " & driveInfo.Name & " is not ready and has been removed.")
-
-                Return ' Exit the method since we can't navigate to this drive
-
+                ' Remove the drive node if not ready
+                tvFolders.Nodes.Remove(node)
+                ShowStatus("Drive is not ready and has been removed.")
+                Return
             End If
 
         Catch ex As Exception
-            ' Handle any exceptions that may occur when accessing DriveInfo
-            ShowStatus("Error accessing drive: " & ex.Message)
+            ' Handle any exceptions when accessing DriveInfo
+            ShowStatus("Nav Error accessing drive: " & ex.Message)
             Return
         End Try
 
         ' If the drive is ready, navigate to the folder
-        NavigateTo(CStr(node.Tag))
+        NavigateTo(path2Nav)
 
     End Sub
+
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
