@@ -1143,8 +1143,8 @@ Public Class Form1
         Try
             Dim driveInfo As New DriveInfo(IO.Path.GetPathRoot(path2Nav))
 
+            ' Prune the tree if the drive is not ready
             If driveInfo.IsReady = False Then
-                ' Remove the drive node if not ready
                 tvFolders.Nodes.Remove(node)
                 ShowStatus("Drive is not ready and has been removed.")
                 Return
@@ -1152,7 +1152,7 @@ Public Class Form1
 
         Catch ex As Exception
             ' Handle any exceptions when accessing DriveInfo
-            ShowStatus("Nav Error accessing drive: " & ex.Message)
+            ShowStatus("NavTree: Error accessing drive: " & ex.Message)
             Return
         End Try
 
