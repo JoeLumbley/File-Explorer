@@ -1337,7 +1337,7 @@ Public Class Form1
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
         }
 
-        ' Normalize protected paths too
+        ' Normalize protected folders too
         For Each protectedFolder In protectedFolders
             Dim normalizedProtected As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
 
