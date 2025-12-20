@@ -1382,6 +1382,7 @@ Public Class Form1
         Debug.Assert(IsProtectedPath(Nothing) = False)
 
         Debug.WriteLine("Exact-mode tests executed.")
+
     End Sub
 
     Private Sub TestIsProtectedPath_SubdirMode()
@@ -1393,6 +1394,7 @@ Public Class Form1
         ' === Positive Tests (Subdirectories now succeed) ===
         Debug.Assert(IsProtectedPath("C:\Windows\System32") = True)
         Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = True)
+        Debug.Assert(IsProtectedPath("C:\Windows\SysWOW64\WindowsPowerShell\v1.0") = True)
 
         ' === Negative Tests (Unrelated paths still fail) ===
         Debug.Assert(IsProtectedPath("C:\Temp") = False)
@@ -1403,6 +1405,7 @@ Public Class Form1
         Debug.Assert(IsProtectedPath("C:\Windows\") = True)  ' Trailing slash
 
         Debug.WriteLine("Subdirectory-inclusive tests executed.")
+
     End Sub
 
     Private Function FormatSize(bytes As Long) As String
