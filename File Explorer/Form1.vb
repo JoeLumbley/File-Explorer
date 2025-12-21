@@ -107,12 +107,24 @@ Public Class Form1
 
     End Sub
 
+    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
+
+        ' Prevent renaming of protected paths
+        Dim item As ListViewItem = lvFiles.Items(e.Item)
+        Dim fullPath As String = CStr(item.Tag)
+
+        If IsProtectedPath(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus("Renaming protected items is not allowed.")
+        End If
+
+    End Sub
+
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
 
         RenameFileOrFolder_AfterLabelEdit(e)
 
     End Sub
-
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
         ' -------- Sort by column --------
@@ -1409,18 +1421,6 @@ Public Class Form1
         Return $"{size:0.##} {units(unitIdx)}"
     End Function
 
-    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
-
-        ' Prevent renaming of protected paths
-        Dim item As ListViewItem = lvFiles.Items(e.Item)
-        Dim fullPath As String = CStr(item.Tag)
-
-        If IsProtectedPath(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus("Renaming protected items is not allowed.")
-        End If
-
-    End Sub
 
 End Class
 
