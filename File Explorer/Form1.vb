@@ -47,6 +47,25 @@ Public Class Form1
 
     Private showHiddenFiles As Boolean = False
 
+
+    Private ColumnTypes As New Dictionary(Of Integer, ListViewItemComparer.ColumnDataType) From {
+    {0, ListViewItemComparer.ColumnDataType.Text},       ' Name
+    {1, ListViewItemComparer.ColumnDataType.Text},       ' Type
+    {2, ListViewItemComparer.ColumnDataType.Number},     ' Size
+    {3, ListViewItemComparer.ColumnDataType.DateValue}   ' Modified
+    }
+
+    Private Shared ReadOnly SizeUnits As (Unit As String, Factor As Long)() = {
+    ("B", 1L),
+    ("KB", 1024L),
+    ("MB", 1024L ^ 2),
+    ("GB", 1024L ^ 3),
+    ("TB", 1024L ^ 4),
+    ("PB", 1024L ^ 5)
+    }
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         InitApp()
@@ -126,17 +145,73 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
+    '    ' -------- Sort by column --------
+
+    '    ' Toggle between ascending and descending
+    '    Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
+
+    '    ' Sort the ListView
+    '    lvFiles.Sorting = sortOrder
+    '    lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
+    '    lvFiles.Sort()
+
+    'End Sub
+
+    'Private _lastSortColumn As Integer = -1
+    'Private _lastSortOrder As SortOrder = SortOrder.Ascending
+
+    'Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
+    '    ' Determine new sort order
+    '    If e.Column = _lastSortColumn Then
+    '        ' Toggle direction
+    '        _lastSortOrder = If(_lastSortOrder = SortOrder.Ascending,
+    '                        SortOrder.Descending,
+    '                        SortOrder.Ascending)
+    '    Else
+    '        ' New column → default to ascending
+    '        _lastSortOrder = SortOrder.Ascending
+    '        _lastSortColumn = e.Column
+    '    End If
+
+    '    ' Apply custom comparer
+    '    lvFiles.ListViewItemSorter = New ListViewItemComparer(_lastSortColumn, _lastSortOrder)
+    '    lvFiles.Sort()
+    'End Sub
+
+
+    Private _lastColumn As Integer = -1
+    Private _lastOrder As SortOrder = SortOrder.Ascending
+
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
-        ' -------- Sort by column --------
 
-        ' Toggle between ascending and descending
-        Dim sortOrder As SortOrder = If(lvFiles.Sorting = SortOrder.Ascending, SortOrder.Descending, SortOrder.Ascending)
+        If e.Column = _lastColumn Then
+            _lastOrder = If(_lastOrder = SortOrder.Ascending,
+                        SortOrder.Descending,
+                        SortOrder.Ascending)
+        Else
+            _lastColumn = e.Column
+            _lastOrder = SortOrder.Ascending
+        End If
 
-        ' Sort the ListView
-        lvFiles.Sorting = sortOrder
-        lvFiles.ListViewItemSorter = New ListViewItemComparer(e.Column, sortOrder)
+        UpdateColumnHeaders(e.Column, _lastOrder)
+
+        lvFiles.ListViewItemSorter =
+        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
+
         lvFiles.Sort()
+    End Sub
 
+
+    Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
+        For i As Integer = 0 To lvFiles.Columns.Count - 1
+            Dim baseText = lvFiles.Columns(i).Text.Replace(" ▲", "").Replace(" ▼", "")
+            If i = sortedColumn Then
+                lvFiles.Columns(i).Text = baseText & If(order = SortOrder.Ascending, " ▲", " ▼")
+            Else
+                lvFiles.Columns(i).Text = baseText
+            End If
+        Next
     End Sub
 
     Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
@@ -998,7 +1073,7 @@ Public Class Form1
 
         InitContextMenu()
 
-        'RunTests()
+        RunTests()
 
         ShowStatus("Ready")
 
@@ -1015,6 +1090,7 @@ Public Class Form1
         lvFiles.Columns.Add("Type", 120)
         lvFiles.Columns.Add("Size", 150)
         lvFiles.Columns.Add("Modified", 200)
+
     End Sub
 
     Private Sub InitTreeRoots()
@@ -1412,6 +1488,12 @@ Public Class Form1
 
         TestIsProtectedPath_SubdirMode()
 
+        TestParseSize()
+
+        TestFormatSize()
+
+        'TestListViewParser()
+
         Debug.WriteLine("All tests executed.")
 
     End Sub
@@ -1460,40 +1542,377 @@ Public Class Form1
 
     End Sub
 
+    Private Sub TestFormatSize()
+
+        ' Test FormatSize
+        Debug.Assert(FormatSize(0) = "0 B")
+        Debug.Assert(FormatSize(500) = "500 B")
+        Debug.Assert(FormatSize(1024) = "1 KB")
+        Debug.Assert(FormatSize(1536) = "1.5 KB")
+        Debug.Assert(FormatSize(1048576) = "1 MB")
+        Debug.Assert(FormatSize(1073741824) = "1 GB")
+        Debug.Assert(FormatSize(1099511627776) = "1 TB")
+
+        Debug.WriteLine("FormatSize tests executed.")
+
+    End Sub
+
+    Private Sub TestParseSize()
+
+        ' Test ParseSize (using exposed test wrapper)
+        Dim cmp As New ListViewItemComparer(0, SortOrder.Ascending)
+
+        Debug.Assert(cmp.Test_ParseSize("0 B") = 0)
+        Debug.Assert(cmp.Test_ParseSize("500 B") = 500)
+        Debug.Assert(cmp.Test_ParseSize("1 KB") = 1024)
+        Debug.Assert(cmp.Test_ParseSize("1.5 KB") = 1536)
+        Debug.Assert(cmp.Test_ParseSize("1 MB") = 1048576)
+        Debug.Assert(cmp.Test_ParseSize("1 GB") = 1073741824)
+        Debug.Assert(cmp.Test_ParseSize("1 TB") = 1099511627776)
+
+        Debug.WriteLine("ParseSize tests executed.")
+
+    End Sub
+
+    Private Sub TestListViewParser()
+
+        lvFiles.Items.Add(New ListViewItem({"alpha.txt", "Text", "12 KB", "1/2/2024"}))
+        lvFiles.Items.Add(New ListViewItem({"beta.txt", "Text", "3,200", "12/25/2023"}))
+        lvFiles.Items.Add(New ListViewItem({"gamma.txt", "Text", "1.5 MB", "5/10/2024"}))
+        lvFiles.Items.Add(New ListViewItem({"delta.txt", "Text", "1.2 GB", "3/1/2023"}))
+
+    End Sub
+
+
+
+    'Private Sub TestListViewParser()
+
+    '    lvFiles.Items.Add(New ListViewItem({"alpha.txt", "Text", "12 KB", "1/2/2024"}))
+    '    lvFiles.Items.Add(New ListViewItem({"beta.txt", "Text", "3,200", "12/25/2023"}))
+    '    lvFiles.Items.Add(New ListViewItem({"gamma.txt", "Text", "1.5 MB", "5/10/2024"}))
+    '    lvFiles.Items.Add(New ListViewItem({"delta.txt", "Text", "1.2 GB", "3/1/2023"}))
+
+
+    '    ' Test cases for FormatSize
+    '    Debug.Assert(FormatSize(0) = "0 B")
+    '    Debug.Assert(FormatSize(500) = "500 B")
+    '    Debug.Assert(FormatSize(1024) = "1 KB")
+    '    Debug.Assert(FormatSize(1536) = "1.5 KB")
+    '    Debug.Assert(FormatSize(1048576) = "1 MB")
+    '    Debug.Assert(FormatSize(1073741824) = "1 GB")
+    '    Debug.Assert(FormatSize(1099511627776) = "1 TB")
+    '    ' Test cases for ParseSize
+    '    Debug.Assert(ParseSize("0 B") = 0)
+    '    Debug.Assert(ParseSize("500 B") = 500)
+    '    Debug.Assert(ParseSize("1 KB") = 1024)
+    '    Debug.Assert(ParseSize("1.5 KB") = 1536)
+    '    Debug.Assert(ParseSize("1 MB") = 1048576)
+    '    Debug.Assert(ParseSize("1 GB") = 1073741824)
+    '    Debug.Assert(ParseSize("1 TB") = 1099511627776)
+    '    Debug.WriteLine("ListView parser tests executed.")
+
+    'End Sub
+
+
+
+    'Private Function FormatSize(bytes As Long) As String
+    '    Dim units = New String() {"B", "KB", "MB", "GB", "TB"}
+    '    Dim size = CDbl(bytes)
+    '    Dim unitIdx = 0
+    '    While size >= 1024 AndAlso unitIdx < units.Length - 1
+    '        size /= 1024
+    '        unitIdx += 1
+    '    End While
+    '    Return $"{size:0.##} {units(unitIdx)}"
+    'End Function
+
+
     Private Function FormatSize(bytes As Long) As String
-        Dim units = New String() {"B", "KB", "MB", "GB", "TB"}
-        Dim size = CDbl(bytes)
-        Dim unitIdx = 0
-        While size >= 1024 AndAlso unitIdx < units.Length - 1
-            size /= 1024
-            unitIdx += 1
-        End While
-        Return $"{size:0.##} {units(unitIdx)}"
+        Dim absBytes = Math.Abs(bytes)
+
+        For i = SizeUnits.Length - 1 To 0 Step -1
+            If absBytes >= SizeUnits(i).Factor Then
+                Dim value = absBytes / SizeUnits(i).Factor
+                Dim formatted = $"{value:0.##} {SizeUnits(i).Unit}"
+                Return If(bytes < 0, "-" & formatted, formatted)
+            End If
+        Next
+
+        Return $"{bytes} B"
     End Function
 
+    Private Function ParseSize(input As String) As Long
+        If String.IsNullOrWhiteSpace(input) Then Return 0
+
+        ' Normalize
+        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+
+        ' Extract sign
+        Dim isNegative As Boolean = text.StartsWith("-")
+        If isNegative Then text = text.Substring(1).Trim()
+
+        ' Split into number + unit
+        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+
+        Dim numberPart As String = parts(0)
+        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+
+        ' Parse numeric portion
+        Dim value As Double
+        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+                               Globalization.CultureInfo.InvariantCulture, value) Then
+            Return 0
+        End If
+
+        ' Unit multipliers (binary units)
+        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+            {"B", 1L},
+            {"KB", 1024L},
+            {"MB", 1024L ^ 2},
+            {"GB", 1024L ^ 3},
+            {"TB", 1024L ^ 4},
+            {"PB", 1024L ^ 5}
+        }
+
+        ' Resolve multiplier
+        Dim factor As Long = 1
+        If multipliers.ContainsKey(unitPart) Then
+            factor = multipliers(unitPart)
+        End If
+
+        ' Compute final byte count
+        Dim bytes As Double = value * factor
+        Dim result As Long = CLng(Math.Round(bytes))
+
+        Return If(isNegative, -result, result)
+    End Function
 
 End Class
 
 ' Custom comparer class
+'Public Class ListViewItemComparer
+'    Implements IComparer
+
+'    Private col As Integer
+'    Private sortOrder As SortOrder
+
+'    Public Sub New(column As Integer, order As SortOrder)
+'        col = column
+'        sortOrder = order
+'    End Sub
+
+'    Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+'        Dim returnVal As Integer = String.Compare(CType(x, ListViewItem).SubItems(col).Text, CType(y, ListViewItem).SubItems(col).Text)
+
+'        If sortOrder = SortOrder.Descending Then
+'            returnVal *= -1
+'        End If
+
+'        Return returnVal
+'    End Function
+
+'End Class
+
+
+'Public Class ListViewItemComparer
+'    Implements IComparer
+
+'    Private ReadOnly _column As Integer
+'    Private ReadOnly _order As SortOrder
+'    Private ReadOnly _columnTypes As Dictionary(Of Integer, ColumnDataType)
+
+'    Public Enum ColumnDataType
+'        Text
+'        Number
+'        DateValue
+'    End Enum
+
+'    Public Sub New(column As Integer, order As SortOrder,
+'                   Optional columnTypes As Dictionary(Of Integer, ColumnDataType) = Nothing)
+
+'        _column = column
+'        _order = order
+'        _columnTypes = If(columnTypes, New Dictionary(Of Integer, ColumnDataType))
+'    End Sub
+
+'    Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+'        Dim itemX As ListViewItem = CType(x, ListViewItem)
+'        Dim itemY As ListViewItem = CType(y, ListViewItem)
+
+'        Dim valX As String = itemX.SubItems(_column).Text
+'        Dim valY As String = itemY.SubItems(_column).Text
+
+'        Dim result As Integer
+
+'        Select Case GetColumnType(_column)
+'            Case ColumnDataType.Number
+'                result = CompareNumbers(valX, valY)
+
+'            Case ColumnDataType.DateValue
+'                result = CompareDates(valX, valY)
+
+'            Case Else
+'                result = String.Compare(valX, valY, StringComparison.OrdinalIgnoreCase)
+'        End Select
+
+'        If _order = SortOrder.Descending Then result = -result
+'        Return result
+'    End Function
+
+'    Private Function GetColumnType(col As Integer) As ColumnDataType
+'        If _columnTypes.ContainsKey(col) Then
+'            Return _columnTypes(col)
+'        End If
+'        Return ColumnDataType.Text
+'    End Function
+
+'    Private Function CompareNumbers(a As String, b As String) As Integer
+'        Dim n1 As Long = ParseSize(a)
+'        Dim n2 As Long = ParseSize(b)
+'        Return n1.CompareTo(n2)
+'    End Function
+
+'    Private Function CompareDates(a As String, b As String) As Integer
+'        Dim d1, d2 As DateTime
+'        DateTime.TryParse(a, d1)
+'        DateTime.TryParse(b, d2)
+'        Return d1.CompareTo(d2)
+'    End Function
+
+'    Private Function ParseSize(sizeText As String) As Long
+'        Dim cleaned = sizeText.Replace(",", "").Trim()
+'        Dim value As Long
+'        Long.TryParse(cleaned, value)
+'        Return value
+'    End Function
+
+'End Class
+
+
+
 Public Class ListViewItemComparer
     Implements IComparer
 
-    Private col As Integer
-    Private sortOrder As SortOrder
+    Private ReadOnly _column As Integer
+    Private ReadOnly _order As SortOrder
+    Private ReadOnly _columnTypes As Dictionary(Of Integer, ColumnDataType)
 
-    Public Sub New(column As Integer, order As SortOrder)
-        col = column
-        sortOrder = order
+    Public Enum ColumnDataType
+        Text
+        Number
+        DateValue
+    End Enum
+
+    Public Sub New(column As Integer, order As SortOrder,
+                   Optional columnTypes As Dictionary(Of Integer, ColumnDataType) = Nothing)
+
+        _column = column
+        _order = order
+        _columnTypes = If(columnTypes, New Dictionary(Of Integer, ColumnDataType))
     End Sub
 
     Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
-        Dim returnVal As Integer = String.Compare(CType(x, ListViewItem).SubItems(col).Text, CType(y, ListViewItem).SubItems(col).Text)
+        Dim itemX As ListViewItem = CType(x, ListViewItem)
+        Dim itemY As ListViewItem = CType(y, ListViewItem)
 
-        If sortOrder = SortOrder.Descending Then
-            returnVal *= -1
+        Dim valX As String = itemX.SubItems(_column).Text
+        Dim valY As String = itemY.SubItems(_column).Text
+
+        Dim result As Integer
+
+        Select Case GetColumnType(_column)
+            Case ColumnDataType.Number
+                result = CompareNumbers(valX, valY)
+
+            Case ColumnDataType.DateValue
+                result = CompareDates(valX, valY)
+
+            Case Else
+                result = String.Compare(valX, valY, StringComparison.OrdinalIgnoreCase)
+        End Select
+
+        If _order = SortOrder.Descending Then result = -result
+        Return result
+    End Function
+
+    Private Function GetColumnType(col As Integer) As ColumnDataType
+        If _columnTypes.ContainsKey(col) Then
+            Return _columnTypes(col)
+        End If
+        Return ColumnDataType.Text
+    End Function
+
+    ' -----------------------------
+    '   NUMBER SORTING (FILE SIZE)
+    ' -----------------------------
+    Private Function CompareNumbers(a As String, b As String) As Integer
+        Dim n1 As Long = ParseSize(a)
+        Dim n2 As Long = ParseSize(b)
+        Return n1.CompareTo(n2)
+    End Function
+
+    ' -----------------------------
+    '   DATE SORTING
+    ' -----------------------------
+    Private Function CompareDates(a As String, b As String) As Integer
+        Dim d1, d2 As DateTime
+        DateTime.TryParse(a, d1)
+        DateTime.TryParse(b, d2)
+        Return d1.CompareTo(d2)
+    End Function
+
+    ' -----------------------------
+    '   PARSE SIZE (SELF-CONTAINED)
+    ' -----------------------------
+    Private Function ParseSize(input As String) As Long
+        If String.IsNullOrWhiteSpace(input) Then Return 0
+
+        ' Normalize
+        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+
+        ' Extract sign
+        Dim isNegative As Boolean = text.StartsWith("-")
+        If isNegative Then text = text.Substring(1).Trim()
+
+        ' Split into number + unit
+        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+
+        Dim numberPart As String = parts(0)
+        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+
+        ' Parse numeric portion
+        Dim value As Double
+        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+                               Globalization.CultureInfo.InvariantCulture, value) Then
+            Return 0
         End If
 
-        Return returnVal
+        ' Unit multipliers (binary units)
+        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+            {"B", 1L},
+            {"KB", 1024L},
+            {"MB", 1024L ^ 2},
+            {"GB", 1024L ^ 3},
+            {"TB", 1024L ^ 4},
+            {"PB", 1024L ^ 5}
+        }
+
+        Dim factor As Long = 1
+        If multipliers.ContainsKey(unitPart) Then
+            factor = multipliers(unitPart)
+        End If
+
+        Dim bytes As Double = value * factor
+        Dim result As Long = CLng(Math.Round(bytes))
+
+        Return If(isNegative, -result, result)
     End Function
+
+
+    ' TEMP: expose parser for testing
+    Public Function Test_ParseSize(input As String) As Long
+        Return ParseSize(input)
+    End Function
+
 
 End Class
