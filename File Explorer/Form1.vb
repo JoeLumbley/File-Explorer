@@ -113,7 +113,7 @@ Public Class Form1
         Dim item As ListViewItem = lvFiles.Items(e.Item)
         Dim fullPath As String = CStr(item.Tag)
 
-        If IsProtectedPath(fullPath) Then
+        If IsProtectedPathOrFolder(fullPath) Then
             e.CancelEdit = True
             ShowStatus("Renaming protected items is not allowed.")
         End If
@@ -419,7 +419,7 @@ Public Class Form1
         End If
 
         ' Check if the path is in the protected list
-        If IsProtectedPath(fullPath) Then
+        If IsProtectedPathOrFolder(fullPath) Then
             ' The path is protected; prevent deletion
             ShowStatus("Deletion prevented for protected path: " & fullPath)
             Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
@@ -628,7 +628,7 @@ Public Class Form1
                     End If
 
                     ' Check if the path is in the protected list
-                    If IsProtectedPath(sourcePath) Then
+                    If IsProtectedPathOrFolder(sourcePath) Then
                         ' The path is protected; prevent rename
 
                         ' Notify the user of the prevention so the user knows why it didn't rename.
@@ -844,7 +844,7 @@ Public Class Form1
         End If
 
         ' Check if the path is in the protected list
-        If IsProtectedPath(path2Delete) Then
+        If IsProtectedPathOrFolder(path2Delete) Then
             ' The path is protected; prevent deletion
 
             ' Notify the user of the prevention so the user knows why it didn't delete.
@@ -1342,7 +1342,7 @@ Public Class Form1
         lvFiles.EndUpdate()
     End Sub
 
-    Private Function IsProtectedPath(path2Check As String) As Boolean
+    Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
 
         If String.IsNullOrWhiteSpace(path2Check) Then Return False
 
@@ -1421,17 +1421,17 @@ Public Class Form1
         Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
 
         ' === Positive Tests (Exact Matches, expected True) ===
-        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents")) = True)
-        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop")) = True)
-        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Downloads")) = True)
+        Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")) = True)
+        Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")) = True)
+        Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")) = True)
 
         ' === Negative Tests (Subdirectories should fail in exact-only mode) ===
-        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Documents\MyProject")) = False)
-        Debug.Assert(IsProtectedPath(Path.Combine(userProfile, "Desktop\TestFolder")) = False)
+        Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents\MyProject")) = False)
+        Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop\TestFolder")) = False)
 
         ' === Edge Cases ===
-        Debug.Assert(IsProtectedPath("") = False)
-        Debug.Assert(IsProtectedPath(Nothing) = False)
+        Debug.Assert(IsProtectedPathOrFolder("") = False)
+        Debug.Assert(IsProtectedPathOrFolder(Nothing) = False)
 
         Debug.WriteLine("Exact-mode tests executed.")
 
@@ -1440,21 +1440,21 @@ Public Class Form1
     Private Sub TestIsProtectedPath_SubdirMode()
 
         ' === Positive Tests (Exact Matches, expected True) ===
-        Debug.Assert(IsProtectedPath("C:\Windows") = True)
-        Debug.Assert(IsProtectedPath("C:\Program Files") = True)
+        Debug.Assert(IsProtectedPathOrFolder("C:\Windows") = True)
+        Debug.Assert(IsProtectedPathOrFolder("C:\Program Files") = True)
 
         ' === Positive Tests (Subdirectories now succeed) ===
-        Debug.Assert(IsProtectedPath("C:\Windows\System32") = True)
-        Debug.Assert(IsProtectedPath("C:\Program Files\MyApp") = True)
-        Debug.Assert(IsProtectedPath("C:\Windows\SysWOW64\WindowsPowerShell\v1.0") = True)
+        Debug.Assert(IsProtectedPathOrFolder("C:\Windows\System32") = True)
+        Debug.Assert(IsProtectedPathOrFolder("C:\Program Files\MyApp") = True)
+        Debug.Assert(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0") = True)
 
         ' === Negative Tests (Unrelated paths still fail) ===
-        Debug.Assert(IsProtectedPath("C:\Temp") = False)
-        Debug.Assert(IsProtectedPath("D:\Games") = False)
+        Debug.Assert(IsProtectedPathOrFolder("C:\Temp") = False)
+        Debug.Assert(IsProtectedPathOrFolder("D:\Games") = False)
 
         ' === Edge Cases ===
-        Debug.Assert(IsProtectedPath("c:\windows") = True)   ' Case-insensitive
-        Debug.Assert(IsProtectedPath("C:\Windows\") = True)  ' Trailing slash
+        Debug.Assert(IsProtectedPathOrFolder("c:\windows") = True)   ' Case-insensitive
+        Debug.Assert(IsProtectedPathOrFolder("C:\Windows\") = True)  ' Trailing slash
 
         Debug.WriteLine("Subdirectory-inclusive tests executed.")
 
