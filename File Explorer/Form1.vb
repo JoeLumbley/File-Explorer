@@ -113,45 +113,6 @@ Public Class Form1
 
     End Sub
 
-    Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
-        ' -------- Rename file or folder after label edit in lvFiles --------
-
-        If e.Label Is Nothing Then Return ' user cancelled
-
-        Dim item = lvFiles.Items(e.Item)
-        Dim oldPath = CStr(item.Tag)
-        Dim newName = e.Label
-        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
-
-        If oldPath = newPath Then Return ' no change
-
-        Try
-            ' Validate new name
-            If Directory.Exists(oldPath) Then
-
-                Directory.Move(oldPath, newPath)
-
-                ShowStatus("Renamed Folder to: " & newName)
-
-            ElseIf File.Exists(oldPath) Then
-
-                File.Move(oldPath, newPath)
-
-                ShowStatus("Renamed File to: " & newName)
-
-            End If
-
-            item.Tag = newPath
-
-        Catch ex As Exception
-
-            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus("Rename failed: " & ex.Message)
-            e.CancelEdit = True
-
-        End Try
-
-    End Sub
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
         ' -------- Sort by column --------
@@ -219,6 +180,50 @@ Public Class Form1
     End Sub
 
 
+
+
+
+
+
+    Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
+        ' -------- Rename file or folder after label edit in lvFiles --------
+
+        If e.Label Is Nothing Then Return ' user cancelled
+
+        Dim item = lvFiles.Items(e.Item)
+        Dim oldPath = CStr(item.Tag)
+        Dim newName = e.Label
+        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
+
+        If oldPath = newPath Then Return ' no change
+
+        Try
+            ' Validate new name
+            If Directory.Exists(oldPath) Then
+
+                Directory.Move(oldPath, newPath)
+
+                ShowStatus("Renamed Folder to: " & newName)
+
+            ElseIf File.Exists(oldPath) Then
+
+                File.Move(oldPath, newPath)
+
+                ShowStatus("Renamed File to: " & newName)
+
+            End If
+
+            item.Tag = newPath
+
+        Catch ex As Exception
+
+            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus("Rename failed: " & ex.Message)
+            e.CancelEdit = True
+
+        End Try
+
+    End Sub
 
     Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
@@ -996,37 +1001,6 @@ Public Class Form1
         ' Expand the Easy Access node
         easyAccessNode.Expand()
 
-        ' --- Drives as separate roots ---
-        'For Each di In DriveInfo.GetDrives()
-        '    Dim rootNode = New TreeNode(di.Name & di.VolumeLabel) With {
-        '        .Tag = di.RootDirectory.FullName,
-        '        .ImageKey = "Drive",
-        '        .SelectedImageKey = "Drive"
-        '        }
-        '    rootNode.Nodes.Add("Loading...")
-        '    tvFolders.Nodes.Add(rootNode)
-        'Next
-
-        'For Each di In DriveInfo.GetDrives()
-        '    If di.IsReady Then
-        '        Try
-        '            Dim rootNode = New TreeNode(di.Name & " - " & di.VolumeLabel) With {
-        '        .Tag = di.RootDirectory.FullName,
-        '        .ImageKey = "Drive",
-        '        .SelectedImageKey = "Drive"
-        '    }
-        '            rootNode.Nodes.Add("Loading...")
-        '            tvFolders.Nodes.Add(rootNode)
-        '        Catch ex As IOException
-        '            ' Handle the exception (e.g., log it or show a message)
-        '            Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
-        '        End Try
-        '    Else
-        '        ' Optionally handle the case where the drive is not ready
-        '        Debug.WriteLine($"Drive {di.Name} is not ready.")
-        '    End If
-        'Next
-
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
@@ -1434,6 +1408,19 @@ Public Class Form1
         End While
         Return $"{size:0.##} {units(unitIdx)}"
     End Function
+
+    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
+
+        ' Prevent renaming of protected paths
+        Dim item As ListViewItem = lvFiles.Items(e.Item)
+        Dim fullPath As String = CStr(item.Tag)
+
+        If IsProtectedPath(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus("Renaming protected items is not allowed.")
+        End If
+
+    End Sub
 
 End Class
 
