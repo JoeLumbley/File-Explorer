@@ -92,7 +92,7 @@ Public Class Form1
                     .Tag = dirPath,
                     .ImageKey = "Folder",
                     .SelectedImageKey = "Folder"
-                }
+                    }
 
                     ' Add placeholder only if it has subdirectories
                     If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
@@ -107,9 +107,14 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
-        ' -------- Rename file or folder --------
+
+        RenameFileOrFolder_AfterLabelEdit(e)
+
+    End Sub
+
+    Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
+        ' -------- Rename file or folder after label edit in lvFiles --------
 
         If e.Label Is Nothing Then Return ' user cancelled
 
@@ -121,18 +126,29 @@ Public Class Form1
         If oldPath = newPath Then Return ' no change
 
         Try
+            ' Validate new name
             If Directory.Exists(oldPath) Then
+
                 Directory.Move(oldPath, newPath)
+
                 ShowStatus("Renamed Folder to: " & newName)
+
             ElseIf File.Exists(oldPath) Then
+
                 File.Move(oldPath, newPath)
+
                 ShowStatus("Renamed File to: " & newName)
+
             End If
+
             item.Tag = newPath
+
         Catch ex As Exception
+
             MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus("Rename failed: " & ex.Message)
             e.CancelEdit = True
+
         End Try
 
     End Sub
