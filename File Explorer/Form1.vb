@@ -388,6 +388,7 @@ Public Class Form1
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
+
     End Sub
 
     Private Sub Open_Click(sender As Object, e As EventArgs)
@@ -606,6 +607,55 @@ Public Class Form1
 
                 Else
                     ShowStatus("Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                End If
+
+
+            Case "rename"
+                ' Rename the file or directory
+
+                If parts.Length > 2 Then
+                    Dim sourcePath As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+                    Dim newName As String = parts(parts.Length - 1).Trim()
+                    Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
+
+                    ' Reject relative paths outright
+                    If Not Path.IsPathRooted(sourcePath) Then
+
+                        ShowStatus("Rename failed: Path must be absolute. Example: C:\folder")
+
+                        Exit Sub
+
+                    End If
+
+                    ' Check if the path is in the protected list
+                    If IsProtectedPath(sourcePath) Then
+                        ' The path is protected; prevent rename
+
+                        ' Notify the user of the prevention so the user knows why it didn't rename.
+                        Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
+                        MsgBox(msg, MsgBoxStyle.Critical, "Rename Prevented")
+
+                        NavigateTo(sourcePath)
+
+                        Exit Sub
+
+                    End If
+
+                    Try
+                        ' Validate new name
+                        If Directory.Exists(sourcePath) Then
+                            Directory.Move(sourcePath, newPath)
+                            ShowStatus("Renamed Folder to: " & newName)
+                        ElseIf File.Exists(sourcePath) Then
+                            File.Move(sourcePath, newPath)
+                            ShowStatus("Renamed File to: " & newName)
+                        End If
+                    Catch ex As Exception
+                        MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        ShowStatus("Rename failed: " & ex.Message)
+                    End Try
+                Else
+                    ShowStatus("Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
                 End If
 
             Case "text", "txt"
