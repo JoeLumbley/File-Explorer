@@ -47,7 +47,6 @@ Public Class Form1
 
     Private showHiddenFiles As Boolean = False
 
-
     Private ColumnTypes As New Dictionary(Of Integer, ListViewItemComparer.ColumnDataType) From {
     {0, ListViewItemComparer.ColumnDataType.Text},       ' Name
     {1, ListViewItemComparer.ColumnDataType.Text},       ' Type
@@ -63,8 +62,6 @@ Public Class Form1
     ("TB", 1024L ^ 4),
     ("PB", 1024L ^ 5)
     }
-
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -144,8 +141,6 @@ Public Class Form1
         RenameFileOrFolder_AfterLabelEdit(e)
 
     End Sub
-
-
 
     Private _lastColumn As Integer = -1
     Private _lastOrder As SortOrder = SortOrder.Ascending
@@ -1041,7 +1036,6 @@ Public Class Form1
 
     End Sub
 
-
     ' -------- UI init --------
     Private Sub InitListView()
         lvFiles.View = View.Details
@@ -1142,7 +1136,7 @@ Public Class Form1
         imgList.ImageSize = New Size(16, 16)
         imgList.ColorDepth = ColorDepth.Depth32Bit
 
-        ' Load icons (replace with actual file paths or resources)
+        ' Load icons 
         imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
         imgList.Images.Add("Drive", My.Resources.Resource1.Drive_16X16)
         imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
@@ -1545,10 +1539,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
     Private Function FormatSize(bytes As Long) As String
         Dim absBytes = Math.Abs(bytes)
 
@@ -1610,10 +1600,6 @@ Public Class Form1
     End Function
 
 End Class
-
-
-
-
 
 Public Class ListViewItemComparer
     Implements IComparer
@@ -1733,11 +1719,9 @@ Public Class ListViewItemComparer
         Return If(isNegative, -result, result)
     End Function
 
-
     ' TEMP: expose parser for testing
     Public Function Test_ParseSize(input As String) As Long
         Return ParseSize(input)
     End Function
-
 
 End Class
