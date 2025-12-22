@@ -2,9 +2,9 @@
 
 **File Explorer** is a simple and user-friendly file management app designed to provide an intuitive interface for navigating, copying, moving, and deleting files and directories.
 
-<img width="1264" height="660" alt="017" src="https://github.com/user-attachments/assets/add55a79-11ef-459c-aae2-4fbcc651ca48" />
 
 
+<img width="1265" height="660" alt="018" src="https://github.com/user-attachments/assets/0224cc08-a2e6-4b37-a17c-1e1113940490" />
 
 
 ## Features
