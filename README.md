@@ -160,6 +160,10 @@ This project is inspired by traditional file explorers and aims to provide a sim
 For more details, check the source code and documentation within the repository.
 
 
+
+<img width="1920" height="1080" alt="026" src="https://github.com/user-attachments/assets/81db1586-871f-4f6a-852e-c377d8daf0ac" />
+
+
 <img width="1920" height="1080" alt="015" src="https://github.com/user-attachments/assets/b936b9f4-1a73-4f2b-ba4c-eded97f51f58" />
 
 
