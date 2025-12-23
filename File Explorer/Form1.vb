@@ -70,7 +70,6 @@ Public Class Form1
     Private _lastColumn As Integer = -1
     Private _lastOrder As SortOrder = SortOrder.Ascending
 
-
     Private ErrorChar As Char = "⛔" ' ⛔
     Private DialogChar As String = "" ' 💬
     Private SuccessChar As Char = "" ' ✔
@@ -84,8 +83,6 @@ Public Class Form1
     Private DeleteChar As Char = "" ' Trash can
     Private NewFolderChar As Char = "" ' 📁
     Private CutChar As Char = "✂" ' ✂
-
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
