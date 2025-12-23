@@ -54,8 +54,11 @@ The CLI supports several basic commands that enable users to perform common file
   - Copies files or directories from a source to a destination.
   - Example: `copy C:\folder1\file.txt C:\folder2`
 
-<img width="1920" height="1080" alt="010" src="https://github.com/user-attachments/assets/909d297d-8e29-4b8c-a07e-e8301898aae5" />
+<img width="1266" height="662" alt="024" src="https://github.com/user-attachments/assets/ff0a34f8-ffe5-4fde-b2a5-d6615bb3faea" />
 
+
+
+<img width="1266" height="662" alt="025" src="https://github.com/user-attachments/assets/e51e69a2-5ea4-4aea-8d1d-e01ab917b10b" />
 
 - **Move Files (`move`)** : 
   - Usage: `move [source] [destination]`
