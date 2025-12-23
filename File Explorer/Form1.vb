@@ -540,48 +540,98 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
+
+    '    ' Go to the folder of the file to be created.
+    '    ' So the user can see where is about to be created.
+    '    Dim destDir As String = currentFolder
+    '    Dim newFilePath As String = Path.Combine(destDir, "New Text File.txt")
+
+    '    ' Ensure unique name if file already exists
+    '    Dim counter As Integer = 1
+    '    While File.Exists(newFilePath)
+    '        newFilePath = Path.Combine(destDir, $"New Text File ({counter}).txt")
+    '        counter += 1
+    '    End While
+
+    '    Try
+
+    '        ' Check if the file exists
+    '        If Not System.IO.File.Exists(newFilePath) Then
+
+    '            ' Create a new file if it doesn't exist
+    '            Using writer As New System.IO.StreamWriter(newFilePath)
+
+    '                writer.WriteLine("Created on " & DateTime.Now.ToString())
+
+    '            End Using
+
+    '            ShowStatus(SuccessChar & " Text file created: " & newFilePath)
+
+    '            ' Go to the folder of the file that was created.
+    '            ' So the user can see that it has been created.
+    '            NavigateTo(destDir)
+
+    '            ' Open the newly created text file.
+    '            GoToFolderOrOpenFile(newFilePath)
+
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(ErrorChar & " Failed to create text file: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
+
+
+
+
     Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
 
-        ' Go to the folder of the file to be created.
-        ' So the user can see where is about to be created.
         Dim destDir As String = currentFolder
-        Dim newFilePath As String = Path.Combine(destDir, "New Text File.txt")
 
-        ' Ensure unique name if file already exists
+        ' Validate destination folder
+        If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
+            ShowStatus(WarningChar & " Invalid folder. Cannot create file.")
+            Return
+        End If
+
+        ' Base filename
+        Dim baseName As String = "New Text File"
+        Dim newFilePath As String = Path.Combine(destDir, baseName & ".txt")
+
+        ' Ensure unique name
         Dim counter As Integer = 1
         While File.Exists(newFilePath)
-            newFilePath = Path.Combine(destDir, $"New Text File ({counter}).txt")
+            newFilePath = Path.Combine(destDir, $"{baseName} ({counter}).txt")
             counter += 1
         End While
 
         Try
+            ' Create the file with initial content
+            File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
 
-            ' Check if the file exists
-            If Not System.IO.File.Exists(newFilePath) Then
+            ShowStatus(SuccessChar & " Text file created: " & newFilePath)
 
-                ' Create a new file if it doesn't exist
-                Using writer As New System.IO.StreamWriter(newFilePath)
+            ' Refresh the folder view so the user sees the new file
+            NavigateTo(destDir)
 
-                    writer.WriteLine("Created on " & DateTime.Now.ToString())
-
-                End Using
-
-                ShowStatus(SuccessChar & " Text file created: " & newFilePath)
-
-                ' Go to the folder of the file that was created.
-                ' So the user can see that it has been created.
-                NavigateTo(destDir)
-
-                ' Open the newly created text file.
-                GoToFolderOrOpenFile(newFilePath)
-
-            End If
+            ' Open the newly created file
+            GoToFolderOrOpenFile(newFilePath)
 
         Catch ex As Exception
             ShowStatus(ErrorChar & " Failed to create text file: " & ex.Message)
         End Try
 
     End Sub
+
+
+
+
+
+
 
     Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
         ' Copy selected file name to clipboard - Mouse right-click context menu for lvFiles
