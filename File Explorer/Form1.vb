@@ -41,6 +41,10 @@ Public Class Form1
 
     Private imgList As New ImageList()
 
+    Private imgArrows As New ImageList()
+
+
+
     Private statusTimer As New Timer() With {.Interval = 10000}
 
     Private currentFolder As String = String.Empty
@@ -92,17 +96,158 @@ Public Class Form1
 
     End Sub
 
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
-        ' Load subdirectories on demand
+    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) Handles tvFolders.BeforeExpand
+    '    ' Load subdirectories on demand
+
+    '    Dim node As TreeNode = e.Node
+    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+    '        node.Nodes.Clear()
+    '        Try
+    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+    '                Dim di As New DirectoryInfo(dirPath)
+
+    '                ' Skip hidden/system folders unless you want them visible
+    '                If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+    '                    Continue For
+    '                End If
+
+    '                Dim child As New TreeNode(di.Name) With {
+    '                .Tag = dirPath,
+    '                .ImageKey = "Folder",
+    '                .SelectedImageKey = "Folder"
+    '                }
+
+    '                ' Add placeholder only if it has subdirectories
+    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+    '                node.Nodes.Add(child)
+    '            Next
+    '        Catch ex As UnauthorizedAccessException
+    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+    '        Catch ex As IOException
+    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+    '        End Try
+    '    End If
+
+    'End Sub
+
+
+    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
+    'Handles tvFolders.BeforeExpand
+
+    '    e.Node.StateImageIndex = 1   ' ▼ expanded
+
+    '    ' Your existing lazy-load logic...
+    '    Dim node As TreeNode = e.Node
+    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+    '        node.Nodes.Clear()
+    '        Try
+    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+    '                Dim di As New DirectoryInfo(dirPath)
+
+    '                If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+    '                    Continue For
+    '                End If
+
+    '                Dim child As New TreeNode(di.Name) With {
+    '                .Tag = dirPath,
+    '                .ImageKey = "Folder",
+    '                .SelectedImageKey = "Folder",
+    '                .StateImageIndex = 0
+    '            }
+
+    '                If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+    '                node.Nodes.Add(child)
+    '            Next
+
+    '        Catch ex As UnauthorizedAccessException
+    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+    '        Catch ex As IOException
+    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+    '        End Try
+    '    End If
+    'End Sub
+
+
+    'Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
+    'Handles tvFolders.BeforeCollapse
+
+    '    e.Node.StateImageIndex = 0   ' ▶ collapsed
+
+    'End Sub
+
+
+
+
+
+
+    '' ============================
+    ''  Expand Node (Lazy Load)
+    '' ============================
+    'Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
+    'Handles tvFolders.BeforeExpand
+
+    '    e.Node.StateImageIndex = 1   ' ▼ expanded
+
+    '    Dim node As TreeNode = e.Node
+
+    '    ' Lazy-load subdirectories
+    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+    '        node.Nodes.Clear()
+
+    '        Try
+    '            For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+    '                Dim di As New DirectoryInfo(dirPath)
+
+    '                ' Skip hidden/system folders
+    '                If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+    '                    Continue For
+    '                End If
+
+    '                Dim child As New TreeNode(di.Name) With {
+    '                .Tag = dirPath,
+    '                .ImageKey = "Folder",
+    '                .SelectedImageKey = "Folder",
+    '                .StateImageIndex = 0   ' ▶ collapsed
+    '            }
+
+    '                If HasSubdirectories(dirPath) Then
+    '                    child.Nodes.Add("Loading...")
+    '                End If
+
+    '                node.Nodes.Add(child)
+    '            Next
+
+    '        Catch ex As UnauthorizedAccessException
+    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+    '        Catch ex As IOException
+    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+    '        End Try
+    '    End If
+
+    'End Sub
+
+
+
+
+    ' ============================
+    '  Expand Node (Lazy Load)
+    ' ============================
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
+    Handles tvFolders.BeforeExpand
+
+        e.Node.StateImageIndex = 1   ' ▼ expanded
 
         Dim node As TreeNode = e.Node
+
+        ' Lazy-load subdirectories
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
             node.Nodes.Clear()
+
             Try
                 For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
                     Dim di As New DirectoryInfo(dirPath)
 
-                    ' Skip hidden/system folders unless you want them visible
+                    ' Skip hidden/system folders
                     If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
                         Continue For
                     End If
@@ -111,12 +256,18 @@ Public Class Form1
                     .Tag = dirPath,
                     .ImageKey = "Folder",
                     .SelectedImageKey = "Folder"
-                    }
+                }
 
-                    ' Add placeholder only if it has subdirectories
-                    If HasSubdirectories(dirPath) Then child.Nodes.Add("Loading...")
+                    If HasSubdirectories(dirPath) Then
+                        child.Nodes.Add("Loading...")
+                        child.StateImageIndex = 0   ' ▶ collapsed
+                    Else
+                        child.StateImageIndex = 2   ' no arrow
+                    End If
+
                     node.Nodes.Add(child)
                 Next
+
             Catch ex As UnauthorizedAccessException
                 node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
             Catch ex As IOException
@@ -125,6 +276,36 @@ Public Class Form1
         End If
 
     End Sub
+
+
+    ' ============================
+    '  Collapse Node
+    ' ============================
+    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
+    Handles tvFolders.BeforeCollapse
+
+        e.Node.StateImageIndex = 0   ' ▶ collapsed
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
 
@@ -1021,6 +1202,8 @@ Public Class Form1
 
         InitListView()
 
+        InitArrows()
+
         InitTreeRoots()
 
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
@@ -1048,16 +1231,271 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub InitTreeRoots()
+
+    '    tvFolders.Nodes.Clear()
+    '    tvFolders.ShowRootLines = True
+
+    '    tvFolders.ShowPlusMinus = False
+    '    tvFolders.StateImageList = imgArrows
+
+    '    ' --- Easy Access node ---
+    '    Dim easyAccessNode As New TreeNode("Easy Access") With {
+    '    .ImageKey = "EasyAccess",
+    '    .SelectedImageKey = "EasyAccess"
+    '    }
+
+    '    ' Define special folders
+    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '    ("Music", Environment.SpecialFolder.MyMusic),
+    '    ("Pictures", Environment.SpecialFolder.MyPictures),
+    '    ("Videos", Environment.SpecialFolder.MyVideos),
+    '    ("Downloads", Environment.SpecialFolder.UserProfile), ' Downloads handled separately
+    '    ("Desktop", Environment.SpecialFolder.Desktop)
+    '}
+
+    '    For Each sf In specialFolders
+    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        ' Handle Downloads manually (UserProfile\Downloads)
+    '        If sf.Item1 = "Downloads" Then
+    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        End If
+
+    '        If Directory.Exists(specialFolderPath) Then
+    '            Dim node = New TreeNode(sf.Item1) With {
+    '            .Tag = specialFolderPath,
+    '            .ImageKey = sf.Item1,
+    '            .SelectedImageKey = sf.Item1
+    '        }
+    '            node.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '            easyAccessNode.Nodes.Add(node)
+    '        End If
+    '    Next
+
+    '    ' Add Easy Access to tree
+    '    tvFolders.Nodes.Add(easyAccessNode)
+
+    '    ' Expand the Easy Access node
+    '    easyAccessNode.Expand()
+
+    '    For Each di In DriveInfo.GetDrives()
+    '        If di.IsReady Then
+    '            Try
+    '                Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
+    '            .Tag = di.RootDirectory.FullName
+    '        }
+
+    '                ' Check if the drive is an optical drive
+    '                If di.DriveType = DriveType.CDRom Then
+    '                    rootNode.ImageKey = "Optical"
+    '                    rootNode.SelectedImageKey = "Optical"
+    '                Else
+    '                    rootNode.ImageKey = "Drive"
+    '                    rootNode.SelectedImageKey = "Drive"
+    '                End If
+
+    '                rootNode.Nodes.Add("Loading...")
+    '                tvFolders.Nodes.Add(rootNode)
+    '            Catch ex As IOException
+    '                ' Handle the exception (e.g., log it or show a message)
+    '                Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+    '            End Try
+    '        Else
+    '            ' Optionally handle the case where the drive is not ready
+    '            Debug.WriteLine($"Drive {di.Name} is not ready.")
+    '        End If
+    '    Next
+
+    'End Sub
+
+
+    'Private Sub InitTreeRoots()
+
+    '    tvFolders.Nodes.Clear()
+    '    tvFolders.ShowRootLines = True
+
+    '    tvFolders.ShowPlusMinus = False
+    '    tvFolders.StateImageList = imgArrows
+
+    '    ' --- Easy Access node ---
+    '    Dim easyAccessNode As New TreeNode("Easy Access") With {
+    '    .ImageKey = "EasyAccess",
+    '    .SelectedImageKey = "EasyAccess",
+    '    .StateImageIndex = 0
+    '}
+
+    '    ' Define special folders
+    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '    ("Music", Environment.SpecialFolder.MyMusic),
+    '    ("Pictures", Environment.SpecialFolder.MyPictures),
+    '    ("Videos", Environment.SpecialFolder.MyVideos),
+    '    ("Downloads", Environment.SpecialFolder.UserProfile),
+    '    ("Desktop", Environment.SpecialFolder.Desktop)
+    '}
+
+    '    For Each sf In specialFolders
+    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        If sf.Item1 = "Downloads" Then
+    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        End If
+
+    '        If Directory.Exists(specialFolderPath) Then
+    '            Dim node = New TreeNode(sf.Item1) With {
+    '            .Tag = specialFolderPath,
+    '            .ImageKey = sf.Item1,
+    '            .SelectedImageKey = sf.Item1,
+    '            .StateImageIndex = 0
+    '        }
+
+    '            node.Nodes.Add("Loading...")
+    '            easyAccessNode.Nodes.Add(node)
+    '        End If
+    '    Next
+
+    '    tvFolders.Nodes.Add(easyAccessNode)
+    '    easyAccessNode.Expand()
+
+    '    For Each di In DriveInfo.GetDrives()
+    '        If di.IsReady Then
+    '            Try
+    '                Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
+    '                .Tag = di.RootDirectory.FullName,
+    '                .StateImageIndex = 0
+    '            }
+
+    '                If di.DriveType = DriveType.CDRom Then
+    '                    rootNode.ImageKey = "Optical"
+    '                    rootNode.SelectedImageKey = "Optical"
+    '                Else
+    '                    rootNode.ImageKey = "Drive"
+    '                    rootNode.SelectedImageKey = "Drive"
+    '                End If
+
+    '                rootNode.Nodes.Add("Loading...")
+    '                tvFolders.Nodes.Add(rootNode)
+
+    '            Catch ex As IOException
+    '                Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+    '            End Try
+    '        Else
+    '            Debug.WriteLine($"Drive {di.Name} is not ready.")
+    '        End If
+    '    Next
+
+    'End Sub
+
+
+    '' ============================
+    ''  Initialize TreeView Roots
+    '' ============================
+    'Private Sub InitTreeRoots()
+
+    '    tvFolders.Nodes.Clear()
+    '    tvFolders.ShowRootLines = True
+
+    '    ' Use arrow icons instead of plus/minus
+    '    tvFolders.ShowPlusMinus = False
+    '    tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼
+
+    '    ' --- Easy Access node ---
+    '    Dim easyAccessNode As New TreeNode("Easy Access") With {
+    '    .ImageKey = "EasyAccess",
+    '    .SelectedImageKey = "EasyAccess",
+    '    .StateImageIndex = 0   ' ▶ collapsed
+    '}
+
+    '    ' Define special folders
+    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '    ("Documents", Environment.SpecialFolder.MyDocuments),
+    '    ("Music", Environment.SpecialFolder.MyMusic),
+    '    ("Pictures", Environment.SpecialFolder.MyPictures),
+    '    ("Videos", Environment.SpecialFolder.MyVideos),
+    '    ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+    '    ("Desktop", Environment.SpecialFolder.Desktop)
+    '}
+
+    '    For Each sf In specialFolders
+    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        ' Handle Downloads manually
+    '        If sf.Item1 = "Downloads" Then
+    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        End If
+
+    '        If Directory.Exists(specialFolderPath) Then
+    '            Dim node As New TreeNode(sf.Item1) With {
+    '            .Tag = specialFolderPath,
+    '            .ImageKey = sf.Item1,
+    '            .SelectedImageKey = sf.Item1,
+    '            .StateImageIndex = 0   ' ▶ collapsed
+    '        }
+
+    '            node.Nodes.Add("Loading...") ' placeholder for lazy-load
+    '            easyAccessNode.Nodes.Add(node)
+    '        End If
+    '    Next
+
+    '    ' Add Easy Access to tree
+    '    tvFolders.Nodes.Add(easyAccessNode)
+
+    '    ' Expand Easy Access and update arrow
+    '    easyAccessNode.Expand()
+    '    easyAccessNode.StateImageIndex = 1   ' ▼ expanded
+
+    '    ' --- Drives ---
+    '    For Each di In DriveInfo.GetDrives()
+    '        If di.IsReady Then
+    '            Try
+    '                Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
+    '                .Tag = di.RootDirectory.FullName,
+    '                .StateImageIndex = 0   ' ▶ collapsed
+    '            }
+
+    '                If di.DriveType = DriveType.CDRom Then
+    '                    rootNode.ImageKey = "Optical"
+    '                    rootNode.SelectedImageKey = "Optical"
+    '                Else
+    '                    rootNode.ImageKey = "Drive"
+    '                    rootNode.SelectedImageKey = "Drive"
+    '                End If
+
+    '                rootNode.Nodes.Add("Loading...")
+    '                tvFolders.Nodes.Add(rootNode)
+
+    '            Catch ex As IOException
+    '                Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+    '            End Try
+    '        Else
+    '            Debug.WriteLine($"Drive {di.Name} is not ready.")
+    '        End If
+    '    Next
+
+    'End Sub
+
+
+
+    ' ============================
+    '  Initialize TreeView Roots
+    ' ============================
     Private Sub InitTreeRoots()
 
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
 
+        ' Use arrow icons instead of plus/minus
+        tvFolders.ShowPlusMinus = False
+        tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼
+
         ' --- Easy Access node ---
         Dim easyAccessNode As New TreeNode("Easy Access") With {
         .ImageKey = "EasyAccess",
-        .SelectedImageKey = "EasyAccess"
-        }
+        .SelectedImageKey = "EasyAccess",
+        .StateImageIndex = 0   ' ▶ collapsed
+    }
 
         ' Define special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
@@ -1065,25 +1503,33 @@ Public Class Form1
         ("Music", Environment.SpecialFolder.MyMusic),
         ("Pictures", Environment.SpecialFolder.MyPictures),
         ("Videos", Environment.SpecialFolder.MyVideos),
-        ("Downloads", Environment.SpecialFolder.UserProfile), ' Downloads handled separately
+        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
         ("Desktop", Environment.SpecialFolder.Desktop)
     }
 
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
 
-            ' Handle Downloads manually (UserProfile\Downloads)
+            ' Handle Downloads manually
             If sf.Item1 = "Downloads" Then
                 specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
             End If
 
             If Directory.Exists(specialFolderPath) Then
-                Dim node = New TreeNode(sf.Item1) With {
+
+                Dim node As New TreeNode(sf.Item1) With {
                 .Tag = specialFolderPath,
                 .ImageKey = sf.Item1,
                 .SelectedImageKey = sf.Item1
             }
-                node.Nodes.Add("Loading...") ' placeholder for lazy-load
+
+                If HasSubdirectories(specialFolderPath) Then
+                    node.Nodes.Add("Loading...")
+                    node.StateImageIndex = 0   ' ▶ collapsed
+                Else
+                    node.StateImageIndex = 2  ' no arrow
+                End If
+
                 easyAccessNode.Nodes.Add(node)
             End If
         Next
@@ -1091,17 +1537,18 @@ Public Class Form1
         ' Add Easy Access to tree
         tvFolders.Nodes.Add(easyAccessNode)
 
-        ' Expand the Easy Access node
+        ' Expand Easy Access and update arrow
         easyAccessNode.Expand()
+        easyAccessNode.StateImageIndex = 1   ' ▼ expanded
 
+        ' --- Drives ---
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
                     Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
-                .Tag = di.RootDirectory.FullName
-            }
+                    .Tag = di.RootDirectory.FullName
+                }
 
-                    ' Check if the drive is an optical drive
                     If di.DriveType = DriveType.CDRom Then
                         rootNode.ImageKey = "Optical"
                         rootNode.SelectedImageKey = "Optical"
@@ -1110,19 +1557,26 @@ Public Class Form1
                         rootNode.SelectedImageKey = "Drive"
                     End If
 
-                    rootNode.Nodes.Add("Loading...")
+                    If HasSubdirectories(di.RootDirectory.FullName) Then
+                        rootNode.Nodes.Add("Loading...")
+                        rootNode.StateImageIndex = 0   ' ▶ collapsed
+                    Else
+                        rootNode.StateImageIndex = 2  ' no arrow
+                    End If
+
                     tvFolders.Nodes.Add(rootNode)
+
                 Catch ex As IOException
-                    ' Handle the exception (e.g., log it or show a message)
                     Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
                 End Try
             Else
-                ' Optionally handle the case where the drive is not ready
                 Debug.WriteLine($"Drive {di.Name} is not ready.")
             End If
         Next
 
     End Sub
+
+
 
     Private Sub InitStatusBar()
         Dim statusStrip As New StatusStrip()
@@ -1154,6 +1608,16 @@ Public Class Form1
         ' Assign ImageList to controls
         tvFolders.ImageList = imgList
         lvFiles.SmallImageList = imgList
+
+    End Sub
+
+    Private Sub InitArrows()
+        imgArrows.ImageSize = New Size(16, 16)
+        imgArrows.ColorDepth = ColorDepth.Depth32Bit
+        imgArrows.Images.Add("Collapsed", My.Resources.Resource1.Arrow_Right_16X16)
+        imgArrows.Images.Add("Expanded", My.Resources.Resource1.Arrow_Down_16X16)
+        imgArrows.Images.Add("NoArrow", My.Resources.Resource1.No_Arrow_16X16)
+
 
     End Sub
 

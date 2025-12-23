@@ -68,7 +68,6 @@ Partial Class Form1
         tvFolders.Location = New Point(0, 0)
         tvFolders.Name = "tvFolders"
         tvFolders.ShowLines = False
-        tvFolders.ShowPlusMinus = False
         tvFolders.Size = New Size(238, 630)
         tvFolders.TabIndex = 0
         ' 
