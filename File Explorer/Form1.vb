@@ -588,6 +588,46 @@ Public Class Form1
 
 
 
+    'Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
+
+    '    Dim destDir As String = currentFolder
+
+    '    ' Validate destination folder
+    '    If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
+    '        ShowStatus(WarningChar & " Invalid folder. Cannot create file.")
+    '        Return
+    '    End If
+
+    '    ' Base filename
+    '    Dim baseName As String = "New Text File"
+    '    Dim newFilePath As String = Path.Combine(destDir, baseName & ".txt")
+
+    '    ' Ensure unique name
+    '    Dim counter As Integer = 1
+    '    While File.Exists(newFilePath)
+    '        newFilePath = Path.Combine(destDir, $"{baseName} ({counter}).txt")
+    '        counter += 1
+    '    End While
+
+    '    Try
+    '        ' Create the file with initial content
+    '        File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+
+    '        ShowStatus(SuccessChar & " Text file created: " & newFilePath)
+
+    '        ' Refresh the folder view so the user sees the new file
+    '        NavigateTo(destDir)
+
+    '        ' Open the newly created file
+    '        GoToFolderOrOpenFile(newFilePath)
+
+    '    Catch ex As Exception
+    '        ShowStatus(ErrorChar & " Failed to create text file: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
     Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
 
         Dim destDir As String = currentFolder
@@ -626,9 +666,6 @@ Public Class Form1
         End Try
 
     End Sub
-
-
-
 
 
 
@@ -934,25 +971,55 @@ Public Class Form1
                     ShowStatus(DialogChar & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
                 End If
 
+            'Case "text", "txt"
+
+            '    If parts.Length > 1 Then
+
+            '        Dim filePath As String = String.Join(" ", parts.Skip(1)).Trim()
+
+            '        ' Validate the file path
+            '        If String.IsNullOrWhiteSpace(filePath) Then
+            '            ShowStatus(DialogChar & " Usage: text [file_path] - e.g., text C:\example.txt")
+            '            Return
+            '        End If
+
+            '        ' Create or open the text file
+            '        CreateTextFile(filePath)
+
+            '    Else
+            '        ShowStatus(DialogChar & " Usage: text [file_path] - e.g., text C:\example.txt")
+            '    End If
+
             Case "text", "txt"
 
                 If parts.Length > 1 Then
 
+                    ' Reassemble everything after the command into a file path
                     Dim filePath As String = String.Join(" ", parts.Skip(1)).Trim()
 
                     ' Validate the file path
                     If String.IsNullOrWhiteSpace(filePath) Then
-                        ShowStatus(DialogChar & " Usage: text [file_path] - e.g., text C:\example.txt")
+                        ShowStatus(DialogChar & " Usage: text [file_path]  e.g., text C:\example.txt")
                         Return
+                    End If
+
+                    ' If the user typed a folder, not a file, guide them
+                    If Directory.Exists(filePath) Then
+                        ShowStatus(DialogChar & " That is a folder. Usage: text [file_path]  e.g., text C:\example.txt")
+                        Return
+                    End If
+
+                    ' Auto‑append .txt if the user omitted an extension
+                    If Path.GetExtension(filePath).Trim() = "" Then
+                        filePath &= ".txt"
                     End If
 
                     ' Create or open the text file
                     CreateTextFile(filePath)
 
                 Else
-                    ShowStatus(DialogChar & " Usage: text [file_path] - e.g., text C:\example.txt")
+                    ShowStatus(DialogChar & " Usage: text [file_path]  e.g., text C:\example.txt")
                 End If
-
 
             Case "help"
 
@@ -996,35 +1063,72 @@ Public Class Form1
         End Select
     End Sub
 
+    'Sub CreateTextFile(filePath As String)
+
+    '    Try
+
+    '        ' Check if the file exists
+    '        If Not System.IO.File.Exists(filePath) Then
+
+    '            ' Create a new file if it doesn't exist
+    '            Using writer As New System.IO.StreamWriter(filePath)
+
+    '                writer.WriteLine("Created on " & DateTime.Now.ToString())
+
+    '                ShowStatus(SuccessChar & " Text file created: " & filePath)
+
+    '                Dim destDir As String = Path.GetDirectoryName(filePath)
+
+    '                NavigateTo(destDir)
+
+    '                GoToFolderOrOpenFile(filePath)
+
+    '            End Using
+
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(ErrorChar & " Failed to create text file: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
     Sub CreateTextFile(filePath As String)
 
         Try
+            Dim destDir As String = Path.GetDirectoryName(filePath)
 
-            ' Check if the file exists
-            If Not System.IO.File.Exists(filePath) Then
+            ' If the file does not exist, create it
+            If Not File.Exists(filePath) Then
 
-                ' Create a new file if it doesn't exist
-                Using writer As New System.IO.StreamWriter(filePath)
-
-                    writer.WriteLine("Created on " & DateTime.Now.ToString())
-
-                    ShowStatus(SuccessChar & " Text file created: " & filePath)
-
-                    Dim destDir As String = Path.GetDirectoryName(filePath)
-
-                    NavigateTo(destDir)
-
-                    GoToFolderOrOpenFile(filePath)
-
+                Using writer As New StreamWriter(filePath)
+                    writer.WriteLine("Created on " & DateTime.Now.ToString("G"))
                 End Using
 
+                ShowStatus(SuccessChar & " Text file created: " & filePath)
+
+            Else
+                ShowStatus(DialogChar & " File already exists: " & filePath)
             End If
+
+            ' Now that the file is closed, navigate and open it
+            NavigateTo(destDir)
+            GoToFolderOrOpenFile(filePath)
 
         Catch ex As Exception
             ShowStatus(ErrorChar & " Failed to create text file: " & ex.Message)
         End Try
 
     End Sub
+
+
+
+
+
+
+
+
 
     Private Sub CreateDirectory(directoryPath As String)
 
