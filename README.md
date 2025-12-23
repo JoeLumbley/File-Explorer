@@ -71,6 +71,14 @@ The CLI supports several basic commands that enable users to perform common file
   - Usage: `text [file]`
   - Creates a new text file at the specified path and opens it.
   - Example: `text C:\folder\example.txt`
+ 
+
+
+
+<img width="1266" height="662" alt="022" src="https://github.com/user-attachments/assets/d4cc77b6-ef3d-4459-a2bc-e03956d94054" />
+
+  
+<img width="1266" height="662" alt="023" src="https://github.com/user-attachments/assets/4b112199-0021-46a8-9d6d-603c2b49e519" />
 
 - **Help (`help`)** : 
   - Displays a list of available commands and their usage.
