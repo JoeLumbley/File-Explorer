@@ -73,7 +73,7 @@ Public Class Form1
     Private ErrorChar As Char = "⛔" ' ⛔
     Private DialogChar As String = "" ' 💬
     Private SuccessChar As Char = "" ' ✔
-    Private OpenChar As Char = "" ' 📂
+    Private OpenChar As Char = "" ' 📂
     Private CopyChar As Char = ""     ' 📋
     Private PasteChar As Char = ""    ' 📥
     Private ProtectChar As Char = "" ' lock
@@ -858,7 +858,7 @@ Public Class Form1
                         ' The path is protected; prevent rename
 
                         ' Notify the user of the prevention so the user knows why it didn't rename.
-                        Dim msg As String = " Rename prevented for protected path: " & Environment.NewLine & sourcePath
+                        Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
                         MsgBox(msg, MsgBoxStyle.Critical, "Rename Prevented")
 
                         NavigateTo(sourcePath)
@@ -871,10 +871,10 @@ Public Class Form1
                         ' Validate new name
                         If Directory.Exists(sourcePath) Then
                             Directory.Move(sourcePath, newPath)
-                            ShowStatus(SuccessChar & " Renamed Folder to: " & newName)
+                            ShowStatus(SuccessChar & " Renamed Folder to: " & newName)
                         ElseIf File.Exists(sourcePath) Then
                             File.Move(sourcePath, newPath)
-                            ShowStatus(SuccessChar & " Renamed File to: " & newName)
+                            ShowStatus(SuccessChar & " Renamed File to: " & newName)
                         End If
                     Catch ex As Exception
                         MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -1888,10 +1888,10 @@ Public Class Form1
 
         ' Define protected paths (normalized) - Exact match and subpaths
         Dim protectedPaths As String() = {
-        "C:\Windows",
-        "C:\Program Files",
-        "C:\Program Files (x86)",
-        "C:\ProgramData"
+            "C:\Windows",
+            "C:\Program Files",
+            "C:\Program Files (x86)",
+            "C:\ProgramData"
         }
 
         ' Normalize protected paths too
@@ -1912,15 +1912,16 @@ Public Class Form1
 
         ' Define protected folders (normalized) for the current user - Exact match only
         Dim protectedFolders As String() = {
-        "C:\Users",
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
+            "C:\Users",
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
         }
 
         ' Normalize protected folders too
@@ -1961,6 +1962,8 @@ Public Class Form1
         Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
 
         ' === Positive Tests (Exact Matches, expected True) ===
+        Debug.Assert(IsProtectedPathOrFolder(userProfile) = True)
+
         Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")) = True)
         Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")) = True)
         Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")) = True)
