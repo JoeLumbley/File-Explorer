@@ -63,6 +63,9 @@ Public Class Form1
     ("PB", 1024L ^ 5) ' Petabytes
     }
 
+    Private _lastColumn As Integer = -1
+    Private _lastOrder As SortOrder = SortOrder.Ascending
+
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         InitApp()
@@ -142,9 +145,6 @@ Public Class Form1
 
     End Sub
 
-    Private _lastColumn As Integer = -1
-    Private _lastOrder As SortOrder = SortOrder.Ascending
-
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
 
         If e.Column = _lastColumn Then
@@ -163,7 +163,6 @@ Public Class Form1
 
         lvFiles.Sort()
     End Sub
-
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
