@@ -55,12 +55,12 @@ Public Class Form1
     }
 
     Private Shared ReadOnly SizeUnits As (Unit As String, Factor As Long)() = {
-    ("B", 1L),
-    ("KB", 1024L),
-    ("MB", 1024L ^ 2),
-    ("GB", 1024L ^ 3),
-    ("TB", 1024L ^ 4),
-    ("PB", 1024L ^ 5)
+    ("B", 1L), ' Bytes
+    ("KB", 1024L), ' Kilobytes
+    ("MB", 1024L ^ 2), ' Megabytes
+    ("GB", 1024L ^ 3), ' Gigabytes
+    ("TB", 1024L ^ 4), ' Terabytes
+    ("PB", 1024L ^ 5) ' Petabytes
     }
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
