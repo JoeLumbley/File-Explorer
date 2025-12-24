@@ -1102,9 +1102,12 @@ Public Class Form1
             ' If the file does not exist, create it
             If Not File.Exists(filePath) Then
 
-                Using writer As New StreamWriter(filePath)
-                    writer.WriteLine("Created on " & DateTime.Now.ToString("G"))
-                End Using
+                'Using writer As New StreamWriter(filePath)
+                '    writer.WriteLine("Created on " & DateTime.Now.ToString("G"))
+                'End Using
+
+                ' Create the file with initial content
+                File.WriteAllText(filePath, $"Created on {DateTime.Now:G}")
 
                 ShowStatus(SuccessChar & " Text file created: " & filePath)
 
@@ -1112,8 +1115,10 @@ Public Class Form1
                 ShowStatus(DialogChar & " File already exists: " & filePath)
             End If
 
-            ' Now that the file is closed, navigate and open it
+            ' Refresh the folder view so the user sees the new or existing file
             NavigateTo(destDir)
+
+            ' Open the newly created or existing file
             GoToFolderOrOpenFile(filePath)
 
         Catch ex As Exception
