@@ -54,8 +54,11 @@ The CLI supports several basic commands that enable users to perform common file
   - Copies files or directories from a source to a destination.
   - Example: `copy C:\folder1\file.txt C:\folder2`
 
-<img width="1920" height="1080" alt="010" src="https://github.com/user-attachments/assets/909d297d-8e29-4b8c-a07e-e8301898aae5" />
+<img width="1266" height="662" alt="024" src="https://github.com/user-attachments/assets/ff0a34f8-ffe5-4fde-b2a5-d6615bb3faea" />
 
+
+
+<img width="1266" height="662" alt="025" src="https://github.com/user-attachments/assets/e51e69a2-5ea4-4aea-8d1d-e01ab917b10b" />
 
 - **Move Files (`move`)** : 
   - Usage: `move [source] [destination]`
@@ -71,6 +74,14 @@ The CLI supports several basic commands that enable users to perform common file
   - Usage: `text [file]`
   - Creates a new text file at the specified path and opens it.
   - Example: `text C:\folder\example.txt`
+ 
+
+
+
+<img width="1266" height="662" alt="022" src="https://github.com/user-attachments/assets/d4cc77b6-ef3d-4459-a2bc-e03956d94054" />
+
+  
+<img width="1266" height="662" alt="023" src="https://github.com/user-attachments/assets/4b112199-0021-46a8-9d6d-603c2b49e519" />
 
 - **Help (`help`)** : 
   - Displays a list of available commands and their usage.
@@ -147,6 +158,10 @@ To install and run the File Explorer application:
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
 
 For more details, check the source code and documentation within the repository.
+
+
+
+<img width="1920" height="1080" alt="026" src="https://github.com/user-attachments/assets/81db1586-871f-4f6a-852e-c377d8daf0ac" />
 
 
 <img width="1920" height="1080" alt="015" src="https://github.com/user-attachments/assets/b936b9f4-1a73-4f2b-ba4c-eded97f51f58" />
