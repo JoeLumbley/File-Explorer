@@ -1127,14 +1127,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
     Private Sub CreateDirectory(directoryPath As String)
 
         Try
