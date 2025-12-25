@@ -244,6 +244,7 @@ Public Class Form1
     Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
 
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+
         UpdateNavButtons()
 
     End Sub
@@ -263,17 +264,27 @@ Public Class Form1
     End Sub
 
     Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
+
         If _historyIndex <= 0 Then Exit Sub
+
         _historyIndex -= 1
+
         NavigateTo(_history(_historyIndex), recordHistory:=False)
+
         UpdateNavButtons()
+
     End Sub
 
     Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
+
         If _historyIndex >= _history.Count - 1 Then Exit Sub
+
         _historyIndex += 1
+
         NavigateTo(_history(_historyIndex), recordHistory:=False)
+
         UpdateNavButtons()
+
     End Sub
 
 
