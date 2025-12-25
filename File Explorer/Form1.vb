@@ -110,8 +110,6 @@ Public Class Form1
 
     End Sub
 
-
-
     ' ============================
     '  Expand Node (Lazy Load)
     ' ============================
@@ -160,7 +158,6 @@ Public Class Form1
 
     End Sub
 
-
     ' ============================
     '  Collapse Node
     ' ============================
@@ -170,9 +167,6 @@ Public Class Form1
         e.Node.StateImageIndex = 0   ' ▶ collapsed
 
     End Sub
-
-
-
 
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
 
@@ -263,74 +257,15 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
-
-    '    If _historyIndex <= 0 Then Exit Sub
-
-    '    _historyIndex -= 1
-
-    '    NavigateTo(_history(_historyIndex), recordHistory:=False)
-
-    '    UpdateNavButtons()
-
-    'End Sub
-
-    'Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
-
-
-    '    If _historyIndex >= _history.Count - 1 Then Exit Sub
-
-    '    _historyIndex += 1
-
-    '    NavigateTo(_history(_historyIndex), recordHistory:=False)
-
-    '    UpdateNavButtons()
-
-    'End Sub
-
     Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
 
         NavigateBackward_Click()
 
     End Sub
 
-    Private Sub NavigateBackward_Click()
-        ' Navigate backward in the history list
-
-        ' If we're already at the first entry, there's nowhere to go
-        If _historyIndex <= 0 Then Exit Sub
-
-        ' Move one step back in history
-        _historyIndex -= 1
-
-        ' Navigate to the previous location without recording a new history entry
-        NavigateTo(_history(_historyIndex), recordHistory:=False)
-
-        ' Refresh the enabled/disabled state of Back/Forward buttons
-        UpdateNavButtons()
-
-    End Sub
-
     Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
 
         NavigateForward_Click()
-
-    End Sub
-
-    Private Sub NavigateForward_Click()
-        ' Navigate forward in the history list
-
-        ' If we're at the most recent entry, we can't go forward
-        If _historyIndex >= _history.Count - 1 Then Exit Sub
-
-        ' Move one step forward in history
-        _historyIndex += 1
-
-        ' Navigate to the next location without recording a new history entry
-        NavigateTo(_history(_historyIndex), recordHistory:=False)
-
-        ' Refresh the enabled/disabled state of Back/Forward buttons
-        UpdateNavButtons()
 
     End Sub
 
@@ -1373,6 +1308,40 @@ Public Class Form1
             _historyIndex = _history.Count - 1
             UpdateNavButtons()
         End If
+    End Sub
+
+    Private Sub NavigateBackward_Click()
+        ' Navigate backward in the history list
+
+        ' If we're already at the first entry, there's nowhere to go
+        If _historyIndex <= 0 Then Exit Sub
+
+        ' Move one step back in history
+        _historyIndex -= 1
+
+        ' Navigate to the previous location without recording a new history entry
+        NavigateTo(_history(_historyIndex), recordHistory:=False)
+
+        ' Refresh the enabled/disabled state of Back/Forward buttons
+        UpdateNavButtons()
+
+    End Sub
+
+    Private Sub NavigateForward_Click()
+        ' Navigate forward in the history list
+
+        ' If we're at the most recent entry, we can't go forward
+        If _historyIndex >= _history.Count - 1 Then Exit Sub
+
+        ' Move one step forward in history
+        _historyIndex += 1
+
+        ' Navigate to the next location without recording a new history entry
+        NavigateTo(_history(_historyIndex), recordHistory:=False)
+
+        ' Refresh the enabled/disabled state of Back/Forward buttons
+        UpdateNavButtons()
+
     End Sub
 
     Private Sub UpdateNavButtons()
