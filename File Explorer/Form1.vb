@@ -812,22 +812,24 @@ Public Class Form1
 
             Case Else
 
-                ' Is it a folder?
+                ' Is the input a folder?
                 If Directory.Exists(command) Then
 
                     ' Go to that folder.
                     NavigateTo(command)
 
-                    ' Is it a file?
+                    ' Is the input a file?
                 ElseIf File.Exists(command) Then
 
                     ' Open the file or go to its folder
                     GoToFolderOrOpenFile(command)
 
-                    ' The input isn't a folder or a file,
                 Else
-                    ' At this point, the interpreter treats it as an unknown command.
+
+                    ' The input isn't a folder or a file,
+                    ' at this point, the interpreter treats it as an unknown command.
                     ShowStatus(DialogChar & " Unknown command: " & cmd)
+
                 End If
 
         End Select
@@ -841,10 +843,6 @@ Public Class Form1
 
             ' If the file does not exist, create it
             If Not File.Exists(filePath) Then
-
-                'Using writer As New StreamWriter(filePath)
-                '    writer.WriteLine("Created on " & DateTime.Now.ToString("G"))
-                'End Using
 
                 ' Create the file with initial content
                 File.WriteAllText(filePath, $"Created on {DateTime.Now:G}")
