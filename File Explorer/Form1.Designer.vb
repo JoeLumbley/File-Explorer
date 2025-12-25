@@ -27,6 +27,10 @@ Partial Class Form1
         TableLayoutPanel1 = New TableLayoutPanel()
         lvFiles = New ListView()
         Panel1 = New Panel()
+        btnNewTextFile = New Button()
+        btnPaste = New Button()
+        btnCut = New Button()
+        btnCopy = New Button()
         btnRefresh = New Button()
         bntHome = New Button()
         btnNewFolder = New Button()
@@ -100,6 +104,10 @@ Partial Class Form1
         ' 
         ' Panel1
         ' 
+        Panel1.Controls.Add(btnNewTextFile)
+        Panel1.Controls.Add(btnPaste)
+        Panel1.Controls.Add(btnCut)
+        Panel1.Controls.Add(btnCopy)
         Panel1.Controls.Add(btnRefresh)
         Panel1.Controls.Add(bntHome)
         Panel1.Controls.Add(btnNewFolder)
@@ -114,6 +122,46 @@ Partial Class Form1
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(1016, 28)
         Panel1.TabIndex = 1
+        ' 
+        ' btnNewTextFile
+        ' 
+        btnNewTextFile.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnNewTextFile.Location = New Point(806, 0)
+        btnNewTextFile.Name = "btnNewTextFile"
+        btnNewTextFile.Size = New Size(30, 28)
+        btnNewTextFile.TabIndex = 12
+        btnNewTextFile.Text = "txt"
+        btnNewTextFile.UseVisualStyleBackColor = True
+        ' 
+        ' btnPaste
+        ' 
+        btnPaste.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnPaste.Location = New Point(914, 0)
+        btnPaste.Name = "btnPaste"
+        btnPaste.Size = New Size(30, 28)
+        btnPaste.TabIndex = 11
+        btnPaste.Text = ""
+        btnPaste.UseVisualStyleBackColor = True
+        ' 
+        ' btnCut
+        ' 
+        btnCut.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnCut.Location = New Point(842, 0)
+        btnCut.Name = "btnCut"
+        btnCut.Size = New Size(30, 28)
+        btnCut.TabIndex = 10
+        btnCut.Text = ""
+        btnCut.UseVisualStyleBackColor = True
+        ' 
+        ' btnCopy
+        ' 
+        btnCopy.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnCopy.Location = New Point(878, 0)
+        btnCopy.Name = "btnCopy"
+        btnCopy.Size = New Size(30, 28)
+        btnCopy.TabIndex = 9
+        btnCopy.Text = ""
+        btnCopy.UseVisualStyleBackColor = True
         ' 
         ' btnRefresh
         ' 
@@ -141,7 +189,7 @@ Partial Class Form1
         btnNewFolder.Anchor = AnchorStyles.Right
         btnNewFolder.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnNewFolder.ForeColor = Color.Orange
-        btnNewFolder.Location = New Point(914, 0)
+        btnNewFolder.Location = New Point(770, 0)
         btnNewFolder.Name = "btnNewFolder"
         btnNewFolder.Size = New Size(30, 28)
         btnNewFolder.TabIndex = 6
@@ -178,7 +226,7 @@ Partial Class Form1
         txtPath.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         txtPath.Location = New Point(144, 1)
         txtPath.Name = "txtPath"
-        txtPath.Size = New Size(728, 27)
+        txtPath.Size = New Size(584, 27)
         txtPath.TabIndex = 3
         ' 
         ' btnForward
@@ -207,7 +255,7 @@ Partial Class Form1
         ' 
         btnGo.Anchor = AnchorStyles.Right
         btnGo.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnGo.Location = New Point(878, 0)
+        btnGo.Location = New Point(734, 0)
         btnGo.Name = "btnGo"
         btnGo.Size = New Size(30, 28)
         btnGo.TabIndex = 0
@@ -246,5 +294,9 @@ Partial Class Form1
     Friend WithEvents btnNewFolder As Button
     Friend WithEvents bntHome As Button
     Friend WithEvents btnRefresh As Button
+    Friend WithEvents btnCopy As Button
+    Friend WithEvents btnCut As Button
+    Friend WithEvents btnPaste As Button
+    Friend WithEvents btnNewTextFile As Button
 
 End Class

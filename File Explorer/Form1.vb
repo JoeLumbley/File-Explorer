@@ -90,11 +90,77 @@ Public Class Form1
 
     End Sub
 
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
+
+        NavigateBackward_Click()
+
+    End Sub
+
+    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
+
+        NavigateForward_Click()
+
+    End Sub
+
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
+
+        InitTreeRoots()
+
+        NavigateTo(currentFolder, recordHistory:=False)
+
+    End Sub
+
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
+
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+
+        UpdateNavButtons()
+
+    End Sub
+
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
 
         Path_KeyDown(e)
 
     End Sub
+
+    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
+
+        ExecuteCommand(txtPath.Text.Trim())
+
+    End Sub
+    Private Sub btnCopy_Click(sender As Object, e As EventArgs) Handles btnCopy.Click
+        CopySelected_Click(sender, e)
+    End Sub
+    Private Sub btnCut_Click(sender As Object, e As EventArgs) Handles btnCut.Click
+        CutSelected_Click(sender, e)
+    End Sub
+
+    Private Sub btnPaste_Click(sender As Object, e As EventArgs) Handles btnPaste.Click
+        PasteSelected_Click(sender, e)
+    End Sub
+    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) Handles btnNewTextFile.Click
+        NewTextFile_Click(sender, e)
+    End Sub
+
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
+
+        NewFolder_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+
+        Delete_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
+
+        RenameFile_Click(sender, e)
+
+    End Sub
+
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
@@ -217,57 +283,8 @@ Public Class Form1
         Next
     End Sub
 
-    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
 
-        Delete_Click(sender, e)
 
-    End Sub
-
-    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
-
-        RenameFile_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
-
-        NewFolder_Click(sender, e)
-
-    End Sub
-
-    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
-
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
-
-        UpdateNavButtons()
-
-    End Sub
-
-    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
-
-        InitTreeRoots()
-
-        NavigateTo(currentFolder, recordHistory:=False)
-
-    End Sub
-
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
-
-        ExecuteCommand(txtPath.Text.Trim())
-
-    End Sub
-
-    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
-
-        NavigateBackward_Click()
-
-    End Sub
-
-    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
-
-        NavigateForward_Click()
-
-    End Sub
 
     Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
         ' -------- Rename file or folder after label edit in lvFiles --------
