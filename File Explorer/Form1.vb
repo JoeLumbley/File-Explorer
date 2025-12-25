@@ -243,7 +243,8 @@ Public Class Form1
 
     Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
 
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+        UpdateNavButtons()
 
     End Sub
 

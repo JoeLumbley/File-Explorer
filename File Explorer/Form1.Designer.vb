@@ -163,13 +163,13 @@ Partial Class Form1
         ' btnDelete
         ' 
         btnDelete.Anchor = AnchorStyles.Right
-        btnDelete.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnDelete.ForeColor = Color.Red
+        btnDelete.Font = New Font("Segoe UI Symbol", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnDelete.ForeColor = Color.Black
         btnDelete.Location = New Point(986, 0)
         btnDelete.Name = "btnDelete"
         btnDelete.Size = New Size(30, 28)
         btnDelete.TabIndex = 4
-        btnDelete.Text = ""
+        btnDelete.Text = ""
         btnDelete.UseVisualStyleBackColor = True
         ' 
         ' txtPath
