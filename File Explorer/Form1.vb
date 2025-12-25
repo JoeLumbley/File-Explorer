@@ -129,9 +129,11 @@ Public Class Form1
         ExecuteCommand(txtPath.Text.Trim())
 
     End Sub
+
     Private Sub btnCopy_Click(sender As Object, e As EventArgs) Handles btnCopy.Click
         CopySelected_Click(sender, e)
     End Sub
+
     Private Sub btnCut_Click(sender As Object, e As EventArgs) Handles btnCut.Click
         CutSelected_Click(sender, e)
     End Sub
@@ -139,6 +141,7 @@ Public Class Form1
     Private Sub btnPaste_Click(sender As Object, e As EventArgs) Handles btnPaste.Click
         PasteSelected_Click(sender, e)
     End Sub
+
     Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) Handles btnNewTextFile.Click
         NewTextFile_Click(sender, e)
     End Sub
