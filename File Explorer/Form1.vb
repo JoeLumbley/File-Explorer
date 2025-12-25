@@ -131,19 +131,27 @@ Public Class Form1
     End Sub
 
     Private Sub btnCopy_Click(sender As Object, e As EventArgs) Handles btnCopy.Click
+
         CopySelected_Click(sender, e)
+
     End Sub
 
     Private Sub btnCut_Click(sender As Object, e As EventArgs) Handles btnCut.Click
+
         CutSelected_Click(sender, e)
+
     End Sub
 
     Private Sub btnPaste_Click(sender As Object, e As EventArgs) Handles btnPaste.Click
+
         PasteSelected_Click(sender, e)
+
     End Sub
 
     Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) Handles btnNewTextFile.Click
+
         NewTextFile_Click(sender, e)
+
     End Sub
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
@@ -164,18 +172,9 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
 
         NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
-
-    End Sub
-
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
-        ' The ItemActivate event is raised when the user double-clicks an item or
-        ' presses the Enter key when an item is selected.
-
-        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
 
     End Sub
 
@@ -237,6 +236,14 @@ Public Class Form1
 
     End Sub
 
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
+        ' The ItemActivate event is raised when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
+
+        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+
+    End Sub
+
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
 
         ' Prevent renaming of protected paths
@@ -285,9 +292,6 @@ Public Class Form1
             End If
         Next
     End Sub
-
-
-
 
     Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
         ' -------- Rename file or folder after label edit in lvFiles --------
@@ -405,7 +409,6 @@ Public Class Form1
         ShowStatus(CutChar & " Cut to clipboard: " & _clipboardPath)
 
     End Sub
-
 
     Private Sub NewTextFile_Click(sender As Object, e As EventArgs)
 
@@ -656,7 +659,6 @@ Public Class Form1
                     ShowStatus(DialogChar & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
                 End If
 
-
             Case "move"
 
                 If parts.Length > 2 Then
@@ -697,7 +699,6 @@ Public Class Form1
                 Else
                     ShowStatus(DialogChar & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
                 End If
-
 
             Case "rename"
                 ' Rename the file or directory
@@ -746,7 +747,6 @@ Public Class Form1
                 Else
                     ShowStatus(DialogChar & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
                 End If
-
 
             Case "text", "txt"
 
@@ -811,16 +811,28 @@ Public Class Form1
                 MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             Case Else
+
+                ' Is it a folder?
                 If Directory.Exists(command) Then
+
+                    ' Go to that folder.
                     NavigateTo(command)
+
+                    ' Is it a file?
                 ElseIf File.Exists(command) Then
+
+                    ' Open the file or go to its folder
                     GoToFolderOrOpenFile(command)
+
+                    ' The input isn't a folder or a file,
                 Else
+                    ' At this point, the interpreter treats it as an unknown command.
                     ShowStatus(DialogChar & " Unknown command: " & cmd)
                 End If
-        End Select
-    End Sub
 
+        End Select
+
+    End Sub
 
     Sub CreateTextFile(filePath As String)
 
