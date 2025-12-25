@@ -125,6 +125,7 @@ Partial Class Form1
         ' 
         ' btnNewTextFile
         ' 
+        btnNewTextFile.Anchor = AnchorStyles.Right
         btnNewTextFile.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnNewTextFile.Location = New Point(806, 0)
         btnNewTextFile.Name = "btnNewTextFile"
@@ -135,6 +136,7 @@ Partial Class Form1
         ' 
         ' btnPaste
         ' 
+        btnPaste.Anchor = AnchorStyles.Right
         btnPaste.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnPaste.Location = New Point(914, 0)
         btnPaste.Name = "btnPaste"
@@ -145,6 +147,7 @@ Partial Class Form1
         ' 
         ' btnCut
         ' 
+        btnCut.Anchor = AnchorStyles.Right
         btnCut.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnCut.Location = New Point(842, 0)
         btnCut.Name = "btnCut"
@@ -155,6 +158,7 @@ Partial Class Form1
         ' 
         ' btnCopy
         ' 
+        btnCopy.Anchor = AnchorStyles.Right
         btnCopy.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnCopy.Location = New Point(878, 0)
         btnCopy.Name = "btnCopy"
