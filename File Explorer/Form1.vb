@@ -84,6 +84,8 @@ Public Class Form1
     'Private NewFolderChar As Char = "" ' 📁
     'Private CutChar As Char = "✂" ' ✂
 
+    ' Icons for status messages
+    ' These require a font that supports these glyphs, such as Segoe MDL2 Assets or similar.
     Private IconError As String = "⛔"
     Private IconDialog As String = ""
     Private IconSuccess As String = ""
