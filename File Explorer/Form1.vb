@@ -1235,7 +1235,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub InitStatusBar()
 
         Dim statusStrip As New StatusStrip()
@@ -1251,8 +1250,6 @@ Public Class Form1
         Me.Controls.Add(statusStrip)
 
     End Sub
-
-
 
     Private Sub InitImageList()
 
