@@ -87,6 +87,13 @@ Public Class Form1
     Private IconSearch As String = ""
 
 
+
+    Dim SearchResults As New List(Of String)
+    Private SearchIndex As Integer = -1
+
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         InitApp()
@@ -816,6 +823,51 @@ Public Class Form1
                 Else
                     ShowStatus(IconDialog & " Usage: find [search_term] - e.g., find document")
                 End If
+                SearchIndex = -1
+            'Case "findnext"
+
+            '    ' Find Next functionality can be implemented here
+            '    If SearchResults.Count = 0 Then
+            '        ShowStatus(IconDialog & " No previous search results. Use 'find [search_term]' to start a search.")
+            '        Return
+
+            '    End If
+
+            '    ' Highlight the next match in ListView
+            '    If SearchResults.Count > 0 Then
+            '        SelectListViewItemByPath(SearchResults(0))
+            '        lvFiles.Focus()
+
+            '        'ShowStatus(IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
+            '    Else
+            '        'ShowStatus(IconDialog & " No items found matching: " & searchTerm)
+            '    End If
+
+            Case "findnext"
+
+                If SearchResults.Count = 0 Then
+                    ShowStatus(IconDialog & " No previous search results. Use 'find [search_term]' to start a search.")
+                    Return
+                End If
+
+                ' Advance index
+                SearchIndex += 1
+
+                ' Wrap around if needed
+                If SearchIndex >= SearchResults.Count Then
+                    SearchIndex = 0
+                End If
+
+                ' Clear item selection for lvFiles
+                lvFiles.SelectedItems.Clear()
+
+                ' Select the item
+                Dim nextPath As String = SearchResults(SearchIndex)
+                SelectListViewItemByPath(nextPath)
+                lvFiles.Focus()
+
+                ShowStatus(IconSmile & " Showing result " & (SearchIndex + 1) & " of " & SearchResults.Count)
+
 
             Case "exit", "quit"
                 ' Exit the application
@@ -848,41 +900,99 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub SearchInCurrentFolder(searchTerm As String)
+
+    '    ' Clear item selection for lvFiles
+
+
+    '    Try
+    '        Dim results As New List(Of String)
+    '        ' Search files
+    '        For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
+    '            If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '                results.Add(filePath)
+
+    '                'Select matching file in list view
+    '                SelectListViewItemByPath(filePath)
+
+    '                lvFiles.Focus()
+
+    '            End If
+    '        Next
+    '        ' Search directories
+    '        For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
+    '            If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '                results.Add(dirPath)
+    '            End If
+    '        Next
+    '        ' Show results
+    '        If results.Count > 0 Then
+    '            Dim resultMsg As String = "Search Results for '" & searchTerm & "':" & Environment.NewLine & Environment.NewLine &
+    '                                      String.Join(Environment.NewLine, results)
+    '            'MessageBox.Show(resultMsg, "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    '            ShowStatus(IconSmile & " Found " & results.Count & " item(s) matching: " & searchTerm)
+    '        Else
+    '            ShowStatus(IconDialog & " No items found matching: " & searchTerm)
+    '        End If
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Search failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+
     Private Sub SearchInCurrentFolder(searchTerm As String)
+
+        ' Clear item selection for lvFiles
+        lvFiles.SelectedItems.Clear()
+
         Try
-            Dim results As New List(Of String)
+            SearchResults = New List(Of String)
+
             ' Search files
             For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
                 If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-                    results.Add(filePath)
-
-                    'Select matching file in list view
-
-                    'Select matching file in list view
-                    SelectListViewItemByPath(filePath)
-
-
+                    SearchResults.Add(filePath)
                 End If
             Next
+
             ' Search directories
             For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
                 If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-                    results.Add(dirPath)
+                    SearchResults.Add(dirPath)
                 End If
             Next
-            ' Show results
-            If results.Count > 0 Then
-                Dim resultMsg As String = "Search Results for '" & searchTerm & "':" & Environment.NewLine & Environment.NewLine &
-                                          String.Join(Environment.NewLine, results)
-                MessageBox.Show(resultMsg, "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                ShowStatus(IconSmile & " Found " & results.Count & " item(s) matching: " & searchTerm)
+
+            ' Highlight first match in ListView
+            If SearchResults.Count > 0 Then
+                SelectListViewItemByPath(SearchResults(0))
+                lvFiles.Focus()
+
+                ShowStatus(IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
             Else
                 ShowStatus(IconDialog & " No items found matching: " & searchTerm)
             End If
+
         Catch ex As Exception
             ShowStatus(IconError & " Search failed: " & ex.Message)
         End Try
+
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub SelectListViewItemByPath(fullPath As String)
         For Each item As ListViewItem In lvFiles.Items
