@@ -179,11 +179,9 @@ Public Class Form1
 
     End Sub
 
-    ' ============================
-    '  Expand Node (Lazy Load)
-    ' ============================
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
     Handles tvFolders.BeforeExpand
+        '  Expand Node (Lazy Load)
 
         e.Node.StateImageIndex = 1   ' ▼ expanded
 
@@ -227,9 +225,6 @@ Public Class Form1
 
     End Sub
 
-    ' ============================
-    '  Collapse Node
-    ' ============================
     Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
     Handles tvFolders.BeforeCollapse
 
