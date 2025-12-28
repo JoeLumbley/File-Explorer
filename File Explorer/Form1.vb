@@ -837,7 +837,7 @@ Public Class Form1
 
     End Sub
 
-    Sub CreateTextFile(filePath As String)
+    Private Sub CreateTextFile(filePath As String)
 
         Try
             Dim destDir As String = Path.GetDirectoryName(filePath)
