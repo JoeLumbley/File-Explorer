@@ -70,20 +70,6 @@ Public Class Form1
     Private _lastColumn As Integer = -1
     Private _lastOrder As SortOrder = SortOrder.Ascending
 
-    'Private ErrorChar As Char = "⛔" ' ⛔
-    'Private DialogChar As String = "" ' 💬
-    'Private SuccessChar As Char = "" ' ✔
-    'Private OpenChar As Char = "" ' 📂
-    'Private CopyChar As Char = ""     ' 📋
-    'Private PasteChar As Char = ""    ' 📥
-    'Private ProtectChar As Char = "" ' lock
-    'Private NavChar As Char = "" ' →
-    'Private SmileChar As Char = "" ' 😊
-    'Private WarningChar As Char = "⚠" ' ⚠
-    'Private DeleteChar As Char = "" ' Trash can
-    'Private NewFolderChar As Char = "" ' 📁
-    'Private CutChar As Char = "✂" ' ✂
-
     ' Icons for status messages
     ' These require a font that supports these glyphs, such as Segoe MDL2 Assets or similar.
     Private IconError As String = "⛔"
