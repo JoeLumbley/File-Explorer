@@ -823,25 +823,7 @@ Public Class Form1
                 Else
                     ShowStatus(IconDialog & " Usage: find [search_term] - e.g., find document")
                 End If
-                SearchIndex = -1
-            'Case "findnext"
-
-            '    ' Find Next functionality can be implemented here
-            '    If SearchResults.Count = 0 Then
-            '        ShowStatus(IconDialog & " No previous search results. Use 'find [search_term]' to start a search.")
-            '        Return
-
-            '    End If
-
-            '    ' Highlight the next match in ListView
-            '    If SearchResults.Count > 0 Then
-            '        SelectListViewItemByPath(SearchResults(0))
-            '        lvFiles.Focus()
-
-            '        'ShowStatus(IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
-            '    Else
-            '        'ShowStatus(IconDialog & " No items found matching: " & searchTerm)
-            '    End If
+                SearchIndex = 0
 
             Case "findnext"
 
