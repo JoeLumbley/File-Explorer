@@ -43,8 +43,6 @@ Public Class Form1
 
     Private imgArrows As New ImageList()
 
-
-
     Private statusTimer As New Timer() With {.Interval = 10000}
 
     Private currentFolder As String = String.Empty
@@ -75,7 +73,7 @@ Public Class Form1
     Private IconError As String = "⛔"
     Private IconDialog As String = ""
     Private IconSuccess As String = ""
-    Private IconOpen As String = ""
+    Private IconOpen As String = ""
     Private IconCopy As String = ""
     Private IconPaste As String = ""
     Private IconProtect As String = ""
@@ -1243,7 +1241,7 @@ Public Class Form1
         Dim statusStrip As New StatusStrip()
 
         ' Set font to Segoe UI Symbol, 12pt
-        statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
+        statusStrip.Font = New Font("Segoe UI Symbol", 9.0F, FontStyle.Regular)
 
         ' If lblStatus should also use this font, set it explicitly
         lblStatus.Font = statusStrip.Font
