@@ -1122,7 +1122,6 @@ Public Class Form1
 
     End Sub
 
-    ' -------- UI init --------
     Private Sub InitListView()
         lvFiles.View = View.Details
         lvFiles.FullRowSelect = True
@@ -1135,12 +1134,8 @@ Public Class Form1
 
     End Sub
 
-
-
-    ' ============================
-    '  Initialize TreeView Roots
-    ' ============================
     Private Sub InitTreeRoots()
+        '  Initialize TreeView Roots
 
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
@@ -1311,7 +1306,6 @@ Public Class Form1
 
     End Sub
 
-    ' -------- Navigation --------
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
         If Not Directory.Exists(path) Then
