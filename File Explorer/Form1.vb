@@ -83,6 +83,7 @@ Public Class Form1
     Private IconDelete As String = ""
     Private IconNewFolder As String = ""
     Private IconCut As String = "✂"
+    Private IconSearch As String = ""
 
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -806,6 +807,20 @@ Public Class Form1
 
                 MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
+            Case "find"
+                If parts.Length > 1 Then
+                    Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+                    ShowStatus(IconSearch & " Searching for: " & searchTerm)
+                    SearchInCurrentFolder(searchTerm)
+                Else
+                    ShowStatus(IconDialog & " Usage: find [search_term] - e.g., find document")
+                End If
+
+            Case "exit", "quit"
+                ' Exit the application
+                Me.Close()
+
+
             Case Else
 
                 ' Is the input a folder?
@@ -831,6 +846,44 @@ Public Class Form1
         End Select
 
     End Sub
+
+    Private Sub SearchInCurrentFolder(searchTerm As String)
+        Try
+            Dim results As New List(Of String)
+            ' Search files
+            For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
+                If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    results.Add(filePath)
+
+                    'Select matching file in list view
+
+
+
+
+                End If
+            Next
+            ' Search directories
+            For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
+                If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+                    results.Add(dirPath)
+                End If
+            Next
+            ' Show results
+            If results.Count > 0 Then
+                Dim resultMsg As String = "Search Results for '" & searchTerm & "':" & Environment.NewLine & Environment.NewLine &
+                                          String.Join(Environment.NewLine, results)
+                MessageBox.Show(resultMsg, "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                ShowStatus(IconSmile & " Found " & results.Count & " item(s) matching: " & searchTerm)
+            Else
+                ShowStatus(IconDialog & " No items found matching: " & searchTerm)
+            End If
+        Catch ex As Exception
+            ShowStatus(IconError & " Search failed: " & ex.Message)
+        End Try
+    End Sub
+
+
+
 
     Private Sub CreateTextFile(filePath As String)
 
