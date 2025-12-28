@@ -23,6 +23,7 @@
 
 Imports System.IO
 Imports System.Text.RegularExpressions
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class Form1
 
@@ -857,7 +858,8 @@ Public Class Form1
 
                     'Select matching file in list view
 
-
+                    'Select matching file in list view
+                    SelectListViewItemByPath(filePath)
 
 
                 End If
@@ -882,7 +884,16 @@ Public Class Form1
         End Try
     End Sub
 
-
+    Private Sub SelectListViewItemByPath(fullPath As String)
+        For Each item As ListViewItem In lvFiles.Items
+            If String.Equals(item.Tag.ToString(), fullPath, StringComparison.OrdinalIgnoreCase) Then
+                item.Selected = True
+                item.Focused = True
+                item.EnsureVisible()
+                Exit For
+            End If
+        Next
+    End Sub
 
 
     Private Sub CreateTextFile(filePath As String)
