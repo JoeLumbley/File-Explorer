@@ -815,7 +815,7 @@ Public Class Form1
 
                 MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-            Case "find"
+            Case "find", "search"
 
                 If parts.Length > 1 Then
 
@@ -831,7 +831,7 @@ Public Class Form1
 
                 SearchIndex = 0
 
-            Case "findnext"
+            Case "findnext", "searchnext"
 
                 If SearchResults.Count = 0 Then
                     ShowStatus(IconDialog & " No previous search results. Use 'find [search_term]' to start a search.")
@@ -859,8 +859,8 @@ Public Class Form1
 
             Case "exit", "quit"
                 ' Exit the application
-                Me.Close()
 
+                Me.Close()
 
             Case Else
 
