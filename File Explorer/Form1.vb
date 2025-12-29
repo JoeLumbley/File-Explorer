@@ -23,7 +23,6 @@
 
 Imports System.IO
 Imports System.Text.RegularExpressions
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class Form1
 
@@ -51,19 +50,19 @@ Public Class Form1
     Private ShowHiddenFiles As Boolean = False
 
     Private ColumnTypes As New Dictionary(Of Integer, ListViewItemComparer.ColumnDataType) From {
-    {0, ListViewItemComparer.ColumnDataType.Text},       ' Name
-    {1, ListViewItemComparer.ColumnDataType.Text},       ' Type
-    {2, ListViewItemComparer.ColumnDataType.Number},     ' Size
-    {3, ListViewItemComparer.ColumnDataType.DateValue}   ' Modified
+        {0, ListViewItemComparer.ColumnDataType.Text},       ' Name
+        {1, ListViewItemComparer.ColumnDataType.Text},       ' Type
+        {2, ListViewItemComparer.ColumnDataType.Number},     ' Size
+        {3, ListViewItemComparer.ColumnDataType.DateValue}   ' Modified
     }
 
     Private Shared ReadOnly SizeUnits As (Unit As String, Factor As Long)() = {
-    ("B", 1L), ' Bytes
-    ("KB", 1024L), ' Kilobytes
-    ("MB", 1024L ^ 2), ' Megabytes
-    ("GB", 1024L ^ 3), ' Gigabytes
-    ("TB", 1024L ^ 4), ' Terabytes
-    ("PB", 1024L ^ 5) ' Petabytes
+        ("B", 1L), ' Bytes
+        ("KB", 1024L), ' Kilobytes
+        ("MB", 1024L ^ 2), ' Megabytes
+        ("GB", 1024L ^ 3), ' Gigabytes
+        ("TB", 1024L ^ 4), ' Terabytes
+        ("PB", 1024L ^ 5) ' Petabytes
     }
 
     Private _lastColumn As Integer = -1
@@ -274,9 +273,9 @@ Public Class Form1
 
                     ' Create child node
                     Dim child As New TreeNode(di.Name) With {
-                    .Tag = dirPath,
-                    .ImageKey = "Folder",
-                    .SelectedImageKey = "Folder"
+                        .Tag = dirPath,
+                        .ImageKey = "Folder",
+                        .SelectedImageKey = "Folder"
                     }
 
                     If HasSubdirectories(dirPath) Then
@@ -1264,20 +1263,20 @@ Public Class Form1
 
         ' --- Easy Access node ---
         Dim easyAccessNode As New TreeNode("Easy Access") With {
-        .ImageKey = "EasyAccess",
-        .SelectedImageKey = "EasyAccess",
-        .StateImageIndex = 0   ' ▶ collapsed
-    }
+            .ImageKey = "EasyAccess",
+            .SelectedImageKey = "EasyAccess",
+            .StateImageIndex = 0   ' ▶ collapsed
+        }
 
         ' Define special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
-        ("Documents", Environment.SpecialFolder.MyDocuments),
-        ("Music", Environment.SpecialFolder.MyMusic),
-        ("Pictures", Environment.SpecialFolder.MyPictures),
-        ("Videos", Environment.SpecialFolder.MyVideos),
-        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
-        ("Desktop", Environment.SpecialFolder.Desktop)
-    }
+            ("Documents", Environment.SpecialFolder.MyDocuments),
+            ("Music", Environment.SpecialFolder.MyMusic),
+            ("Pictures", Environment.SpecialFolder.MyPictures),
+            ("Videos", Environment.SpecialFolder.MyVideos),
+            ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+            ("Desktop", Environment.SpecialFolder.Desktop)
+        }
 
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
@@ -1290,10 +1289,10 @@ Public Class Form1
             If Directory.Exists(specialFolderPath) Then
 
                 Dim node As New TreeNode(sf.Item1) With {
-                .Tag = specialFolderPath,
-                .ImageKey = sf.Item1,
-                .SelectedImageKey = sf.Item1
-            }
+                    .Tag = specialFolderPath,
+                    .ImageKey = sf.Item1,
+                    .SelectedImageKey = sf.Item1
+                }
 
                 If HasSubdirectories(specialFolderPath) Then
                     node.Nodes.Add("Loading...")
@@ -1318,8 +1317,8 @@ Public Class Form1
             If di.IsReady Then
                 Try
                     Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
-                    .Tag = di.RootDirectory.FullName
-                }
+                        .Tag = di.RootDirectory.FullName
+                    }
 
                     If di.DriveType = DriveType.CDRom Then
                         rootNode.ImageKey = "Optical"
