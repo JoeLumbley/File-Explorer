@@ -86,13 +86,8 @@ Public Class Form1
     Private IconCut As String = "✂"
     Private IconSearch As String = ""
 
-
-
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
-
-
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -196,6 +191,59 @@ Public Class Form1
 
     End Sub
 
+    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
+    Handles tvFolders.BeforeCollapse
+
+        e.Node.StateImageIndex = 0   ' ▶ collapsed
+
+    End Sub
+
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
+        ' The ItemActivate event is raised when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
+
+        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+
+    End Sub
+
+    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
+
+        ' Prevent renaming of protected paths
+        Dim item As ListViewItem = lvFiles.Items(e.Item)
+        Dim fullPath As String = CStr(item.Tag)
+
+        If IsProtectedPathOrFolder(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(IconProtect & " Renaming protected items is not allowed.")
+        End If
+
+    End Sub
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
+
+        RenameFileOrFolder_AfterLabelEdit(e)
+
+    End Sub
+
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
+
+        If e.Column = _lastColumn Then
+            _lastOrder = If(_lastOrder = SortOrder.Ascending,
+                        SortOrder.Descending,
+                        SortOrder.Ascending)
+        Else
+            _lastColumn = e.Column
+            _lastOrder = SortOrder.Ascending
+        End If
+
+        UpdateColumnHeaders(e.Column, _lastOrder)
+
+        lvFiles.ListViewItemSorter =
+        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
+
+        lvFiles.Sort()
+    End Sub
+
     Private Function ExpandNode_BeforeExpand(e As TreeViewCancelEventArgs) As TreeViewCancelEventArgs
         '  Expand Node (Lazy Load)
 
@@ -253,59 +301,6 @@ Public Class Form1
 
         Return e
     End Function
-
-    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
-    Handles tvFolders.BeforeCollapse
-
-        e.Node.StateImageIndex = 0   ' ▶ collapsed
-
-    End Sub
-
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
-        ' The ItemActivate event is raised when the user double-clicks an item or
-        ' presses the Enter key when an item is selected.
-
-        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
-
-    End Sub
-
-    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
-
-        ' Prevent renaming of protected paths
-        Dim item As ListViewItem = lvFiles.Items(e.Item)
-        Dim fullPath As String = CStr(item.Tag)
-
-        If IsProtectedPathOrFolder(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(IconProtect & " Renaming protected items is not allowed.")
-        End If
-
-    End Sub
-
-    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
-
-        RenameFileOrFolder_AfterLabelEdit(e)
-
-    End Sub
-
-    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
-
-        If e.Column = _lastColumn Then
-            _lastOrder = If(_lastOrder = SortOrder.Ascending,
-                        SortOrder.Descending,
-                        SortOrder.Ascending)
-        Else
-            _lastColumn = e.Column
-            _lastOrder = SortOrder.Ascending
-        End If
-
-        UpdateColumnHeaders(e.Column, _lastOrder)
-
-        lvFiles.ListViewItemSorter =
-        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
-
-        lvFiles.Sort()
-    End Sub
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
