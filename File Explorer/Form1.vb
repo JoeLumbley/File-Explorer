@@ -186,10 +186,54 @@ Public Class Form1
     End Sub
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
-        Handles tvFolders.BeforeExpand
+    Handles tvFolders.BeforeExpand
 
-        e = ExpandNode_BeforeExpand(e)
+        ExpandNode_LazyLoad(e.Node)
 
+        ' Set expanded icon
+        e.Node.StateImageIndex = 1   ' ▼ expanded
+
+    End Sub
+
+    Private Sub ExpandNode_LazyLoad(node As TreeNode)
+
+        ' Only lazy-load if placeholder exists
+        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+            node.Nodes.Clear()
+
+            Dim basePath As String = CStr(node.Tag)
+
+            Try
+                For Each dirPath In Directory.GetDirectories(basePath)
+                    Dim di As New DirectoryInfo(dirPath)
+
+                    ' Skip hidden/system folders
+                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+
+                    Dim child As New TreeNode(di.Name) With {
+                    .Tag = dirPath,
+                    .ImageKey = "Folder",
+                    .SelectedImageKey = "Folder"
+                }
+
+                    If HasSubdirectories(dirPath) Then
+                        child.Nodes.Add("Loading...")
+                        child.StateImageIndex = 0   ' ▶ collapsed
+                    Else
+                        child.StateImageIndex = 2   ' no arrow
+                    End If
+
+                    node.Nodes.Add(child)
+                Next
+
+            Catch ex As UnauthorizedAccessException
+                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+            Catch ex As IOException
+                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+            End Try
+        End If
     End Sub
 
     Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
@@ -245,63 +289,23 @@ Public Class Form1
         lvFiles.Sort()
     End Sub
 
-    Private Function ExpandNode_BeforeExpand(e As TreeViewCancelEventArgs) As TreeViewCancelEventArgs
-        '  Expand Node (Lazy Load)
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    Handles tvFolders.NodeMouseClick
 
-        ' Set expanded icon
-        e.Node.StateImageIndex = 1   ' ▼ expanded
+        Dim info = tvFolders.HitTest(e.Location)
 
-        ' Get the node being expanded
-        Dim node As TreeNode = e.Node
+        ' Only toggle when clicking the STATE IMAGE (arrow)
+        If info.Location = TreeViewHitTestLocations.StateImage Then
 
-        ' Lazy-load subdirectories
-        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-
-            Dim dirPath As String
-
-            node.Nodes.Clear()
-
-            Try
-                For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
-
-                    Dim di As New DirectoryInfo(dirPath)
-
-                    ' Skip hidden/system folders
-                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                        Continue For
-                    End If
-
-                    ' Create child node
-                    Dim child As New TreeNode(di.Name) With {
-                        .Tag = dirPath,
-                        .ImageKey = "Folder",
-                        .SelectedImageKey = "Folder"
-                    }
-
-                    If HasSubdirectories(dirPath) Then
-
-                        child.Nodes.Add("Loading...")
-
-                        child.StateImageIndex = 0   ' ▶ collapsed
-
-                    Else
-                        child.StateImageIndex = 2   ' no arrow
-                    End If
-
-                    node.Nodes.Add(child)
-
-                Next
-
-            Catch ex As UnauthorizedAccessException
-                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
-            Catch ex As IOException
-                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
-            End Try
+            If e.Node.IsExpanded Then
+                e.Node.Collapse()
+            Else
+                e.Node.Expand()
+            End If
 
         End If
 
-        Return e
-    End Function
+    End Sub
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1

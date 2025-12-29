@@ -169,7 +169,7 @@ Partial Class Form1
         ' 
         ' btnRefresh
         ' 
-        btnRefresh.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnRefresh.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnRefresh.Location = New Point(72, 0)
         btnRefresh.Name = "btnRefresh"
         btnRefresh.Size = New Size(30, 28)
@@ -180,7 +180,7 @@ Partial Class Form1
         ' bntHome
         ' 
         bntHome.Anchor = AnchorStyles.Left
-        bntHome.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        bntHome.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         bntHome.Location = New Point(108, 0)
         bntHome.Name = "bntHome"
         bntHome.Size = New Size(30, 28)
@@ -236,7 +236,7 @@ Partial Class Form1
         ' btnForward
         ' 
         btnForward.Anchor = AnchorStyles.Left
-        btnForward.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnForward.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnForward.Location = New Point(36, 0)
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 28)
@@ -247,7 +247,7 @@ Partial Class Form1
         ' btnBack
         ' 
         btnBack.Anchor = AnchorStyles.Left
-        btnBack.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnBack.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnBack.Location = New Point(0, 0)
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(30, 28)
