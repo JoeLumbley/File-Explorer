@@ -191,10 +191,13 @@ Public Class Form1
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
         Handles tvFolders.BeforeExpand
+
+        e = ExpandNode_BeforeExpand(e)
+
+    End Sub
+
+    Private Function ExpandNode_BeforeExpand(e As TreeViewCancelEventArgs) As TreeViewCancelEventArgs
         '  Expand Node (Lazy Load)
-
-
-        ' 
 
         ' Set expanded icon
         e.Node.StateImageIndex = 1   ' ▼ expanded
@@ -248,7 +251,8 @@ Public Class Form1
 
         End If
 
-    End Sub
+        Return e
+    End Function
 
     Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
     Handles tvFolders.BeforeCollapse
