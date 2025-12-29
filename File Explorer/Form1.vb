@@ -816,13 +816,19 @@ Public Class Form1
                 MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             Case "find"
+
                 If parts.Length > 1 Then
+
                     Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
                     ShowStatus(IconSearch & " Searching for: " & searchTerm)
+
                     SearchInCurrentFolder(searchTerm)
+
                 Else
                     ShowStatus(IconDialog & " Usage: find [search_term] - e.g., find document")
                 End If
+
                 SearchIndex = 0
 
             Case "findnext"
