@@ -182,26 +182,36 @@ Public Class Form1
 
     End Sub
 
-    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) Handles tvFolders.AfterSelect
+    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) _
+        Handles tvFolders.AfterSelect
 
         NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
 
     End Sub
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
-    Handles tvFolders.BeforeExpand
+        Handles tvFolders.BeforeExpand
         '  Expand Node (Lazy Load)
 
+
+        ' 
+
+        ' Set expanded icon
         e.Node.StateImageIndex = 1   ' ▼ expanded
 
+        ' Get the node being expanded
         Dim node As TreeNode = e.Node
 
         ' Lazy-load subdirectories
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+
+            Dim dirPath As String
+
             node.Nodes.Clear()
 
             Try
                 For Each dirPath In Directory.GetDirectories(CStr(node.Tag))
+
                     Dim di As New DirectoryInfo(dirPath)
 
                     ' Skip hidden/system folders
@@ -209,20 +219,25 @@ Public Class Form1
                         Continue For
                     End If
 
+                    ' Create child node
                     Dim child As New TreeNode(di.Name) With {
                     .Tag = dirPath,
                     .ImageKey = "Folder",
                     .SelectedImageKey = "Folder"
-                }
+                    }
 
                     If HasSubdirectories(dirPath) Then
+
                         child.Nodes.Add("Loading...")
+
                         child.StateImageIndex = 0   ' ▶ collapsed
+
                     Else
                         child.StateImageIndex = 2   ' no arrow
                     End If
 
                     node.Nodes.Add(child)
+
                 Next
 
             Catch ex As UnauthorizedAccessException
@@ -230,6 +245,7 @@ Public Class Form1
             Catch ex As IOException
                 node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
             End Try
+
         End If
 
     End Sub
