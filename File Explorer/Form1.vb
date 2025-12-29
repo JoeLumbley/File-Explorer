@@ -722,49 +722,16 @@ Public Class Form1
                 End If
 
             Case "rename"
-                ' Rename the file or directory
+                ' Rename file or directory
 
                 If parts.Length > 2 Then
+
                     Dim sourcePath As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
                     Dim newName As String = parts(parts.Length - 1).Trim()
-                    Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
 
-                    ' Reject relative paths outright
-                    If Not Path.IsPathRooted(sourcePath) Then
+                    RenameFileOrDirectory(sourcePath, newName)
 
-                        ShowStatus(IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
-
-                        Exit Sub
-
-                    End If
-
-                    ' Check if the path is in the protected list
-                    If IsProtectedPathOrFolder(sourcePath) Then
-                        ' The path is protected; prevent rename
-
-                        ' Notify the user of the prevention so the user knows why it didn't rename.
-                        Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
-                        MsgBox(msg, MsgBoxStyle.Critical, "Rename Prevented")
-
-                        NavigateTo(sourcePath)
-
-                        Exit Sub
-
-                    End If
-
-                    Try
-                        ' Validate new name
-                        If Directory.Exists(sourcePath) Then
-                            Directory.Move(sourcePath, newPath)
-                            ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
-                        ElseIf File.Exists(sourcePath) Then
-                            File.Move(sourcePath, newPath)
-                            ShowStatus(IconSuccess & " Renamed File to: " & newName)
-                        End If
-                    Catch ex As Exception
-                        MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                        ShowStatus(IconError & " Rename failed: " & ex.Message)
-                    End Try
                 Else
                     ShowStatus(IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
                 End If
@@ -901,6 +868,60 @@ Public Class Form1
                 End If
 
         End Select
+
+    End Sub
+
+    Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
+
+        Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
+
+        ' Reject relative paths outright
+        If Not Path.IsPathRooted(sourcePath) Then
+
+            ShowStatus(IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
+
+            Exit Sub
+
+        End If
+
+        ' Check if the path is in the protected list
+        If IsProtectedPathOrFolder(sourcePath) Then
+            ' The path is protected; prevent rename
+
+            ' Notify the user of the prevention so the user knows why it didn't rename.
+            Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
+            MsgBox(msg, MsgBoxStyle.Critical, "Rename Prevented")
+
+            NavigateTo(sourcePath)
+
+            Exit Sub
+
+        End If
+
+        Try
+
+            ' If source is a directory
+            If Directory.Exists(sourcePath) Then
+
+                ' Rename directory
+                Directory.Move(sourcePath, newPath)
+
+                ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+
+                ' If source is a file
+            ElseIf File.Exists(sourcePath) Then
+
+                ' Rename file
+                File.Move(sourcePath, newPath)
+
+                ShowStatus(IconSuccess & " Renamed File to: " & newName)
+
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus(IconError & " Rename failed: " & ex.Message)
+        End Try
 
     End Sub
 
