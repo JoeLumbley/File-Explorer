@@ -48,7 +48,7 @@ Public Class Form1
 
     Private currentFolder As String = String.Empty
 
-    Private showHiddenFiles As Boolean = False
+    Private ShowHiddenFiles As Boolean = False
 
     Private ColumnTypes As New Dictionary(Of Integer, ListViewItemComparer.ColumnDataType) From {
     {0, ListViewItemComparer.ColumnDataType.Text},       ' Name
@@ -88,6 +88,8 @@ Public Class Form1
 
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
+
+
 
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -903,48 +905,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub SearchInCurrentFolder(searchTerm As String)
-
-    '    ' Clear item selection for lvFiles
-
-
-    '    Try
-    '        Dim results As New List(Of String)
-    '        ' Search files
-    '        For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
-    '            If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '                results.Add(filePath)
-
-    '                'Select matching file in list view
-    '                SelectListViewItemByPath(filePath)
-
-    '                lvFiles.Focus()
-
-    '            End If
-    '        Next
-    '        ' Search directories
-    '        For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
-    '            If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '                results.Add(dirPath)
-    '            End If
-    '        Next
-    '        ' Show results
-    '        If results.Count > 0 Then
-    '            Dim resultMsg As String = "Search Results for '" & searchTerm & "':" & Environment.NewLine & Environment.NewLine &
-    '                                      String.Join(Environment.NewLine, results)
-    '            'MessageBox.Show(resultMsg, "Search Results", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '            ShowStatus(IconSmile & " Found " & results.Count & " item(s) matching: " & searchTerm)
-    '        Else
-    '            ShowStatus(IconDialog & " No items found matching: " & searchTerm)
-    '        End If
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Search failed: " & ex.Message)
-    '    End Try
-    'End Sub
-
-
-
-
     Private Sub SearchInCurrentFolder(searchTerm As String)
 
         ' Clear item selection for lvFiles
@@ -982,20 +942,6 @@ Public Class Form1
         End Try
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub SelectListViewItemByPath(fullPath As String)
         For Each item As ListViewItem In lvFiles.Items
@@ -1491,7 +1437,6 @@ Public Class Form1
         currentFolder = path
         txtPath.Text = path
         PopulateFiles(path)
-        'EnsureTreeSelection(path)
 
         If recordHistory Then
             ' Trim forward history if we branch
@@ -1628,7 +1573,9 @@ Public Class Form1
     End Function
 
     Private Sub PopulateFiles(path As String)
+
         lvFiles.BeginUpdate()
+
         lvFiles.Items.Clear()
 
         ' Folders first
@@ -1637,7 +1584,7 @@ Public Class Form1
                 Dim di = New DirectoryInfo(mDir)
 
                 ' Skip hidden/system folders unless checkbox is checked
-                If Not showHiddenFiles AndAlso
+                If Not ShowHiddenFiles AndAlso
                (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
                     Continue For
                 End If
@@ -1660,7 +1607,7 @@ Public Class Form1
                 Dim fi = New FileInfo(file)
 
                 ' Skip hidden/system files unless checkbox is checked
-                If Not showHiddenFiles AndAlso
+                If Not ShowHiddenFiles AndAlso
                (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
                     Continue For
                 End If
@@ -1702,6 +1649,7 @@ Public Class Form1
         End Try
 
         lvFiles.EndUpdate()
+
     End Sub
 
     Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
