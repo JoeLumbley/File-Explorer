@@ -91,8 +91,6 @@ Public Class Form1
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
 
-
-
     Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         InitApp()
