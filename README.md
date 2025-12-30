@@ -77,11 +77,11 @@ The CLI supports several basic commands that enable users to perform common file
  
 
 
+<img width="1266" height="662" alt="031" src="https://github.com/user-attachments/assets/bf4f994e-69f7-458b-8b5b-12f0246474e6" />
 
-<img width="1266" height="662" alt="022" src="https://github.com/user-attachments/assets/d4cc77b6-ef3d-4459-a2bc-e03956d94054" />
 
-  
-<img width="1266" height="662" alt="023" src="https://github.com/user-attachments/assets/4b112199-0021-46a8-9d6d-603c2b49e519" />
+<img width="1266" height="662" alt="032" src="https://github.com/user-attachments/assets/c7a3e045-6c55-4cd5-bf41-8f3bf820040e" />
+
 
 - **Help (`help`)** : 
   - Displays a list of available commands and their usage.
