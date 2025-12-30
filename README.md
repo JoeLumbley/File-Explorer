@@ -77,11 +77,11 @@ The CLI supports several basic commands that enable users to perform common file
  
 
 
+<img width="1266" height="662" alt="033" src="https://github.com/user-attachments/assets/5d4d9beb-8345-41db-a5dd-640e06427117" />
 
-<img width="1266" height="662" alt="022" src="https://github.com/user-attachments/assets/d4cc77b6-ef3d-4459-a2bc-e03956d94054" />
 
-  
-<img width="1266" height="662" alt="023" src="https://github.com/user-attachments/assets/4b112199-0021-46a8-9d6d-603c2b49e519" />
+<img width="1266" height="662" alt="034" src="https://github.com/user-attachments/assets/669f727f-a3d5-468d-9457-77846120f02f" />
+
 
 - **Help (`help`)** : 
   - Displays a list of available commands and their usage.
@@ -158,6 +158,19 @@ To install and run the File Explorer application:
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
 
 For more details, check the source code and documentation within the repository.
+
+
+
+
+
+
+
+<img width="1920" height="1080" alt="036" src="https://github.com/user-attachments/assets/0b26a009-9c2e-4ac0-b811-61ead16b80da" />
+
+
+
+
+
 
 
 
