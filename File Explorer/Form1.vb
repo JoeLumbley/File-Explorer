@@ -21,6 +21,9 @@
 ' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ' SOFTWARE.
 
+' Github repo: https://github.com/JoeLumbley/File-Explorer
+
+
 Imports System.IO
 Imports System.Text.RegularExpressions
 
