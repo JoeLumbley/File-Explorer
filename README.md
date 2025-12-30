@@ -165,7 +165,7 @@ For more details, check the source code and documentation within the repository.
 
 
 
-<img width="1920" height="1080" alt="035" src="https://github.com/user-attachments/assets/9d231408-5a65-4ea2-a6a4-02bc3b97d1c1" />
+<img width="1920" height="1080" alt="036" src="https://github.com/user-attachments/assets/0b26a009-9c2e-4ac0-b811-61ead16b80da" />
 
 
 
