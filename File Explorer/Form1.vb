@@ -289,12 +289,32 @@ Public Class Form1
         lvFiles.Sort()
     End Sub
 
+    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    'Handles tvFolders.NodeMouseClick
+
+    '    Dim info = tvFolders.HitTest(e.Location)
+
+    '    ' Only toggle when clicking the STATE IMAGE (arrow)
+    '    If info.Location = TreeViewHitTestLocations.StateImage Then
+
+    '        ' Toggle expand/collapse
+    '        If e.Node.IsExpanded Then
+    '            e.Node.Collapse()
+    '        Else
+    '            e.Node.Expand()
+    '        End If
+
+    '    End If
+
+    'End Sub
+
+
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
     Handles tvFolders.NodeMouseClick
 
         Dim info = tvFolders.HitTest(e.Location)
 
-        ' Only toggle when clicking the STATE IMAGE (arrow)
+        ' Only toggle when clicking the arrow
         If info.Location = TreeViewHitTestLocations.StateImage Then
 
             If e.Node.IsExpanded Then
@@ -306,6 +326,9 @@ Public Class Form1
         End If
 
     End Sub
+
+
+
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
@@ -1284,7 +1307,7 @@ Public Class Form1
 
         ' Use arrow icons instead of plus/minus
         tvFolders.ShowPlusMinus = False
-        tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼
+        tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
 
         ' --- Easy Access node ---
         Dim easyAccessNode As New TreeNode("Easy Access") With {
