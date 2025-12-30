@@ -290,26 +290,6 @@ Public Class Form1
         lvFiles.Sort()
     End Sub
 
-    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-    'Handles tvFolders.NodeMouseClick
-
-    '    Dim info = tvFolders.HitTest(e.Location)
-
-    '    ' Only toggle when clicking the STATE IMAGE (arrow)
-    '    If info.Location = TreeViewHitTestLocations.StateImage Then
-
-    '        ' Toggle expand/collapse
-    '        If e.Node.IsExpanded Then
-    '            e.Node.Collapse()
-    '        Else
-    '            e.Node.Expand()
-    '        End If
-
-    '    End If
-
-    'End Sub
-
-
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
     Handles tvFolders.NodeMouseClick
 
@@ -327,9 +307,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
