@@ -77,10 +77,10 @@ The CLI supports several basic commands that enable users to perform common file
  
 
 
-<img width="1266" height="662" alt="031" src="https://github.com/user-attachments/assets/bf4f994e-69f7-458b-8b5b-12f0246474e6" />
+<img width="1266" height="662" alt="033" src="https://github.com/user-attachments/assets/5d4d9beb-8345-41db-a5dd-640e06427117" />
 
 
-<img width="1266" height="662" alt="032" src="https://github.com/user-attachments/assets/c7a3e045-6c55-4cd5-bf41-8f3bf820040e" />
+<img width="1266" height="662" alt="034" src="https://github.com/user-attachments/assets/669f727f-a3d5-468d-9457-77846120f02f" />
 
 
 - **Help (`help`)** : 
