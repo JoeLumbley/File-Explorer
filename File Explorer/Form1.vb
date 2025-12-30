@@ -791,12 +791,13 @@ Public Class Form1
                     End While
 
                     Try
+
                         ' Create the file with initial content
                         File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
 
                         ShowStatus(IconSuccess & " Text file created: " & newFilePath)
 
-                        ' Refresh the folder view so the user sees the new file
+                        ' Refresh the folder contents view so the user sees the new file
                         NavigateTo(destDir)
 
                         ' Open the newly created file
