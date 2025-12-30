@@ -769,7 +769,44 @@ Public Class Form1
                     CreateTextFile(filePath)
 
                 Else
-                    ShowStatus(IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
+                    ' No file path provided
+
+                    Dim destDir As String = currentFolder
+
+                    ' Validate destination folder
+                    If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
+                        ShowStatus(IconWarning & " Invalid folder. Cannot create file.")
+                        Return
+                    End If
+
+                    ' Base filename
+                    Dim baseName As String = "New Text File"
+                    Dim newFilePath As String = Path.Combine(destDir, baseName & ".txt")
+
+                    ' Ensure unique name
+                    Dim counter As Integer = 1
+                    While File.Exists(newFilePath)
+                        newFilePath = Path.Combine(destDir, $"{baseName} ({counter}).txt")
+                        counter += 1
+                    End While
+
+                    Try
+                        ' Create the file with initial content
+                        File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+
+                        ShowStatus(IconSuccess & " Text file created: " & newFilePath)
+
+                        ' Refresh the folder view so the user sees the new file
+                        NavigateTo(destDir)
+
+                        ' Open the newly created file
+                        GoToFolderOrOpenFile(newFilePath)
+
+                    Catch ex As Exception
+                        ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+                    End Try
+
+
                 End If
 
             Case "help"
