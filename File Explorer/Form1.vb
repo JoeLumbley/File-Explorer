@@ -1738,7 +1738,20 @@ Public Class Form1
             Next
         Catch ex As UnauthorizedAccessException
 
-            lvFiles.Items.Add(New ListViewItem(" Folder Access Denied") With {.ForeColor = Color.Gray, .ImageKey = "AccessDenied"})
+
+
+            Dim item = New ListViewItem(" Folder Access Denied")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.Tag = " Folder Access Denied"
+            item.ImageKey = "AccessDenied"
+            item.ForeColor = Color.Gray
+
+            lvFiles.Items.Add(item)
+
+
+            'lvFiles.Items.Add(New ListViewItem(" Folder Access Denied") With {.ForeColor = Color.Gray, .ImageKey = "AccessDenied"})
 
             Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
 
@@ -1796,7 +1809,15 @@ Public Class Form1
 
         Catch ex As UnauthorizedAccessException
 
-            lvFiles.Items.Add(New ListViewItem(" File Access Denied") With {.ForeColor = Color.Gray, .ImageKey = "AccessDenied"})
+            Dim item = New ListViewItem(" File Access Denied")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.Tag = " File Access Denied"
+            item.ImageKey = "AccessDenied"
+            item.ForeColor = Color.Gray
+
+            lvFiles.Items.Add(item)
 
             Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
 
