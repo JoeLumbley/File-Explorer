@@ -741,76 +741,6 @@ Public Class Form1
                     ShowStatus(IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
                 End If
 
-            'Case "text", "txt"
-
-            '    If parts.Length > 1 Then
-
-            '        ' Reassemble everything after the command into a file path
-            '        Dim filePath As String = String.Join(" ", parts.Skip(1)).Trim()
-
-            '        ' Validate the file path
-            '        If String.IsNullOrWhiteSpace(filePath) Then
-            '            ShowStatus(IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
-            '            Return
-            '        End If
-
-            '        ' If the user typed a folder, not a file, guide them
-            '        If Directory.Exists(filePath) Then
-            '            ShowStatus(IconDialog & " That is a folder. Usage: text [file_path]  e.g., text C:\example.txt")
-            '            Return
-            '        End If
-
-            '        ' Auto‑append .txt if the user omitted an extension
-            '        If Path.GetExtension(filePath).Trim() = "" Then
-            '            filePath &= ".txt"
-            '        End If
-
-            '        ' Create or open the text file
-            '        CreateTextFile(filePath)
-
-            '    Else
-            '        ' No file path provided
-
-            '        Dim destDir As String = currentFolder
-
-            '        ' Validate destination folder
-            '        If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
-            '            ShowStatus(IconWarning & " Invalid folder. Cannot create file.")
-            '            Return
-            '        End If
-
-            '        ' Base filename
-            '        Dim baseName As String = "New Text File"
-            '        Dim newFilePath As String = Path.Combine(destDir, baseName & ".txt")
-
-            '        ' Ensure unique name
-            '        Dim counter As Integer = 1
-            '        While File.Exists(newFilePath)
-            '            newFilePath = Path.Combine(destDir, $"{baseName} ({counter}).txt")
-            '            counter += 1
-            '        End While
-
-            '        Try
-
-            '            ' Create the file with initial content
-            '            File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
-
-            '            ShowStatus(IconSuccess & " Text file created: " & newFilePath)
-
-            '            ' Refresh the folder contents view so the user sees the new file
-            '            NavigateTo(destDir)
-
-            '            ' Open the newly created file
-            '            GoToFolderOrOpenFile(newFilePath)
-
-            '        Catch ex As Exception
-            '            ShowStatus(IconError & " Failed to create text file: " & ex.Message)
-            '        End Try
-
-
-            '    End If
-
-
             Case "text", "txt"
 
                 If parts.Length > 1 Then
@@ -864,11 +794,6 @@ Public Class Form1
                 Catch ex As Exception
                     ShowStatus(IconError & " Failed to create text file: " & ex.Message)
                 End Try
-
-
-
-
-
 
             Case "help"
 
@@ -974,21 +899,6 @@ Public Class Form1
 
     End Sub
 
-
-
-    'Private Function NormalizeTextFilePath(raw As String) As String
-    '    Dim trimmed = raw.Trim()
-
-    '    If String.IsNullOrWhiteSpace(trimmed) Then Return Nothing
-    '    If Directory.Exists(trimmed) Then Return Nothing
-
-    '    If Path.GetExtension(trimmed) = "" Then
-    '        trimmed &= ".txt"
-    '    End If
-
-    '    Return trimmed
-    'End Function
-
     Private Function NormalizeTextFilePath(raw As String) As String
         If raw Is Nothing Then Return Nothing
 
@@ -1006,21 +916,6 @@ Public Class Form1
         Return trimmed
     End Function
 
-
-
-
-    'Private Function GetUniqueFilePath(baseDir As String, baseName As String, ext As String) As String
-    '    Dim DirPathAndFileName = Path.Combine(baseDir, baseName & ext)
-    '    Dim counter = 1
-
-    '    While File.Exists(DirPathAndFileName)
-    '        DirPathAndFileName = Path.Combine(baseDir, $"{baseName} ({counter}){ext}")
-    '        counter += 1
-    '    End While
-
-    '    Return DirPathAndFileName
-    'End Function
-
     Private Function GetUniqueFilePath(baseDir As String, baseName As String, ext As String) As String
         Dim candidate = Path.Combine(baseDir, baseName & ext)
         Dim counter = 1
@@ -1032,15 +927,6 @@ Public Class Form1
 
         Return candidate
     End Function
-
-
-
-
-
-
-
-
-
 
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
 
