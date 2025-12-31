@@ -321,8 +321,17 @@ Public Class Form1
 
             Catch ex As UnauthorizedAccessException
                 node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+                Debug.WriteLine($"[Access denied]: {ex.Message}")
+
             Catch ex As IOException
                 node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+
+                Debug.WriteLine($"[Unavailable]: {ex.Message}")
+
+            Catch ex As Exception
+
+                Debug.WriteLine($"ExpandNode_LazyLoad Error: {ex.Message}")
+
             End Try
         End If
     End Sub
@@ -372,6 +381,7 @@ Public Class Form1
 
             MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Rename failed: " & ex.Message)
+            Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
             e.CancelEdit = True
 
         End Try
@@ -415,7 +425,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Paste failed: " & ex.Message)
-
+            Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
     End Sub
 
@@ -490,6 +500,7 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+            Debug.WriteLine("NewTextFile_Click Error: " & ex.Message)
         End Try
 
     End Sub
@@ -585,6 +596,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Delete failed: " & ex.Message)
+            Debug.WriteLine("Delete_Click Error: " & ex.Message)
         End Try
 
     End Sub
@@ -627,6 +639,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Failed to create folder: " & ex.Message)
+            Debug.WriteLine("NewFolder_Click Error: " & ex.Message)
         End Try
 
     End Sub
@@ -812,6 +825,7 @@ Public Class Form1
 
                 Catch ex As Exception
                     ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+                    Debug.WriteLine("Text Command Error: " & ex.Message)
                 End Try
 
             Case "help"
@@ -997,6 +1011,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Rename failed: " & ex.Message)
+            Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
         End Try
 
     End Sub
@@ -1035,6 +1050,7 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & " Search failed: " & ex.Message)
+            Debug.WriteLine("SearchInCurrentFolder Error: " & ex.Message)
         End Try
 
     End Sub
@@ -1076,6 +1092,8 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+            Debug.WriteLine("CreateTextFile Error: " & ex.Message)
+
         End Try
 
     End Sub
@@ -1092,6 +1110,7 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & " Failed to create directory: " & ex.Message)
+            Debug.WriteLine("CreateDirectory Error: " & ex.Message)
         End Try
 
     End Sub
@@ -1119,6 +1138,7 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & " Copy Failed: " & ex.Message)
+            Debug.WriteLine("CopyFile Error: " & ex.Message)
         End Try
     End Sub
 
@@ -1159,6 +1179,7 @@ Public Class Form1
             End If
         Catch ex As Exception
             ShowStatus(IconError & " Move failed: " & ex.Message)
+            Debug.WriteLine("MoveFileOrDirectory Error: " & ex.Message)
         End Try
     End Sub
 
@@ -1251,6 +1272,7 @@ Public Class Form1
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error)
             ShowStatus(IconError & " Delete failed: " & ex.Message)
+            Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
 
     End Sub
@@ -1287,6 +1309,7 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & "Copy failed: " & ex.Message)
+            Debug.WriteLine("CopyDirectory Error: " & ex.Message)
         End Try
 
     End Sub
@@ -1436,6 +1459,12 @@ Public Class Form1
 
                 Catch ex As IOException
                     Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+                Catch ex As UnauthorizedAccessException
+                    Debug.WriteLine($"Access denied to drive {di.Name}: {ex.Message}")
+
+                Catch ex As Exception
+                    Debug.WriteLine($"Unexpected error with drive {di.Name}: {ex.Message}")
+
                 End Try
             Else
                 Debug.WriteLine($"Drive {di.Name} is not ready.")
@@ -1480,6 +1509,9 @@ Public Class Form1
 
         imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
         imgList.Images.Add("Optical", My.Resources.Resource1.Optical_16X16)
+        imgList.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
+        imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
+
 
         ' Assign ImageList to controls
         tvFolders.ImageList = imgList
@@ -1608,6 +1640,7 @@ Public Class Form1
         Catch ex As Exception
             ' Handle any exceptions when accessing DriveInfo
             ShowStatus(IconError & " NavTree: Error accessing drive: " & ex.Message)
+            Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
             Return
         End Try
 
@@ -1652,6 +1685,8 @@ Public Class Form1
 
             Catch ex As Exception
                 ShowStatus(IconError & " Cannot open: " & ex.Message)
+
+                Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
             End Try
 
         Else
@@ -1661,11 +1696,19 @@ Public Class Form1
     End Sub
 
     Private Function HasSubdirectories(path As String) As Boolean
+
         Try
+
             Return Directory.EnumerateDirectories(path).Any()
-        Catch
+
+        Catch ex As Exception
+
+            Debug.WriteLine($"HasSubdirectories: Access denied or error for path: {path}")
+
             Return False
+
         End Try
+
     End Function
 
     Private Sub PopulateFiles(path As String)
@@ -1694,7 +1737,17 @@ Public Class Form1
                 lvFiles.Items.Add(item)
             Next
         Catch ex As UnauthorizedAccessException
-            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {.ForeColor = Color.Gray})
+
+            lvFiles.Items.Add(New ListViewItem(" Folder Access Denied") With {.ForeColor = Color.Gray, .ImageKey = "AccessDenied"})
+
+            Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
+
+        Catch ex As Exception
+
+            lvFiles.Items.Add(New ListViewItem("[Error reading folders]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
+
+            Debug.WriteLine($"PopulateFiles [Error]: {ex.Message}")
+
         End Try
 
         ' Files
@@ -1740,8 +1793,20 @@ Public Class Form1
 
                 lvFiles.Items.Add(item)
             Next
+
         Catch ex As UnauthorizedAccessException
-            lvFiles.Items.Add(New ListViewItem("[Access denied]") With {.ForeColor = Color.Gray})
+
+            lvFiles.Items.Add(New ListViewItem(" File Access Denied") With {.ForeColor = Color.Gray, .ImageKey = "AccessDenied"})
+
+            Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+
+            ' How do we say this has been handled?
+        Catch ex As Exception
+
+            lvFiles.Items.Add(New ListViewItem("[Error reading files]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
+
+            Debug.WriteLine($"PopulateFiles [Error]: {ex.Message}")
+
         End Try
 
         lvFiles.EndUpdate()

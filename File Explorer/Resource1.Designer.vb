@@ -67,6 +67,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend Shared ReadOnly Property Access_Denied_16X16() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Access Denied 16X16", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend Shared ReadOnly Property Arrow_Down_16X16() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Arrow Down 16X16", resourceCulture)
@@ -130,6 +140,16 @@ Namespace My.Resources
         Friend Shared ReadOnly Property Easy_Access_16X16() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Easy Access 16X16", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend Shared ReadOnly Property Error_16X16() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Error 16X16", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
