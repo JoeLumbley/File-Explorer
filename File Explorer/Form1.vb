@@ -1036,71 +1036,6 @@ Public Class Form1
 
 
 
-    Private Sub Test_NormalizeTextFilePath()
-
-        Debug.WriteLine("→ Testing NormalizeTextFilePath")
-
-        ' === Null / Empty ===
-        AssertTrue(NormalizeTextFilePath(Nothing) Is Nothing, "Nothing should return Nothing")
-        AssertTrue(NormalizeTextFilePath("") Is Nothing, "Empty string should return Nothing")
-        AssertTrue(NormalizeTextFilePath("   ") Is Nothing, "Whitespace should return Nothing")
-
-        ' === Reject folders ===
-        Dim tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
-        Directory.CreateDirectory(tempDir)
-        AssertTrue(NormalizeTextFilePath(tempDir) Is Nothing, "Existing directory should return Nothing")
-        Directory.Delete(tempDir)
-
-        ' === Auto-append .txt ===
-        AssertTrue(NormalizeTextFilePath("C:\Test\Notes") = "C:\Test\Notes.txt",
-               "Missing extension should auto-append .txt")
-
-        ' === Preserve existing extension ===
-        AssertTrue(NormalizeTextFilePath("C:\Test\Notes.md") = "C:\Test\Notes.md",
-               "Existing extension should be preserved")
-
-        ' === Trim whitespace ===
-        AssertTrue(NormalizeTextFilePath("   C:\File   ") = "C:\File.txt",
-               "Whitespace should be trimmed before processing")
-
-        Debug.WriteLine("✓ NormalizeTextFilePath tests passed")
-
-    End Sub
-
-
-
-    Private Sub Test_GetUniqueFilePath()
-
-        Debug.WriteLine("→ Testing GetUniqueFilePath")
-
-        ' Create a temporary directory for isolated testing
-        Dim tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
-        Directory.CreateDirectory(tempDir)
-
-        ' === No conflicts ===
-        Dim p1 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
-        AssertTrue(p1 = Path.Combine(tempDir, "New Text File.txt"),
-               "Should return base name when no conflict exists")
-
-        ' === One conflict ===
-        File.WriteAllText(Path.Combine(tempDir, "New Text File.txt"), "")
-        Dim p2 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
-        AssertTrue(p2 = Path.Combine(tempDir, "New Text File (1).txt"),
-               "Should append (1) when base file exists")
-
-        ' === Multiple conflicts ===
-        File.WriteAllText(Path.Combine(tempDir, "New Text File (1).txt"), "")
-        File.WriteAllText(Path.Combine(tempDir, "New Text File (2).txt"), "")
-        Dim p3 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
-        AssertTrue(p3 = Path.Combine(tempDir, "New Text File (3).txt"),
-               "Should increment until a free name is found")
-
-        ' Cleanup
-        Directory.Delete(tempDir, recursive:=True)
-
-        Debug.WriteLine("✓ GetUniqueFilePath tests passed")
-
-    End Sub
 
 
 
@@ -2087,6 +2022,70 @@ Public Class Form1
         AssertTrue(cmp.Test_ParseSize("1 TB") = 1099511627776, "1 TB should parse to 1,099,511,627,776 bytes")
 
         Debug.WriteLine("✓ ParseSize tests passed")
+
+    End Sub
+
+    Private Sub Test_NormalizeTextFilePath()
+
+        Debug.WriteLine("→ Testing NormalizeTextFilePath")
+
+        ' === Null / Empty ===
+        AssertTrue(NormalizeTextFilePath(Nothing) Is Nothing, "Nothing should return Nothing")
+        AssertTrue(NormalizeTextFilePath("") Is Nothing, "Empty string should return Nothing")
+        AssertTrue(NormalizeTextFilePath("   ") Is Nothing, "Whitespace should return Nothing")
+
+        ' === Reject folders ===
+        Dim tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
+        Directory.CreateDirectory(tempDir)
+        AssertTrue(NormalizeTextFilePath(tempDir) Is Nothing, "Existing directory should return Nothing")
+        Directory.Delete(tempDir)
+
+        ' === Auto-append .txt ===
+        AssertTrue(NormalizeTextFilePath("C:\Test\Notes") = "C:\Test\Notes.txt",
+               "Missing extension should auto-append .txt")
+
+        ' === Preserve existing extension ===
+        AssertTrue(NormalizeTextFilePath("C:\Test\Notes.md") = "C:\Test\Notes.md",
+               "Existing extension should be preserved")
+
+        ' === Trim whitespace ===
+        AssertTrue(NormalizeTextFilePath("   C:\File   ") = "C:\File.txt",
+               "Whitespace should be trimmed before processing")
+
+        Debug.WriteLine("✓ NormalizeTextFilePath tests passed")
+
+    End Sub
+
+    Private Sub Test_GetUniqueFilePath()
+
+        Debug.WriteLine("→ Testing GetUniqueFilePath")
+
+        ' Create a temporary directory for isolated testing
+        Dim tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
+        Directory.CreateDirectory(tempDir)
+
+        ' === No conflicts ===
+        Dim p1 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
+        AssertTrue(p1 = Path.Combine(tempDir, "New Text File.txt"),
+               "Should return base name when no conflict exists")
+
+        ' === One conflict ===
+        File.WriteAllText(Path.Combine(tempDir, "New Text File.txt"), "")
+        Dim p2 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
+        AssertTrue(p2 = Path.Combine(tempDir, "New Text File (1).txt"),
+               "Should append (1) when base file exists")
+
+        ' === Multiple conflicts ===
+        File.WriteAllText(Path.Combine(tempDir, "New Text File (1).txt"), "")
+        File.WriteAllText(Path.Combine(tempDir, "New Text File (2).txt"), "")
+        Dim p3 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
+        AssertTrue(p3 = Path.Combine(tempDir, "New Text File (3).txt"),
+               "Should increment until a free name is found")
+
+        ' Cleanup
+        Directory.Delete(tempDir, recursive:=True)
+
+        Debug.WriteLine("✓ GetUniqueFilePath tests passed")
 
     End Sub
 
