@@ -91,25 +91,29 @@ Public Class Form1
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
 
-    Private Sub Form_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub Form_Load(sender As Object, e As EventArgs) _
+        Handles MyBase.Load
 
         InitApp()
 
     End Sub
 
-    Private Sub btnBack_Click(sender As Object, e As EventArgs) Handles btnBack.Click
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) _
+        Handles btnBack.Click
 
         NavigateBackward_Click()
 
     End Sub
 
-    Private Sub btnForward_Click(sender As Object, e As EventArgs) Handles btnForward.Click
+    Private Sub btnForward_Click(sender As Object, e As EventArgs) _
+        Handles btnForward.Click
 
         NavigateForward_Click()
 
     End Sub
 
-    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) _
+        Handles btnRefresh.Click
 
         InitTreeRoots()
 
@@ -117,7 +121,8 @@ Public Class Form1
 
     End Sub
 
-    Private Sub bntHome_Click(sender As Object, e As EventArgs) Handles bntHome.Click
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) _
+        Handles bntHome.Click
 
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
 
@@ -125,57 +130,94 @@ Public Class Form1
 
     End Sub
 
-    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) Handles txtPath.KeyDown
+    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) _
+        Handles txtPath.KeyDown
 
         Path_KeyDown(e)
 
     End Sub
 
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
+    Private Sub btnGo_Click(sender As Object, e As EventArgs) _
+        Handles btnGo.Click
 
         ExecuteCommand(txtPath.Text.Trim())
 
     End Sub
 
-    Private Sub btnCopy_Click(sender As Object, e As EventArgs) Handles btnCopy.Click
+    Private Sub btnCopy_Click(sender As Object, e As EventArgs) _
+        Handles btnCopy.Click
 
         CopySelected_Click(sender, e)
 
     End Sub
 
-    Private Sub btnCut_Click(sender As Object, e As EventArgs) Handles btnCut.Click
+    Private Sub btnCut_Click(sender As Object, e As EventArgs) _
+        Handles btnCut.Click
 
         CutSelected_Click(sender, e)
 
     End Sub
 
-    Private Sub btnPaste_Click(sender As Object, e As EventArgs) Handles btnPaste.Click
+    Private Sub btnPaste_Click(sender As Object, e As EventArgs) _
+        Handles btnPaste.Click
 
         PasteSelected_Click(sender, e)
 
     End Sub
 
-    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) Handles btnNewTextFile.Click
+    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) _
+        Handles btnNewTextFile.Click
 
         NewTextFile_Click(sender, e)
 
     End Sub
 
-    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) Handles btnNewFolder.Click
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
+        Handles btnNewFolder.Click
 
         NewFolder_Click(sender, e)
 
     End Sub
 
-    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) _
+        Handles btnDelete.Click
 
         Delete_Click(sender, e)
 
     End Sub
 
-    Private Sub btnRename_Click(sender As Object, e As EventArgs) Handles btnRename.Click
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) _
+        Handles btnRename.Click
 
         RenameFile_Click(sender, e)
+
+    End Sub
+
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+        Handles tvFolders.NodeMouseClick
+
+        Dim info = tvFolders.HitTest(e.Location)
+
+        ' Only toggle when clicking the arrow
+        If info.Location = TreeViewHitTestLocations.StateImage Then
+
+            If e.Node.IsExpanded Then
+                e.Node.Collapse()
+            Else
+                e.Node.Expand()
+            End If
+
+        End If
+
+    End Sub
+
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
+        Handles tvFolders.BeforeExpand
+
+        ExpandNode_LazyLoad(e.Node)
+
+        ' Set expanded icon
+        e.Node.StateImageIndex = 1   ' ▼ expanded
 
     End Sub
 
@@ -186,13 +228,61 @@ Public Class Form1
 
     End Sub
 
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
-    Handles tvFolders.BeforeExpand
+    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
+        Handles tvFolders.BeforeCollapse
 
-        ExpandNode_LazyLoad(e.Node)
+        e.Node.StateImageIndex = 0   ' ▶ collapsed
 
-        ' Set expanded icon
-        e.Node.StateImageIndex = 1   ' ▼ expanded
+    End Sub
+
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
+        Handles lvFiles.ItemActivate
+        ' The ItemActivate event is raised when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
+
+        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+
+    End Sub
+
+    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
+        Handles lvFiles.BeforeLabelEdit
+
+        ' Prevent renaming of protected paths
+        Dim item As ListViewItem = lvFiles.Items(e.Item)
+        Dim fullPath As String = CStr(item.Tag)
+
+        If IsProtectedPathOrFolder(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(IconProtect & " Renaming protected items is not allowed.")
+        End If
+
+    End Sub
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+        Handles lvFiles.AfterLabelEdit
+
+        RenameFileOrFolder_AfterLabelEdit(e)
+
+    End Sub
+
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) _
+        Handles lvFiles.ColumnClick
+
+        If e.Column = _lastColumn Then
+            _lastOrder = If(_lastOrder = SortOrder.Ascending,
+                        SortOrder.Descending,
+                        SortOrder.Ascending)
+        Else
+            _lastColumn = e.Column
+            _lastOrder = SortOrder.Ascending
+        End If
+
+        UpdateColumnHeaders(e.Column, _lastOrder)
+
+        lvFiles.ListViewItemSorter =
+        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
+
+        lvFiles.Sort()
 
     End Sub
 
@@ -235,77 +325,6 @@ Public Class Form1
                 node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
             End Try
         End If
-    End Sub
-
-    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
-    Handles tvFolders.BeforeCollapse
-
-        e.Node.StateImageIndex = 0   ' ▶ collapsed
-
-    End Sub
-
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) Handles lvFiles.ItemActivate
-        ' The ItemActivate event is raised when the user double-clicks an item or
-        ' presses the Enter key when an item is selected.
-
-        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
-
-    End Sub
-
-    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.BeforeLabelEdit
-
-        ' Prevent renaming of protected paths
-        Dim item As ListViewItem = lvFiles.Items(e.Item)
-        Dim fullPath As String = CStr(item.Tag)
-
-        If IsProtectedPathOrFolder(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(IconProtect & " Renaming protected items is not allowed.")
-        End If
-
-    End Sub
-
-    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) Handles lvFiles.AfterLabelEdit
-
-        RenameFileOrFolder_AfterLabelEdit(e)
-
-    End Sub
-
-    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) Handles lvFiles.ColumnClick
-
-        If e.Column = _lastColumn Then
-            _lastOrder = If(_lastOrder = SortOrder.Ascending,
-                        SortOrder.Descending,
-                        SortOrder.Ascending)
-        Else
-            _lastColumn = e.Column
-            _lastOrder = SortOrder.Ascending
-        End If
-
-        UpdateColumnHeaders(e.Column, _lastOrder)
-
-        lvFiles.ListViewItemSorter =
-        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
-
-        lvFiles.Sort()
-    End Sub
-
-    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-    Handles tvFolders.NodeMouseClick
-
-        Dim info = tvFolders.HitTest(e.Location)
-
-        ' Only toggle when clicking the arrow
-        If info.Location = TreeViewHitTestLocations.StateImage Then
-
-            If e.Node.IsExpanded Then
-                e.Node.Collapse()
-            Else
-                e.Node.Expand()
-            End If
-
-        End If
-
     End Sub
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
