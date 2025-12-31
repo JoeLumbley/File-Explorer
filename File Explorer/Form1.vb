@@ -976,12 +976,29 @@ Public Class Form1
 
 
 
-    Private Function NormalizeTextFilePath(raw As String) As String
-        Dim trimmed = raw.Trim()
+    'Private Function NormalizeTextFilePath(raw As String) As String
+    '    Dim trimmed = raw.Trim()
 
-        If String.IsNullOrWhiteSpace(trimmed) Then Return Nothing
+    '    If String.IsNullOrWhiteSpace(trimmed) Then Return Nothing
+    '    If Directory.Exists(trimmed) Then Return Nothing
+
+    '    If Path.GetExtension(trimmed) = "" Then
+    '        trimmed &= ".txt"
+    '    End If
+
+    '    Return trimmed
+    'End Function
+
+    Private Function NormalizeTextFilePath(raw As String) As String
+        If raw Is Nothing Then Return Nothing
+
+        Dim trimmed = raw.Trim()
+        If trimmed.Length = 0 Then Return Nothing
+
+        ' Reject folders — this function is for files only
         If Directory.Exists(trimmed) Then Return Nothing
 
+        ' Auto-append .txt if missing
         If Path.GetExtension(trimmed) = "" Then
             trimmed &= ".txt"
         End If
@@ -992,30 +1009,98 @@ Public Class Form1
 
 
 
+    'Private Function GetUniqueFilePath(baseDir As String, baseName As String, ext As String) As String
+    '    Dim DirPathAndFileName = Path.Combine(baseDir, baseName & ext)
+    '    Dim counter = 1
 
+    '    While File.Exists(DirPathAndFileName)
+    '        DirPathAndFileName = Path.Combine(baseDir, $"{baseName} ({counter}){ext}")
+    '        counter += 1
+    '    End While
+
+    '    Return DirPathAndFileName
+    'End Function
 
     Private Function GetUniqueFilePath(baseDir As String, baseName As String, ext As String) As String
-        Dim DirPathAndFileName = Path.Combine(baseDir, baseName & ext)
+        Dim candidate = Path.Combine(baseDir, baseName & ext)
         Dim counter = 1
 
-        While File.Exists(DirPathAndFileName)
-            DirPathAndFileName = Path.Combine(baseDir, $"{baseName} ({counter}){ext}")
+        While File.Exists(candidate)
+            candidate = Path.Combine(baseDir, $"{baseName} ({counter}){ext}")
             counter += 1
         End While
 
-        Return DirPathAndFileName
+        Return candidate
     End Function
 
 
 
 
+    Private Sub Test_NormalizeTextFilePath()
+
+        Debug.WriteLine("→ Testing NormalizeTextFilePath")
+
+        ' === Null / Empty ===
+        AssertTrue(NormalizeTextFilePath(Nothing) Is Nothing, "Nothing should return Nothing")
+        AssertTrue(NormalizeTextFilePath("") Is Nothing, "Empty string should return Nothing")
+        AssertTrue(NormalizeTextFilePath("   ") Is Nothing, "Whitespace should return Nothing")
+
+        ' === Reject folders ===
+        Dim tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
+        Directory.CreateDirectory(tempDir)
+        AssertTrue(NormalizeTextFilePath(tempDir) Is Nothing, "Existing directory should return Nothing")
+        Directory.Delete(tempDir)
+
+        ' === Auto-append .txt ===
+        AssertTrue(NormalizeTextFilePath("C:\Test\Notes") = "C:\Test\Notes.txt",
+               "Missing extension should auto-append .txt")
+
+        ' === Preserve existing extension ===
+        AssertTrue(NormalizeTextFilePath("C:\Test\Notes.md") = "C:\Test\Notes.md",
+               "Existing extension should be preserved")
+
+        ' === Trim whitespace ===
+        AssertTrue(NormalizeTextFilePath("   C:\File   ") = "C:\File.txt",
+               "Whitespace should be trimmed before processing")
+
+        Debug.WriteLine("✓ NormalizeTextFilePath tests passed")
+
+    End Sub
 
 
 
+    Private Sub Test_GetUniqueFilePath()
 
+        Debug.WriteLine("→ Testing GetUniqueFilePath")
 
+        ' Create a temporary directory for isolated testing
+        Dim tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString())
+        Directory.CreateDirectory(tempDir)
 
+        ' === No conflicts ===
+        Dim p1 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
+        AssertTrue(p1 = Path.Combine(tempDir, "New Text File.txt"),
+               "Should return base name when no conflict exists")
 
+        ' === One conflict ===
+        File.WriteAllText(Path.Combine(tempDir, "New Text File.txt"), "")
+        Dim p2 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
+        AssertTrue(p2 = Path.Combine(tempDir, "New Text File (1).txt"),
+               "Should append (1) when base file exists")
+
+        ' === Multiple conflicts ===
+        File.WriteAllText(Path.Combine(tempDir, "New Text File (1).txt"), "")
+        File.WriteAllText(Path.Combine(tempDir, "New Text File (2).txt"), "")
+        Dim p3 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
+        AssertTrue(p3 = Path.Combine(tempDir, "New Text File (3).txt"),
+               "Should increment until a free name is found")
+
+        ' Cleanup
+        Directory.Delete(tempDir, recursive:=True)
+
+        Debug.WriteLine("✓ GetUniqueFilePath tests passed")
+
+    End Sub
 
 
 
@@ -1903,6 +1988,10 @@ Public Class Form1
 
         'TestListViewParser()
 
+        Test_NormalizeTextFilePath()
+
+        Test_GetUniqueFilePath()
+
         Debug.WriteLine("All tests executed.")
 
     End Sub
@@ -1987,60 +2076,150 @@ Public Class Form1
 
 
 
+    'Private Sub TestIsProtectedPath_SubdirMode()
+
+    '    ' === Positive Tests (Exact Matches, expected True) ===
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows") = True)
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Program Files") = True)
+
+    '    ' === Positive Tests (Subdirectories now succeed) ===
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows\System32") = True)
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Program Files\MyApp") = True)
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0") = True)
+
+    '    ' === Negative Tests (Unrelated paths still fail) ===
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Temp") = False)
+    '    Debug.Assert(IsProtectedPathOrFolder("D:\Games") = False)
+
+    '    ' === Edge Cases ===
+    '    Debug.Assert(IsProtectedPathOrFolder("c:\windows") = True)   ' Case-insensitive
+    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows\") = True)  ' Trailing slash
+
+    '    Debug.WriteLine("Subdirectory-inclusive tests executed.")
+
+    'End Sub
+
+
+
     Private Sub TestIsProtectedPath_SubdirMode()
 
+        Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Subdirectory Mode)")
+
         ' === Positive Tests (Exact Matches, expected True) ===
-        Debug.Assert(IsProtectedPathOrFolder("C:\Windows") = True)
-        Debug.Assert(IsProtectedPathOrFolder("C:\Program Files") = True)
+        AssertTrue(IsProtectedPathOrFolder("C:\Windows"), "Windows root should be protected")
+        AssertTrue(IsProtectedPathOrFolder("C:\Program Files"), "Program Files root should be protected")
 
         ' === Positive Tests (Subdirectories now succeed) ===
-        Debug.Assert(IsProtectedPathOrFolder("C:\Windows\System32") = True)
-        Debug.Assert(IsProtectedPathOrFolder("C:\Program Files\MyApp") = True)
-        Debug.Assert(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0") = True)
+        AssertTrue(IsProtectedPathOrFolder("C:\Windows\System32"), "System32 should be protected as a subdirectory")
+        AssertTrue(IsProtectedPathOrFolder("C:\Program Files\MyApp"), "Subfolder under Program Files should be protected")
+        AssertTrue(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0"),
+               "Deep Windows subdirectory should be protected")
 
         ' === Negative Tests (Unrelated paths still fail) ===
-        Debug.Assert(IsProtectedPathOrFolder("C:\Temp") = False)
-        Debug.Assert(IsProtectedPathOrFolder("D:\Games") = False)
+        AssertFalse(IsProtectedPathOrFolder("C:\Temp"), "Temp should NOT be protected")
+        AssertFalse(IsProtectedPathOrFolder("D:\Games"), "Unrelated drive should NOT be protected")
 
         ' === Edge Cases ===
-        Debug.Assert(IsProtectedPathOrFolder("c:\windows") = True)   ' Case-insensitive
-        Debug.Assert(IsProtectedPathOrFolder("C:\Windows\") = True)  ' Trailing slash
+        AssertTrue(IsProtectedPathOrFolder("c:\windows"), "Case-insensitive match should be protected")
+        AssertTrue(IsProtectedPathOrFolder("C:\Windows\"), "Trailing slash should still match protected path")
 
-        Debug.WriteLine("Subdirectory-inclusive tests executed.")
+        Debug.WriteLine("✓ Subdirectory-inclusive tests passed")
 
     End Sub
+
+
+
+
+
+
+    'Private Sub TestFormatSize()
+
+    '    ' Test FormatSize
+    '    Debug.Assert(FormatSize(0) = "0 B")
+    '    Debug.Assert(FormatSize(500) = "500 B")
+    '    Debug.Assert(FormatSize(1024) = "1 KB")
+    '    Debug.Assert(FormatSize(1536) = "1.5 KB")
+    '    Debug.Assert(FormatSize(1048576) = "1 MB")
+    '    Debug.Assert(FormatSize(1073741824) = "1 GB")
+    '    Debug.Assert(FormatSize(1099511627776) = "1 TB")
+
+    '    Debug.WriteLine("FormatSize tests executed.")
+
+    'End Sub
+
+
 
     Private Sub TestFormatSize()
 
-        ' Test FormatSize
-        Debug.Assert(FormatSize(0) = "0 B")
-        Debug.Assert(FormatSize(500) = "500 B")
-        Debug.Assert(FormatSize(1024) = "1 KB")
-        Debug.Assert(FormatSize(1536) = "1.5 KB")
-        Debug.Assert(FormatSize(1048576) = "1 MB")
-        Debug.Assert(FormatSize(1073741824) = "1 GB")
-        Debug.Assert(FormatSize(1099511627776) = "1 TB")
+        Debug.WriteLine("→ Testing FormatSize")
 
-        Debug.WriteLine("FormatSize tests executed.")
+        AssertTrue(FormatSize(0) = "0 B", "0 bytes should format as '0 B'")
+        AssertTrue(FormatSize(500) = "500 B", "500 bytes should format as '500 B'")
+        AssertTrue(FormatSize(1024) = "1 KB", "1024 bytes should format as '1 KB'")
+        AssertTrue(FormatSize(1536) = "1.5 KB", "1536 bytes should format as '1.5 KB'")
+        AssertTrue(FormatSize(1048576) = "1 MB", "1,048,576 bytes should format as '1 MB'")
+        AssertTrue(FormatSize(1073741824) = "1 GB", "1,073,741,824 bytes should format as '1 GB'")
+        AssertTrue(FormatSize(1099511627776) = "1 TB", "1,099,511,627,776 bytes should format as '1 TB'")
+
+        Debug.WriteLine("✓ FormatSize tests passed")
 
     End Sub
+
+
+
+
+
+
+    'Private Sub TestParseSize()
+
+    '    ' Test ParseSize (using exposed test wrapper)
+    '    Dim cmp As New ListViewItemComparer(0, SortOrder.Ascending)
+
+    '    Debug.Assert(cmp.Test_ParseSize("0 B") = 0)
+    '    Debug.Assert(cmp.Test_ParseSize("500 B") = 500)
+    '    Debug.Assert(cmp.Test_ParseSize("1 KB") = 1024)
+    '    Debug.Assert(cmp.Test_ParseSize("1.5 KB") = 1536)
+    '    Debug.Assert(cmp.Test_ParseSize("1 MB") = 1048576)
+    '    Debug.Assert(cmp.Test_ParseSize("1 GB") = 1073741824)
+    '    Debug.Assert(cmp.Test_ParseSize("1 TB") = 1099511627776)
+
+    '    Debug.WriteLine("ParseSize tests executed.")
+
+    'End Sub
+
+
+
+
+
+
 
     Private Sub TestParseSize()
 
-        ' Test ParseSize (using exposed test wrapper)
+        Debug.WriteLine("→ Testing ParseSize")
+
         Dim cmp As New ListViewItemComparer(0, SortOrder.Ascending)
 
-        Debug.Assert(cmp.Test_ParseSize("0 B") = 0)
-        Debug.Assert(cmp.Test_ParseSize("500 B") = 500)
-        Debug.Assert(cmp.Test_ParseSize("1 KB") = 1024)
-        Debug.Assert(cmp.Test_ParseSize("1.5 KB") = 1536)
-        Debug.Assert(cmp.Test_ParseSize("1 MB") = 1048576)
-        Debug.Assert(cmp.Test_ParseSize("1 GB") = 1073741824)
-        Debug.Assert(cmp.Test_ParseSize("1 TB") = 1099511627776)
+        AssertTrue(cmp.Test_ParseSize("0 B") = 0, "0 B should parse to 0 bytes")
+        AssertTrue(cmp.Test_ParseSize("500 B") = 500, "500 B should parse to 500 bytes")
+        AssertTrue(cmp.Test_ParseSize("1 KB") = 1024, "1 KB should parse to 1024 bytes")
+        AssertTrue(cmp.Test_ParseSize("1.5 KB") = 1536, "1.5 KB should parse to 1536 bytes")
+        AssertTrue(cmp.Test_ParseSize("1 MB") = 1048576, "1 MB should parse to 1,048,576 bytes")
+        AssertTrue(cmp.Test_ParseSize("1 GB") = 1073741824, "1 GB should parse to 1,073,741,824 bytes")
+        AssertTrue(cmp.Test_ParseSize("1 TB") = 1099511627776, "1 TB should parse to 1,099,511,627,776 bytes")
 
-        Debug.WriteLine("ParseSize tests executed.")
+        Debug.WriteLine("✓ ParseSize tests passed")
 
     End Sub
+
+
+
+
+
+
+
+
+
+
 
     Private Sub TestListViewParser()
 
