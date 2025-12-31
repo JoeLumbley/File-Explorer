@@ -1975,18 +1975,11 @@ Public Class Form1
 
         Debug.WriteLine("Running tests...")
 
-
         TestIsProtectedPath()
-
-        'TestIsProtectedPath_ExactMode()
-
-        'TestIsProtectedPath_SubdirMode()
 
         TestParseSize()
 
         TestFormatSize()
-
-        'TestListViewParser()
 
         Test_NormalizeTextFilePath()
 
@@ -2003,35 +1996,6 @@ Public Class Form1
     Private Sub AssertFalse(condition As Boolean, message As String)
         Debug.Assert(Not condition, message)
     End Sub
-
-
-
-
-
-
-
-    'Private Sub TestIsProtectedPath_ExactMode()
-
-    '    Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-
-    '    ' === Positive Tests (Exact Matches, expected True) ===
-    '    Debug.Assert(IsProtectedPathOrFolder(userProfile) = True)
-
-    '    Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")) = True)
-    '    Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")) = True)
-    '    Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")) = True)
-
-    '    ' === Negative Tests (Subdirectories should fail in exact-only mode) ===
-    '    Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents\MyProject")) = False)
-    '    Debug.Assert(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop\TestFolder")) = False)
-
-    '    ' === Edge Cases ===
-    '    Debug.Assert(IsProtectedPathOrFolder("") = False)
-    '    Debug.Assert(IsProtectedPathOrFolder(Nothing) = False)
-
-    '    Debug.WriteLine("Exact-mode tests executed.")
-
-    'End Sub
 
     Private Sub TestIsProtectedPath()
 
@@ -2066,41 +2030,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-    'Private Sub TestIsProtectedPath_SubdirMode()
-
-    '    ' === Positive Tests (Exact Matches, expected True) ===
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows") = True)
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Program Files") = True)
-
-    '    ' === Positive Tests (Subdirectories now succeed) ===
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows\System32") = True)
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Program Files\MyApp") = True)
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0") = True)
-
-    '    ' === Negative Tests (Unrelated paths still fail) ===
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Temp") = False)
-    '    Debug.Assert(IsProtectedPathOrFolder("D:\Games") = False)
-
-    '    ' === Edge Cases ===
-    '    Debug.Assert(IsProtectedPathOrFolder("c:\windows") = True)   ' Case-insensitive
-    '    Debug.Assert(IsProtectedPathOrFolder("C:\Windows\") = True)  ' Trailing slash
-
-    '    Debug.WriteLine("Subdirectory-inclusive tests executed.")
-
-    'End Sub
-
-
-
     Private Sub TestIsProtectedPath_SubdirMode()
 
         Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Subdirectory Mode)")
@@ -2127,28 +2056,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-    'Private Sub TestFormatSize()
-
-    '    ' Test FormatSize
-    '    Debug.Assert(FormatSize(0) = "0 B")
-    '    Debug.Assert(FormatSize(500) = "500 B")
-    '    Debug.Assert(FormatSize(1024) = "1 KB")
-    '    Debug.Assert(FormatSize(1536) = "1.5 KB")
-    '    Debug.Assert(FormatSize(1048576) = "1 MB")
-    '    Debug.Assert(FormatSize(1073741824) = "1 GB")
-    '    Debug.Assert(FormatSize(1099511627776) = "1 TB")
-
-    '    Debug.WriteLine("FormatSize tests executed.")
-
-    'End Sub
-
-
-
     Private Sub TestFormatSize()
 
         Debug.WriteLine("→ Testing FormatSize")
@@ -2164,34 +2071,6 @@ Public Class Form1
         Debug.WriteLine("✓ FormatSize tests passed")
 
     End Sub
-
-
-
-
-
-
-    'Private Sub TestParseSize()
-
-    '    ' Test ParseSize (using exposed test wrapper)
-    '    Dim cmp As New ListViewItemComparer(0, SortOrder.Ascending)
-
-    '    Debug.Assert(cmp.Test_ParseSize("0 B") = 0)
-    '    Debug.Assert(cmp.Test_ParseSize("500 B") = 500)
-    '    Debug.Assert(cmp.Test_ParseSize("1 KB") = 1024)
-    '    Debug.Assert(cmp.Test_ParseSize("1.5 KB") = 1536)
-    '    Debug.Assert(cmp.Test_ParseSize("1 MB") = 1048576)
-    '    Debug.Assert(cmp.Test_ParseSize("1 GB") = 1073741824)
-    '    Debug.Assert(cmp.Test_ParseSize("1 TB") = 1099511627776)
-
-    '    Debug.WriteLine("ParseSize tests executed.")
-
-    'End Sub
-
-
-
-
-
-
 
     Private Sub TestParseSize()
 
@@ -2210,16 +2089,6 @@ Public Class Form1
         Debug.WriteLine("✓ ParseSize tests passed")
 
     End Sub
-
-
-
-
-
-
-
-
-
-
 
     Private Sub TestListViewParser()
 
