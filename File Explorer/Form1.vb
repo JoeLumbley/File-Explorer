@@ -73,7 +73,7 @@ Public Class Form1
 
     ' Icons for status messages
     ' These require a font that supports these glyphs, such as Segoe MDL2 Assets or similar.
-    Private IconError As String = "⛔"
+    Private IconError As String = ""
     Private IconDialog As String = ""
     Private IconSuccess As String = ""
     Private IconOpen As String = ""
@@ -240,6 +240,13 @@ Public Class Form1
         ' The ItemActivate event is raised when the user double-clicks an item or
         ' presses the Enter key when an item is selected.
 
+        ' Validate selection
+        If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
+            ShowStatus(IconError & " The selected item isn't a file or folder and can't be opened.")
+            Exit Sub
+        End If
+
+
         GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
 
     End Sub
@@ -249,12 +256,29 @@ Public Class Form1
 
         ' Prevent renaming of protected paths
         Dim item As ListViewItem = lvFiles.Items(e.Item)
+        'Dim fullPath As String = CStr(item.Tag)
+
+        ' Enable or disable the Copy button based on selection
         Dim fullPath As String = CStr(item.Tag)
+
+        ' Validate that the selected item actually exists
+        If Not PathExists(fullPath) Then
+
+            e.CancelEdit = True
+
+            'ShowStatus(IconWarning & " Rename failed: Selected item does not exist.")
+
+            Exit Sub
+
+        End If
+
 
         If IsProtectedPathOrFolder(fullPath) Then
             e.CancelEdit = True
             ShowStatus(IconProtect & " Renaming protected items is not allowed.")
         End If
+
+
 
     End Sub
 
@@ -285,6 +309,171 @@ Public Class Form1
         lvFiles.Sort()
 
     End Sub
+
+
+    'Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles lvFiles.ItemSelectionChanged
+
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    ' Enable or disable the Copy button based on selection
+    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' Validate that the selected item actually exists
+    '    If Not PathExists(path) Then
+    '        btnCopy.Enabled = False
+    '        btnCut.Enabled = False
+    '        btnRename.Enabled = False
+    '        btnDelete.Enabled = False
+
+    '        ' How do we disable context menu items?
+    '        cmsFiles.Items(cmsFiles.Items.IndexOfKey("Cut")).Enabled = False
+
+    '    Else
+    '        btnCopy.Enabled = True
+    '        btnCut.Enabled = True
+    '        btnRename.Enabled = True
+    '        btnDelete.Enabled = True
+
+    '    End If
+
+    'End Sub
+    Private Sub UpdateEditButtons()
+
+        If _clipboardIsCut Then
+            btnPaste.Enabled = True
+        Else
+            btnPaste.Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+        End If
+
+        If lvFiles.SelectedItems.Count = 0 Then
+
+            ' Buttons
+            btnCopy.Enabled = False
+            btnCut.Enabled = False
+            btnRename.Enabled = False
+            btnDelete.Enabled = False
+
+            Exit Sub
+
+        End If
+
+        Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+        Dim exists As Boolean = PathExists(path)
+
+        ' Buttons
+        btnCopy.Enabled = exists
+        btnCut.Enabled = exists
+        btnRename.Enabled = exists
+        btnDelete.Enabled = exists
+
+    End Sub
+
+    Private Sub UpdateEditContextMenu()
+
+        If cmsFiles.Items.Count = 0 Then Return
+
+        If _clipboardIsCut Then
+            cmsFiles.Items("Paste").Enabled = True
+        Else
+            cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+        End If
+
+        If lvFiles.SelectedItems.Count = 0 Then
+
+            ' Context menu items
+            cmsFiles.Items("Cut").Enabled = False
+            cmsFiles.Items("Copy").Enabled = False
+            cmsFiles.Items("Rename").Enabled = False
+            cmsFiles.Items("Delete").Enabled = False
+            cmsFiles.Items("Open").Enabled = False
+            cmsFiles.Items("CopyName").Enabled = False
+            cmsFiles.Items("CopyPath").Enabled = False
+
+            Exit Sub
+
+        End If
+
+        Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+        Dim exists As Boolean = PathExists(path)
+
+        ' Context menu items
+        cmsFiles.Items("Cut").Enabled = exists
+        cmsFiles.Items("Copy").Enabled = exists
+        cmsFiles.Items("Rename").Enabled = exists
+        cmsFiles.Items("Delete").Enabled = exists
+        cmsFiles.Items("Open").Enabled = exists
+        cmsFiles.Items("CopyName").Enabled = exists
+        cmsFiles.Items("CopyPath").Enabled = exists
+
+    End Sub
+
+
+
+    Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles lvFiles.ItemSelectionChanged
+
+
+        UpdateEditButtons()
+
+        UpdateEditContextMenu()
+
+
+
+        'If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        'If lvFiles.SelectedItems.Count = 0 Then
+
+        '    ' Buttons
+        '    btnCopy.Enabled = False
+        '    btnCut.Enabled = False
+        '    btnRename.Enabled = False
+        '    btnDelete.Enabled = False
+
+        '    ' Context menu items
+        '    cmsFiles.Items("Cut").Enabled = False
+        '    cmsFiles.Items("Copy").Enabled = False
+        '    cmsFiles.Items("Rename").Enabled = False
+        '    cmsFiles.Items("Delete").Enabled = False
+        '    cmsFiles.Items("Open").Enabled = False
+        '    cmsFiles.Items("CopyName").Enabled = False
+        '    cmsFiles.Items("CopyPath").Enabled = False
+
+        '    Exit Sub
+
+        'End If
+
+        'Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+        'Dim exists As Boolean = PathExists(path)
+
+        '' Buttons
+        'btnCopy.Enabled = exists
+        'btnCut.Enabled = exists
+        'btnRename.Enabled = exists
+        'btnDelete.Enabled = exists
+
+        '' Context menu items
+        'cmsFiles.Items("Cut").Enabled = exists
+        'cmsFiles.Items("Copy").Enabled = exists
+        'cmsFiles.Items("Rename").Enabled = exists
+        'cmsFiles.Items("Delete").Enabled = exists
+        'cmsFiles.Items("Open").Enabled = exists
+        'cmsFiles.Items("CopyName").Enabled = exists
+        'cmsFiles.Items("CopyPath").Enabled = exists
+
+
+        'If e.Button = MouseButtons.Right Then
+
+
+
+    End Sub
+
+
+
+
+
+
+
+
+
 
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
 
@@ -393,8 +582,16 @@ Public Class Form1
         ' Is a file or folder selected?
         If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
 
-        Dim destDir = txtPath.Text
+        Dim destDir = currentFolder
         Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+        If destPath = Nothing Then
+
+            ShowStatus(IconError & "Paste failed: No Path")
+
+            Exit Sub
+
+        End If
 
         Try
             If File.Exists(_clipboardPath) Then
@@ -409,6 +606,13 @@ Public Class Form1
                 Else
                     CopyDirectory(_clipboardPath, destPath)
                 End If
+
+            Else
+
+                ShowStatus("Paste failed: No Path")
+
+                Exit Sub
+
             End If
 
             ' Clear cut state
@@ -427,24 +631,70 @@ Public Class Form1
             ShowStatus(IconError & " Paste failed: " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
+
     End Sub
+
+    'Private Sub CopySelected_Click(sender As Object, e As EventArgs)
+
+    '    ' Is a file or folder selected?
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    ' Validate selection
+    '    If File.Exists(CStr(lvFiles.SelectedItems(0).Tag)) Then
+
+    '    ElseIf Directory.Exists(CStr(lvFiles.SelectedItems(0).Tag)) Then
+
+    '    Else
+
+    '        ShowStatus(IconWarning & " Copy failed: Selected item does not exist.")
+
+    '        Exit Sub
+
+    '    End If
+
+
+    '    ' Copy the full path stored in the Tag property to clipboard
+    '    Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+
+    '    ' Store in internal clipboard
+    '    _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    _clipboardIsCut = False
+
+    '    ShowStatus(IconCopy & " Copied to clipboard: " & _clipboardPath)
+
+    'End Sub
 
     Private Sub CopySelected_Click(sender As Object, e As EventArgs)
 
-        ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
-        ' Copy the full path stored in the Tag property to clipboard
-        Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
+        Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
 
-        ' Store in internal clipboard
-        _clipboardPath = CStr(lvFiles.SelectedItems(0).Tag)
+        ' Validate that the selected item actually exists
+        If Not PathExists(path) Then
+            ShowStatus(IconWarning & " Copy failed: Selected item does not exist.")
+            Exit Sub
+        End If
 
+        ' Copy to system clipboard
+        Clipboard.SetText(path)
+
+        ' Update internal clipboard
+        _clipboardPath = path
         _clipboardIsCut = False
 
         ShowStatus(IconCopy & " Copied to clipboard: " & _clipboardPath)
 
+        UpdateEditButtons()
+        UpdateEditContextMenu()
+
+
     End Sub
+
+    Private Function PathExists(path As String) As Boolean
+        Return File.Exists(path) OrElse Directory.Exists(path)
+    End Function
 
     Private Sub CutSelected_Click(sender As Object, e As EventArgs)
 
@@ -1337,21 +1587,23 @@ Public Class Form1
 
         Me.Text = "File Explorer - Code with Joe"
 
+        InitStatusBar()
+
         ShowStatus(IconDialog & " Loading...")
 
-        InitImageList()
+        InitContextMenu()
 
-        InitListView()
+        InitImageList()
 
         InitArrows()
 
         InitTreeRoots()
 
+        InitListView()
+
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
-        InitStatusBar()
-
-        InitContextMenu()
+        'InitContextMenu()
 
         RunTests()
 
@@ -1529,24 +1781,48 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub InitContextMenu()
+    '    ' Context menu setup
+
+    '    cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
+    '    cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
+    '    cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
+
+    '    cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
+
+
+    '    cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
+    '    cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+
+    '    cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
+    '    cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
+
+    '    cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
+    '    cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+
+    '    lvFiles.ContextMenuStrip = cmsFiles
+
+    'End Sub
+
     Private Sub InitContextMenu()
-        ' Context menu setup
-
-        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click)
-        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click)
-        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click)
-
-        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click)
 
 
-        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click)
-        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click)
+        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click).Name = "Open"
 
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click)
-        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click) ' ✅ new item
+        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
+        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click).Name = "NewTextFile"
 
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click)
-        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click)
+        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click).Name = "Cut"
+        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
+        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
+
+
+        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
+        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
+
+
+        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
+        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
 
         lvFiles.ContextMenuStrip = cmsFiles
 
@@ -1565,6 +1841,8 @@ Public Class Form1
         currentFolder = path
         txtPath.Text = path
         PopulateFiles(path)
+        UpdateEditButtons()
+        UpdateEditContextMenu()
 
         If recordHistory Then
             ' Trim forward history if we branch
@@ -1744,7 +2022,7 @@ Public Class Form1
             item.SubItems.Add("")
             item.SubItems.Add("")
             item.SubItems.Add("")
-            item.Tag = " Folder Access Denied"
+            item.Tag = "AccessDenied"
             item.ImageKey = "AccessDenied"
             item.ForeColor = Color.Gray
 
@@ -1813,7 +2091,7 @@ Public Class Form1
             item.SubItems.Add("")
             item.SubItems.Add("")
             item.SubItems.Add("")
-            item.Tag = " File Access Denied"
+            item.Tag = "AccessDenied"
             item.ImageKey = "AccessDenied"
             item.ForeColor = Color.Gray
 
@@ -2148,6 +2426,42 @@ Public Class Form1
 
         Return If(isNegative, -result, result)
     End Function
+
+    'Private Sub lvFiles_MouseClick(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseClick
+
+    '    If e.Button = MouseButtons.Right Then
+
+    '        If lvFiles.SelectedItems.Count = 0 Then
+
+
+    '            ' Buttons
+    '            btnCopy.Enabled = False
+    '            btnCut.Enabled = False
+    '            btnRename.Enabled = False
+    '            btnDelete.Enabled = False
+
+    '            ' Context menu items
+    '            cmsFiles.Items("Cut").Enabled = False
+    '            cmsFiles.Items("Copy").Enabled = False
+    '            cmsFiles.Items("Rename").Enabled = False
+    '            cmsFiles.Items("Delete").Enabled = False
+    '            cmsFiles.Items("Open").Enabled = False
+    '            cmsFiles.Items("CopyName").Enabled = False
+    '            cmsFiles.Items("CopyPath").Enabled = False
+
+
+    '            ' No item selected, do not show context menu
+    '            'Return
+    '        End If
+
+
+
+    '        'If lvFiles.FocusedItem IsNot Nothing AndAlso lvFiles.FocusedItem.Bounds.Contains(e.Location) Then
+    '        '    cmsFiles.Show(Cursor.Position)
+    '        'End If
+    '    End If
+    'End Sub
+
 
 End Class
 
