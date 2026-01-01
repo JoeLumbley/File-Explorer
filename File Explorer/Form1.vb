@@ -601,10 +601,11 @@ Public Class Form1
 
         Catch ex As Exception
 
-            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(IconError & " Rename failed: " & ex.Message)
-            Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
             e.CancelEdit = True
+
+            ShowStatus(IconError & " Rename Failed. " & ex.Message)
+
+            Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
 
         End Try
 
@@ -708,15 +709,9 @@ Public Class Form1
 
             ShowStatus(IconNewFolder & " Created folder: " & di.Name)
 
-        Catch ex As UnauthorizedAccessException
-
-            ShowStatus(IconError & " " & ex.Message)
-
-            Debug.WriteLine($"NewFolder_Click UnauthorizedAccessException: {ex.Message}")
-
         Catch ex As Exception
 
-            ShowStatus(IconError & " Error: " & ex.Message)
+            ShowStatus(IconError & " New folder creation failed. " & ex.Message)
 
             Debug.WriteLine("NewFolder_Click Error: " & ex.Message)
 
@@ -757,15 +752,9 @@ Public Class Form1
             ' Open the newly created file
             GoToFolderOrOpenFile(newFilePath)
 
-        Catch ex As UnauthorizedAccessException
-
-            ShowStatus(IconError & " " & ex.Message)
-
-            Debug.WriteLine($"NewTextFile_Click UnauthorizedAccessException: {ex.Message}")
-
         Catch ex As Exception
 
-            ShowStatus(IconError & " Error: " & ex.Message)
+            ShowStatus(IconError & " New text file creation failed. " & ex.Message)
 
             Debug.WriteLine("NewTextFile_Click Error: " & ex.Message)
 
@@ -933,9 +922,12 @@ Public Class Form1
                 ShowStatus(IconWarning & " Path not found.")
             End If
         Catch ex As Exception
-            MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+            'MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Delete failed: " & ex.Message)
+
             Debug.WriteLine("Delete_Click Error: " & ex.Message)
+
         End Try
 
     End Sub
