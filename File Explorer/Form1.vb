@@ -708,10 +708,18 @@ Public Class Form1
 
             ShowStatus(IconNewFolder & " Created folder: " & di.Name)
 
+        Catch ex As UnauthorizedAccessException
+
+            ShowStatus(IconError & " " & ex.Message)
+
+            Debug.WriteLine($"NewFolder_Click UnauthorizedAccessException: {ex.Message}")
+
         Catch ex As Exception
-            MessageBox.Show("Failed to create folder: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(IconError & " Failed to create folder: " & ex.Message)
+
+            ShowStatus(IconError & " Error: " & ex.Message)
+
             Debug.WriteLine("NewFolder_Click Error: " & ex.Message)
+
         End Try
 
     End Sub
@@ -749,9 +757,18 @@ Public Class Form1
             ' Open the newly created file
             GoToFolderOrOpenFile(newFilePath)
 
+        Catch ex As UnauthorizedAccessException
+
+            ShowStatus(IconError & " " & ex.Message)
+
+            Debug.WriteLine($"NewTextFile_Click UnauthorizedAccessException: {ex.Message}")
+
         Catch ex As Exception
-            ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+
+            ShowStatus(IconError & " Error: " & ex.Message)
+
             Debug.WriteLine("NewTextFile_Click Error: " & ex.Message)
+
         End Try
 
     End Sub
