@@ -1736,7 +1736,6 @@ Public Class Form1
         Return File.Exists(path) OrElse Directory.Exists(path)
     End Function
 
-
     Private Function NormalizeTextFilePath(raw As String) As String
         If raw Is Nothing Then Return Nothing
 
@@ -1766,7 +1765,6 @@ Public Class Form1
         Return candidate
     End Function
 
-
     Private Sub SelectListViewItemByPath(fullPath As String)
         For Each item As ListViewItem In lvFiles.Items
             If String.Equals(item.Tag.ToString(), fullPath, StringComparison.OrdinalIgnoreCase) Then
@@ -1777,6 +1775,145 @@ Public Class Form1
             End If
         Next
     End Sub
+
+    Private Function HasSubdirectories(path As String) As Boolean
+
+        Try
+
+            Return Directory.EnumerateDirectories(path).Any()
+
+        Catch ex As Exception
+
+            Debug.WriteLine($"HasSubdirectories: Access denied or error for path: {path}")
+
+            Return False
+
+        End Try
+
+    End Function
+
+    Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
+
+        If String.IsNullOrWhiteSpace(path2Check) Then Return False
+
+        ' Reject relative paths outright
+        If Not Path.IsPathRooted(path2Check) Then Return False
+
+        ' Normalize the input path: full path, trim trailing slashes
+        Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
+
+        ' Define protected paths (normalized) - Exact match and subpaths
+        Dim protectedPaths As String() = {
+            "C:\Windows",
+            "C:\Program Files",
+            "C:\Program Files (x86)",
+            "C:\ProgramData"
+        }
+
+        ' Normalize protected paths too
+        For Each protectedPath In protectedPaths
+            Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
+
+            ' Exact match
+            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+
+            ' Subdirectory match (ensure proper boundary with "\")
+            If normalizedInput.StartsWith(normalizedProtected & "\", StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+
+        Next
+
+        ' Define protected folders (normalized) for the current user - Exact match only
+        Dim protectedFolders As String() = {
+            "C:\Users",
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
+        }
+
+        ' Normalize protected folders too
+        For Each protectedFolder In protectedFolders
+            Dim normalizedProtected As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
+
+            ' Exact match
+            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+                Return True
+            End If
+
+        Next
+
+        Return False
+
+    End Function
+
+    Private Function FormatSize(bytes As Long) As String
+        Dim absBytes = Math.Abs(bytes)
+
+        For i = SizeUnits.Length - 1 To 0 Step -1
+            If absBytes >= SizeUnits(i).Factor Then
+                Dim value = absBytes / SizeUnits(i).Factor
+                Dim formatted = $"{value:0.##} {SizeUnits(i).Unit}"
+                Return If(bytes < 0, "-" & formatted, formatted)
+            End If
+        Next
+
+        Return $"{bytes} B"
+    End Function
+
+    Private Function ParseSize(input As String) As Long
+        If String.IsNullOrWhiteSpace(input) Then Return 0
+
+        ' Normalize
+        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+
+        ' Extract sign
+        Dim isNegative As Boolean = text.StartsWith("-")
+        If isNegative Then text = text.Substring(1).Trim()
+
+        ' Split into number + unit
+        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+
+        Dim numberPart As String = parts(0)
+        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+
+        ' Parse numeric portion
+        Dim value As Double
+        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+                               Globalization.CultureInfo.InvariantCulture, value) Then
+            Return 0
+        End If
+
+        ' Unit multipliers (binary units)
+        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+            {"B", 1L},
+            {"KB", 1024L},
+            {"MB", 1024L ^ 2},
+            {"GB", 1024L ^ 3},
+            {"TB", 1024L ^ 4},
+            {"PB", 1024L ^ 5}
+        }
+
+        ' Resolve multiplier
+        Dim factor As Long = 1
+        If multipliers.ContainsKey(unitPart) Then
+            factor = multipliers(unitPart)
+        End If
+
+        ' Compute final byte count
+        Dim bytes As Double = value * factor
+        Dim result As Long = CLng(Math.Round(bytes))
+
+        Return If(isNegative, -result, result)
+    End Function
 
 
     Private Sub InitApp()
@@ -1999,86 +2136,6 @@ Public Class Form1
     End Sub
 
 
-    Private Function HasSubdirectories(path As String) As Boolean
-
-        Try
-
-            Return Directory.EnumerateDirectories(path).Any()
-
-        Catch ex As Exception
-
-            Debug.WriteLine($"HasSubdirectories: Access denied or error for path: {path}")
-
-            Return False
-
-        End Try
-
-    End Function
-
-    Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
-
-        If String.IsNullOrWhiteSpace(path2Check) Then Return False
-
-        ' Reject relative paths outright
-        If Not Path.IsPathRooted(path2Check) Then Return False
-
-        ' Normalize the input path: full path, trim trailing slashes
-        Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
-
-        ' Define protected paths (normalized) - Exact match and subpaths
-        Dim protectedPaths As String() = {
-            "C:\Windows",
-            "C:\Program Files",
-            "C:\Program Files (x86)",
-            "C:\ProgramData"
-        }
-
-        ' Normalize protected paths too
-        For Each protectedPath In protectedPaths
-            Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
-
-            ' Exact match
-            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
-                Return True
-            End If
-
-            ' Subdirectory match (ensure proper boundary with "\")
-            If normalizedInput.StartsWith(normalizedProtected & "\", StringComparison.OrdinalIgnoreCase) Then
-                Return True
-            End If
-
-        Next
-
-        ' Define protected folders (normalized) for the current user - Exact match only
-        Dim protectedFolders As String() = {
-            "C:\Users",
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
-        }
-
-        ' Normalize protected folders too
-        For Each protectedFolder In protectedFolders
-            Dim normalizedProtected As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
-
-            ' Exact match
-            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
-                Return True
-            End If
-
-        Next
-
-        Return False
-
-    End Function
-
-
     Private Sub RunTests()
 
         Debug.WriteLine("Running tests...")
@@ -2095,14 +2152,6 @@ Public Class Form1
 
         Debug.WriteLine("All tests executed.")
 
-    End Sub
-
-    Private Sub AssertTrue(condition As Boolean, message As String)
-        Debug.Assert(condition, message)
-    End Sub
-
-    Private Sub AssertFalse(condition As Boolean, message As String)
-        Debug.Assert(Not condition, message)
     End Sub
 
     Private Sub TestIsProtectedPath()
@@ -2271,65 +2320,13 @@ Public Class Form1
     End Sub
 
 
-    Private Function FormatSize(bytes As Long) As String
-        Dim absBytes = Math.Abs(bytes)
+    Private Sub AssertTrue(condition As Boolean, message As String)
+        Debug.Assert(condition, message)
+    End Sub
 
-        For i = SizeUnits.Length - 1 To 0 Step -1
-            If absBytes >= SizeUnits(i).Factor Then
-                Dim value = absBytes / SizeUnits(i).Factor
-                Dim formatted = $"{value:0.##} {SizeUnits(i).Unit}"
-                Return If(bytes < 0, "-" & formatted, formatted)
-            End If
-        Next
-
-        Return $"{bytes} B"
-    End Function
-
-    Private Function ParseSize(input As String) As Long
-        If String.IsNullOrWhiteSpace(input) Then Return 0
-
-        ' Normalize
-        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
-
-        ' Extract sign
-        Dim isNegative As Boolean = text.StartsWith("-")
-        If isNegative Then text = text.Substring(1).Trim()
-
-        ' Split into number + unit
-        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
-
-        Dim numberPart As String = parts(0)
-        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
-
-        ' Parse numeric portion
-        Dim value As Double
-        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
-                               Globalization.CultureInfo.InvariantCulture, value) Then
-            Return 0
-        End If
-
-        ' Unit multipliers (binary units)
-        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
-            {"B", 1L},
-            {"KB", 1024L},
-            {"MB", 1024L ^ 2},
-            {"GB", 1024L ^ 3},
-            {"TB", 1024L ^ 4},
-            {"PB", 1024L ^ 5}
-        }
-
-        ' Resolve multiplier
-        Dim factor As Long = 1
-        If multipliers.ContainsKey(unitPart) Then
-            factor = multipliers(unitPart)
-        End If
-
-        ' Compute final byte count
-        Dim bytes As Double = value * factor
-        Dim result As Long = CLng(Math.Round(bytes))
-
-        Return If(isNegative, -result, result)
-    End Function
+    Private Sub AssertFalse(condition As Boolean, message As String)
+        Debug.Assert(Not condition, message)
+    End Sub
 
 
 End Class
