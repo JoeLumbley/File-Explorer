@@ -310,33 +310,6 @@ Public Class Form1
 
     End Sub
 
-
-    'Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) Handles lvFiles.ItemSelectionChanged
-
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-    '    ' Enable or disable the Copy button based on selection
-    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-    '    ' Validate that the selected item actually exists
-    '    If Not PathExists(path) Then
-    '        btnCopy.Enabled = False
-    '        btnCut.Enabled = False
-    '        btnRename.Enabled = False
-    '        btnDelete.Enabled = False
-
-    '        ' How do we disable context menu items?
-    '        cmsFiles.Items(cmsFiles.Items.IndexOfKey("Cut")).Enabled = False
-
-    '    Else
-    '        btnCopy.Enabled = True
-    '        btnCut.Enabled = True
-    '        btnRename.Enabled = True
-    '        btnDelete.Enabled = True
-
-    '    End If
-
-    'End Sub
     Private Sub UpdateEditButtons()
 
         If _clipboardIsCut Then
@@ -386,7 +359,7 @@ Public Class Form1
             cmsFiles.Items("Rename").Enabled = False
             cmsFiles.Items("Delete").Enabled = False
             cmsFiles.Items("Open").Enabled = False
-            cmsFiles.Items("CopyName").Enabled = False
+            'cmsFiles.Items("CopyName").Enabled = False
             cmsFiles.Items("CopyPath").Enabled = False
 
             Exit Sub
@@ -402,7 +375,7 @@ Public Class Form1
         cmsFiles.Items("Rename").Enabled = exists
         cmsFiles.Items("Delete").Enabled = exists
         cmsFiles.Items("Open").Enabled = exists
-        cmsFiles.Items("CopyName").Enabled = exists
+        'cmsFiles.Items("CopyName").Enabled = exists
         cmsFiles.Items("CopyPath").Enabled = exists
 
     End Sub
@@ -1806,7 +1779,6 @@ Public Class Form1
 
     Private Sub InitContextMenu()
 
-
         cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click).Name = "Open"
 
         cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
@@ -1816,13 +1788,12 @@ Public Class Form1
         cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
         cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
 
-
-        cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
-        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
-
-
         cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
         cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
+
+        'cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
+        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
+
 
         lvFiles.ContextMenuStrip = cmsFiles
 
@@ -1841,8 +1812,6 @@ Public Class Form1
         currentFolder = path
         txtPath.Text = path
         PopulateFiles(path)
-        UpdateEditButtons()
-        UpdateEditContextMenu()
 
         If recordHistory Then
             ' Trim forward history if we branch
@@ -1853,6 +1822,10 @@ Public Class Form1
             _historyIndex = _history.Count - 1
             UpdateNavButtons()
         End If
+
+        UpdateEditButtons()
+        UpdateEditContextMenu()
+
     End Sub
 
     Private Sub NavigateBackward_Click()
@@ -1997,12 +1970,14 @@ Public Class Form1
 
         ' Folders first
         Try
+
             For Each mDir In Directory.GetDirectories(path)
+
                 Dim di = New DirectoryInfo(mDir)
 
                 ' Skip hidden/system folders unless checkbox is checked
                 If Not ShowHiddenFiles AndAlso
-               (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                   (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
                     Continue For
                 End If
 
@@ -2012,11 +1987,12 @@ Public Class Form1
                 item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = di.FullName
                 item.ImageKey = "Folder"
+
                 lvFiles.Items.Add(item)
+
             Next
+
         Catch ex As UnauthorizedAccessException
-
-
 
             Dim item = New ListViewItem(" Folder Access Denied")
             item.SubItems.Add("")
@@ -2028,16 +2004,23 @@ Public Class Form1
 
             lvFiles.Items.Add(item)
 
-
-            'lvFiles.Items.Add(New ListViewItem(" Folder Access Denied") With {.ForeColor = Color.Gray, .ImageKey = "AccessDenied"})
-
             Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
 
         Catch ex As Exception
 
-            lvFiles.Items.Add(New ListViewItem("[Error reading folders]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
+            Dim item = New ListViewItem($"PopulateFiles Folder [Error]: {ex.Message}")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.Tag = "Error"
+            item.ImageKey = "Error"
+            item.ForeColor = Color.Gray
 
-            Debug.WriteLine($"PopulateFiles [Error]: {ex.Message}")
+            lvFiles.Items.Add(item)
+
+            'lvFiles.Items.Add(New ListViewItem("[Error reading folders]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
+
+            Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
 
         End Try
 
@@ -2083,6 +2066,7 @@ Public Class Form1
                 End Select
 
                 lvFiles.Items.Add(item)
+
             Next
 
         Catch ex As UnauthorizedAccessException
@@ -2099,12 +2083,21 @@ Public Class Form1
 
             Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
 
-            ' How do we say this has been handled?
         Catch ex As Exception
 
-            lvFiles.Items.Add(New ListViewItem("[Error reading files]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
+            Dim item = New ListViewItem($"PopulateFiles File [Error]: {ex.Message}")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.Tag = "Error"
+            item.ImageKey = "Error"
+            item.ForeColor = Color.Gray
 
-            Debug.WriteLine($"PopulateFiles [Error]: {ex.Message}")
+            lvFiles.Items.Add(item)
+
+            'lvFiles.Items.Add(New ListViewItem("[Error reading files]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
+
+            Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
 
         End Try
 
