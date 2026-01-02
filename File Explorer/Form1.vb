@@ -569,6 +569,7 @@ Public Class Form1
             End Try
 
         Else
+            ' User lacks directory creation access - show Access Denied message
             Dim item = New ListViewItem(" Access Denied")
             item.SubItems.Add("")
             item.SubItems.Add("")
@@ -579,36 +580,6 @@ Public Class Form1
             lvFiles.Items.Add(item)
 
         End If
-
-
-
-
-
-
-
-
-
-
-
-        'If lvFiles.Items.Count = 0 Then
-        '    If Not HasWriteAccessToDirectory(currentFolder) Then
-
-        '        Dim item = New ListViewItem(" Access Denied")
-        '        item.SubItems.Add("")
-        '        item.SubItems.Add("")
-        '        item.SubItems.Add("")
-        '        item.Tag = "AccessDenied"
-        '        item.ImageKey = "AccessDenied"
-        '        item.ForeColor = Color.Gray
-
-        '        lvFiles.Items.Add(item)
-
-        '        'Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
-
-        '    End If
-
-        'End If
-
 
         lvFiles.EndUpdate()
 
