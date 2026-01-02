@@ -231,17 +231,25 @@ Public Class Form1
         Dim parentDir As String
 
         If Directory.Exists(fullPath) Then
+
             ' Item is a folder → check write access ON the folder
             parentDir = fullPath
+
         Else
+
             ' Item is a file → check write access on its parent directory
             parentDir = Path.GetDirectoryName(fullPath)
+
         End If
 
         If Not HasWriteAccessToDirectory(parentDir) Then
+
             e.CancelEdit = True
+
             ShowStatus(IconError & " Access denied. You cannot rename items in this location.")
+
             Exit Sub
+
         End If
 
     End Sub
