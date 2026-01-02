@@ -437,139 +437,35 @@ Public Class Form1
 
         lvFiles.Items.Clear()
 
-        ' Folders first
-        Try
+        If HasDirectoryCreationAccessToDirectory(currentFolder) Then
 
-            For Each mDir In Directory.GetDirectories(path)
+            ' Folders first
+            Try
 
-                Dim di = New DirectoryInfo(mDir)
+                For Each mDir In Directory.GetDirectories(path)
 
-                ' Skip hidden/system folders unless checkbox is checked
-                If Not ShowHiddenFiles AndAlso
+                    Dim di = New DirectoryInfo(mDir)
+
+                    ' Skip hidden/system folders unless checkbox is checked
+                    If Not ShowHiddenFiles AndAlso
                    (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                    Continue For
-                End If
+                        Continue For
+                    End If
 
-                Dim item = New ListViewItem(di.Name)
-                item.SubItems.Add("Folder")
-                item.SubItems.Add("") ' size blank for folders
-                item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-                item.Tag = di.FullName
-                item.ImageKey = "Folder"
+                    Dim item = New ListViewItem(di.Name)
+                    item.SubItems.Add("Folder")
+                    item.SubItems.Add("") ' size blank for folders
+                    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+                    item.Tag = di.FullName
+                    item.ImageKey = "Folder"
 
-                lvFiles.Items.Add(item)
+                    lvFiles.Items.Add(item)
 
-            Next
+                Next
 
-        Catch ex As UnauthorizedAccessException
+            Catch ex As UnauthorizedAccessException
 
-            Dim item = New ListViewItem(" Folder Access Denied")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.Tag = "AccessDenied"
-            item.ImageKey = "AccessDenied"
-            item.ForeColor = Color.Gray
-
-            lvFiles.Items.Add(item)
-
-            Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
-
-        Catch ex As Exception
-
-            Dim item = New ListViewItem($"PopulateFiles Folder [Error]: {ex.Message}")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.Tag = "Error"
-            item.ImageKey = "Error"
-            item.ForeColor = Color.Gray
-
-            lvFiles.Items.Add(item)
-
-            Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
-
-        End Try
-
-        ' Files
-        Try
-            For Each file In Directory.GetFiles(path)
-                Dim fi = New FileInfo(file)
-
-                ' Skip hidden/system files unless checkbox is checked
-                If Not ShowHiddenFiles AndAlso
-               (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                    Continue For
-                End If
-
-                Dim item = New ListViewItem(fi.Name)
-                item.SubItems.Add(fi.Extension.ToLowerInvariant())
-                item.SubItems.Add(FormatSize(fi.Length))
-                item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-                item.Tag = fi.FullName
-
-                ' Assign image based on file type (same as before)
-                Select Case fi.Extension.ToLowerInvariant()
-                    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
-                     ".m4a", ".alac", ".aiff", ".dsd"
-                        item.ImageKey = "Music"
-                    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
-                     ".raw", ".cr2", ".nef", ".orf", ".sr2"
-                        item.ImageKey = "Pictures"
-                    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
-                     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
-                        item.ImageKey = "Documents"
-                    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
-                     ".3gp", ".vob", ".ogv", ".ts"
-                        item.ImageKey = "Videos"
-                    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
-                     ".epub", ".mobi", ".apk", ".crx"
-                        item.ImageKey = "Downloads"
-                    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
-                     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
-                        item.ImageKey = "Executable"
-                    Case Else
-                        item.ImageKey = "Documents"
-                End Select
-
-                lvFiles.Items.Add(item)
-
-            Next
-
-        Catch ex As UnauthorizedAccessException
-
-            Dim item = New ListViewItem(" File Access Denied")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.Tag = "AccessDenied"
-            item.ImageKey = "AccessDenied"
-            item.ForeColor = Color.Gray
-
-            lvFiles.Items.Add(item)
-
-            Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
-
-        Catch ex As Exception
-
-            Dim item = New ListViewItem($"PopulateFiles File [Error]: {ex.Message}")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.Tag = "Error"
-            item.ImageKey = "Error"
-            item.ForeColor = Color.Gray
-
-            lvFiles.Items.Add(item)
-
-            Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
-
-        End Try
-
-        If lvFiles.Items.Count = 0 Then
-            If Not HasWriteAccessToDirectory(currentFolder) Then
-
-                Dim item = New ListViewItem(" Access Denied")
+                Dim item = New ListViewItem(" Folder Access Denied")
                 item.SubItems.Add("")
                 item.SubItems.Add("")
                 item.SubItems.Add("")
@@ -579,11 +475,139 @@ Public Class Form1
 
                 lvFiles.Items.Add(item)
 
-                'Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+                Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
 
-            End If
+            Catch ex As Exception
+
+                Dim item = New ListViewItem($"PopulateFiles Folder [Error]: {ex.Message}")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.Tag = "Error"
+                item.ImageKey = "Error"
+                item.ForeColor = Color.Gray
+
+                lvFiles.Items.Add(item)
+
+                Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
+
+            End Try
+
+            ' Files
+            Try
+                For Each file In Directory.GetFiles(path)
+                    Dim fi = New FileInfo(file)
+
+                    ' Skip hidden/system files unless checkbox is checked
+                    If Not ShowHiddenFiles AndAlso
+               (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+
+                    Dim item = New ListViewItem(fi.Name)
+                    item.SubItems.Add(fi.Extension.ToLowerInvariant())
+                    item.SubItems.Add(FormatSize(fi.Length))
+                    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+                    item.Tag = fi.FullName
+
+                    ' Assign image based on file type (same as before)
+                    Select Case fi.Extension.ToLowerInvariant()
+                        Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
+                     ".m4a", ".alac", ".aiff", ".dsd"
+                            item.ImageKey = "Music"
+                        Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
+                     ".raw", ".cr2", ".nef", ".orf", ".sr2"
+                            item.ImageKey = "Pictures"
+                        Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
+                     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
+                            item.ImageKey = "Documents"
+                        Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
+                     ".3gp", ".vob", ".ogv", ".ts"
+                            item.ImageKey = "Videos"
+                        Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
+                     ".epub", ".mobi", ".apk", ".crx"
+                            item.ImageKey = "Downloads"
+                        Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
+                     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
+                            item.ImageKey = "Executable"
+                        Case Else
+                            item.ImageKey = "Documents"
+                    End Select
+
+                    lvFiles.Items.Add(item)
+
+                Next
+
+            Catch ex As UnauthorizedAccessException
+
+                Dim item = New ListViewItem(" File Access Denied")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.Tag = "AccessDenied"
+                item.ImageKey = "AccessDenied"
+                item.ForeColor = Color.Gray
+
+                lvFiles.Items.Add(item)
+
+                Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+
+            Catch ex As Exception
+
+                Dim item = New ListViewItem($"PopulateFiles File [Error]: {ex.Message}")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.Tag = "Error"
+                item.ImageKey = "Error"
+                item.ForeColor = Color.Gray
+
+                lvFiles.Items.Add(item)
+
+                Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
+
+            End Try
+
+        Else
+            Dim item = New ListViewItem(" Access Denied")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.SubItems.Add("")
+            item.Tag = "AccessDenied"
+            item.ImageKey = "AccessDenied"
+            item.ForeColor = Color.Gray
+            lvFiles.Items.Add(item)
 
         End If
+
+
+
+
+
+
+
+
+
+
+
+        'If lvFiles.Items.Count = 0 Then
+        '    If Not HasWriteAccessToDirectory(currentFolder) Then
+
+        '        Dim item = New ListViewItem(" Access Denied")
+        '        item.SubItems.Add("")
+        '        item.SubItems.Add("")
+        '        item.SubItems.Add("")
+        '        item.Tag = "AccessDenied"
+        '        item.ImageKey = "AccessDenied"
+        '        item.ForeColor = Color.Gray
+
+        '        lvFiles.Items.Add(item)
+
+        '        'Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+
+        '    End If
+
+        'End If
 
 
         lvFiles.EndUpdate()
