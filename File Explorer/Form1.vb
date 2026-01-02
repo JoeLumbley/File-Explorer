@@ -264,11 +264,6 @@ Public Class Form1
         End If
 
         ' Rule 3: User must have rename permission
-        'Dim isFolder As Boolean = (item.ImageKey = "folder") ' or your own metadata
-        'Dim parentDir As String =
-        'If(isFolder, fullPath, Path.GetDirectoryName(fullPath))
-
-        ' Check for write permission
         Dim parentDir As String
         If Directory.Exists(fullPath) Then
             ' Item is a folder → check write access ON the folder
@@ -277,7 +272,6 @@ Public Class Form1
             ' Item is a file → check write access on its parent directory
             parentDir = Path.GetDirectoryName(fullPath)
         End If
-
 
         If Not HasWriteAccessToDirectory(parentDir) Then
             e.CancelEdit = True
