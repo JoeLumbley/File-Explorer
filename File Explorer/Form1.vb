@@ -463,7 +463,7 @@ Public Class Form1
 
         Catch ex As UnauthorizedAccessException
 
-            Dim item = New ListViewItem(" Folder Access Denied")
+            Dim item = New ListViewItem(" Folder Access Denied")
             item.SubItems.Add("")
             item.SubItems.Add("")
             item.SubItems.Add("")
@@ -486,8 +486,6 @@ Public Class Form1
             item.ForeColor = Color.Gray
 
             lvFiles.Items.Add(item)
-
-            'lvFiles.Items.Add(New ListViewItem("[Error reading folders]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
 
             Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
 
@@ -540,7 +538,7 @@ Public Class Form1
 
         Catch ex As UnauthorizedAccessException
 
-            Dim item = New ListViewItem(" File Access Denied")
+            Dim item = New ListViewItem(" File Access Denied")
             item.SubItems.Add("")
             item.SubItems.Add("")
             item.SubItems.Add("")
@@ -564,11 +562,29 @@ Public Class Form1
 
             lvFiles.Items.Add(item)
 
-            'lvFiles.Items.Add(New ListViewItem("[Error reading files]") With {.ForeColor = Color.Red, .ImageKey = "Error"})
-
             Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
 
         End Try
+
+        If lvFiles.Items.Count = 0 Then
+            If Not HasWriteAccessToDirectory(currentFolder) Then
+
+                Dim item = New ListViewItem(" Access Denied")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.SubItems.Add("")
+                item.Tag = "AccessDenied"
+                item.ImageKey = "AccessDenied"
+                item.ForeColor = Color.Gray
+
+                lvFiles.Items.Add(item)
+
+                'Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+
+            End If
+
+        End If
+
 
         lvFiles.EndUpdate()
 
