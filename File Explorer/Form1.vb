@@ -175,7 +175,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.BeforeLabelEdit
 
@@ -212,7 +211,6 @@ Public Class Form1
         End If
 
     End Sub
-
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.AfterLabelEdit
@@ -282,7 +280,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
         Handles btnNewFolder.Click
 
@@ -296,7 +293,6 @@ Public Class Form1
         NewTextFile_Click(sender, e)
 
     End Sub
-
 
     Private Sub btnCut_Click(sender As Object, e As EventArgs) _
         Handles btnCut.Click
@@ -319,7 +315,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub btnRename_Click(sender As Object, e As EventArgs) _
         Handles btnRename.Click
 
@@ -335,36 +330,21 @@ Public Class Form1
     End Sub
 
 
+    Private Sub Path_KeyDown(e As KeyEventArgs)
+        ' Path command input box key handling
 
-    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
-        ' Check if we can create, rename, and delete a temporary file in the directory to test write access 
+        ' Check for Enter key
+        If e.KeyCode = Keys.Enter Then
 
-        Dim testFile As String =
-        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
+            e.SuppressKeyPress = True
 
-        Dim testFile2 As String = testFile & "_renamed"
+            Dim command As String = txtPath.Text.Trim()
 
-        Try
-            ' Create
-            Using fs As FileStream = File.Create(testFile, 1, FileOptions.None)
-            End Using
+            ExecuteCommand(command)
 
-            ' Rename
-            File.Move(testFile, testFile2)
+        End If
 
-            ' Cleanup
-            File.Delete(testFile2)
-
-            Return True
-
-        Catch ex As UnauthorizedAccessException
-            Return False
-        Catch ex As IOException
-            Return False
-        End Try
-
-    End Function
-
+    End Sub
 
 
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
@@ -683,23 +663,6 @@ Public Class Form1
 
         ' Refresh the enabled/disabled state of Back/Forward buttons
         UpdateNavButtons()
-
-    End Sub
-
-
-    Private Sub Path_KeyDown(e As KeyEventArgs)
-        ' Path command input box key handling
-
-        ' Check for Enter key
-        If e.KeyCode = Keys.Enter Then
-
-            e.SuppressKeyPress = True
-
-            Dim command As String = txtPath.Text.Trim()
-
-            ExecuteCommand(command)
-
-        End If
 
     End Sub
 
@@ -1296,6 +1259,7 @@ Public Class Form1
             UpdateNavButtons()
         End If
 
+        UpdateFileButtons()
         UpdateEditButtons()
         UpdateEditContextMenu()
 
@@ -1711,6 +1675,25 @@ Public Class Form1
 
     End Sub
 
+    Private Sub UpdateFileButtons()
+
+        If HasWriteAccessToDirectory(currentFolder) Then
+            ' Enable buttons if current folder is valid and writable
+            btnNewTextFile.Enabled = True
+        Else
+            ' Disable buttons if current folder is invalid
+            btnNewTextFile.Enabled = False
+        End If
+
+        If HasDirectoryCreationAccessToDirectory(currentFolder) Then
+            btnNewFolder.Enabled = True
+        Else
+            btnNewFolder.Enabled = False
+        End If
+
+    End Sub
+
+
     Private Sub UpdateEditContextMenu()
 
         If cmsFiles.Items.Count = 0 Then Return
@@ -1783,6 +1766,63 @@ Public Class Form1
 
     Private Function PathExists(path As String) As Boolean
         Return File.Exists(path) OrElse Directory.Exists(path)
+    End Function
+
+    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
+        ' Check if we can create, rename, and delete a temporary file in the directory to test write access 
+
+        Dim testFile As String =
+        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
+
+        Dim testFile2 As String = testFile & "_renamed"
+
+        Try
+            ' Create
+            Using fs As FileStream = File.Create(testFile, 1, FileOptions.None)
+            End Using
+
+            ' Rename
+            File.Move(testFile, testFile2)
+
+            ' Cleanup
+            File.Delete(testFile2)
+
+            Return True
+
+        Catch ex As UnauthorizedAccessException
+            Return False
+        Catch ex As IOException
+            Return False
+        End Try
+
+    End Function
+
+
+    Private Function HasDirectoryCreationAccessToDirectory(dirPath As String) As Boolean
+        ' Test whether we can create, rename, and delete a directory inside dirPath.
+
+        Dim testDir As String =
+        Path.Combine(dirPath, ".__dir_access_test_" & Guid.NewGuid().ToString("N"))
+
+        Dim testDirRenamed As String = testDir & "_renamed"
+
+        Try
+            ' Create directory
+            Directory.CreateDirectory(testDir)
+
+            ' Rename directory
+            Directory.Move(testDir, testDirRenamed)
+
+            ' Delete directory
+            Directory.Delete(testDirRenamed)
+
+            Return True
+
+        Catch ex As UnauthorizedAccessException
+            Return False
+        Catch ex As IOException
+            Return False
+        End Try
     End Function
 
     Private Function NormalizeTextFilePath(raw As String) As String
