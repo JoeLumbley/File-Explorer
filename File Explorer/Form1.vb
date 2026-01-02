@@ -208,60 +208,131 @@ Public Class Form1
 
 
 
+    'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    '    Handles lvFiles.BeforeLabelEdit
+
+    '    Dim item As ListViewItem = lvFiles.Items(e.Item)
+    '    Dim fullPath As String = CStr(item.Tag)
+
+    '    If Not PathExists(fullPath) Then
+    '        e.CancelEdit = True
+    '        Exit Sub
+    '    End If
+
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        e.CancelEdit = True
+    '        ShowStatus(IconProtect & " Renaming protected items is not allowed.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Check for write permission
+    '    Dim parentDir As String
+    '    If Directory.Exists(fullPath) Then
+    '        ' Item is a folder → check write access ON the folder
+    '        parentDir = fullPath
+    '    Else
+    '        ' Item is a file → check write access on its parent directory
+    '        parentDir = Path.GetDirectoryName(fullPath)
+    '    End If
+
+    '    If Not HasWriteAccessToDirectory(parentDir) Then
+    '        e.CancelEdit = True
+    '        ShowStatus(IconError & " Access denied. You cannot rename items in this location.")
+    '        Exit Sub
+    '    End If
+
+    'End Sub
+
+
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.BeforeLabelEdit
 
         Dim item As ListViewItem = lvFiles.Items(e.Item)
         Dim fullPath As String = CStr(item.Tag)
 
+        ' Rule 1: Path must exist
         If Not PathExists(fullPath) Then
             e.CancelEdit = True
             Exit Sub
         End If
 
+        ' Rule 2: Protected items cannot be renamed
         If IsProtectedPathOrFolder(fullPath) Then
             e.CancelEdit = True
-            ShowStatus(IconProtect & " Renaming protected items is not allowed.")
+            ShowStatus(IconProtect & " This item is protected and cannot be renamed.")
             Exit Sub
         End If
 
-        ' NEW: Check for write permission
-        'Dim parentDir As String = Path.GetDirectoryName(fullPath)
+        ' Rule 3: User must have rename permission
+        'Dim isFolder As Boolean = (item.ImageKey = "folder") ' or your own metadata
+        'Dim parentDir As String =
+        'If(isFolder, fullPath, Path.GetDirectoryName(fullPath))
 
+        ' Check for write permission
         Dim parentDir As String
-
         If Directory.Exists(fullPath) Then
-
             ' Item is a folder → check write access ON the folder
             parentDir = fullPath
-
         Else
-
             ' Item is a file → check write access on its parent directory
             parentDir = Path.GetDirectoryName(fullPath)
-
         End If
 
+
         If Not HasWriteAccessToDirectory(parentDir) Then
-
             e.CancelEdit = True
-
-            ShowStatus(IconError & " Access denied. You cannot rename items in this location.")
-
+            ShowStatus(IconError & " This location does not allow renaming.")
             Exit Sub
-
         End If
 
     End Sub
 
-    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
-        Try
-            Dim testFile As String =
-            Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
 
-            ' Try to create and delete a tiny file
-            Using fs As FileStream = File.Create(testFile, 1, FileOptions.DeleteOnClose)
+
+
+
+
+
+
+
+
+
+
+
+    'Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
+    '    Try
+    '        Dim testFile As String =
+    '        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
+
+    '        ' Try to create and delete a tiny file
+    '        Using fs As FileStream = File.Create(testFile, 1, FileOptions.DeleteOnClose)
+    '        End Using
+
+    '        Return True
+
+    '    Catch ex As UnauthorizedAccessException
+    '        Return False
+    '    Catch ex As IOException
+    '        Return False
+    '    End Try
+    'End Function
+
+
+    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
+        Dim testFile As String =
+        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
+        Dim testFile2 As String = testFile & "_renamed"
+
+        Try
+            ' Create
+            Using fs As FileStream = File.Create(testFile, 1, FileOptions.None)
             End Using
+
+            ' Rename
+            File.Move(testFile, testFile2)
+
+            ' Cleanup
+            File.Delete(testFile2)
 
             Return True
 
@@ -271,7 +342,6 @@ Public Class Form1
             Return False
         End Try
     End Function
-
 
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
