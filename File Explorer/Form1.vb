@@ -175,71 +175,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    '    Handles lvFiles.BeforeLabelEdit
-
-    '    ' Prevent renaming of protected paths
-    '    Dim item As ListViewItem = lvFiles.Items(e.Item)
-    '    'Dim fullPath As String = CStr(item.Tag)
-
-    '    ' Enable or disable the Copy button based on selection
-    '    Dim fullPath As String = CStr(item.Tag)
-
-    '    ' Validate that the selected item actually exists
-    '    If Not PathExists(fullPath) Then
-
-    '        e.CancelEdit = True
-
-    '        Exit Sub
-
-    '    End If
-
-    '    If IsProtectedPathOrFolder(fullPath) Then
-
-    '        e.CancelEdit = True
-
-    '        ShowStatus(IconProtect & " Renaming protected items is not allowed.")
-
-    '    End If
-
-    '    ' How can we find out if access to the directory is denided and cancel the edit?
-
-    'End Sub
-
-    'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    '    Handles lvFiles.BeforeLabelEdit
-
-    '    Dim item As ListViewItem = lvFiles.Items(e.Item)
-    '    Dim fullPath As String = CStr(item.Tag)
-
-    '    If Not PathExists(fullPath) Then
-    '        e.CancelEdit = True
-    '        Exit Sub
-    '    End If
-
-    '    If IsProtectedPathOrFolder(fullPath) Then
-    '        e.CancelEdit = True
-    '        ShowStatus(IconProtect & " Renaming protected items is not allowed.")
-    '        Exit Sub
-    '    End If
-
-    '    ' Check for write permission
-    '    Dim parentDir As String
-    '    If Directory.Exists(fullPath) Then
-    '        ' Item is a folder → check write access ON the folder
-    '        parentDir = fullPath
-    '    Else
-    '        ' Item is a file → check write access on its parent directory
-    '        parentDir = Path.GetDirectoryName(fullPath)
-    '    End If
-
-    '    If Not HasWriteAccessToDirectory(parentDir) Then
-    '        e.CancelEdit = True
-    '        ShowStatus(IconError & " Access denied. You cannot rename items in this location.")
-    '        Exit Sub
-    '    End If
-
-    'End Sub
 
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.BeforeLabelEdit
@@ -277,25 +212,6 @@ Public Class Form1
         End If
 
     End Sub
-
-    'Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
-    '    Try
-    '        Dim testFile As String =
-    '        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
-
-    '        ' Try to create and delete a tiny file
-    '        Using fs As FileStream = File.Create(testFile, 1, FileOptions.DeleteOnClose)
-    '        End Using
-
-    '        Return True
-
-    '    Catch ex As UnauthorizedAccessException
-    '        Return False
-    '    Catch ex As IOException
-    '        Return False
-    '    End Try
-    'End Function
-
 
     Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
         Dim testFile As String =
