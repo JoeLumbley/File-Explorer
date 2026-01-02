@@ -213,31 +213,6 @@ Public Class Form1
 
     End Sub
 
-    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
-        Dim testFile As String =
-        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
-        Dim testFile2 As String = testFile & "_renamed"
-
-        Try
-            ' Create
-            Using fs As FileStream = File.Create(testFile, 1, FileOptions.None)
-            End Using
-
-            ' Rename
-            File.Move(testFile, testFile2)
-
-            ' Cleanup
-            File.Delete(testFile2)
-
-            Return True
-
-        Catch ex As UnauthorizedAccessException
-            Return False
-        Catch ex As IOException
-            Return False
-        End Try
-    End Function
-
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.AfterLabelEdit
@@ -358,6 +333,38 @@ Public Class Form1
         Delete_Click(sender, e)
 
     End Sub
+
+
+
+    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
+        ' Check if we can create, rename, and delete a temporary file in the directory to test write access 
+
+        Dim testFile As String =
+        Path.Combine(dirPath, ".__access_test_" & Guid.NewGuid().ToString("N") & ".tmp")
+
+        Dim testFile2 As String = testFile & "_renamed"
+
+        Try
+            ' Create
+            Using fs As FileStream = File.Create(testFile, 1, FileOptions.None)
+            End Using
+
+            ' Rename
+            File.Move(testFile, testFile2)
+
+            ' Cleanup
+            File.Delete(testFile2)
+
+            Return True
+
+        Catch ex As UnauthorizedAccessException
+            Return False
+        Catch ex As IOException
+            Return False
+        End Try
+
+    End Function
+
 
 
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
