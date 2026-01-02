@@ -206,8 +206,6 @@ Public Class Form1
 
     'End Sub
 
-
-
     'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
     '    Handles lvFiles.BeforeLabelEdit
 
@@ -242,7 +240,6 @@ Public Class Form1
     '    End If
 
     'End Sub
-
 
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.BeforeLabelEdit
@@ -280,18 +277,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
 
     'Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
     '    Try
