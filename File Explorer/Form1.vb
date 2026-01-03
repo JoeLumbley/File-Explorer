@@ -155,6 +155,8 @@ Public Class Form1
 
         UpdateEditButtons()
 
+        UpdateRenameButton()
+
         UpdateEditContextMenu()
 
     End Sub
@@ -1214,6 +1216,7 @@ Public Class Form1
 
         UpdateFileButtons()
         UpdateEditButtons()
+        UpdateRenameButton()
         UpdateEditContextMenu()
 
     End Sub
@@ -1597,6 +1600,63 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
+
+    Private Sub UpdateRenameButton()
+
+        'Dim item As ListViewItem = lvFiles.Items(e.Item)
+        'Dim fullPath As String = CStr(item.Tag)
+        If lvFiles.SelectedItems.Count = 0 Then
+            btnRename.Enabled = False
+            Exit Sub
+        End If
+
+        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+        ' Rule 1: Path must exist
+        If Not PathExists(fullPath) Then
+            btnRename.Enabled = False
+
+            'e.CancelEdit = True
+
+            Exit Sub
+        End If
+
+        ' Rule 2: Protected items cannot be renamed
+        If IsProtectedPathOrFolder(fullPath) Then
+            btnRename.Enabled = False
+
+            'e.CancelEdit = True
+            ShowStatus(IconProtect & " This item is protected and cannot be renamed.")
+            Exit Sub
+        End If
+
+        ' Rule 3: User must have rename permission
+        Dim parentDir As String
+        If Directory.Exists(fullPath) Then
+            ' Item is a folder → check write access ON the folder
+            parentDir = fullPath
+        Else
+            ' Item is a file → check write access on its parent directory
+            parentDir = Path.GetDirectoryName(fullPath)
+        End If
+
+        If Not HasWriteAccessToDirectory(parentDir) Then
+            btnRename.Enabled = False
+
+            'e.CancelEdit = True
+            ShowStatus(IconError & " This location does not allow renaming.")
+            Exit Sub
+        End If
+
+        btnRename.Enabled = True
+
+    End Sub
+
+
+
+
+
+
     Private Sub UpdateEditButtons()
 
         If _clipboardIsCut Then
@@ -1610,21 +1670,67 @@ Public Class Form1
             ' Buttons
             btnCopy.Enabled = False
             btnCut.Enabled = False
-            btnRename.Enabled = False
+            'btnRename.Enabled = False
             btnDelete.Enabled = False
 
             Exit Sub
 
         End If
 
-        Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-        Dim exists As Boolean = PathExists(path)
+        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+        Dim exists As Boolean = PathExists(fullPath)
 
         ' Buttons
         btnCopy.Enabled = exists
         btnCut.Enabled = exists
-        btnRename.Enabled = exists
+        'btnRename.Enabled = exists
         btnDelete.Enabled = exists
+
+        'If HasWriteAccessToDirectory(fullPath) Then
+
+        '    btnRename.Enabled = True
+
+        'Else
+
+        '    btnRename.Enabled = False
+
+
+
+
+        'End If
+
+
+
+
+        '' Rule 3: User must have rename permission
+        'Dim parentDir As String
+        'If Directory.Exists(fullPath) Then
+        '    ' Item is a folder → check write access ON the folder
+        '    parentDir = fullPath
+
+        '    If HasDirectoryCreationAccessToDirectory(fullPath) Then
+        '        btnRename.Enabled = True
+        '    Else
+        '        btnRename.Enabled = False
+        '    End If
+
+        'Else
+        '        ' Item is a file → check write access on its parent directory
+        '        parentDir = Path.GetDirectoryName(fullPath)
+
+        '    If HasWriteAccessToDirectory(fullPath) Then
+        '        btnRename.Enabled = True
+        '    Else
+        '        btnRename.Enabled = False
+        '    End If
+
+        'End If
+
+
+
+
+
+
 
     End Sub
 
@@ -1656,6 +1762,10 @@ Public Class Form1
         Else
             cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
         End If
+
+
+
+
 
         If lvFiles.SelectedItems.Count = 0 Then
 
