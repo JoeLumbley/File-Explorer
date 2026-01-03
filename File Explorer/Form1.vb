@@ -1652,10 +1652,6 @@ Public Class Form1
         ' --- All rules passed ---
         btnRename.Enabled = True
 
-        'TableLayoutPanel1.ResumeLayout()
-
-
-
     End Sub
 
     Private Sub UpdateDeleteButton()
@@ -1753,28 +1749,10 @@ Public Class Form1
             Exit Sub
         End If
 
-        '' --- Rule 2: Protected items cannot be renamed ---
-        'If IsProtectedPathOrFolder(fullPath) Then
-        '    btnCopy.Enabled = False
-        '    Exit Sub
-        'End If
-
-        '' --- Rule 3: User must have rename permission ---
-        'Dim parentDir As String =
-        'If(Directory.Exists(fullPath),
-        '   fullPath,                          ' Folder → check write access ON the folder
-        '   Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-        'If Not HasWriteAccessToDirectory(parentDir) Then
-        '    btnCopy.Enabled = False
-        '    Exit Sub
-        'End If
-
         ' --- All rules passed ---
         btnCopy.Enabled = True
 
     End Sub
-
 
     Private Sub UpdateEditButtons()
 
@@ -1792,11 +1770,6 @@ Public Class Form1
         Else
             btnPaste.Enabled = Not String.IsNullOrEmpty(_clipboardPath)
         End If
-
-        '' Update Copy button
-        'Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-        'btnCopy.Enabled = itemSelected
-
 
     End Sub
 
