@@ -437,10 +437,9 @@ Public Class Form1
 
         lvFiles.Items.Clear()
 
-        If HasDirectoryCreationAccessToDirectory(currentFolder) Then
 
-            ' Folders first
-            Try
+        ' Folders first
+        Try
 
                 For Each mDir In Directory.GetDirectories(path)
 
@@ -465,17 +464,20 @@ Public Class Form1
 
             Catch ex As UnauthorizedAccessException
 
-                Dim item = New ListViewItem(" Folder Access Denied")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.Tag = "AccessDenied"
-                item.ImageKey = "AccessDenied"
-                item.ForeColor = Color.Gray
+            'Dim item = New ListViewItem(" Folder Access Denied")
+            'item.SubItems.Add("")
+            'item.SubItems.Add("")
+            'item.SubItems.Add("")
+            'item.Tag = "AccessDenied"
+            'item.ImageKey = "AccessDenied"
+            'item.ForeColor = Color.Gray
 
-                lvFiles.Items.Add(item)
+            'lvFiles.Items.Add(item)
 
-                Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
+            ShowStatus(IconError & " Access Denied")
+
+
+            Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
 
             Catch ex As Exception
 
@@ -493,93 +495,100 @@ Public Class Form1
 
             End Try
 
-            ' Files
-            Try
-                For Each file In Directory.GetFiles(path)
-                    Dim fi = New FileInfo(file)
+        ' Files
+        Try
+            For Each file In Directory.GetFiles(path)
+                Dim fi = New FileInfo(file)
 
-                    ' Skip hidden/system files unless checkbox is checked
-                    If Not ShowHiddenFiles AndAlso
+                ' Skip hidden/system files unless checkbox is checked
+                If Not ShowHiddenFiles AndAlso
                (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                        Continue For
-                    End If
+                    Continue For
+                End If
 
-                    Dim item = New ListViewItem(fi.Name)
-                    item.SubItems.Add(fi.Extension.ToLowerInvariant())
-                    item.SubItems.Add(FormatSize(fi.Length))
-                    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-                    item.Tag = fi.FullName
+                Dim item = New ListViewItem(fi.Name)
+                item.SubItems.Add(fi.Extension.ToLowerInvariant())
+                item.SubItems.Add(FormatSize(fi.Length))
+                item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+                item.Tag = fi.FullName
 
-                    ' Assign image based on file type (same as before)
-                    Select Case fi.Extension.ToLowerInvariant()
-                        Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
+                ' Assign image based on file type (same as before)
+                Select Case fi.Extension.ToLowerInvariant()
+                    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
                      ".m4a", ".alac", ".aiff", ".dsd"
-                            item.ImageKey = "Music"
-                        Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
+                        item.ImageKey = "Music"
+                    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
                      ".raw", ".cr2", ".nef", ".orf", ".sr2"
-                            item.ImageKey = "Pictures"
-                        Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
+                        item.ImageKey = "Pictures"
+                    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
                      ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
-                            item.ImageKey = "Documents"
-                        Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
+                        item.ImageKey = "Documents"
+                    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
                      ".3gp", ".vob", ".ogv", ".ts"
-                            item.ImageKey = "Videos"
-                        Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
+                        item.ImageKey = "Videos"
+                    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
                      ".epub", ".mobi", ".apk", ".crx"
-                            item.ImageKey = "Downloads"
-                        Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
+                        item.ImageKey = "Downloads"
+                    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
                      ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
-                            item.ImageKey = "Executable"
-                        Case Else
-                            item.ImageKey = "Documents"
-                    End Select
-
-                    lvFiles.Items.Add(item)
-
-                Next
-
-            Catch ex As UnauthorizedAccessException
-
-                Dim item = New ListViewItem(" File Access Denied")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.Tag = "AccessDenied"
-                item.ImageKey = "AccessDenied"
-                item.ForeColor = Color.Gray
+                        item.ImageKey = "Executable"
+                    Case Else
+                        item.ImageKey = "Documents"
+                End Select
 
                 lvFiles.Items.Add(item)
 
-                Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+            Next
 
-            Catch ex As Exception
+        Catch ex As UnauthorizedAccessException
 
-                Dim item = New ListViewItem($"PopulateFiles File [Error]: {ex.Message}")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.Tag = "Error"
-                item.ImageKey = "Error"
-                item.ForeColor = Color.Gray
+            'Dim item = New ListViewItem(" File Access Denied")
+            'item.SubItems.Add("")
+            'item.SubItems.Add("")
+            'item.SubItems.Add("")
+            'item.Tag = "AccessDenied"
+            'item.ImageKey = "AccessDenied"
+            'item.ForeColor = Color.Gray
 
-                lvFiles.Items.Add(item)
+            'lvFiles.Items.Add(item)
 
-                Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
+            ShowStatus(IconError & " Access Denied")
 
-            End Try
+            Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
 
-        Else
-            ' User lacks directory creation access - show Access Denied message
-            Dim item = New ListViewItem(" Access Denied")
+        Catch ex As Exception
+
+            Dim item = New ListViewItem($"PopulateFiles File [Error]: {ex.Message}")
             item.SubItems.Add("")
             item.SubItems.Add("")
             item.SubItems.Add("")
-            item.Tag = "AccessDenied"
-            item.ImageKey = "AccessDenied"
+            item.Tag = "Error"
+            item.ImageKey = "Error"
             item.ForeColor = Color.Gray
+
             lvFiles.Items.Add(item)
 
-        End If
+            Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
+
+        End Try
+
+        'If lvFiles.Items.Count = 0 Then
+
+        '    If Not HasDirectoryCreationAccessToDirectory(currentFolder) Then
+
+        '        ' User lacks directory creation access - show Access Denied message
+        '        Dim item = New ListViewItem(" Access Denied")
+        '        item.SubItems.Add("")
+        '        item.SubItems.Add("")
+        '        item.SubItems.Add("")
+        '        item.Tag = "AccessDenied"
+        '        item.ImageKey = "AccessDenied"
+        '        item.ForeColor = Color.Gray
+        '        lvFiles.Items.Add(item)
+
+        '    End If
+
+        'End If
 
         lvFiles.EndUpdate()
 
@@ -1809,8 +1818,38 @@ Public Class Form1
     End Function
 
 
+    'Private Function HasDirectoryCreationAccessToDirectory(dirPath As String) As Boolean
+    '    ' Test whether we can create, rename, and delete a directory inside dirPath.
+
+    '    Dim testDir As String =
+    '    Path.Combine(dirPath, ".__dir_access_test_" & Guid.NewGuid().ToString("N"))
+
+    '    Dim testDirRenamed As String = testDir & "_renamed"
+
+    '    Try
+    '        ' Create directory
+    '        Directory.CreateDirectory(testDir)
+
+    '        ' Rename directory
+    '        Directory.Move(testDir, testDirRenamed)
+
+    '        ' Delete directory
+    '        Directory.Delete(testDirRenamed)
+
+    '        Return True
+
+    '    Catch ex As UnauthorizedAccessException
+    '        Return False
+    '    Catch ex As IOException
+    '        Return False
+    '    End Try
+
+    'End Function
+
+
+
     Private Function HasDirectoryCreationAccessToDirectory(dirPath As String) As Boolean
-        ' Test whether we can create, rename, and delete a directory inside dirPath.
+        ' Tests whether we can create, rename, and delete a directory inside dirPath.
 
         Dim testDir As String =
         Path.Combine(dirPath, ".__dir_access_test_" & Guid.NewGuid().ToString("N"))
@@ -1825,16 +1864,35 @@ Public Class Form1
             Directory.Move(testDir, testDirRenamed)
 
             ' Delete directory
-            Directory.Delete(testDirRenamed)
+            Directory.Delete(testDirRenamed, recursive:=False)
 
             Return True
 
         Catch ex As UnauthorizedAccessException
             Return False
+
         Catch ex As IOException
+            ' Could be permissions, could be other IO issues.
+            ' For access testing, treat as failure.
             Return False
+
+        Finally
+            ' Cleanup in case of partial success
+            Try
+                If Directory.Exists(testDir) Then
+                    Directory.Delete(testDir, recursive:=False)
+                End If
+
+                If Directory.Exists(testDirRenamed) Then
+                    Directory.Delete(testDirRenamed, recursive:=False)
+                End If
+            Catch
+                ' Swallow cleanup errors intentionally.
+            End Try
         End Try
     End Function
+
+
 
     Private Function NormalizeTextFilePath(raw As String) As String
         If raw Is Nothing Then Return Nothing
