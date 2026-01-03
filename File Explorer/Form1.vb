@@ -437,7 +437,6 @@ Public Class Form1
 
         lvFiles.Items.Clear()
 
-
         ' Folders first
         Try
 
@@ -463,17 +462,11 @@ Public Class Form1
             Next
 
         Catch ex As UnauthorizedAccessException
-
             ShowStatus(IconError & " Access Denied")
-
             Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
-
         Catch ex As Exception
-
             ShowStatus(IconError & $" Error: {ex.Message}")
-
             Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
-
         End Try
 
 
@@ -523,17 +516,11 @@ Public Class Form1
             Next
 
         Catch ex As UnauthorizedAccessException
-
             ShowStatus(IconError & " Access Denied")
-
             Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
-
         Catch ex As Exception
-
             ShowStatus(IconError & $" Error: {ex.Message}")
-
             Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
-
         End Try
 
         lvFiles.EndUpdate()
