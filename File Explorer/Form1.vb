@@ -441,59 +441,41 @@ Public Class Form1
         ' Folders first
         Try
 
-                For Each mDir In Directory.GetDirectories(path)
+            For Each mDir In Directory.GetDirectories(path)
 
-                    Dim di = New DirectoryInfo(mDir)
+                Dim di = New DirectoryInfo(mDir)
 
-                    ' Skip hidden/system folders unless checkbox is checked
-                    If Not ShowHiddenFiles AndAlso
+                ' Skip hidden/system folders unless checkbox is checked
+                If Not ShowHiddenFiles AndAlso
                    (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                        Continue For
-                    End If
+                    Continue For
+                End If
 
-                    Dim item = New ListViewItem(di.Name)
-                    item.SubItems.Add("Folder")
-                    item.SubItems.Add("") ' size blank for folders
-                    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-                    item.Tag = di.FullName
-                    item.ImageKey = "Folder"
-
-                    lvFiles.Items.Add(item)
-
-                Next
-
-            Catch ex As UnauthorizedAccessException
-
-            'Dim item = New ListViewItem(" Folder Access Denied")
-            'item.SubItems.Add("")
-            'item.SubItems.Add("")
-            'item.SubItems.Add("")
-            'item.Tag = "AccessDenied"
-            'item.ImageKey = "AccessDenied"
-            'item.ForeColor = Color.Gray
-
-            'lvFiles.Items.Add(item)
-
-            ShowStatus(IconError & " Access Denied")
-
-
-            Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
-
-            Catch ex As Exception
-
-                Dim item = New ListViewItem($"PopulateFiles Folder [Error]: {ex.Message}")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.SubItems.Add("")
-                item.Tag = "Error"
-                item.ImageKey = "Error"
-                item.ForeColor = Color.Gray
+                Dim item = New ListViewItem(di.Name)
+                item.SubItems.Add("Folder")
+                item.SubItems.Add("") ' size blank for folders
+                item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+                item.Tag = di.FullName
+                item.ImageKey = "Folder"
 
                 lvFiles.Items.Add(item)
 
-                Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
+            Next
 
-            End Try
+        Catch ex As UnauthorizedAccessException
+
+            ShowStatus(IconError & " Access Denied")
+
+            Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
+
+        Catch ex As Exception
+
+            ShowStatus(IconError & $" Error: {ex.Message}")
+
+            Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
+
+        End Try
+
 
         ' Files
         Try
@@ -542,53 +524,17 @@ Public Class Form1
 
         Catch ex As UnauthorizedAccessException
 
-            'Dim item = New ListViewItem(" File Access Denied")
-            'item.SubItems.Add("")
-            'item.SubItems.Add("")
-            'item.SubItems.Add("")
-            'item.Tag = "AccessDenied"
-            'item.ImageKey = "AccessDenied"
-            'item.ForeColor = Color.Gray
-
-            'lvFiles.Items.Add(item)
-
             ShowStatus(IconError & " Access Denied")
 
             Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
 
         Catch ex As Exception
 
-            Dim item = New ListViewItem($"PopulateFiles File [Error]: {ex.Message}")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.SubItems.Add("")
-            item.Tag = "Error"
-            item.ImageKey = "Error"
-            item.ForeColor = Color.Gray
-
-            lvFiles.Items.Add(item)
+            ShowStatus(IconError & $" Error: {ex.Message}")
 
             Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
 
         End Try
-
-        'If lvFiles.Items.Count = 0 Then
-
-        '    If Not HasDirectoryCreationAccessToDirectory(currentFolder) Then
-
-        '        ' User lacks directory creation access - show Access Denied message
-        '        Dim item = New ListViewItem(" Access Denied")
-        '        item.SubItems.Add("")
-        '        item.SubItems.Add("")
-        '        item.SubItems.Add("")
-        '        item.Tag = "AccessDenied"
-        '        item.ImageKey = "AccessDenied"
-        '        item.ForeColor = Color.Gray
-        '        lvFiles.Items.Add(item)
-
-        '    End If
-
-        'End If
 
         lvFiles.EndUpdate()
 
