@@ -98,7 +98,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) _
         Handles txtPath.KeyDown
 
@@ -106,13 +105,12 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
         Handles tvFolders.NodeMouseClick
 
         Dim info = tvFolders.HitTest(e.Location)
 
-        ' Only toggle when clicking the arrow
+        ' Only toggle node when the arrow is clicked
         If info.Location = TreeViewHitTestLocations.StateImage Then
 
             If e.Node.IsExpanded Then
@@ -131,7 +129,7 @@ Public Class Form1
         ExpandNode_LazyLoad(e.Node)
 
         ' Set expanded icon
-        e.Node.StateImageIndex = 1   ' ▼ expanded
+        'e.Node.StateImageIndex = 1   ' ▼ expanded
 
     End Sub
 
@@ -364,6 +362,7 @@ Public Class Form1
 
         ' Only lazy-load if placeholder exists
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+
             node.Nodes.Clear()
 
             Dim basePath As String = CStr(node.Tag)
@@ -408,6 +407,10 @@ Public Class Form1
 
             End Try
         End If
+
+        ' Set expanded icon
+        node.StateImageIndex = 1   ' ▼ expanded
+
     End Sub
 
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
