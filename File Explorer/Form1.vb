@@ -358,10 +358,10 @@ Public Class Form1
                     End If
 
                     Dim child As New TreeNode(di.Name) With {
-                    .Tag = dirPath,
-                    .ImageKey = "Folder",
-                    .SelectedImageKey = "Folder"
-                }
+                        .Tag = dirPath,
+                        .ImageKey = "Folder",
+                        .SelectedImageKey = "Folder"
+                    }
 
                     If HasSubdirectories(dirPath) Then
                         child.Nodes.Add("Loading...")
@@ -376,16 +376,11 @@ Public Class Form1
             Catch ex As UnauthorizedAccessException
                 node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
                 Debug.WriteLine($"[Access denied]: {ex.Message}")
-
             Catch ex As IOException
                 node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
-
                 Debug.WriteLine($"[Unavailable]: {ex.Message}")
-
             Catch ex As Exception
-
                 Debug.WriteLine($"ExpandNode_LazyLoad Error: {ex.Message}")
-
             End Try
         End If
 
@@ -484,7 +479,7 @@ Public Class Form1
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
 
-                ' Assign image based on file type (same as before)
+                ' Assign image based on file type
                 Select Case fi.Extension.ToLowerInvariant()
                     Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
                      ".m4a", ".alac", ".aiff", ".dsd"
@@ -624,6 +619,7 @@ Public Class Form1
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
         GoToFolderOrOpenFile(fullPath)
+
     End Sub
 
 
@@ -1186,7 +1182,12 @@ Public Class Form1
 
 
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
+        ' Navigate to the specified folder path.
+
+        '  Updates the current folder, path textbox, and file list.
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
+
+        ' Validate that the folder exists
         If Not Directory.Exists(path) Then
             MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
             ShowStatus(IconWarning & " Folder not found: " & path)
@@ -1211,10 +1212,6 @@ Public Class Form1
 
         UpdateFileButtons()
         UpdateEditButtons()
-        'UpdateCutButton()
-
-        'UpdateRenameButton()
-        'UpdateDeleteButton()
         UpdateEditContextMenu()
 
     End Sub
