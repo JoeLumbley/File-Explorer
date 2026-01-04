@@ -128,9 +128,6 @@ Public Class Form1
 
         ExpandNode_LazyLoad(e.Node)
 
-        ' Set expanded icon
-        'e.Node.StateImageIndex = 1   ' ▼ expanded
-
     End Sub
 
     Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) _
@@ -151,22 +148,9 @@ Public Class Form1
     Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
         Handles lvFiles.ItemSelectionChanged
 
-        'SuspendLayout()
-
         UpdateEditButtons()
 
-        'UpdateRenameButton()
-
-        'UpdateDeleteButton()
-
-        'UpdateCutButton()
-
-
-        'ResumeLayout()
-
-
         UpdateEditContextMenu()
-
 
     End Sub
 
@@ -181,7 +165,6 @@ Public Class Form1
             Exit Sub
         End If
 
-
         GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
 
     End Sub
@@ -195,6 +178,7 @@ Public Class Form1
         ' Rule 1: Path must exist
         If Not PathExists(fullPath) Then
             e.CancelEdit = True
+            ShowStatus(IconError & " The selected item doesn't exist and cannot be renamed.")
             Exit Sub
         End If
 
@@ -250,7 +234,6 @@ Public Class Form1
         lvFiles.Sort()
 
     End Sub
-
 
     Private Sub btnBack_Click(sender As Object, e As EventArgs) _
         Handles btnBack.Click
@@ -340,7 +323,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub Path_KeyDown(e As KeyEventArgs)
         ' Path command input box key handling
 
@@ -356,7 +338,6 @@ Public Class Form1
         End If
 
     End Sub
-
 
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
 
