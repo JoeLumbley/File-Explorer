@@ -1514,49 +1514,55 @@ Public Class Form1
 
             ' Notify the user of the prevention so the user knows why it didn't rename.
             Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
-            MsgBox(msg, MsgBoxStyle.Critical, "Rename Prevented")
+            MsgBox(msg, MsgBoxStyle.Exclamation, "Can't Rename")
 
+            ' Show user the directory so they can see it wasn't renamed.
             NavigateTo(sourcePath)
 
             Exit Sub
 
         End If
 
-        Try
+        'Try
 
-            ' If source is a directory
-            If Directory.Exists(sourcePath) Then
+        '    ' If source is a directory
+        '    If Directory.Exists(sourcePath) Then
 
-                ' Rename directory
-                Directory.Move(sourcePath, newPath)
+        '        ' Rename directory
+        '        Directory.Move(sourcePath, newPath)
 
-                NavigateTo(sourcePath)
+        '        ' Show user the directory so they can see it was renamed.
+        '        NavigateTo(sourcePath)
 
-                ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+        '        ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
 
-                ' If source is a file
-            ElseIf File.Exists(sourcePath) Then
+        ' If source is a directory
+        If Directory.Exists(sourcePath) Then
+
+            ' Rename directory
+            Directory.Move(sourcePath, newPath)
+
+            ' Navigate to the renamed directory
+            NavigateTo(newPath)
+
+            ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+
+            ' If source is a file
+        ElseIf File.Exists(sourcePath) Then
 
                 ' Rename file
                 File.Move(sourcePath, newPath)
-
 
                 NavigateTo(Path.GetDirectoryName(sourcePath))
 
                 ShowStatus(IconSuccess & " Renamed File to: " & newName)
 
             Else
+                ' Path does not exist
 
-                'ShowStatus("Renamed failed: No Path Usage: rename [source_path] [new_name] - e.g., rename" str & "C:\folder\old name.txt newname.txt")'
                 ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
-                'Paths with spaces must be enclosed in quotes. 'Example: Rename "C:\folder\old name.txt" "new name.txt"
-
-
-
 
             End If
-
-
 
         Catch ex As Exception
             MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
