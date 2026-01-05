@@ -1530,6 +1530,8 @@ Public Class Form1
                 ' Rename directory
                 Directory.Move(sourcePath, newPath)
 
+                NavigateTo(sourcePath)
+
                 ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
 
                 ' If source is a file
@@ -1538,9 +1540,14 @@ Public Class Form1
                 ' Rename file
                 File.Move(sourcePath, newPath)
 
+
+                NavigateTo(Path.GetDirectoryName(sourcePath))
+
                 ShowStatus(IconSuccess & " Renamed File to: " & newName)
 
             End If
+
+
 
         Catch ex As Exception
             MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -1595,6 +1602,52 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
+    Private Sub UpdateDestructiveButton()
+
+        ' --- Rule 0: Something must be selected ---
+        Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
+        If Not itemSelected Then
+            btnCut.Enabled = False
+            btnRename.Enabled = False
+            btnDelete.Enabled = False
+            Exit Sub
+        End If
+
+        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+        ' --- Rule 1: Path must exist ---
+        If Not PathExists(fullPath) Then
+            btnCut.Enabled = False
+            btnRename.Enabled = False
+            btnDelete.Enabled = False
+            Exit Sub
+        End If
+
+        ' --- Rule 2: Protected items cannot be renamed ---
+        If IsProtectedPathOrFolder(fullPath) Then
+            btnCut.Enabled = False
+            btnRename.Enabled = False
+            btnDelete.Enabled = False
+            Exit Sub
+        End If
+
+        ' --- Rule 3: User must have rename permission ---
+        Dim parentDir As String =
+        If(Directory.Exists(fullPath),
+           fullPath,                          ' Folder → check write access ON the folder
+           Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
+
+        If Not HasWriteAccessToDirectory(parentDir) Then
+            btnRename.Enabled = False
+            Exit Sub
+        End If
+
+        ' --- All rules passed ---
+        btnCut.Enabled = True
+        btnRename.Enabled = True
+        btnDelete.Enabled = True
+
+    End Sub
 
     Private Sub UpdateRenameButton()
 
@@ -1691,13 +1744,13 @@ Public Class Form1
             Exit Sub
         End If
 
-        ' --- Rule 2: Protected items cannot be renamed ---
+        ' --- Rule 2: Protected items cannot be cut ---
         If IsProtectedPathOrFolder(fullPath) Then
             btnCut.Enabled = False
             Exit Sub
         End If
 
-        ' --- Rule 3: User must have rename permission ---
+        ' --- Rule 3: User must have cut permission ---
         Dim parentDir As String =
         If(Directory.Exists(fullPath),
            fullPath,                          ' Folder → check write access ON the folder
@@ -1737,13 +1790,15 @@ Public Class Form1
 
     Private Sub UpdateEditButtons()
 
-        UpdateCutButton()
+        'UpdateCutButton()
 
         UpdateCopyButton()
 
-        UpdateRenameButton()
+        'UpdateRenameButton()
 
-        UpdateDeleteButton()
+        'UpdateDeleteButton()
+
+        UpdateDestructiveButton()
 
         ' Update Paste button
         If _clipboardIsCut Then
