@@ -1521,7 +1521,8 @@ Public Class Form1
             ' Show user the directory so they can see it wasn't renamed.
             NavigateTo(sourcePath)
 
-            ShowStatus(IconProtect & "  Rename prevented for protected path: " & sourcePath)
+            ' Notify the user of the prevention so the user knows why it didn't rename.
+            ShowStatus(IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
 
             Exit Sub
 
