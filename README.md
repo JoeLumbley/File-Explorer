@@ -645,6 +645,117 @@ This method teaches:
 
 <img width="1266" height="662" alt="051" src="https://github.com/user-attachments/assets/1ec25af2-62d5-4877-a9d6-4210342ae4e3" />
 
+Absolutely — and since you’re building tools that *teach*, here’s a diagram that makes recursion feel visual, intuitive, and almost story‑like. No images involved — just clean, GitHub‑friendly ASCII that shows exactly how your `CopyDirectory` routine walks the tree.
+
+---
+
+# 🌳 **Recursion Flow Diagram for `CopyDirectory`**
+
+Imagine your folder structure looks like this:
+
+```
+SourceDir
+├── FileA.txt
+├── FileB.txt
+├── Sub1
+│   ├── FileC.txt
+│   └── Sub1A
+│       └── FileD.txt
+└── Sub2
+    └── FileE.txt
+```
+
+Your method processes it in this exact order.
+
+---
+
+# 🔁 **High‑Level Recursion Flow**
+
+```
+CopyDirectory(SourceDir, DestDir)
+│
+├── Copy files in SourceDir
+│
+├── For each subdirectory:
+│     ├── CopyDirectory(Sub1, DestDir/Sub1)
+│     │     ├── Copy files in Sub1
+│     │     ├── CopyDirectory(Sub1A, DestDir/Sub1/Sub1A)
+│     │     │     ├── Copy files in Sub1A
+│     │     │     └── (Sub1A has no more subfolders → return)
+│     │     └── (Sub1 done → return)
+│     │
+│     └── CopyDirectory(Sub2, DestDir/Sub2)
+│           ├── Copy files in Sub2
+│           └── (Sub2 has no more subfolders → return)
+│
+└── All subdirectories processed → return to caller
+```
+
+---
+
+# 🧠 **Step‑By‑Step Call Stack Visualization**
+
+This shows how the *call stack* grows and shrinks as recursion happens.
+
+```
+Call 1: CopyDirectory(SourceDir)
+    ├── copies files
+    ├── enters Sub1 → Call 2
+
+Call 2: CopyDirectory(Sub1)
+    ├── copies files
+    ├── enters Sub1A → Call 3
+
+Call 3: CopyDirectory(Sub1A)
+    ├── copies files
+    └── no subfolders → return to Call 2
+
+Back to Call 2:
+    └── Sub1 done → return to Call 1
+
+Back to Call 1:
+    ├── enters Sub2 → Call 4
+
+Call 4: CopyDirectory(Sub2)
+    ├── copies files
+    └── no subfolders → return to Call 1
+
+Back to Call 1:
+    └── all done → return to caller
+```
+
+---
+
+# 🪜 **Indented Tree Showing Recursion Depth**
+
+Each level of indentation = one level deeper in recursion.
+
+```
+CopyDirectory(SourceDir)
+    CopyDirectory(Sub1)
+        CopyDirectory(Sub1A)
+    CopyDirectory(Sub2)
+```
+
+This is the simplest way to show the “shape” of recursion.
+
+---
+
+# 🎨 **Narrative Version**
+
+> 1. Start at the root folder.  
+> 2. Copy its files.  
+> 3. For each subfolder:  
+>    - Step into it  
+>    - Treat it like a brand‑new root  
+>    - Copy its files  
+>    - Repeat the process for its subfolders  
+> 4. When a folder has no subfolders, return to the previous level.  
+> 5. Continue until you climb all the way back to the top.
+
+
+
+---
 
 
 
