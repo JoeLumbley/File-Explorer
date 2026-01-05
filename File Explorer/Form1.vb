@@ -1545,6 +1545,15 @@ Public Class Form1
 
                 ShowStatus(IconSuccess & " Renamed File to: " & newName)
 
+            Else
+
+                'ShowStatus("Renamed failed: No Path Usage: rename [source_path] [new_name] - e.g., rename" str & "C:\folder\old name.txt newname.txt")'
+                ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
+                'Paths with spaces must be enclosed in quotes. 'Example: Rename "C:\folder\old name.txt" "new name.txt"
+
+
+
+
             End If
 
 
