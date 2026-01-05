@@ -671,7 +671,7 @@ Your method processes it in this exact order.
 
 ---
 
-# 🔁 **High‑Level Recursion Flow**
+# **High‑Level Recursion Flow**
 
 ```
 CopyDirectory(SourceDir, DestDir)
@@ -695,7 +695,7 @@ CopyDirectory(SourceDir, DestDir)
 
 ---
 
-# 🧠 **Step‑By‑Step Call Stack Visualization**
+# **Step‑By‑Step Call Stack Visualization**
 
 This shows how the *call stack* grows and shrinks as recursion happens.
 
@@ -728,7 +728,7 @@ Back to Call 1:
 
 ---
 
-# 🪜 **Indented Tree Showing Recursion Depth**
+# **Indented Tree Showing Recursion Depth**
 
 Each level of indentation = one level deeper in recursion.
 
@@ -743,7 +743,7 @@ This is the simplest way to show the “shape” of recursion.
 
 ---
 
-# 🎨 **Narrative Version**
+# **Narrative Version**
 
 > 1. Start at the root folder.  
 > 2. Copy its files.  
