@@ -1525,17 +1525,6 @@ Public Class Form1
 
         Try
 
-            '    ' If source is a directory
-            '    If Directory.Exists(sourcePath) Then
-
-            '        ' Rename directory
-            '        Directory.Move(sourcePath, newPath)
-
-            '        ' Show user the directory so they can see it was renamed.
-            '        NavigateTo(sourcePath)
-
-            '        ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
-
             ' If source is a directory
             If Directory.Exists(sourcePath) Then
 
@@ -1553,6 +1542,7 @@ Public Class Form1
                 ' Rename file
                 File.Move(sourcePath, newPath)
 
+                ' Navigate to the directory of the renamed file
                 NavigateTo(Path.GetDirectoryName(sourcePath))
 
                 ShowStatus(IconSuccess & " Renamed File to: " & newName)
