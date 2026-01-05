@@ -4,8 +4,8 @@
 
 
 
+<img width="1266" height="662" alt="047" src="https://github.com/user-attachments/assets/f27424c5-9982-4408-a59f-22d8be045ea2" />
 
-<img width="1266" height="662" alt="039" src="https://github.com/user-attachments/assets/7419a467-9180-4803-aa98-2f8f4f2de7f5" />
 
 ## Features
 - **Navigation**: Easily navigate through directories using a tree view and a list view.
@@ -54,11 +54,6 @@ The CLI supports several basic commands that enable users to perform common file
   - Copies files or directories from a source to a destination.
   - Example: `copy C:\folder1\file.txt C:\folder2`
 
-<img width="1266" height="662" alt="024" src="https://github.com/user-attachments/assets/ff0a34f8-ffe5-4fde-b2a5-d6615bb3faea" />
-
-
-
-<img width="1266" height="662" alt="025" src="https://github.com/user-attachments/assets/e51e69a2-5ea4-4aea-8d1d-e01ab917b10b" />
 
 - **Move Files (`move`)** : 
   - Usage: `move [source] [destination]`
@@ -75,12 +70,6 @@ The CLI supports several basic commands that enable users to perform common file
   - Creates a new text file at the specified path and opens it.
   - Example: `text C:\folder\example.txt`
  
-
-
-<img width="1266" height="662" alt="033" src="https://github.com/user-attachments/assets/5d4d9beb-8345-41db-a5dd-640e06427117" />
-
-
-<img width="1266" height="662" alt="034" src="https://github.com/user-attachments/assets/669f727f-a3d5-468d-9457-77846120f02f" />
 
 
 - **Help (`help`)** : 
@@ -135,7 +124,258 @@ The CLI in the File Explorer application provides a powerful and flexible way to
 
 
 
+---
+
+
+# 📁 `RenameFileOrDirectory` —  Walkthrough
+
+This method renames either a **file** or a **folder**, following a clear set of safety rules. Each rule protects the user from mistakes and helps them understand what’s happening.
+
+
+
 <img width="1275" height="662" alt="040" src="https://github.com/user-attachments/assets/db463d52-0d3f-40c7-bb34-867deb1925d7" />
+
+
+
+
+Below is the full code, then we’ll walk through it one small step at a time.
+
+
+```vb.net
+
+    Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
+
+        Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
+
+        ' Rule 1: Path must be absolute (start with C:\ or similar).
+        ' Reject relative paths outright
+        If Not Path.IsPathRooted(sourcePath) Then
+
+            ShowStatus(IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
+
+            Exit Sub
+
+        End If
+
+        ' Rule 2: Protected paths are never renamed.
+        ' Check if the path is in the protected list
+        If IsProtectedPathOrFolder(sourcePath) Then
+            ' The path is protected; prevent rename
+
+            ' Show user the directory so they can see it wasn't renamed.
+            NavigateTo(sourcePath)
+
+            ' Notify the user of the prevention so the user knows why it didn't rename.
+            ShowStatus(IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
+
+            Exit Sub
+
+        End If
+
+        Try
+
+            ' Rule 3: If it’s a folder, rename the folder and show the new folder.
+            ' If source is a directory
+            If Directory.Exists(sourcePath) Then
+
+                ' Rename directory
+                Directory.Move(sourcePath, newPath)
+
+                ' Navigate to the renamed directory
+                NavigateTo(newPath)
+
+                ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+
+                ' Rule 4: If it’s a file, rename the file and show its folder.
+                ' If source is a file
+            ElseIf File.Exists(sourcePath) Then
+
+                ' Rename file
+                File.Move(sourcePath, newPath)
+
+                ' Navigate to the directory of the renamed file
+                NavigateTo(Path.GetDirectoryName(sourcePath))
+
+                ShowStatus(IconSuccess & " Renamed File to: " & newName)
+
+                ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
+            Else
+                ' Path does not exist
+                ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
+
+            End If
+
+        Catch ex As Exception
+            ' Rule 6: If anything goes wrong,show a status message.
+            ShowStatus(IconError & " Rename failed: " & ex.Message)
+            Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
+        End Try
+
+    End Sub
+
+```
+
+
+
+---
+
+## 🔧 Method Signature
+
+```vb.net
+Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
+```
+
+- **sourcePath** — the full path to the file or folder you want to rename  
+- **newName** — just the new name (not a full path)
+
+---
+
+## 🧱 Step 1 — Build the new full path
+
+```vb.net
+Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
+```
+
+- Extracts the folder that contains the item  
+- Combines it with the new name  
+- Example:  
+  - `sourcePath = "C:\Stuff\Old.txt"`  
+  - `newName = "New.txt"`  
+  - `newPath = "C:\Stuff\New.txt"`
+
+---
+
+## 🛑 Rule 1 — Path must be absolute
+
+```vb.net
+If Not Path.IsPathRooted(sourcePath) Then
+    ShowStatus(IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
+    Exit Sub
+End If
+```
+
+Beginners often type relative paths like `folder\file.txt`.  
+This rule stops the rename and explains the correct format.
+
+---
+
+## 🔒 Rule 2 — Protected paths are never renamed
+
+```vb.net
+If IsProtectedPathOrFolder(sourcePath) Then
+    NavigateTo(sourcePath)
+    ShowStatus(IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
+    Exit Sub
+End If
+```
+
+Some paths should never be renamed (system folders, app folders, etc.).  
+This rule:
+
+- Prevents the rename  
+- Shows the user the original folder  
+- Explains why the rename was blocked  
+
+This is excellent for learner clarity.
+
+---
+
+## 🧪 Try/Catch — Safe execution zone
+
+```vb.net
+Try
+    ...
+Catch ex As Exception
+    ShowStatus(IconError & " Rename failed: " & ex.Message)
+    Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
+End Try
+```
+
+Anything inside the `Try` block that fails will be caught and explained.  
+Beginners get a friendly message instead of a crash.
+
+---
+
+## 📁 Rule 3 — If it’s a folder, rename the folder
+
+```vb.net
+If Directory.Exists(sourcePath) Then
+    Directory.Move(sourcePath, newPath)
+    NavigateTo(newPath)
+    ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+```
+
+- Checks if the path points to a **directory**  
+- Renames it  
+- Shows the user the newly renamed folder  
+
+This reinforces the idea that folders are “containers” and have their own identity.
+
+---
+
+## 📄 Rule 4 — If it’s a file, rename the file
+
+```vb.net
+ElseIf File.Exists(sourcePath) Then
+    File.Move(sourcePath, newPath)
+    NavigateTo(Path.GetDirectoryName(sourcePath))
+    ShowStatus(IconSuccess & " Renamed File to: " & newName)
+```
+
+- Checks if the path points to a **file**  
+- Renames it  
+- Shows the user the folder containing the renamed file  
+
+This keeps the UI consistent and predictable.
+
+---
+
+## ❓ Rule 5 — If nothing exists at that path, explain quoting rules
+
+```vb.net
+Else
+    ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
+End If
+```
+
+Beginners often forget to quote paths with spaces.  
+This rule:
+
+- Detects the missing path  
+- Explains the quoting rule  
+- Gives both a template and a real example  
+
+This is *excellent* pedagogy.
+
+---
+
+## ⚠️ Rule 6 — If anything goes wrong, show a clear error
+
+```vb.net
+Catch ex As Exception
+    ShowStatus(IconError & " Rename failed: " & ex.Message)
+    Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
+End Try
+```
+
+- No crashes  
+- Clear feedback  
+- Debug info for you  
+
+---
+
+This method teaches six important rules:
+
+1. **Paths must be absolute**  
+2. **Protected paths cannot be renamed**  
+3. **Folders are renamed and then shown**  
+4. **Files are renamed and their folder is shown**  
+5. **Missing paths trigger a helpful quoting explanation**  
+6. **Any error is caught and explained safely**
+
+
+
+
 
 
 
