@@ -1515,11 +1515,13 @@ Public Class Form1
             ' The path is protected; prevent rename
 
             ' Notify the user of the prevention so the user knows why it didn't rename.
-            Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
-            MsgBox(msg, MsgBoxStyle.Exclamation, "Can't Rename")
+            'Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
+            'MsgBox(msg, MsgBoxStyle.Exclamation, "Can't Rename")
 
             ' Show user the directory so they can see it wasn't renamed.
             NavigateTo(sourcePath)
+
+            ShowStatus(IconProtect & "  Rename prevented for protected path: " & sourcePath)
 
             Exit Sub
 
@@ -1551,8 +1553,8 @@ Public Class Form1
 
                 ShowStatus(IconSuccess & " Renamed File to: " & newName)
 
-            Else
                 ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
+            Else
                 ' Path does not exist
                 ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
 
