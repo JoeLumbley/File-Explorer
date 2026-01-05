@@ -1523,32 +1523,32 @@ Public Class Form1
 
         End If
 
-        'Try
+        Try
 
-        '    ' If source is a directory
-        '    If Directory.Exists(sourcePath) Then
+            '    ' If source is a directory
+            '    If Directory.Exists(sourcePath) Then
 
-        '        ' Rename directory
-        '        Directory.Move(sourcePath, newPath)
+            '        ' Rename directory
+            '        Directory.Move(sourcePath, newPath)
 
-        '        ' Show user the directory so they can see it was renamed.
-        '        NavigateTo(sourcePath)
+            '        ' Show user the directory so they can see it was renamed.
+            '        NavigateTo(sourcePath)
 
-        '        ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+            '        ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
 
-        ' If source is a directory
-        If Directory.Exists(sourcePath) Then
+            ' If source is a directory
+            If Directory.Exists(sourcePath) Then
 
-            ' Rename directory
-            Directory.Move(sourcePath, newPath)
+                ' Rename directory
+                Directory.Move(sourcePath, newPath)
 
-            ' Navigate to the renamed directory
-            NavigateTo(newPath)
+                ' Navigate to the renamed directory
+                NavigateTo(newPath)
 
-            ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+                ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
 
-            ' If source is a file
-        ElseIf File.Exists(sourcePath) Then
+                ' If source is a file
+            ElseIf File.Exists(sourcePath) Then
 
                 ' Rename file
                 File.Move(sourcePath, newPath)
