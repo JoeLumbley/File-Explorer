@@ -1463,7 +1463,12 @@ Public Class Form1
 
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
-        If Not dirInfo.Exists Then Throw New DirectoryNotFoundException("Source not found: " & sourceDir)
+        If Not dirInfo.Exists Then
+
+            ShowStatus("Source not found: " & sourceDir)
+
+            'Throw New DirectoryNotFoundException("Source not found: " & sourceDir)
+        End If
 
         Try
 
@@ -1471,22 +1476,26 @@ Public Class Form1
 
             ' Create destination directory
             Directory.CreateDirectory(destDir)
+
             ' Copy files
             For Each file In dirInfo.GetFiles()
                 Dim targetFilePath = Path.Combine(destDir, file.Name)
                 file.CopyTo(targetFilePath, overwrite:=True)
             Next
+
             ' Copy subdirectories recursively
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
                 CopyDirectory(subDir.FullName, newDest)
             Next
 
-            'ShowStatus("Copied into " & destDir)
 
             'MessageBox.Show("Copied into " & destDir, "Copied Folder", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
+            ' 
             NavigateTo(destDir)
+
+            ShowStatus("Copied into " & destDir)
 
         Catch ex As Exception
             ShowStatus(IconError & "Copy failed: " & ex.Message)
