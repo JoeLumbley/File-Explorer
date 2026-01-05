@@ -470,7 +470,7 @@ Private Sub CopyDirectory(sourceDir As String, destDir As String)
 
 ---
 
-## 1. Create a DirectoryInfo object for the source
+## Create a DirectoryInfo object for the source
 
 ```vb.net
 Dim dirInfo As New DirectoryInfo(sourceDir)
@@ -484,7 +484,7 @@ Dim dirInfo As New DirectoryInfo(sourceDir)
 
 ---
 
-## 2. Make sure the source directory exists
+## Make sure the source directory exists
 
 ```vb.net
 If Not dirInfo.Exists Then
@@ -499,7 +499,7 @@ End If
 
 ---
 
-## 3. Start a Try/Catch block
+## Start a Try/Catch block
 
 ```vb.net
 Try
@@ -510,7 +510,7 @@ If anything goes wrong (permissions, locked files, etc.), the `Catch` block will
 
 ---
 
-## 4. Tell the user we’re creating the destination directory
+## Tell the user we’re creating the destination directory
 
 ```vb.net
 ShowStatus(IconCopy & "  Create destination directory:" & destDir)
@@ -520,7 +520,7 @@ This gives immediate feedback so the UI feels alive and responsive.
 
 ---
 
-## 5. Create the destination directory
+## Create the destination directory
 
 ```vb.net
 Directory.CreateDirectory(destDir)
@@ -532,7 +532,7 @@ Directory.CreateDirectory(destDir)
 
 ---
 
-## 6. Tell the user we’re copying files
+## Tell the user we’re copying files
 
 ```vb.net
 ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
@@ -542,7 +542,7 @@ This message helps learners understand the sequence of operations.
 
 ---
 
-## 7. Copy all files in the current directory
+## Copy all files in the current directory
 
 ```vb.net
 For Each file In dirInfo.GetFiles()
@@ -561,7 +561,7 @@ This loop handles only the files — not subfolders.
 
 ---
 
-## 8. Tell the user we’re copying subdirectories
+## Tell the user we’re copying subdirectories
 
 ```vb.net
 ShowStatus(IconCopy & "  Copying subdirectories.")
@@ -571,7 +571,7 @@ This prepares the learner for the next step: recursion.
 
 ---
 
-## 9. Copy all subdirectories (recursively)
+## Copy all subdirectories (recursively)
 
 ```vb.net
 For Each subDir In dirInfo.GetDirectories()
@@ -593,7 +593,7 @@ Beginners often find this magical once they see it in action.
 
 ---
 
-## 10. Refresh the UI to show the copied directory
+## Refresh the UI to show the copied directory
 
 ```vb.net
 NavigateTo(destDir)
@@ -603,7 +603,7 @@ This helps the user visually confirm the copy succeeded.
 
 ---
 
-## 11. Show a success message
+## Show a success message
 
 ```vb.net
 ShowStatus(IconSuccess & "  Copied into " & destDir)
@@ -613,7 +613,7 @@ Clear, friendly confirmation that the operation completed.
 
 ---
 
-## 12. Handle any errors
+## Handle any errors
 
 ```vb.net
 Catch ex As Exception
