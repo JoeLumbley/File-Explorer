@@ -1467,7 +1467,8 @@ Public Class Form1
 
             ShowStatus("Source not found: " & sourceDir)
 
-            'Throw New DirectoryNotFoundException("Source not found: " & sourceDir)
+            Exit Sub
+
         End If
 
         Try
@@ -1489,10 +1490,6 @@ Public Class Form1
                 CopyDirectory(subDir.FullName, newDest)
             Next
 
-
-            'MessageBox.Show("Copied into " & destDir, "Copied Folder", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-            ' 
             NavigateTo(destDir)
 
             ShowStatus("Copied into " & destDir)
