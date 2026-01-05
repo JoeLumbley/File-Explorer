@@ -4,8 +4,8 @@
 
 
 
+<img width="1266" height="662" alt="047" src="https://github.com/user-attachments/assets/f27424c5-9982-4408-a59f-22d8be045ea2" />
 
-<img width="1266" height="662" alt="039" src="https://github.com/user-attachments/assets/7419a467-9180-4803-aa98-2f8f4f2de7f5" />
 
 ## Features
 - **Navigation**: Easily navigate through directories using a tree view and a list view.
