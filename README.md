@@ -651,7 +651,7 @@ This method teaches:
 
 # 🌳 **Recursion Flow Diagram for `CopyDirectory`**
 
-Here’s a diagram that makes recursion feel visual, intuitive, and almost story‑like. This shows exactly how your `CopyDirectory` routine walks the tree.
+Here’s a diagram that makes recursion feel visual, intuitive, and almost story‑like. This shows exactly how the `CopyDirectory` routine walks the tree.
 
 Imagine your folder structure looks like this:
 
