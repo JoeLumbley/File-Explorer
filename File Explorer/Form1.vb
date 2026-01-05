@@ -1465,7 +1465,7 @@ Public Class Form1
 
         If Not dirInfo.Exists Then
 
-            ShowStatus("Source not found: " & sourceDir)
+            ShowStatus(IconError & "  Source directory not found: " & sourceDir)
 
             Exit Sub
 
@@ -1473,10 +1473,12 @@ Public Class Form1
 
         Try
 
-            ShowStatus(IconDialog & "Copying directory")
+            ShowStatus(IconCopy & "  Create destination directory:" & destDir)
 
             ' Create destination directory
             Directory.CreateDirectory(destDir)
+
+            ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
 
             ' Copy files
             For Each file In dirInfo.GetFiles()
@@ -1484,18 +1486,21 @@ Public Class Form1
                 file.CopyTo(targetFilePath, overwrite:=True)
             Next
 
+            ShowStatus(IconCopy & "  Copying subdirectories.")
+
             ' Copy subdirectories recursively
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
                 CopyDirectory(subDir.FullName, newDest)
             Next
 
+            ' Refresh the view to show the copied directory
             NavigateTo(destDir)
 
-            ShowStatus("Copied into " & destDir)
+            ShowStatus(IconSuccess & "  Copied into " & destDir)
 
         Catch ex As Exception
-            ShowStatus(IconError & "Copy failed: " & ex.Message)
+            ShowStatus(IconError & "  Copy failed: " & ex.Message)
             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
         End Try
 
