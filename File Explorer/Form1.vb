@@ -1499,6 +1499,7 @@ Public Class Form1
 
         Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
 
+        ' Rule 1: Path must be absolute (start with C:\ or similar).
         ' Reject relative paths outright
         If Not Path.IsPathRooted(sourcePath) Then
 
@@ -1508,6 +1509,7 @@ Public Class Form1
 
         End If
 
+        ' Rule 2: Protected paths are never renamed.
         ' Check if the path is in the protected list
         If IsProtectedPathOrFolder(sourcePath) Then
             ' The path is protected; prevent rename
@@ -1525,6 +1527,7 @@ Public Class Form1
 
         Try
 
+            ' Rule 3: If it’s a folder, rename the folder and show the new folder.
             ' If source is a directory
             If Directory.Exists(sourcePath) Then
 
@@ -1536,6 +1539,7 @@ Public Class Form1
 
                 ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
 
+                ' Rule 4: If it’s a file, rename the file and show its folder.
                 ' If source is a file
             ElseIf File.Exists(sourcePath) Then
 
@@ -1548,14 +1552,14 @@ Public Class Form1
                 ShowStatus(IconSuccess & " Renamed File to: " & newName)
 
             Else
+                ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
                 ' Path does not exist
-
                 ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
 
             End If
 
         Catch ex As Exception
-            MessageBox.Show("Rename failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ' Rule 6: If anything goes wrong,show a status message.
             ShowStatus(IconError & " Rename failed: " & ex.Message)
             Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
         End Try
