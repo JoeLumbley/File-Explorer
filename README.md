@@ -645,11 +645,13 @@ This method teaches:
 
 <img width="1266" height="662" alt="051" src="https://github.com/user-attachments/assets/1ec25af2-62d5-4877-a9d6-4210342ae4e3" />
 
-Absolutely — and since you’re building tools that *teach*, here’s a diagram that makes recursion feel visual, intuitive, and almost story‑like. No images involved — just clean, GitHub‑friendly ASCII that shows exactly how your `CopyDirectory` routine walks the tree.
+
 
 ---
 
 # 🌳 **Recursion Flow Diagram for `CopyDirectory`**
+
+Here’s a diagram that makes recursion feel visual, intuitive, and almost story‑like. This shows exactly how your `CopyDirectory` routine walks the tree.
 
 Imagine your folder structure looks like this:
 
