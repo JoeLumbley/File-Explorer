@@ -133,7 +133,9 @@ This method renames either a **file** or a **folder**, following a clear set of 
 
 <img width="1275" height="662" alt="040" src="https://github.com/user-attachments/assets/db463d52-0d3f-40c7-bb34-867deb1925d7" />
 
+
 Below is the full code, then we’ll walk through it one small step at a time.
+
 
 ```vb.net
 
