@@ -1514,10 +1514,6 @@ Public Class Form1
         If IsProtectedPathOrFolder(sourcePath) Then
             ' The path is protected; prevent rename
 
-            ' Notify the user of the prevention so the user knows why it didn't rename.
-            'Dim msg As String = "Rename prevented for protected path: " & Environment.NewLine & sourcePath
-            'MsgBox(msg, MsgBoxStyle.Exclamation, "Can't Rename")
-
             ' Show user the directory so they can see it wasn't renamed.
             NavigateTo(sourcePath)
 
