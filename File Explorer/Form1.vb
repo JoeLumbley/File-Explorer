@@ -1402,12 +1402,13 @@ Public Class Form1
                 NavigateTo(destDir)
 
                 ' Make the user confirm deletion.
-                Dim confirmMsg As String = "Are you sure you want to delete the file '" &
-                                            path2Delete & "'?"
+                Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
+                                            path2Delete & Environment.NewLine & "?"
+
                 Dim result = MessageBox.Show(confirmMsg,
                                              "Delete",
                                              MessageBoxButtons.YesNo,
-                                             MessageBoxIcon.Warning)
+                                             MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
                 File.Delete(path2Delete)
@@ -1426,13 +1427,13 @@ Public Class Form1
                 NavigateTo(path2Delete)
 
                 ' Make the user confirm deletion.
-                Dim confirmMsg As String = IconDialog & " Are you sure you want to delete the folder '" &
-                                           path2Delete & "' and all its contents?"
-                ShowStatus(confirmMsg)
+                Dim confirmMsg As String = "Are you sure you want to delete the folder:" & Environment.NewLine &
+                                           path2Delete & Environment.NewLine & "and all its contents?"
+                'ShowStatus(confirmMsg)
                 Dim result = MessageBox.Show(confirmMsg,
-                                             "Delete",
+                                             "Confirm Deletion",
                                              MessageBoxButtons.YesNo,
-                                             MessageBoxIcon.Warning)
+                                             MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
                 Directory.Delete(path2Delete, recursive:=True)
