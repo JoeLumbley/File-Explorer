@@ -217,7 +217,6 @@ Below is the full code, then we’ll walk through it one small step at a time.
 
 
 
----
 
 ## 🔧 Method Signature
 
@@ -228,7 +227,7 @@ Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
 - **sourcePath** — the full path to the file or folder you want to rename  
 - **newName** — just the new name (not a full path)
 
----
+
 
 ## 🧱 Step 1 — Build the new full path
 
@@ -243,7 +242,7 @@ Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
   - `newName = "New.txt"`  
   - `newPath = "C:\Stuff\New.txt"`
 
----
+
 
 ## 🛑 Rule 1 — Path must be absolute
 
@@ -257,7 +256,7 @@ End If
 Beginners often type relative paths like `folder\file.txt`.  
 This rule stops the rename and explains the correct format.
 
----
+
 
 ## 🔒 Rule 2 — Protected paths are never renamed
 
@@ -278,7 +277,7 @@ This rule:
 
 This is excellent for learner clarity.
 
----
+
 
 ## 🧪 Try/Catch — Safe execution zone
 
@@ -294,7 +293,7 @@ End Try
 Anything inside the `Try` block that fails will be caught and explained.  
 Beginners get a friendly message instead of a crash.
 
----
+
 
 ## 📁 Rule 3 — If it’s a folder, rename the folder
 
@@ -311,7 +310,7 @@ If Directory.Exists(sourcePath) Then
 
 This reinforces the idea that folders are “containers” and have their own identity.
 
----
+
 
 ## 📄 Rule 4 — If it’s a file, rename the file
 
@@ -328,7 +327,7 @@ ElseIf File.Exists(sourcePath) Then
 
 This keeps the UI consistent and predictable.
 
----
+
 
 ## ❓ Rule 5 — If nothing exists at that path, explain quoting rules
 
@@ -347,7 +346,7 @@ This rule:
 
 This is *excellent* pedagogy.
 
----
+
 
 ## ⚠️ Rule 6 — If anything goes wrong, show a clear error
 
@@ -362,7 +361,7 @@ End Try
 - Clear feedback  
 - Debug info for you  
 
----
+
 
 This method teaches six important rules:
 
