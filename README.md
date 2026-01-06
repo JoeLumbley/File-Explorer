@@ -20,6 +20,31 @@
 - **File Type Icons**: Visual representation of different file types with corresponding icons.
 - **Status Bar**: Provides feedback on the current operation and status updates.
 
+---
+---
+---
+
+## 📚 Table of Contents
+
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory--code-walkthrough)
+- [🧭 Overview](#-overview)
+- [🧩 Full Method](#-full-method)
+- [🧠 How It Works (Step‑By‑Step)](#-how-it-works-stepby-step)
+- [🎯 Design Philosophy](#-design-philosophy)
+- [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
+- [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory--code-walkthrough)
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
+- [🌳 TreeView Navigation & Lazy Loading](#treeview-navigation--lazy-loading)
+- [🔐 Protected Paths & Safety Rules](#protected-paths--safety-rules)
+- [📜 Command Reference](#command-reference)
+- [⚙️ Architecture Overview](#architecture-overview)
+- [🧪 Testing & Edge Cases](#testing--edge-cases)
+- [📸 Screenshots](#screenshots)
+- [📄 License](#license)
+
+---
+---
+---
 
 
 ---
