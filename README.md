@@ -27,10 +27,7 @@
 ## 📚 Table of Contents
 
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
-- [🧭 Overview](#-overview)
-- [🧩 Full Method](#-full-method)
-- [🧠 How It Works (Step‑By‑Step)](#-how-it-works-stepby-step)
-- [🎯 Design Philosophy](#-design-philosophy)
+
 - [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
 - [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory--code-walkthrough)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
