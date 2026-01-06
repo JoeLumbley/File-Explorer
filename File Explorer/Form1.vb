@@ -1403,9 +1403,6 @@ Public Class Form1
                 Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
                                             Path.GetFileName(path2Delete) & " ?"
 
-                ' Path.GetFileName(path2Delete)
-
-
                 Dim result = MessageBox.Show(confirmMsg,
                                              "Confirm Deletion",
                                              MessageBoxButtons.YesNo,
@@ -1414,13 +1411,11 @@ Public Class Form1
 
                 File.Delete(path2Delete)
 
-
                 ' Go to the directory of the file that was deleted.
                 ' So the user can see that it has been deleted.
                 NavigateTo(destDir)
 
                 ShowStatus(IconDelete & "Deleted file: " & path2Delete)
-
 
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
