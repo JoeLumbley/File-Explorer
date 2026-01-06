@@ -1369,7 +1369,13 @@ Public Class Form1
 
                     ShowStatus(IconDialog & "  Moving file to: " & destination)
 
+
+                    ' Ensure destination directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(destination))
+
                     File.Move(source, destination)
+                    'File.Move(source, destination)
+
 
                     ' Navigate to the destination folder (corrected)
                     NavigateTo(Path.GetDirectoryName(destination))
@@ -1391,7 +1397,13 @@ Public Class Form1
 
                     ShowStatus(IconDialog & "  Moving directory to: " & destination)
 
+                    ' Ensure destination parent exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(destination))
+
                     Directory.Move(source, destination)
+                    'Directory.Move(source, destination)
+
+                    InitTreeRoots()
 
                     ' Navigate to the new location
                     NavigateTo(destination)
