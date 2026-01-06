@@ -127,7 +127,7 @@ Partial Class Form1
         ' 
         btnNewTextFile.Anchor = AnchorStyles.Right
         btnNewTextFile.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnNewTextFile.Location = New Point(831, 0)
+        btnNewTextFile.Location = New Point(829, 0)
         btnNewTextFile.Name = "btnNewTextFile"
         btnNewTextFile.Size = New Size(30, 28)
         btnNewTextFile.TabIndex = 12
@@ -193,7 +193,7 @@ Partial Class Form1
         btnNewFolder.Anchor = AnchorStyles.Right
         btnNewFolder.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnNewFolder.ForeColor = Color.Orange
-        btnNewFolder.Location = New Point(800, 0)
+        btnNewFolder.Location = New Point(798, 0)
         btnNewFolder.Name = "btnNewFolder"
         btnNewFolder.Size = New Size(30, 28)
         btnNewFolder.TabIndex = 6
