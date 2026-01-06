@@ -1369,7 +1369,7 @@ Public Class Form1
 
         ' Reject relative paths outright
         If Not Path.IsPathRooted(path2Delete) Then
-            ShowStatus(IconWarning & " Delete failed: Path must be absolute. Example: C:\folder")
+            ShowStatus(IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
             Exit Sub
         End If
 
@@ -1377,13 +1377,15 @@ Public Class Form1
         If IsProtectedPathOrFolder(path2Delete) Then
             ' The path is protected; prevent deletion
 
-            ' Notify the user of the prevention so the user knows why it didn't delete.
-            ShowStatus(IconProtect & " Deletion prevented for protected path: " & path2Delete)
-            Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
-            MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
-
             ' Show user the directory so they can see it wasn't deleted.
             NavigateTo(path2Delete)
+
+            ShowStatus(IconProtect & "  Deletion prevented for protected path: " & path2Delete)
+
+            '' Notify the user of the prevention so the user knows why it didn't delete.
+            'ShowStatus(IconProtect & " Deletion prevented for protected path: " & path2Delete)
+            'Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
+            'MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
 
             Exit Sub
 
@@ -1420,39 +1422,38 @@ Public Class Form1
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
 
-                ' Go to the directory to be deleted.
-                ' So the user can see what is about to be deleted.
+                ' Navigate into the folder to be deleted
                 NavigateTo(path2Delete)
 
-                ' Make the user confirm directory deletion.
+                ' Get the parent directory so we can navigate there after deletion
+                Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
+
+                ' Ask the user to confirm deletion
                 Dim folderName As String = Path.GetFileName(path2Delete)
                 Dim confirmMsg As String =
                     "Are you sure you want to delete the following folder:" & Environment.NewLine &
-                     "''" & folderName & "'' and all of its contents?"
+                    "''" & folderName & "'' and all of its contents?"
+
                 Dim result = MessageBox.Show(confirmMsg,
                                              "Confirm Folder Deletion",
                                              MessageBoxButtons.YesNo,
                                              MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
+                ' Delete the folder
                 Directory.Delete(path2Delete, recursive:=True)
 
-                ' Go to the parent directory of the deleted directory.
-                ' So the user can see that it has been deleted.
-                Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
+                ' Navigate to the parent so the user sees the result
                 NavigateTo(parentDir, True)
 
+                ' Status message
                 ShowStatus(IconDelete & "  Deleted folder: " & folderName)
 
             Else
-                ShowStatus(IconWarning & " Delete failed: Path not found.")
+                ShowStatus(IconWarning & "  Delete failed: Path not found.")
             End If
 
         Catch ex As Exception
-            'MessageBox.Show("Delete failed: " & ex.Message,
-            '                "Error",
-            '                MessageBoxButtons.OK,
-            '                MessageBoxIcon.Error)
             ShowStatus(IconError & " Delete failed: " & ex.Message)
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
