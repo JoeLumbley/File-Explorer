@@ -456,7 +456,7 @@ Below is the full code, then we’ll walk through it one small step at a time.
 ```
 
 
----
+
 
 ## 🔧 Method Definition
 
@@ -467,7 +467,7 @@ Private Sub CopyDirectory(sourceDir As String, destDir As String)
 - **sourceDir** — the folder you want to copy  
 - **destDir** — where the copy should be created  
 
----
+
 
 ## Create a DirectoryInfo object for the source
 
@@ -481,7 +481,7 @@ Dim dirInfo As New DirectoryInfo(sourceDir)
   - metadata  
 - It’s a convenient wrapper around a directory path.
 
----
+
 
 ## Make sure the source directory exists
 
@@ -496,7 +496,7 @@ End If
 - Beginners often mistype paths, so this prevents confusing errors.  
 - The user gets a clear, friendly message.
 
----
+
 
 ## Start a Try/Catch block
 
@@ -507,7 +507,7 @@ Try
 Everything inside this block is protected.  
 If anything goes wrong (permissions, locked files, etc.), the `Catch` block will handle it gracefully.
 
----
+
 
 ## Tell the user we’re creating the destination directory
 
@@ -517,7 +517,7 @@ ShowStatus(IconCopy & "  Create destination directory:" & destDir)
 
 This gives immediate feedback so the UI feels alive and responsive.
 
----
+
 
 ## Create the destination directory
 
@@ -539,7 +539,7 @@ ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
 
 This message helps learners understand the sequence of operations.
 
----
+
 
 ## Copy all files in the current directory
 
@@ -558,7 +558,7 @@ Next
 
 This loop handles only the files — not subfolders.
 
----
+
 
 ## Tell the user we’re copying subdirectories
 
@@ -568,7 +568,7 @@ ShowStatus(IconCopy & "  Copying subdirectories.")
 
 This prepares the learner for the next step: recursion.
 
----
+
 
 ## Copy all subdirectories (recursively)
 
@@ -590,7 +590,7 @@ This technique is called **recursion** — the function keeps calling itself unt
 
 Beginners often find this magical once they see it in action.
 
----
+
 
 ## Refresh the UI to show the copied directory
 
@@ -600,7 +600,7 @@ NavigateTo(destDir)
 
 This helps the user visually confirm the copy succeeded.
 
----
+
 
 ## Show a success message
 
@@ -610,7 +610,7 @@ ShowStatus(IconSuccess & "  Copied into " & destDir)
 
 Clear, friendly confirmation that the operation completed.
 
----
+
 
 ## Handle any errors
 
@@ -628,7 +628,7 @@ If anything goes wrong:
 
 This keeps the app stable and beginner‑friendly.
 
----
+
 
 This method teaches:
 
