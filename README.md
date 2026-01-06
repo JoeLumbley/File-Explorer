@@ -25,13 +25,10 @@
 ---
 
 ## 📚 Table of Contents
+- [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
 
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
-
-- [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
-- [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
-- [🌳 TreeView Navigation & Lazy Loading](#treeview-navigation--lazy-loading)
 
 - [📄 License](#license)
 
