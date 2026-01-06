@@ -537,7 +537,7 @@ Directory.CreateDirectory(destDir)
 ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
 ```
 
-This message helps learners understand the sequence of operations.
+This message helps user understand the sequence of operations.
 
 
 
@@ -566,7 +566,7 @@ This loop handles only the files — not subfolders.
 ShowStatus(IconCopy & "  Copying subdirectories.")
 ```
 
-This prepares the learner for the next step: recursion.
+This prepares the user for the next step: recursion.
 
 
 
@@ -626,11 +626,11 @@ If anything goes wrong:
 - The user gets a helpful message  
 - You get a debug log for troubleshooting  
 
-This keeps the app stable and beginner‑friendly.
+This keeps the app stable and user‑friendly.
 
 
 
-This method teaches:
+This method shows:
 
 - How to check whether a directory exists  
 - How to create directories safely  
