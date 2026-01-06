@@ -138,7 +138,7 @@ This method renames either a **file** or a **folder**, following a clear set of 
 
 
 
-Below is the full code, then we’ll walk through it one small step at a time.
+Below is the full code, then we’ll walk through it one step at a time.
 
 
 ```vb.net
