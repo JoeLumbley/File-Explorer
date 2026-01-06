@@ -119,7 +119,7 @@ help - Show this help message
 
 The CLI in the File Explorer application provides a powerful and flexible way to manage files and directories. It appeals to users who are comfortable with command-line operations, offering an efficient alternative to the graphical user interface. With support for essential file operations, feedback mechanisms, and navigation history, the CLI enhances the overall user experience.
 
----
+
 
 
 
@@ -383,9 +383,9 @@ This method teaches six important rules:
 <img width="1275" height="662" alt="041" src="https://github.com/user-attachments/assets/15de34d4-f14c-4968-a10d-2203af0c7130" />
 
 
----
 
----
+
+
 
 ---
 
@@ -529,7 +529,7 @@ Directory.CreateDirectory(destDir)
 - If it doesn’t exist, it is created.  
 - Either way, the destination is now ready.
 
----
+
 
 ## Tell the user we’re copying files
 
@@ -666,9 +666,9 @@ SourceDir
     └── FileE.txt
 ```
 
-Your method processes it in this exact order.
+The method processes it in this exact order.
 
----
+
 
 # **High‑Level Recursion Flow**
 
@@ -692,7 +692,7 @@ CopyDirectory(SourceDir, DestDir)
 └── All subdirectories processed → return to caller
 ```
 
----
+
 
 # **Step‑By‑Step Call Stack Visualization**
 
@@ -725,7 +725,7 @@ Back to Call 1:
     └── all done → return to caller
 ```
 
----
+
 
 # **Indented Tree Showing Recursion Depth**
 
@@ -740,7 +740,7 @@ CopyDirectory(SourceDir)
 
 This is the simplest way to show the “shape” of recursion.
 
----
+
 
 # **Narrative Version**
 
