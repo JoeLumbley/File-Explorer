@@ -32,11 +32,7 @@
 - [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory--code-walkthrough)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
 - [🌳 TreeView Navigation & Lazy Loading](#treeview-navigation--lazy-loading)
-- [🔐 Protected Paths & Safety Rules](#protected-paths--safety-rules)
-- [📜 Command Reference](#command-reference)
-- [⚙️ Architecture Overview](#architecture-overview)
-- [🧪 Testing & Edge Cases](#testing--edge-cases)
-- [📸 Screenshots](#screenshots)
+
 - [📄 License](#license)
 
 ---
