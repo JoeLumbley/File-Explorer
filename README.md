@@ -119,7 +119,7 @@ help - Show this help message
 
 The CLI in the File Explorer application provides a powerful and flexible way to manage files and directories. It appeals to users who are comfortable with command-line operations, offering an efficient alternative to the graphical user interface. With support for essential file operations, feedback mechanisms, and navigation history, the CLI enhances the overall user experience.
 
----
+
 
 
 
@@ -138,7 +138,7 @@ This method renames either a **file** or a **folder**, following a clear set of 
 
 
 
-Below is the full code, then we’ll walk through it one small step at a time.
+Below is the full code, then we’ll walk through it one step at a time.
 
 
 ```vb.net
@@ -217,7 +217,6 @@ Below is the full code, then we’ll walk through it one small step at a time.
 
 
 
----
 
 ## 🔧 Method Signature
 
@@ -228,7 +227,7 @@ Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
 - **sourcePath** — the full path to the file or folder you want to rename  
 - **newName** — just the new name (not a full path)
 
----
+
 
 ## 🧱 Step 1 — Build the new full path
 
@@ -243,7 +242,7 @@ Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
   - `newName = "New.txt"`  
   - `newPath = "C:\Stuff\New.txt"`
 
----
+
 
 ## 🛑 Rule 1 — Path must be absolute
 
@@ -257,7 +256,7 @@ End If
 Beginners often type relative paths like `folder\file.txt`.  
 This rule stops the rename and explains the correct format.
 
----
+
 
 ## 🔒 Rule 2 — Protected paths are never renamed
 
@@ -278,7 +277,7 @@ This rule:
 
 This is excellent for learner clarity.
 
----
+
 
 ## 🧪 Try/Catch — Safe execution zone
 
@@ -294,7 +293,7 @@ End Try
 Anything inside the `Try` block that fails will be caught and explained.  
 Beginners get a friendly message instead of a crash.
 
----
+
 
 ## 📁 Rule 3 — If it’s a folder, rename the folder
 
@@ -311,7 +310,7 @@ If Directory.Exists(sourcePath) Then
 
 This reinforces the idea that folders are “containers” and have their own identity.
 
----
+
 
 ## 📄 Rule 4 — If it’s a file, rename the file
 
@@ -328,7 +327,7 @@ ElseIf File.Exists(sourcePath) Then
 
 This keeps the UI consistent and predictable.
 
----
+
 
 ## ❓ Rule 5 — If nothing exists at that path, explain quoting rules
 
@@ -347,7 +346,7 @@ This rule:
 
 This is *excellent* pedagogy.
 
----
+
 
 ## ⚠️ Rule 6 — If anything goes wrong, show a clear error
 
@@ -362,7 +361,7 @@ End Try
 - Clear feedback  
 - Debug info for you  
 
----
+
 
 This method teaches six important rules:
 
@@ -382,6 +381,383 @@ This method teaches six important rules:
 
 
 <img width="1275" height="662" alt="041" src="https://github.com/user-attachments/assets/15de34d4-f14c-4968-a10d-2203af0c7130" />
+
+
+
+
+
+
+---
+
+# 📁 `CopyDirectory` —  Walkthrough
+
+This method copies an entire directory — including all files and all subfolders — into a new destination. It uses **recursion**, meaning the method calls itself to handle deeper levels of folders.
+
+
+
+
+<img width="1266" height="662" alt="050" src="https://github.com/user-attachments/assets/60446ac8-b44a-447c-bcd5-4bffb25e2e8d" />
+
+
+Below is the full code, then we’ll walk through it one small step at a time.
+
+
+```vb.net
+
+    Private Sub CopyDirectory(sourceDir As String, destDir As String)
+
+        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+        If Not dirInfo.Exists Then
+
+            ShowStatus(IconError & "  Source directory not found: " & sourceDir)
+
+            Exit Sub
+
+        End If
+
+        Try
+
+            ShowStatus(IconCopy & "  Create destination directory:" & destDir)
+
+            ' Create destination directory
+            Directory.CreateDirectory(destDir)
+
+            ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
+
+            ' Copy files
+            For Each file In dirInfo.GetFiles()
+                Dim targetFilePath = Path.Combine(destDir, file.Name)
+                file.CopyTo(targetFilePath, overwrite:=True)
+            Next
+
+            ShowStatus(IconCopy & "  Copying subdirectories.")
+
+            ' Copy subdirectories recursively
+            For Each subDir In dirInfo.GetDirectories()
+                Dim newDest = Path.Combine(destDir, subDir.Name)
+                CopyDirectory(subDir.FullName, newDest)
+            Next
+
+            ' Refresh the view to show the copied directory
+            NavigateTo(destDir)
+
+            ShowStatus(IconSuccess & "  Copied into " & destDir)
+
+        Catch ex As Exception
+            ShowStatus(IconError & "  Copy failed: " & ex.Message)
+            Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+        End Try
+
+    End Sub
+
+
+
+```
+
+
+
+
+## 🔧 Method Definition
+
+```vb.net
+Private Sub CopyDirectory(sourceDir As String, destDir As String)
+```
+
+- **sourceDir** — the folder you want to copy  
+- **destDir** — where the copy should be created  
+
+
+
+## Create a DirectoryInfo object for the source
+
+```vb.net
+Dim dirInfo As New DirectoryInfo(sourceDir)
+```
+
+- `DirectoryInfo` gives you access to:
+  - the folder’s files  
+  - its subfolders  
+  - metadata  
+- It’s a convenient wrapper around a directory path.
+
+
+
+## Make sure the source directory exists
+
+```vb.net
+If Not dirInfo.Exists Then
+    ShowStatus(IconError & "  Source directory not found: " & sourceDir)
+    Exit Sub
+End If
+```
+
+- If the folder doesn’t exist, we stop immediately.  
+- Beginners often mistype paths, so this prevents confusing errors.  
+- The user gets a clear, friendly message.
+
+
+
+## Start a Try/Catch block
+
+```vb.net
+Try
+```
+
+Everything inside this block is protected.  
+If anything goes wrong (permissions, locked files, etc.), the `Catch` block will handle it gracefully.
+
+
+
+## Tell the user we’re creating the destination directory
+
+```vb.net
+ShowStatus(IconCopy & "  Create destination directory:" & destDir)
+```
+
+This gives immediate feedback so the UI feels alive and responsive.
+
+
+
+## Create the destination directory
+
+```vb.net
+Directory.CreateDirectory(destDir)
+```
+
+- If the folder already exists, nothing bad happens.  
+- If it doesn’t exist, it is created.  
+- Either way, the destination is now ready.
+
+
+
+## Tell the user we’re copying files
+
+```vb.net
+ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
+```
+
+This message helps user understand the sequence of operations.
+
+
+
+## Copy all files in the current directory
+
+```vb.net
+For Each file In dirInfo.GetFiles()
+    Dim targetFilePath = Path.Combine(destDir, file.Name)
+    file.CopyTo(targetFilePath, overwrite:=True)
+Next
+```
+
+- `GetFiles()` returns all files directly inside the folder.  
+- `Path.Combine` builds the full destination path.  
+- `CopyTo(..., overwrite:=True)` ensures:
+  - files are copied  
+  - existing files are replaced  
+
+This loop handles only the files — not subfolders.
+
+
+
+## Tell the user we’re copying subdirectories
+
+```vb.net
+ShowStatus(IconCopy & "  Copying subdirectories.")
+```
+
+This prepares the user for the next step: recursion.
+
+
+
+## Copy all subdirectories (recursively)
+
+```vb.net
+For Each subDir In dirInfo.GetDirectories()
+    Dim newDest = Path.Combine(destDir, subDir.Name)
+    CopyDirectory(subDir.FullName, newDest)
+Next
+```
+
+This is the heart of the algorithm.
+
+- `GetDirectories()` returns all subfolders.  
+- For each subfolder:
+  - Build a new destination path  
+  - Call **CopyDirectory again** on that subfolder  
+
+This technique is called **recursion** — the function keeps calling itself until it reaches the deepest level of the folder tree.
+
+Beginners often find this magical once they see it in action.
+
+
+
+## Refresh the UI to show the copied directory
+
+```vb.net
+NavigateTo(destDir)
+```
+
+This helps the user visually confirm the copy succeeded.
+
+
+
+## Show a success message
+
+```vb.net
+ShowStatus(IconSuccess & "  Copied into " & destDir)
+```
+
+Clear, friendly confirmation that the operation completed.
+
+
+
+## Handle any errors
+
+```vb.net
+Catch ex As Exception
+    ShowStatus(IconError & "  Copy failed: " & ex.Message)
+    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+End Try
+```
+
+If anything goes wrong:
+
+- The user gets a helpful message  
+- You get a debug log for troubleshooting  
+
+This keeps the app stable and user‑friendly.
+
+
+
+This method shows:
+
+- How to check whether a directory exists  
+- How to create directories safely  
+- How to copy files  
+- How to copy subfolders using **recursion**  
+- How to build paths correctly  
+- How to give user feedback  
+- How to handle errors without crashing  
+
+
+
+<img width="1266" height="662" alt="051" src="https://github.com/user-attachments/assets/1ec25af2-62d5-4877-a9d6-4210342ae4e3" />
+
+
+
+---
+
+# 🌳 **Recursion Flow Diagram for `CopyDirectory`**
+
+This diagram shows exactly how the `CopyDirectory` routine walks the tree.
+
+Imagine your folder structure looks like this:
+
+```
+SourceDir
+├── FileA.txt
+├── FileB.txt
+├── Sub1
+│   ├── FileC.txt
+│   └── Sub1A
+│       └── FileD.txt
+└── Sub2
+    └── FileE.txt
+```
+
+The method processes it in this exact order.
+
+
+
+# **High‑Level Recursion Flow**
+
+```
+CopyDirectory(SourceDir, DestDir)
+│
+├── Copy files in SourceDir
+│
+├── For each subdirectory:
+│     ├── CopyDirectory(Sub1, DestDir/Sub1)
+│     │     ├── Copy files in Sub1
+│     │     ├── CopyDirectory(Sub1A, DestDir/Sub1/Sub1A)
+│     │     │     ├── Copy files in Sub1A
+│     │     │     └── (Sub1A has no more subfolders → return)
+│     │     └── (Sub1 done → return)
+│     │
+│     └── CopyDirectory(Sub2, DestDir/Sub2)
+│           ├── Copy files in Sub2
+│           └── (Sub2 has no more subfolders → return)
+│
+└── All subdirectories processed → return to caller
+```
+
+
+
+# **Step‑By‑Step Call Stack Visualization**
+
+This shows how the *call stack* grows and shrinks as recursion happens.
+
+```
+Call 1: CopyDirectory(SourceDir)
+    ├── copies files
+    ├── enters Sub1 → Call 2
+
+Call 2: CopyDirectory(Sub1)
+    ├── copies files
+    ├── enters Sub1A → Call 3
+
+Call 3: CopyDirectory(Sub1A)
+    ├── copies files
+    └── no subfolders → return to Call 2
+
+Back to Call 2:
+    └── Sub1 done → return to Call 1
+
+Back to Call 1:
+    ├── enters Sub2 → Call 4
+
+Call 4: CopyDirectory(Sub2)
+    ├── copies files
+    └── no subfolders → return to Call 1
+
+Back to Call 1:
+    └── all done → return to caller
+```
+
+
+
+# **Indented Tree Showing Recursion Depth**
+
+Each level of indentation = one level deeper in recursion.
+
+```
+CopyDirectory(SourceDir)
+    CopyDirectory(Sub1)
+        CopyDirectory(Sub1A)
+    CopyDirectory(Sub2)
+```
+
+This is the simplest way to show the “shape” of recursion.
+
+
+
+# **Narrative Version**
+
+> 1. Start at the root folder.  
+> 2. Copy its files.  
+> 3. For each subfolder:  
+>    - Step into it  
+>    - Treat it like a brand‑new root  
+>    - Copy its files  
+>    - Repeat the process for its subfolders  
+> 4. When a folder has no subfolders, return to the previous level.  
+> 5. Continue until you climb all the way back to the top.
+
+
+
+---
+
 
 
 
