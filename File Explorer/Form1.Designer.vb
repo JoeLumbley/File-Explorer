@@ -127,7 +127,7 @@ Partial Class Form1
         ' 
         btnNewTextFile.Anchor = AnchorStyles.Right
         btnNewTextFile.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnNewTextFile.Location = New Point(806, 0)
+        btnNewTextFile.Location = New Point(831, 0)
         btnNewTextFile.Name = "btnNewTextFile"
         btnNewTextFile.Size = New Size(30, 28)
         btnNewTextFile.TabIndex = 12
@@ -138,7 +138,7 @@ Partial Class Form1
         ' 
         btnPaste.Anchor = AnchorStyles.Right
         btnPaste.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnPaste.Location = New Point(914, 0)
+        btnPaste.Location = New Point(924, 0)
         btnPaste.Name = "btnPaste"
         btnPaste.Size = New Size(30, 28)
         btnPaste.TabIndex = 11
@@ -149,7 +149,7 @@ Partial Class Form1
         ' 
         btnCut.Anchor = AnchorStyles.Right
         btnCut.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnCut.Location = New Point(842, 0)
+        btnCut.Location = New Point(862, 0)
         btnCut.Name = "btnCut"
         btnCut.Size = New Size(30, 28)
         btnCut.TabIndex = 10
@@ -160,7 +160,7 @@ Partial Class Form1
         ' 
         btnCopy.Anchor = AnchorStyles.Right
         btnCopy.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnCopy.Location = New Point(878, 0)
+        btnCopy.Location = New Point(893, 0)
         btnCopy.Name = "btnCopy"
         btnCopy.Size = New Size(30, 28)
         btnCopy.TabIndex = 9
@@ -170,7 +170,7 @@ Partial Class Form1
         ' btnRefresh
         ' 
         btnRefresh.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnRefresh.Location = New Point(72, 0)
+        btnRefresh.Location = New Point(62, 0)
         btnRefresh.Name = "btnRefresh"
         btnRefresh.Size = New Size(30, 28)
         btnRefresh.TabIndex = 8
@@ -181,7 +181,7 @@ Partial Class Form1
         ' 
         bntHome.Anchor = AnchorStyles.Left
         bntHome.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        bntHome.Location = New Point(108, 0)
+        bntHome.Location = New Point(93, 0)
         bntHome.Name = "bntHome"
         bntHome.Size = New Size(30, 28)
         bntHome.TabIndex = 7
@@ -193,7 +193,7 @@ Partial Class Form1
         btnNewFolder.Anchor = AnchorStyles.Right
         btnNewFolder.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnNewFolder.ForeColor = Color.Orange
-        btnNewFolder.Location = New Point(770, 0)
+        btnNewFolder.Location = New Point(800, 0)
         btnNewFolder.Name = "btnNewFolder"
         btnNewFolder.Size = New Size(30, 28)
         btnNewFolder.TabIndex = 6
@@ -205,7 +205,7 @@ Partial Class Form1
         btnRename.Anchor = AnchorStyles.Right
         btnRename.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnRename.ForeColor = SystemColors.ControlText
-        btnRename.Location = New Point(950, 0)
+        btnRename.Location = New Point(955, 0)
         btnRename.Name = "btnRename"
         btnRename.Size = New Size(30, 28)
         btnRename.TabIndex = 5
@@ -228,16 +228,16 @@ Partial Class Form1
         ' 
         txtPath.Anchor = AnchorStyles.Left Or AnchorStyles.Right
         txtPath.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        txtPath.Location = New Point(144, 1)
+        txtPath.Location = New Point(129, 1)
         txtPath.Name = "txtPath"
-        txtPath.Size = New Size(584, 27)
+        txtPath.Size = New Size(633, 27)
         txtPath.TabIndex = 3
         ' 
         ' btnForward
         ' 
         btnForward.Anchor = AnchorStyles.Left
         btnForward.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnForward.Location = New Point(36, 0)
+        btnForward.Location = New Point(31, 0)
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 28)
         btnForward.TabIndex = 2
@@ -259,7 +259,7 @@ Partial Class Form1
         ' 
         btnGo.Anchor = AnchorStyles.Right
         btnGo.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnGo.Location = New Point(734, 0)
+        btnGo.Location = New Point(764, 0)
         btnGo.Name = "btnGo"
         btnGo.Size = New Size(30, 28)
         btnGo.TabIndex = 0
