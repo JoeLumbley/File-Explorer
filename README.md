@@ -29,7 +29,7 @@
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 
 - [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
-- [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory--code-walkthrough)
+- [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
 - [🌳 TreeView Navigation & Lazy Loading](#treeview-navigation--lazy-loading)
 
