@@ -1375,20 +1375,14 @@ Public Class Form1
 
         ' Check if the path is in the protected list
         If IsProtectedPathOrFolder(path2Delete) Then
-            ' The path is protected; prevent deletion
 
-            ' Show user the directory so they can see it wasn't deleted.
+            ' Navigate to the protected path so the user can see it was not deleted
             NavigateTo(path2Delete)
 
+            ' Inform the user that deletion was prevented
             ShowStatus(IconProtect & "  Deletion prevented for protected path: " & path2Delete)
 
-            '' Notify the user of the prevention so the user knows why it didn't delete.
-            'ShowStatus(IconProtect & " Deletion prevented for protected path: " & path2Delete)
-            'Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
-            'MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
-
             Exit Sub
-
         End If
 
         Try
