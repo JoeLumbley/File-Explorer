@@ -761,7 +761,8 @@ This is the simplest way to show the “shape” of recursion.
 
 # 📦 MoveFileOrDirectory — Code Walkthrough
 
-<img width="1266" height="662" alt="059" src="https://github.com/user-attachments/assets/83e62ade-0246-49ae-b7e3-5fe3c1c76526" />
+<img width="1266" height="662" alt="073" src="https://github.com/user-attachments/assets/fe3323d2-0087-4ab8-8d00-755558bf2ccf" />
+
 
 This walkthrough explains how the `MoveFileOrDirectory` routine works inside the file‑manager project. The goal of this method is to safely move files or directories while providing clear, user‑friendly feedback and preventing dangerous or confusing operations.
 
@@ -948,7 +949,8 @@ This makes the file manager not just functional — but **guiding**.
 
 
 
-<img width="1266" height="662" alt="060" src="https://github.com/user-attachments/assets/4c10d7dc-a126-48bc-975e-1fd4d533c0c7" />
+
+<img width="1266" height="662" alt="074" src="https://github.com/user-attachments/assets/ea1ecd50-d794-40c9-9723-824487dfff1e" />
 
 
 ---
