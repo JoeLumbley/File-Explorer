@@ -1375,13 +1375,10 @@ Public Class Form1
 
         ' Check if the path is in the protected list
         If IsProtectedPathOrFolder(path2Delete) Then
-
             ' Navigate to the protected path so the user can see it was not deleted
             NavigateTo(path2Delete)
-
             ' Inform the user that deletion was prevented
             ShowStatus(IconProtect & "  Deletion prevented for protected path: " & path2Delete)
-
             Exit Sub
         End If
 
@@ -1390,8 +1387,7 @@ Public Class Form1
             ' Check if it's a file
             If File.Exists(path2Delete) Then
 
-                ' Goto the directory of the file to be deleted.
-                ' So the user can see what is about to be deleted.
+                ' Goto the directory of the file to be deleted so the user can see what is about to be deleted.
                 Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(destDir)
 
@@ -1407,9 +1403,7 @@ Public Class Form1
 
                 File.Delete(path2Delete)
 
-                ' Go to the directory of the file that was deleted.
-                ' So the user can see that it has been deleted.
-                NavigateTo(destDir)
+                PopulateFiles(destDir)
 
                 ShowStatus(IconDelete & "  Deleted file: " & fileName)
 
@@ -1427,20 +1421,17 @@ Public Class Form1
                 Dim confirmMsg As String =
                     "Are you sure you want to delete the following folder:" & Environment.NewLine &
                     "''" & folderName & "'' and all of its contents?"
-
                 Dim result = MessageBox.Show(confirmMsg,
                                              "Confirm Folder Deletion",
                                              MessageBoxButtons.YesNo,
                                              MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
-                ' Delete the folder
                 Directory.Delete(path2Delete, recursive:=True)
 
                 ' Navigate to the parent so the user sees the result
                 NavigateTo(parentDir, True)
 
-                ' Status message
                 ShowStatus(IconDelete & "  Deleted folder: " & folderName)
 
             Else
