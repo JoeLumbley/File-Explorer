@@ -1332,33 +1332,79 @@ Public Class Form1
                 Return
             End If
 
+            ' if source and destination are the same, do nothing
+            If String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) Then
+                ShowStatus(IconWarning & " Source and destination paths are the same. Move operation canceled.")
+                Return
+            End If
+
+            ' Is source on the protected paths list?
+            If IsProtectedPathOrFolder(source) Then
+                ShowStatus(IconProtect & " Move operation prevented for protected path: " & source)
+                Return
+            End If
+
+            ' Is destination on the protected paths list?
+            If IsProtectedPathOrFolder(destination) Then
+                ShowStatus(IconProtect & " Move operation prevented for protected path: " & destination)
+                Return
+            End If
+
+            ' Prevent moving a directory into itself or its subdirectory
+            If Directory.Exists(source) AndAlso
+               (String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) OrElse
+                destination.StartsWith(source.TrimEnd("\"c) & "\", StringComparison.OrdinalIgnoreCase)) Then
+                ShowStatus(IconWarning & " Cannot move a directory into itself or its subdirectory.")
+                Return
+            End If
+
             ' Check if the source is a file
             If File.Exists(source) Then
+
+                ' Check if the destination file already exists
                 If Not File.Exists(destination) Then
+
+                    'Dim destDir As String = Path.GetDirectoryName(destination)
+
+                    'Navigate to the directory of the source file so the user can see what is about to be moved.
+                    NavigateTo(Path.GetDirectoryName(source))
+
+                    ShowStatus(IconDialog & "  Moving file to: " & destination)
+
                     File.Move(source, destination)
-                    'ShowStatus("Moved file to: " & destination)
-                    MsgBox("Moved file to: " & destination)
-                    Dim destDir As String = Path.GetDirectoryName(destination)
-                    NavigateTo(destDir)
+
+                    ' Navigate to the destination folder
+                    NavigateTo(destination)
+
+                    ShowStatus(IconSuccess & "  Moved file to: " & destination)
+
                 Else
                     ShowStatus(IconWarning & " Destination file already exists.")
                 End If
 
                 ' Check if the source is a directory
             ElseIf Directory.Exists(source) Then
+
+                ' Check if the destination directory already exists
                 If Not Directory.Exists(destination) Then
+
+                    ShowStatus(IconDialog & "  Moving directory to: " & destination)
+
                     Directory.Move(source, destination)
-                    'ShowStatus("Moved directory to: " & destination)
-                    MsgBox("Moved directory to: " & destination)
+
                     NavigateTo(destination)
+
+                    ShowStatus(IconSuccess & "  Moved directory to: " & destination)
+
                 Else
                     ShowStatus(IconWarning & " Destination directory already exists.")
                 End If
 
                 ' If neither a file nor a directory exists
             Else
-                ShowStatus(IconWarning & " Source not found.")
+                ShowStatus(IconWarning & "  Move failed: Source not found.")
             End If
+
         Catch ex As Exception
             ShowStatus(IconError & " Move failed: " & ex.Message)
             Debug.WriteLine("MoveFileOrDirectory Error: " & ex.Message)
