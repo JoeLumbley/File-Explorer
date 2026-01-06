@@ -1364,17 +1364,15 @@ Public Class Form1
                 ' Check if the destination file already exists
                 If Not File.Exists(destination) Then
 
-                    'Dim destDir As String = Path.GetDirectoryName(destination)
-
-                    'Navigate to the directory of the source file so the user can see what is about to be moved.
+                    ' Navigate to the directory of the source file
                     NavigateTo(Path.GetDirectoryName(source))
 
                     ShowStatus(IconDialog & "  Moving file to: " & destination)
 
                     File.Move(source, destination)
 
-                    ' Navigate to the destination folder
-                    NavigateTo(destination)
+                    ' Navigate to the destination folder (corrected)
+                    NavigateTo(Path.GetDirectoryName(destination))
 
                     ShowStatus(IconSuccess & "  Moved file to: " & destination)
 
@@ -1388,10 +1386,14 @@ Public Class Form1
                 ' Check if the destination directory already exists
                 If Not Directory.Exists(destination) Then
 
+                    ' Navigate to the directory being moved so the user can see it
+                    NavigateTo(source)
+
                     ShowStatus(IconDialog & "  Moving directory to: " & destination)
 
                     Directory.Move(source, destination)
 
+                    ' Navigate to the new location
                     NavigateTo(destination)
 
                     ShowStatus(IconSuccess & "  Moved directory to: " & destination)
