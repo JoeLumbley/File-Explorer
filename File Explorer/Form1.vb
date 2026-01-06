@@ -1464,11 +1464,8 @@ Public Class Form1
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
         If Not dirInfo.Exists Then
-
             ShowStatus(IconError & "  Source directory not found: " & sourceDir)
-
             Exit Sub
-
         End If
 
         Try
