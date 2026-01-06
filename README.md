@@ -30,7 +30,7 @@
 
 - [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
 - [📁 DeleteFileOrDirectory — Code Walkthrough](#deletefileordirectory)
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
 - [🌳 TreeView Navigation & Lazy Loading](#treeview-navigation--lazy-loading)
 
 - [📄 License](#license)
