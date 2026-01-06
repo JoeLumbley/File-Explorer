@@ -4,7 +4,7 @@
 
 
 
-<img width="1266" height="662" alt="047" src="https://github.com/user-attachments/assets/f27424c5-9982-4408-a59f-22d8be045ea2" />
+<img width="1184" height="662" alt="052" src="https://github.com/user-attachments/assets/5eb1a283-6907-45a1-a605-6bd626519ac2" />
 
 
 ## Features
@@ -787,6 +787,13 @@ To install and run the File Explorer application:
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
 
 For more details, check the source code and documentation within the repository.
+
+
+
+
+
+
+<img width="1920" height="1080" alt="053" src="https://github.com/user-attachments/assets/8fbf7c91-0cbb-4838-867a-84b7dcf41c2c" />
 
 
 
