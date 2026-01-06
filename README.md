@@ -23,6 +23,8 @@
 
 
 ---
+# 🖥️ The Command Line Interface (CLI)
+
 
 
 The **Command Line Interface (CLI)** for File Explorer application provides users with a way to interact with the file management system through text-based commands. This interface allows for efficient navigation and file operations, catering to users who prefer command-line interactions over graphical interfaces.
