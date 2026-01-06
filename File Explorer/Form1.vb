@@ -1510,11 +1510,8 @@ Public Class Form1
         ' Rule 1: Path must be absolute (start with C:\ or similar).
         ' Reject relative paths outright
         If Not Path.IsPathRooted(sourcePath) Then
-
             ShowStatus(IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
-
             Exit Sub
-
         End If
 
         ' Rule 2: Protected paths are never renamed.
