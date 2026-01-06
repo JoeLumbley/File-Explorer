@@ -26,7 +26,7 @@
 
 ## 📚 Table of Contents
 
-- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory--code-walkthrough)
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 - [🧭 Overview](#-overview)
 - [🧩 Full Method](#-full-method)
 - [🧠 How It Works (Step‑By‑Step)](#-how-it-works-stepby-step)
@@ -788,7 +788,7 @@ This is the simplest way to show the “shape” of recursion.
 
 ---
 
-# 📦 MoveFileOrDirectory — Code Walkthrough
+# MoveFileOrDirectory
 
 <img width="1266" height="662" alt="073" src="https://github.com/user-attachments/assets/fe3323d2-0087-4ab8-8d00-755558bf2ccf" />
 
