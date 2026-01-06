@@ -1403,6 +1403,7 @@ Public Class Form1
 
                 File.Delete(path2Delete)
 
+                ' Refresh the view to show the file is deleted
                 PopulateFiles(destDir)
 
                 ShowStatus(IconDelete & "  Deleted file: " & fileName)
