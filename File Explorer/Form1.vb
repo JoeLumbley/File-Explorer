@@ -1369,11 +1369,8 @@ Public Class Form1
 
         ' Reject relative paths outright
         If Not Path.IsPathRooted(path2Delete) Then
-
             ShowStatus(IconWarning & " Delete failed: Path must be absolute. Example: C:\folder")
-
             Exit Sub
-
         End If
 
         ' Check if the path is in the protected list
@@ -1385,6 +1382,7 @@ Public Class Form1
             Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & path2Delete
             MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
 
+            ' Show user the directory so they can see it wasn't deleted.
             NavigateTo(path2Delete)
 
             Exit Sub
@@ -1403,21 +1401,26 @@ Public Class Form1
 
                 ' Make the user confirm deletion.
                 Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
-                                            path2Delete & Environment.NewLine & "?"
+                                            Path.GetFileName(path2Delete) & " ?"
+
+                ' Path.GetFileName(path2Delete)
+
 
                 Dim result = MessageBox.Show(confirmMsg,
-                                             "Delete",
+                                             "Confirm Deletion",
                                              MessageBoxButtons.YesNo,
                                              MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
                 File.Delete(path2Delete)
 
-                ShowStatus(IconDelete & "Deleted file: " & path2Delete)
 
                 ' Go to the directory of the file that was deleted.
                 ' So the user can see that it has been deleted.
                 NavigateTo(destDir)
+
+                ShowStatus(IconDelete & "Deleted file: " & path2Delete)
+
 
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
