@@ -1399,12 +1399,12 @@ Public Class Form1
                 Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(destDir)
 
-                ' Make the user confirm deletion.
+                ' Make the user confirm file deletion.
+                Dim fileName As String = Path.GetFileName(path2Delete)
                 Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
-                                            Path.GetFileName(path2Delete) & " ?"
-
+                                            "''" & fileName & "''?"
                 Dim result = MessageBox.Show(confirmMsg,
-                                             "Confirm Deletion",
+                                             "Confirm File Deletion",
                                              MessageBoxButtons.YesNo,
                                              MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
@@ -1415,7 +1415,7 @@ Public Class Form1
                 ' So the user can see that it has been deleted.
                 NavigateTo(destDir)
 
-                ShowStatus(IconDelete & "Deleted file: " & path2Delete)
+                ShowStatus(IconDelete & "  Deleted file: " & fileName)
 
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
@@ -1424,12 +1424,13 @@ Public Class Form1
                 ' So the user can see what is about to be deleted.
                 NavigateTo(path2Delete)
 
-                ' Make the user confirm deletion.
-                Dim confirmMsg As String = "Are you sure you want to delete the folder:" & Environment.NewLine &
-                                           path2Delete & Environment.NewLine & "and all its contents?"
-                'ShowStatus(confirmMsg)
+                ' Make the user confirm directory deletion.
+                Dim folderName As String = Path.GetFileName(path2Delete)
+                Dim confirmMsg As String =
+                    "Are you sure you want to delete the following folder:" & Environment.NewLine &
+                     "''" & folderName & "'' and all of its contents?"
                 Dim result = MessageBox.Show(confirmMsg,
-                                             "Confirm Deletion",
+                                             "Confirm Folder Deletion",
                                              MessageBoxButtons.YesNo,
                                              MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
@@ -1441,17 +1442,17 @@ Public Class Form1
                 Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(parentDir, True)
 
-                ShowStatus(IconDelete & " Deleted folder: " & path2Delete)
+                ShowStatus(IconDelete & "  Deleted folder: " & folderName)
 
             Else
                 ShowStatus(IconWarning & " Delete failed: Path not found.")
             End If
 
         Catch ex As Exception
-            MessageBox.Show("Delete failed: " & ex.Message,
-                            "Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error)
+            'MessageBox.Show("Delete failed: " & ex.Message,
+            '                "Error",
+            '                MessageBoxButtons.OK,
+            '                MessageBoxIcon.Error)
             ShowStatus(IconError & " Delete failed: " & ex.Message)
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
