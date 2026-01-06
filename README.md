@@ -147,7 +147,7 @@ The CLI in the File Explorer application provides a powerful and flexible way to
 ---
 
 
-# 📁 `RenameFileOrDirectory` —  Walkthrough
+# `RenameFileOrDirectory`
 
 This method renames either a **file** or a **folder**, following a clear set of safety rules. Each rule protects the user from mistakes and helps them understand what’s happening.
 
@@ -409,7 +409,7 @@ This method teaches six important rules:
 
 ---
 
-# 📁 `CopyDirectory` —  Walkthrough
+# `CopyDirectory`
 
 This method copies an entire directory — including all files and all subfolders — into a new destination. It uses **recursion**, meaning the method calls itself to handle deeper levels of folders.
 
