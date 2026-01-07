@@ -82,7 +82,7 @@
 
 
 
-# 🖥️ Command Line Interface
+# Command Line Interface
 
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
