@@ -20,9 +20,26 @@
 - **File Type Icons**: Visual representation of different file types with corresponding icons.
 - **Status Bar**: Provides feedback on the current operation and status updates.
 
+---
+---
+---
+
+## 📚 Table of Contents
+- [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
+
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+
+- [📄 License](#license)
+
+---
+---
+---
 
 
 ---
+# The Command Line Interface (CLI)
+
 
 
 The **Command Line Interface (CLI)** for File Explorer application provides users with a way to interact with the file management system through text-based commands. This interface allows for efficient navigation and file operations, catering to users who prefer command-line interactions over graphical interfaces.
@@ -127,7 +144,7 @@ The CLI in the File Explorer application provides a powerful and flexible way to
 ---
 
 
-# 📁 `RenameFileOrDirectory` —  Walkthrough
+# `RenameFileOrDirectory`
 
 This method renames either a **file** or a **folder**, following a clear set of safety rules. Each rule protects the user from mistakes and helps them understand what’s happening.
 
@@ -389,7 +406,7 @@ This method teaches six important rules:
 
 ---
 
-# 📁 `CopyDirectory` —  Walkthrough
+# `CopyDirectory`
 
 This method copies an entire directory — including all files and all subfolders — into a new destination. It uses **recursion**, meaning the method calls itself to handle deeper levels of folders.
 
@@ -755,11 +772,213 @@ This is the simplest way to show the “shape” of recursion.
 > 5. Continue until you climb all the way back to the top.
 
 
+---
+---
+---
+
+---
+
+# MoveFileOrDirectory
+
+<img width="1266" height="662" alt="073" src="https://github.com/user-attachments/assets/fe3323d2-0087-4ab8-8d00-755558bf2ccf" />
+
+This walkthrough explains how the `MoveFileOrDirectory` routine works inside the file‑manager project. The goal of this method is to safely move files or directories while providing clear, user‑friendly feedback and preventing dangerous or confusing operations.
+
+---
+
+## 🧭 Overview
+
+`MoveFileOrDirectory(source, destination)` performs a safe move operation with:
+
+- **Input validation**  
+- **Protected‑path checks**  
+- **Self‑move and recursive‑move prevention**  
+- **Automatic creation of destination directories**  
+- **User‑visible navigation before and after the move**  
+- **Clear status messages for every outcome**
+
+This mirrors the project’s design philosophy:  
+**Show → Confirm → Act → Show Result**
+
+---
+
+## 🧩 Full Method
+
+```vb.net
+Private Sub MoveFileOrDirectory(source As String, destination As String)
+    Try
+        ' Validate parameters
+        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+            ShowStatus(IconWarning & " Source or destination path is invalid.")
+            Return
+        End If
+
+        ' If source and destination are the same, do nothing
+        If String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) Then
+            ShowStatus(IconWarning & " Source and destination paths are the same. Move operation canceled.")
+            Return
+        End If
+
+        ' Is source on the protected paths list?
+        If IsProtectedPathOrFolder(source) Then
+            ShowStatus(IconProtect & " Move operation prevented for protected path: " & source)
+            Return
+        End If
+
+        ' Is destination on the protected paths list?
+        If IsProtectedPathOrFolder(destination) Then
+            ShowStatus(IconProtect & " Move operation prevented for protected path: " & destination)
+            Return
+        End If
+
+        ' Prevent moving a directory into itself or its subdirectory
+        If Directory.Exists(source) AndAlso
+           (String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) OrElse
+            destination.StartsWith(source.TrimEnd("\"c) & "\", StringComparison.OrdinalIgnoreCase)) Then
+            ShowStatus(IconWarning & " Cannot move a directory into itself or its subdirectory.")
+            Return
+        End If
+
+        ' Check if the source is a file
+        If File.Exists(source) Then
+
+            ' Check if the destination file already exists
+            If Not File.Exists(destination) Then
+
+                ' Navigate to the directory of the source file
+                NavigateTo(Path.GetDirectoryName(source))
+
+                ShowStatus(IconDialog & "  Moving file to: " & destination)
+
+                ' Ensure destination directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(destination))
+
+                File.Move(source, destination)
+
+                ' Navigate to the destination folder
+                NavigateTo(Path.GetDirectoryName(destination))
+
+                ShowStatus(IconSuccess & "  Moved file to: " & destination)
+
+            Else
+                ShowStatus(IconWarning & " Destination file already exists.")
+            End If
+
+        ElseIf Directory.Exists(source) Then
+
+            ' Check if the destination directory already exists
+            If Not Directory.Exists(destination) Then
+
+                ' Navigate to the directory being moved so the user can see it
+                NavigateTo(source)
+
+                ShowStatus(IconDialog & "  Moving directory to: " & destination)
+
+                ' Ensure destination parent exists
+                Directory.CreateDirectory(Path.GetDirectoryName(destination))
+
+                ' Perform the move
+                Directory.Move(source, destination)
+
+                ' Navigate to the new location FIRST
+                NavigateTo(destination)
+
+                ' Now refresh the tree roots
+                InitTreeRoots()
+
+                ShowStatus(IconSuccess & "  Moved directory to: " & destination)
+
+            Else
+                ShowStatus(IconWarning & " Destination directory already exists.")
+            End If
+
+        Else
+            ShowStatus(IconWarning & "  Move failed: Source path not found. Paths with spaces must be enclosed in quotes. Example: move ""C:\folder A"" ""C:\folder B""")
+        End If
+
+    Catch ex As Exception
+        ShowStatus(IconError & " Move failed: " & ex.Message)
+        Debug.WriteLine("MoveFileOrDirectory Error: " & ex.Message)
+    End Try
+End Sub
+```
+
+---
+
+## 🧠 How It Works (Step‑By‑Step)
+
+### 1. **Input Validation**
+Rejects empty or whitespace paths to prevent confusing errors.
+
+### 2. **Same‑Path Check**
+If the source and destination resolve to the same location, the move is canceled.
+
+### 3. **Protected Path Safety**
+Both source and destination are checked against a protected‑paths list.  
+Protected paths cannot be moved.
+
+### 4. **Recursive Move Prevention**
+The method prevents moving a directory into:
+
+- Itself  
+- One of its own subdirectories  
+
+This avoids catastrophic recursive behavior.
+
+### 5. **File Move Logic**
+If the source is a file:
+
+- Navigate to the file’s directory  
+- Ensure the destination directory exists  
+- Move the file  
+- Navigate to the destination folder  
+- Show success  
+
+### 6. **Directory Move Logic**
+If the source is a directory:
+
+- Navigate into the directory being moved  
+- Ensure the destination parent exists  
+- Move the directory  
+- Navigate to the new location  
+- Refresh the tree  
+- Show success  
+
+### 7. **Error Handling**
+Any exception results in:
+
+- A user‑friendly status message  
+- A debug log entry  
+
+---
+
+## 🎯 Design Philosophy
+
+This method is built around **clarity, safety, and emotional transparency**:
+
+- The user always sees *what is about to happen*  
+- The user always sees *the result*  
+- Dangerous operations are prevented  
+- All actions are narrated through status messages  
+- The UI updates in a way that reinforces the mental model  
+
+This makes the file manager not just functional — but **guiding**.
+
+<img width="1266" height="662" alt="074" src="https://github.com/user-attachments/assets/ea1ecd50-d794-40c9-9723-824487dfff1e" />
 
 ---
 
 
 
+
+
+
+
+---
+
+---
+
+---
 
 
 
@@ -789,6 +1008,10 @@ This project is inspired by traditional file explorers and aims to provide a sim
 For more details, check the source code and documentation within the repository.
 
 
+
+
+
+<img width="1920" height="1080" alt="075" src="https://github.com/user-attachments/assets/8ded5094-bc7d-4ed1-b6c2-a105743e33e6" />
 
 
 
