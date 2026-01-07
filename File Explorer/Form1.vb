@@ -1125,7 +1125,6 @@ Public Class Form1
                     If SearchResults.Count > 0 Then
                         lvFiles.SelectedItems.Clear()
                         SelectListViewItemByPath(SearchResults(0))
-                        'lvFiles.Focus()
 
                         ShowStatus(
                             IconSearch &
@@ -1161,7 +1160,6 @@ Public Class Form1
                 lvFiles.SelectedItems.Clear()
                 Dim nextPath As String = SearchResults(SearchIndex)
                 SelectListViewItemByPath(nextPath)
-                'lvFiles.Focus()
 
                 ShowStatus(
                     IconSearch &
