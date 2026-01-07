@@ -38,7 +38,7 @@
 
 ## Table of Contents
 
-- [🖥️ Command Line Interface (CLI)](#-command-line-interface)
+- [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
     - [cd — Change Directory](#-change-directory--cd)
