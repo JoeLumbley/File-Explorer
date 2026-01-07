@@ -24,13 +24,16 @@
 ---
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 - [🖥️ The Command Line Interface (CLI)](#command-line-interface-cli)
 
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
 
 - [📄 License](#license)
+
+
+[ Table of Contents](#table-of-contents)
 
 ---
 ---
@@ -333,6 +336,9 @@ The File Explorer CLI provides:
 - Contextual file/folder opening  
 
 It’s a flexible, efficient alternative to the graphical interface — perfect for users who enjoy command‑driven workflows.
+
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
