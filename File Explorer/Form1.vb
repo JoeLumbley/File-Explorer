@@ -1129,16 +1129,19 @@ Public Class Form1
                 EnsureHelpFileExists(helpFilePath)
 
                 Try
-                    'Dim helpText As String = File.ReadAllText(helpFilePath)
                     'ShowStatus(helpText)
+                    ShowStatus(IconDialog & "  Opening help file.")
+
                     ' Open the help file in the default text editor
                     Process.Start(New ProcessStartInfo() With {
                         .FileName = helpFilePath,
                         .UseShellExecute = True
                     })
 
+                    ShowStatus(IconSuccess & "  Opened help file.")
+
                 Catch ex As Exception
-                    ShowStatus(IconError & " Failed to load help file: " & ex.Message)
+                    ShowStatus(IconError & "  Failed to open help file: " & ex.Message)
                 End Try
 
 
@@ -1307,6 +1310,8 @@ Public Class Form1
                 Exit Sub
             End If
 
+            ShowStatus(IconDialog & "  Creating help file.")
+
             Dim helpText As String = BuildHelpText()
 
             Dim dir As String = Path.GetDirectoryName(helpFilePath)
@@ -1316,67 +1321,233 @@ Public Class Form1
 
             File.WriteAllText(helpFilePath, helpText)
 
+            ShowStatus(IconSuccess & "  Help file created.")
+
         Catch ex As Exception
-            ShowStatus(IconError & " Unable to create help file: " & ex.Message)
+            ShowStatus(IconError & "  Unable to create help file: " & ex.Message)
         End Try
 
     End Sub
 
 
 
+    'Private Function BuildHelpText() As String
+    '    Dim sb As New StringBuilder()
+
+    '    sb.AppendLine("Available Commands:")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("cd")
+    '    sb.AppendLine("cd [directory]")
+    '    sb.AppendLine("  Change directory to the specified path")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    cd C:\")
+    '    sb.AppendLine("    cd C:\folder")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("mkdir, make")
+    '    sb.AppendLine("mkdir [directory_path]")
+    '    sb.AppendLine("  Creates a new folder")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    mkdir C:\newfolder")
+    '    sb.AppendLine("    make C:\newfolder")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("copy")
+    '    sb.AppendLine("copy [source] [destination]")
+    '    sb.AppendLine("  Copy file or folder to destination folder")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
+    '    sb.AppendLine("    copy C:\folderA C:\folderB")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("move")
+    '    sb.AppendLine("move [source] [destination]")
+    '    sb.AppendLine("  Move file or folder to destination")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
+    '    sb.AppendLine("    move C:\folderA\file.doc C:\folderB\rename.doc")
+    '    sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
+    '    sb.AppendLine("    move C:\folderA\folder C:\folderB\rename")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("delete")
+    '    sb.AppendLine("delete [file_or_directory]")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    delete C:\file")
+    '    sb.AppendLine("    delete C:\folder")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("rename")
+    '    sb.AppendLine("rename [source_path] [new_name]")
+    '    sb.AppendLine("  Rename file or directory")
+    '    sb.AppendLine("  Example:")
+    '    sb.AppendLine("    rename C:\folder\oldname.txt newname.txt")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("text, txt")
+    '    sb.AppendLine("text [file]")
+    '    sb.AppendLine("  Creates a new text file at the specified path.")
+    '    sb.AppendLine("  Example:")
+    '    sb.AppendLine("    text C:\folder\example.txt")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("find, search")
+    '    sb.AppendLine("find [search_term]")
+    '    sb.AppendLine("  Search for files and folders in the current directory matching the search term.")
+    '    sb.AppendLine("  Example:")
+    '    sb.AppendLine("    find document")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("findnext, searchnext")
+    '    sb.AppendLine("findnext")
+    '    sb.AppendLine("  Show the next search result from the previous search.")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("To exit the application, use one of the following commands:")
+    '    sb.AppendLine("exit, quit")
+    '    sb.AppendLine("  Exit the application")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("help")
+    '    sb.AppendLine("  Show this help message")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+
+
     Private Function BuildHelpText() As String
         Dim sb As New StringBuilder()
 
+        ' ---------------------------------------------------------
+        ' HEADER
+        ' ---------------------------------------------------------
+        sb.AppendLine("========================================")
+        sb.AppendLine("            File Explorer CLI")
+        sb.AppendLine("========================================")
+        sb.AppendLine()
         sb.AppendLine("Available Commands:")
         sb.AppendLine()
 
+        ' ---------------------------------------------------------
+        ' NAVIGATION
+        ' ---------------------------------------------------------
+        sb.AppendLine("cd")
         sb.AppendLine("cd [directory]")
-        sb.AppendLine("  Change directory to the specified path")
+        sb.AppendLine("  Change directory to the specified path.")
         sb.AppendLine("  Examples:")
         sb.AppendLine("    cd C:\")
-        sb.AppendLine("    cd C:\folder")
+        sb.AppendLine("    cd ""C:\My Folder""")
         sb.AppendLine()
 
+        ' ---------------------------------------------------------
+        ' DIRECTORY CREATION
+        ' ---------------------------------------------------------
+        sb.AppendLine("mkdir, make")
         sb.AppendLine("mkdir [directory_path]")
-        sb.AppendLine("  Creates a new folder")
+        sb.AppendLine("  Create a new folder.")
         sb.AppendLine("  Examples:")
         sb.AppendLine("    mkdir C:\newfolder")
-        sb.AppendLine("    make C:\newfolder")
+        sb.AppendLine("    make ""C:\My New Folder""")
         sb.AppendLine()
 
+        ' ---------------------------------------------------------
+        ' COPY
+        ' ---------------------------------------------------------
+        sb.AppendLine("copy")
         sb.AppendLine("copy [source] [destination]")
-        sb.AppendLine("  Copy file or folder to destination folder")
+        sb.AppendLine("  Copy a file or folder to a destination folder.")
         sb.AppendLine("  Examples:")
         sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
-        sb.AppendLine("    copy C:\folderA C:\folderB")
+        sb.AppendLine("    copy ""C:\folder A"" ""C:\folder B""")
         sb.AppendLine()
 
+        ' ---------------------------------------------------------
+        ' MOVE
+        ' ---------------------------------------------------------
+        sb.AppendLine("move")
         sb.AppendLine("move [source] [destination]")
-        sb.AppendLine("  Move file or folder to destination")
+        sb.AppendLine("  Move a file or folder to a new location.")
         sb.AppendLine("  Examples:")
         sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
-        sb.AppendLine("    move C:\folderA\file.doc C:\folderB\rename.doc")
+        sb.AppendLine("    move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc""")
         sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
-        sb.AppendLine("    move C:\folderA\folder C:\folderB\rename")
+        sb.AppendLine("    move ""C:\folder A"" ""C:\folder B\New Name""")
         sb.AppendLine()
 
+        ' ---------------------------------------------------------
+        ' DELETE
+        ' ---------------------------------------------------------
+        sb.AppendLine("delete")
         sb.AppendLine("delete [file_or_directory]")
+        sb.AppendLine("  Delete a file or folder.")
         sb.AppendLine("  Examples:")
-        sb.AppendLine("    delete C:\file")
-        sb.AppendLine("    delete C:\folder")
+        sb.AppendLine("    delete C:\file.txt")
+        sb.AppendLine("    delete ""C:\My Folder""")
         sb.AppendLine()
 
-        sb.AppendLine("text [file]")
-        sb.AppendLine("  Creates a new text file at the specified path.")
+        ' ---------------------------------------------------------
+        ' RENAME
+        ' ---------------------------------------------------------
+        sb.AppendLine("rename")
+        sb.AppendLine("rename [source_path] [new_name]")
+        sb.AppendLine("  Rename a file or directory.")
+        sb.AppendLine("  Paths with spaces must be enclosed in quotes.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    rename ""C:\folder\oldname.txt"" ""newname.txt""")
+        sb.AppendLine("    rename ""C:\folder\old name.txt"" ""new name.txt""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' TEXT FILE CREATION
+        ' ---------------------------------------------------------
+        sb.AppendLine("text, txt")
+        sb.AppendLine("text [file_path]")
+        sb.AppendLine("  Create a new text file at the specified path.")
         sb.AppendLine("  Example:")
-        sb.AppendLine("    text C:\folder\example.txt")
+        sb.AppendLine("    text ""C:\folder\example.txt""")
         sb.AppendLine()
 
+        ' ---------------------------------------------------------
+        ' SEARCH
+        ' ---------------------------------------------------------
+        sb.AppendLine("find, search")
+        sb.AppendLine("find [search_term]")
+        sb.AppendLine("  Search for files and folders in the current directory.")
+        sb.AppendLine("  Example:")
+        sb.AppendLine("    find document")
+        sb.AppendLine()
+
+        sb.AppendLine("findnext, searchnext")
+        sb.AppendLine("findnext")
+        sb.AppendLine("  Show the next search result from the previous search.")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' EXIT
+        ' ---------------------------------------------------------
+        sb.AppendLine("exit, quit")
+        sb.AppendLine("  Exit the application.")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' HELP
+        ' ---------------------------------------------------------
         sb.AppendLine("help")
-        sb.AppendLine("  Show this help message")
+        sb.AppendLine("  Show this help message.")
+        sb.AppendLine()
 
         Return sb.ToString()
     End Function
+
+
+
+
 
 
 
