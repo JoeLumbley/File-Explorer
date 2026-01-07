@@ -307,6 +307,8 @@ Closes the application.
 
 Displays the full list of commands.
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 # 🧠 Quoting Rules (Important)
