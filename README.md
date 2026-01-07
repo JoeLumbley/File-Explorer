@@ -31,6 +31,8 @@
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
 
+- [Clones](#clones)
+
 - [📄 License](#license)
 
 
@@ -613,10 +615,17 @@ This method teaches six important rules:
 
 
 
-
-
+[ Table of Contents](#table-of-contents)
 
 ---
+---
+---
+---
+
+
+
+
+
 
 # `CopyDirectory`
 
@@ -984,11 +993,28 @@ This is the simplest way to show the “shape” of recursion.
 > 5. Continue until you climb all the way back to the top.
 
 
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
 ---
 ---
 ---
 
----
+
+
+
+
+
+
 
 # MoveFileOrDirectory
 
@@ -1178,24 +1204,47 @@ This makes the file manager not just functional — but **guiding**.
 
 <img width="1266" height="662" alt="074" src="https://github.com/user-attachments/assets/ea1ecd50-d794-40c9-9723-824487dfff1e" />
 
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
 ---
 
 
 
 
 
-
-
----
-
----
-
----
 
 
 
 ## License
 This project is licensed under the **MIT License**. You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, with the inclusion of the copyright notice and permission notice in all copies or substantial portions of the software.
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+
+
+
+
 
 ## Installation
 To install and run the File Explorer application:
@@ -1206,6 +1255,19 @@ To install and run the File Explorer application:
 2. Open the solution in Visual Studio.
 3. Build the project and run it.
 
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+
 ## Usage
 - Launch the application to access your file system.
 - Use the tree view on the left to navigate through folders.
@@ -1214,6 +1276,15 @@ To install and run the File Explorer application:
 - Right-click on files or folders for additional options.
 
 
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
 ## Acknowledgements
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
 
@@ -1221,6 +1292,16 @@ For more details, check the source code and documentation within the repository.
 
 
 
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+# Clones
 
 
 <img width="1920" height="1080" alt="075" src="https://github.com/user-attachments/assets/8ded5094-bc7d-4ed1-b6c2-a105743e33e6" />
