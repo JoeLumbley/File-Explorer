@@ -87,6 +87,9 @@ Public Class Form1
     Private IconNewFolder As String = ""
     Private IconCut As String = "✂"
     Private IconSearch As String = ""
+    Private IconMoving As String = ""
+
+
 
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
@@ -1367,7 +1370,7 @@ Public Class Form1
                     ' Navigate to the directory of the source file
                     NavigateTo(Path.GetDirectoryName(source))
 
-                    ShowStatus(IconDialog & "  Moving file to: " & destination)
+                    ShowStatus(IconMoving & "  Moving file to: " & destination)
 
 
                     ' Ensure destination directory exists
@@ -1380,13 +1383,12 @@ Public Class Form1
                     ' Navigate to the destination folder (corrected)
                     NavigateTo(Path.GetDirectoryName(destination))
 
-                    ShowStatus(IconSuccess & "  Moved file to: " & destination)
+                    ShowStatus(IconMoving & "  Moved file to: " & destination)
 
                 Else
                     ShowStatus(IconWarning & " Destination file already exists.")
                 End If
 
-                ' Check if the source is a directory
             ElseIf Directory.Exists(source) Then
 
                 ' Check if the destination directory already exists
@@ -1395,29 +1397,30 @@ Public Class Form1
                     ' Navigate to the directory being moved so the user can see it
                     NavigateTo(source)
 
-                    ShowStatus(IconDialog & "  Moving directory to: " & destination)
+                    ShowStatus(IconMoving & "  Moving directory to: " & destination)
 
                     ' Ensure destination parent exists
                     Directory.CreateDirectory(Path.GetDirectoryName(destination))
 
+                    ' Perform the move
                     Directory.Move(source, destination)
-                    'Directory.Move(source, destination)
 
-                    InitTreeRoots()
-
-                    ' Navigate to the new location
+                    ' Navigate to the new location FIRST
                     NavigateTo(destination)
 
-                    ShowStatus(IconSuccess & "  Moved directory to: " & destination)
+                    ' Now refresh the tree roots
+                    InitTreeRoots()
+
+                    ShowStatus(IconMoving & "  Moved directory to: " & destination)
 
                 Else
                     ShowStatus(IconWarning & " Destination directory already exists.")
                 End If
 
-                ' If neither a file nor a directory exists
             Else
-                ShowStatus(IconWarning & "  Move failed: Source not found.")
+                ShowStatus(IconWarning & "  Move failed: Source path not found. Paths with spaces must be enclosed in quotes. Example: move ""C:\folder A"" ""C:\folder B""")
             End If
+
 
         Catch ex As Exception
             ShowStatus(IconError & " Move failed: " & ex.Message)
@@ -2276,7 +2279,7 @@ Public Class Form1
 
         RunTests()
 
-        ShowStatus(IconSuccess & " Ready")
+        ShowStatus(IconSuccess & "  Ready")
 
     End Sub
 
