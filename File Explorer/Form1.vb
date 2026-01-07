@@ -2271,6 +2271,8 @@ Public Class Form1
 
         InitListView()
 
+        InitTreeView()
+
         '  Start in User Profile folder
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
@@ -2294,17 +2296,35 @@ Public Class Form1
 
     End Sub
 
-    Private Sub UpdateTreeRoots()
-        '  Initialize TreeView Roots
 
-        tvFolders.BeginUpdate()
+    Private Sub InitTreeView()
 
-        tvFolders.Nodes.Clear()
-        tvFolders.ShowRootLines = True
+        ' Don't show lines connecting nodes
+        tvFolders.ShowRootLines = False
 
         ' Use arrow icons instead of plus/minus
         tvFolders.ShowPlusMinus = False
         tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
+
+    End Sub
+
+
+
+
+    Private Sub UpdateTreeRoots()
+        ' Update the TreeView with current drives and special folders at the top level.
+
+        tvFolders.BeginUpdate()
+
+        ' Clear existing nodes and add new ones for:
+        tvFolders.Nodes.Clear()
+
+        '' Show lines connecting nodes
+        'tvFolders.ShowRootLines = False
+
+        '' Use arrow icons instead of plus/minus
+        'tvFolders.ShowPlusMinus = False
+        'tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
 
         ' --- Easy Access node ---
         Dim easyAccessNode As New TreeNode("Easy Access") With {
