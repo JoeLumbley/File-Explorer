@@ -1,24 +1,37 @@
 # 📁 File Explorer
 
-**File Explorer** is a simple and user-friendly file management app designed to provide an intuitive interface for navigating, copying, moving, and deleting files and directories.
-
-
+**File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
 
 <img width="1184" height="662" alt="052" src="https://github.com/user-attachments/assets/5eb1a283-6907-45a1-a605-6bd626519ac2" />
 
-
 ## Features
-- **Navigation**: Easily navigate through directories using a tree view and a list view.
-- **File Operations**: Perform common file operations such as:
+
+### 🗂 Graphical Interface
+- **Navigation**: Browse directories using a tree view and list view.
+- **File Operations**: Perform essential actions such as:
   - Change Directory (`cd`)
   - Copy files and directories
   - Move files and directories
   - Delete files and directories
-- **Clipboard Support**: Supports cut, copy, and paste operations for files and directories.
-- **Context Menu**: Right-click context menu for quick access to file operations.
-- **History Tracking**: Simple navigation history allows users to go back and forward through their directory changes.
-- **File Type Icons**: Visual representation of different file types with corresponding icons.
-- **Status Bar**: Provides feedback on the current operation and status updates.
+- **Clipboard Support**: Cut, copy, and paste files and folders.
+- **Context Menu**: Right‑click menus for quick access to common actions.
+- **History Tracking**: Move backward and forward through previously visited directories.
+- **File Type Icons**: Visual indicators for different file types.
+- **Status Bar**: Real‑time feedback on operations and system status.
+
+### 💻 Integrated Command Line Interface (CLI)
+For users who enjoy the speed and precision of typed commands, the built‑in CLI provides:
+
+- Fast directory navigation (`cd`)
+- File and folder operations (`copy`, `move`, `delete`, `rename`)
+- Text file creation (`text`, `txt`)
+- Search and result cycling (`find`, `findnext`)
+- Contextual path handling (type a path to open it)
+- Quoting rules for paths with spaces
+- Helpful usage messages and error feedback
+- A built‑in `help` command with full documentation
+
+The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
 
@@ -31,6 +44,9 @@
 ---
 ---
 ---
+
+
+
 
 
 
