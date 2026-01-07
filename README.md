@@ -38,7 +38,7 @@
 
 ## Table of Contents
 
-- [🖥️ Command Line Interface (CLI)](#-command-line-interface-(cli))
+- [🖥️ Command Line Interface (CLI)](#-command-line-interface-cli)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
     - [cd — Change Directory](#-change-directory--cd)
@@ -82,7 +82,7 @@
 
 
 
-# 🖥️ Command Line Interface (CLI)
+# 🖥️ Command Line Interface CLI
 
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
