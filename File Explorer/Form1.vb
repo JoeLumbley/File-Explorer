@@ -255,9 +255,9 @@ Public Class Form1
     Private Sub btnRefresh_Click(sender As Object, e As EventArgs) _
         Handles btnRefresh.Click
 
-        InitTreeRoots()
-
         NavigateTo(currentFolder, recordHistory:=False)
+
+        InitTreeRoots()
 
     End Sub
 
@@ -2269,11 +2269,13 @@ Public Class Form1
 
         InitArrows()
 
-        InitTreeRoots()
+        'InitTreeRoots()
 
         InitListView()
 
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+        InitTreeRoots()
 
         RunTests()
 
