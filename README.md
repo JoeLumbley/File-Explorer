@@ -23,6 +23,7 @@
 ---
 ---
 ---
+---
 
 ## Table of Contents
 - [🖥️ The Command Line Interface (CLI)](#command-line-interface-cli)
@@ -33,13 +34,10 @@
 - [📄 License](#license)
 
 
-[ Table of Contents](#table-of-contents)
 
 ---
 ---
 ---
-
-
 ---
 
 
