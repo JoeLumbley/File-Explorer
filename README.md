@@ -25,7 +25,7 @@
 ---
 
 ## 📚 Table of Contents
-- [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
+- [🖥️ The Command Line Interface (CLI)](#command-line-interface-cli)
 
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
