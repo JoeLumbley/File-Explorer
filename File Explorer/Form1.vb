@@ -2296,7 +2296,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub InitTreeView()
 
         ' Don't show lines connecting nodes
@@ -2308,9 +2307,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
     Private Sub UpdateTreeRoots()
         ' Update the TreeView with current drives and special folders at the top level.
 
@@ -2318,13 +2314,6 @@ Public Class Form1
 
         ' Clear existing nodes and add new ones for:
         tvFolders.Nodes.Clear()
-
-        '' Show lines connecting nodes
-        'tvFolders.ShowRootLines = False
-
-        '' Use arrow icons instead of plus/minus
-        'tvFolders.ShowPlusMinus = False
-        'tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
 
         ' --- Easy Access node ---
         Dim easyAccessNode As New TreeNode("Easy Access") With {
