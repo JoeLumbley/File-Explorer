@@ -2275,8 +2275,6 @@ Public Class Form1
 
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
-        'InitContextMenu()
-
         RunTests()
 
         ShowStatus(IconSuccess & "  Ready")
