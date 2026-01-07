@@ -2269,8 +2269,6 @@ Public Class Form1
 
         InitArrows()
 
-        'InitTreeRoots()
-
         InitListView()
 
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
