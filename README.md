@@ -1254,12 +1254,14 @@ This makes the file manager not just functional — but **guiding**.
 
 
 
+
 [ Table of Contents](#table-of-contents)
 
 ---
 ---
 ---
 ---
+
 
 
 
@@ -1277,12 +1279,23 @@ This project is licensed under the **MIT License**. You are free to use, copy, m
 
 
 
+
+
+
 [ Table of Contents](#table-of-contents)
 
 ---
 ---
 ---
 ---
+
+
+
+
+
+
+
+
 
 
 
@@ -1303,12 +1316,28 @@ To install and run the File Explorer application:
 
 
 
+
+
+
+
+
+
+
+
 [ Table of Contents](#table-of-contents)
 
 ---
 ---
 ---
 ---
+
+
+
+
+
+
+
+
 
 
 ## Usage
@@ -1321,12 +1350,26 @@ To install and run the File Explorer application:
 
 
 
+
+
+
+
+
 [ Table of Contents](#table-of-contents)
 
 ---
 ---
 ---
 ---
+
+
+
+
+
+
+
+
+
 
 ## Acknowledgements
 This project is inspired by traditional file explorers and aims to provide a simplified experience for managing files on Windows systems.
@@ -1337,12 +1380,33 @@ For more details, check the source code and documentation within the repository.
 
 
 
+
+
+
+
+
+
+
+
+
+
 [ Table of Contents](#table-of-contents)
 
 ---
 ---
 ---
 ---
+
+
+
+
+
+
+
+
+
+
+
 
 # Clones
 
@@ -1398,5 +1462,11 @@ For more details, check the source code and documentation within the repository.
 <img width="1920" height="1080" alt="011" src="https://github.com/user-attachments/assets/0b1bff67-26a9-456d-9c42-0b96d4dd1bb8" />
 
 
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
 
 
