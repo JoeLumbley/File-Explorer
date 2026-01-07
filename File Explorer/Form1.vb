@@ -2271,6 +2271,7 @@ Public Class Form1
 
         InitListView()
 
+        '  Start in User Profile folder
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
         InitTreeRoots()
@@ -2399,7 +2400,7 @@ Public Class Form1
 
         Dim statusStrip As New StatusStrip()
 
-        ' Set font to Segoe UI Symbol, 12pt
+        ' Set font to Segoe UI Symbol, 9pt
         statusStrip.Font = New Font("Segoe UI Symbol", 9.0F, FontStyle.Regular)
 
         ' If lblStatus should also use this font, set it explicitly
