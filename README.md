@@ -202,6 +202,8 @@ move C:\folderA\file.txt C:\folderB\file.txt
 move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
 ```
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## 🗑 Delete — `delete`
