@@ -257,7 +257,7 @@ Public Class Form1
 
         NavigateTo(currentFolder, recordHistory:=False)
 
-        InitTreeRoots()
+        UpdateTreeRoots()
 
     End Sub
 
@@ -1409,7 +1409,7 @@ Public Class Form1
                     NavigateTo(destination)
 
                     ' Now refresh the tree roots
-                    InitTreeRoots()
+                    UpdateTreeRoots()
 
                     ShowStatus(IconMoving & "  Moved directory to: " & destination)
 
@@ -2274,7 +2274,7 @@ Public Class Form1
         '  Start in User Profile folder
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
-        InitTreeRoots()
+        UpdateTreeRoots()
 
         RunTests()
 
@@ -2294,8 +2294,10 @@ Public Class Form1
 
     End Sub
 
-    Private Sub InitTreeRoots()
+    Private Sub UpdateTreeRoots()
         '  Initialize TreeView Roots
+
+        tvFolders.BeginUpdate()
 
         tvFolders.Nodes.Clear()
         tvFolders.ShowRootLines = True
@@ -2393,6 +2395,8 @@ Public Class Form1
                 Debug.WriteLine($"Drive {di.Name} is not ready.")
             End If
         Next
+
+        tvFolders.EndUpdate()
 
     End Sub
 
