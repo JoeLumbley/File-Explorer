@@ -1080,47 +1080,6 @@ Public Class Form1
                     Debug.WriteLine("Text Command Error: " & ex.Message)
                 End Try
 
-            'Case "help"
-
-            '    Dim helpText As String = "Available Commands:" & Environment.NewLine & Environment.NewLine &
-            '                             "cd [directory]" & Environment.NewLine &
-            '                             "Change directory to the specified path" & Environment.NewLine &
-            '                             "cd C:\" & Environment.NewLine &
-            '                             "cd C:\folder" & Environment.NewLine & Environment.NewLine &
-            '                             "mkdir [directory_path]" & Environment.NewLine &
-            '                             "Creates a new folder" & Environment.NewLine &
-            '                             "mkdir C:\newfolder" & Environment.NewLine &
-            '                             "make C:\newfolder" & Environment.NewLine & Environment.NewLine &
-            '                             "copy [source] [destination]" & Environment.NewLine &
-            '                             "Copy file or folder to destination folder" & Environment.NewLine &
-            '                             "copy C:\folderA\file.doc C:\folderB" & Environment.NewLine &
-            '                             "copy C:\folderA C:\folderB" & Environment.NewLine & Environment.NewLine &
-            '                             "move [source] [destination]" & Environment.NewLine &
-            '                             "Move file or folder to destination" & Environment.NewLine &
-            '                             "move C:\folderA\file.doc C:\folderB\file.doc" & Environment.NewLine &
-            '                             "move C:\folderA\file.doc C:\folderB\rename.doc" & Environment.NewLine &
-            '                             "move C:\folderA\folder C:\folderB\folder" & Environment.NewLine &
-            '                             "move C:\folderA\folder C:\folderB\rename" & Environment.NewLine & Environment.NewLine &
-            '                             "delete [file or directory]" & Environment.NewLine &
-            '                             "delete C:\file" & Environment.NewLine &
-            '                             "delete C:\folder" & Environment.NewLine & Environment.NewLine &
-            '                             "text [file]" & Environment.NewLine &
-            '                             "Creates a new text file at the specified path." & Environment.NewLine &
-            '                             "text C:\folder\example.txt" & Environment.NewLine & Environment.NewLine &
-            '                             "help - Show this help message"
-
-            '    MessageBox.Show(helpText, "Help", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-
-
-
-
-
-
-
-
-
-
             Case "help"
 
                 Dim helpFilePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
@@ -1144,54 +1103,6 @@ Public Class Form1
                     ShowStatus(IconError & "  Failed to open help file: " & ex.Message)
                 End Try
 
-
-
-
-
-
-
-
-
-            'Case "find", "search"
-
-            '    If parts.Length > 1 Then
-
-            '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-            '        ShowStatus(IconSearch & " Searching for: " & searchTerm)
-
-            '        SearchInCurrentFolder(searchTerm)
-
-            '    Else
-            '        ShowStatus(IconDialog & " Usage: find [search_term] - e.g., find document")
-            '    End If
-
-            '    SearchIndex = 0
-
-            'Case "findnext", "searchnext"
-
-            '    If SearchResults.Count = 0 Then
-            '        ShowStatus(IconDialog & " No previous search results. Use 'find [search_term]' to start a search.")
-            '        Return
-            '    End If
-
-            '    ' Advance index
-            '    SearchIndex += 1
-
-            '    ' Wrap around if needed
-            '    If SearchIndex >= SearchResults.Count Then
-            '        SearchIndex = 0
-            '    End If
-
-            '    ' Clear item selection for lvFiles
-            '    lvFiles.SelectedItems.Clear()
-
-            '    ' Select the item
-            '    Dim nextPath As String = SearchResults(SearchIndex)
-            '    SelectListViewItemByPath(nextPath)
-            '    lvFiles.Focus()
-
-            '    ShowStatus(IconSmile & " Showing result " & (SearchIndex + 1) & " of " & SearchResults.Count)
             Case "find", "search"
 
                 If parts.Length > 1 Then
@@ -1210,15 +1121,6 @@ Public Class Form1
                     ' Reset index for new search
                     SearchIndex = 0
 
-                    '' Auto-select first result if available
-                    'If SearchResults.Count > 0 Then
-                    '    lvFiles.SelectedItems.Clear()
-                    '    SelectListViewItemByPath(SearchResults(0))
-                    '    lvFiles.Focus()
-                    '    ShowStatus(IconSmile & " Found " & SearchResults.Count & " result(s). Showing result 1. To show next result enter:findnext")
-                    'Else
-                    '    ShowStatus(IconDialog & " No results found for: " & searchTerm)
-                    'End If
                     ' Auto-select first result if available
                     If SearchResults.Count > 0 Then
                         lvFiles.SelectedItems.Clear()
@@ -1270,8 +1172,8 @@ Public Class Form1
                     " To show the next result, enter: findnext")
 
             Case "exit", "quit"
-                ' Exit the application
 
+                ' Exit the application
                 Me.Close()
 
             Case Else
@@ -1301,8 +1203,6 @@ Public Class Form1
     End Sub
 
 
-
-
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
         Try
@@ -1328,98 +1228,6 @@ Public Class Form1
         End Try
 
     End Sub
-
-
-
-    'Private Function BuildHelpText() As String
-    '    Dim sb As New StringBuilder()
-
-    '    sb.AppendLine("Available Commands:")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("cd")
-    '    sb.AppendLine("cd [directory]")
-    '    sb.AppendLine("  Change directory to the specified path")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    cd C:\")
-    '    sb.AppendLine("    cd C:\folder")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("mkdir, make")
-    '    sb.AppendLine("mkdir [directory_path]")
-    '    sb.AppendLine("  Creates a new folder")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    mkdir C:\newfolder")
-    '    sb.AppendLine("    make C:\newfolder")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("copy")
-    '    sb.AppendLine("copy [source] [destination]")
-    '    sb.AppendLine("  Copy file or folder to destination folder")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
-    '    sb.AppendLine("    copy C:\folderA C:\folderB")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("move")
-    '    sb.AppendLine("move [source] [destination]")
-    '    sb.AppendLine("  Move file or folder to destination")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
-    '    sb.AppendLine("    move C:\folderA\file.doc C:\folderB\rename.doc")
-    '    sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
-    '    sb.AppendLine("    move C:\folderA\folder C:\folderB\rename")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("delete")
-    '    sb.AppendLine("delete [file_or_directory]")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    delete C:\file")
-    '    sb.AppendLine("    delete C:\folder")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("rename")
-    '    sb.AppendLine("rename [source_path] [new_name]")
-    '    sb.AppendLine("  Rename file or directory")
-    '    sb.AppendLine("  Example:")
-    '    sb.AppendLine("    rename C:\folder\oldname.txt newname.txt")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("text, txt")
-    '    sb.AppendLine("text [file]")
-    '    sb.AppendLine("  Creates a new text file at the specified path.")
-    '    sb.AppendLine("  Example:")
-    '    sb.AppendLine("    text C:\folder\example.txt")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("find, search")
-    '    sb.AppendLine("find [search_term]")
-    '    sb.AppendLine("  Search for files and folders in the current directory matching the search term.")
-    '    sb.AppendLine("  Example:")
-    '    sb.AppendLine("    find document")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("findnext, searchnext")
-    '    sb.AppendLine("findnext")
-    '    sb.AppendLine("  Show the next search result from the previous search.")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("To exit the application, use one of the following commands:")
-    '    sb.AppendLine("exit, quit")
-    '    sb.AppendLine("  Exit the application")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("help")
-    '    sb.AppendLine("  Show this help message")
-    '    sb.AppendLine()
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-
-
 
     Private Function BuildHelpText() As String
         Dim sb As New StringBuilder()
@@ -1544,13 +1352,6 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
-
-
-
-
-
-
-
 
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
