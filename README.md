@@ -38,103 +38,303 @@
 
 
 ---
-# The Command Line Interface (CLI)
 
 
+# Command Line Interface (CLI)
 
-The **Command Line Interface (CLI)** for File Explorer application provides users with a way to interact with the file management system through text-based commands. This interface allows for efficient navigation and file operations, catering to users who prefer command-line interactions over graphical interfaces.
+The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
-## Key Features of the CLI
+The CLI is designed to be:
 
-###  Basic Commands
-The CLI supports several basic commands that enable users to perform common file operations:
+- **Fast** — no menus, no dialogs  
+- **Predictable** — clear rules and consistent behavior  
+- **Beginner‑friendly** — helpful messages and examples  
+- **Powerful** — supports navigation, search, file operations, and more  
 
-- **Change Directory (`cd`)** : 
-  - Usage: `cd [directory]`
-  - Changes the current working directory to the specified path.
-  - Example: `cd C:\`
+---
 
+## 🚀 Features Overview
 
+### ✔ Navigation  
+- Change directories  
+- Open files directly  
+- Navigate to folders by typing their path  
+- Supports paths with spaces using quotes  
 
-- **Make Directory (`mkdir` or `make`)** :
+### ✔ File & Folder Operations  
+- Create, copy, move, rename, and delete  
+- Works with both files and directories  
+- Handles quoted paths safely  
 
-  - Usage: `mkdir [directory]`
-  - Creates a new directory at the specified path.
-  - Example: `mkdir C:\newfolder`
+### ✔ Search  
+- Search the current folder  
+- Cycle through results with `findnext`  
+- Highlights and selects results in the UI  
 
+### ✔ Contextual Behavior  
+If a command doesn’t match a known keyword, the CLI checks:
 
+- **Is it a folder?** → Navigate to it  
+- **Is it a file?** → Open it  
+- Otherwise → “Unknown command”  
 
+This makes the CLI feel natural and forgiving.
 
+---
 
-- **Copy Files (`copy`)** : 
-  - Usage: `copy [source] [destination]`
-  - Copies files or directories from a source to a destination.
-  - Example: `copy C:\folder1\file.txt C:\folder2`
+# 🧭 Commands
 
+Below is the complete list of supported commands, including syntax, descriptions, and examples.
 
-- **Move Files (`move`)** : 
-  - Usage: `move [source] [destination]`
-  - Moves files or directories from one location to another.
-  - Example: `move C:\folder1\file.txt C:\folder2\file.txt`
+---
 
-- **Delete Files (`delete`)** : 
-  - Usage: `delete [file or directory]`
-  - Deletes the specified file or directory.
-  - Example: `delete C:\folder1\file.txt`
- 
-- **Create Text File (`text` or `txt`)** :
-  - Usage: `text [file]`
-  - Creates a new text file at the specified path and opens it.
-  - Example: `text C:\folder\example.txt`
- 
+## 📂 Change Directory — `cd`
 
+**Usage:**  
+```
+cd [directory]
+```
 
-- **Help (`help`)** : 
-  - Displays a list of available commands and their usage.
-  - Example: `help`
+**Description:**  
+Changes the current working directory.
 
-###  Command Execution
-- Users enter commands in a text box and press **Enter** to execute them.
-- The application parses the command input, using regular expressions to handle quoted strings and spaces correctly.
+**Examples:**  
+```
+cd C:\
+cd "C:\My Folder"
+```
 
-###  Feedback and Status Messages
-- The CLI provides immediate feedback on command execution, displaying messages for success, errors, or usage instructions.
-- Example feedback messages include:
-  - "No command entered."
-  - "Copy Failed - Source does not exist."
-  - "Deleted file: [file_path]"
+---
 
-###  Navigation History
-- The CLI maintains a simple navigation history, allowing users to move back and forth through their directory changes.
-- Users can navigate to previously accessed directories using the history feature, enhancing usability.
+## 📁 Create Directory — `mkdir`, `make`
 
-###  Contextual Commands
-- If a command does not match any predefined operation, the CLI checks if the input corresponds to an existing file or directory and attempts to navigate to it or open it accordingly.
+**Usage:**  
+```
+mkdir [directory_path]
+```
 
-### Example Usage
-Here’s how a typical session might look in the CLI:
+**Description:**  
+Creates a new folder.
 
-```plaintext
+**Examples:**  
+```
+mkdir C:\newfolder
+make "C:\My New Folder"
+```
+
+---
+
+## 📄 Copy — `copy`
+
+**Usage:**  
+```
+copy [source] [destination]
+```
+
+**Description:**  
+Copies a file or folder to a destination directory.
+
+**Examples:**  
+```
+copy C:\folderA\file.txt C:\folderB
+copy "C:\folder A" "C:\folder B"
+```
+
+---
+
+## 📦 Move — `move`
+
+**Usage:**  
+```
+move [source] [destination]
+```
+
+**Description:**  
+Moves a file or folder to a new location.
+
+**Examples:**  
+```
+move C:\folderA\file.txt C:\folderB\file.txt
+move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
+```
+
+---
+
+## 🗑 Delete — `delete`
+
+**Usage:**  
+```
+delete [file_or_directory]
+```
+
+**Description:**  
+Deletes a file or folder.
+
+**Examples:**  
+```
+delete C:\file.txt
+delete "C:\My Folder"
+```
+
+---
+
+## ✏ Rename — `rename`
+
+**Usage:**  
+```
+rename [source_path] [new_name]
+```
+
+**Important:**  
+Paths containing spaces **must** be enclosed in quotes.
+
+**Examples:**  
+```
+rename "C:\folder\oldname.txt" "newname.txt"
+rename "C:\folder\old name.txt" "new name.txt"
+```
+
+---
+
+## 📝 Create Text File — `text`, `txt`
+
+**Usage:**  
+```
+text [file_path]
+```
+
+**Description:**  
+Creates a new text file at the specified path and opens it.
+
+**Example:**  
+```
+text "C:\folder\example.txt"
+```
+
+If no file name is provided, the CLI creates a new file named:  
+```
+New Text File.txt
+```
+
+---
+
+## 🔍 Search — `find`, `search`
+
+**Usage:**  
+```
+find [search_term]
+```
+
+**Description:**  
+Searches the current folder for files or folders containing the term.
+
+**Example:**  
+```
+find report
+```
+
+If results are found:
+
+- The first result is automatically selected  
+- The status bar shows how many matches were found  
+
+---
+
+## ⏭ Next Search Result — `findnext`, `searchnext`
+
+**Usage:**  
+```
+findnext
+```
+
+**Description:**  
+Cycles to the next result from the previous search.  
+Wraps around when reaching the end.
+
+---
+
+## ❌ Exit — `exit`, `quit`
+
+Closes the application.
+
+---
+
+## ❓ Help — `help`
+
+Displays the full list of commands.
+
+---
+
+# 🧠 Quoting Rules (Important)
+
+Paths containing spaces **must** be enclosed in quotes:
+
+```
+"C:\My Folder"
+"C:\Users\Joe\My File.txt"
+```
+
+This applies to:
+
+- `cd`
+- `copy`
+- `move`
+- `rename`
+- `delete`
+- `text`
+
+The CLI will warn the user when quotes are required.
+
+---
+
+# 🧭 Contextual Navigation
+
+If the user enters something that is **not** a command:
+
+- If it’s a **folder path**, the CLI navigates to it  
+- If it’s a **file path**, the CLI opens it  
+- Otherwise, the CLI shows an “Unknown command” message  
+
+This makes the CLI feel natural and forgiving.
+
+---
+
+# 🖥 Example Session
+
+```
 > cd C:\Users\Joe
 Navigated To: C:\Users\Joe
 
-> copy C:\Users\Joe\file.txt C:\Users\Joe\Documents
+> copy "C:\Users\Joe\file.txt" "C:\Users\Joe\Documents"
 Copied file: file.txt to: C:\Users\Joe\Documents
 
-> delete C:\Users\Joe\Documents\old_file.txt
-Deleted file: C:\Users\Joe\Documents\old_file.txt
+> find report
+Found 3 result(s). Showing result 1. Type findnext to move to the next match.
+
+> findnext
+Showing result 2 of 3
 
 > help
-Available Commands:
-cd [directory] - Change directory
-copy [source] [destination] - Copy file or folder to destination folder
-move [source] [destination] - Move file or folder to destination
-delete [file_or_directory] - Delete file or directory
-help - Show this help message
+(Displays full help text)
 ```
 
+---
 
-The CLI in the File Explorer application provides a powerful and flexible way to manage files and directories. It appeals to users who are comfortable with command-line operations, offering an efficient alternative to the graphical user interface. With support for essential file operations, feedback mechanisms, and navigation history, the CLI enhances the overall user experience.
+# 🎯 Summary
+
+The File Explorer CLI provides:
+
+- Fast directory navigation  
+- Powerful file operations  
+- Search with result cycling  
+- Intelligent path handling  
+- Clear feedback and usage messages  
+- Beginner‑friendly quoting rules  
+- Contextual file/folder opening  
+
+It’s a flexible, efficient alternative to the graphical interface — perfect for users who enjoy command‑driven workflows.
+
+---
 
 
 
