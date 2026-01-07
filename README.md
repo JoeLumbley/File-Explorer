@@ -20,27 +20,66 @@
 - **File Type Icons**: Visual representation of different file types with corresponding icons.
 - **Status Bar**: Provides feedback on the current operation and status updates.
 
+
+
+
+
+
+
+
 ---
 ---
 ---
 ---
+
+
+
+
 
 ## Table of Contents
-- [🖥️ The Command Line Interface (CLI)](#command-line-interface-cli)
 
-- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+- [🖥️ The Command Line Interface (CLI)](#the-command-line-interface-cli)
+  - [Features Overview](#-features-overview)
+  - [Commands](#-commands)
+    - [cd — Change Directory](#-change-directory--cd)
+    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
+    - [copy — Copy Files or Folders](#-copy--copy)
+    - [move — Move Files or Folders](#-move--move)
+    - [delete — Delete Files or Folders](#-delete--delete)
+    - [rename — Rename Files or Folders](#-rename--rename)
+    - [text / txt — Create Text Files](#-create-text-file--text-txt)
+    - [find / search — Search](#-search--find-search)
+    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
+    - [help — Show Help](#-help--help)
+  - [Quoting Rules](#-quoting-rules-important)
+  - [Contextual Navigation](#-contextual-navigation)
+  - [Example Session](#-example-session)
 
-- [Clones](#clones)
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory--code-walkthrough)
+
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
+
+- [🧬 Clones](#clones)
 
 - [📄 License](#license)
 
 
 
+
+
+
 ---
 ---
 ---
 ---
+
+
+
+
+
+
+
+
 
 
 # Command Line Interface (CLI)
