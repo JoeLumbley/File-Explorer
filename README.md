@@ -90,10 +90,92 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 ---
 ---
 ---
+
+
+
+
+
+## Table of Contents
+
+- [🖥️ Command Line Interface (CLI)](#command-line-interface)
+  - [Features Overview](#-features-overview)
+  - [Commands](#-commands)
+    - [cd — Change Directory](#-change-directory--cd)
+    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
+    - [copy — Copy Files or Folders](#-copy--copy)
+    - [move — Move Files or Folders](#-move--move)
+    - [delete — Delete Files or Folders](#-delete--delete)
+    - [rename — Rename Files or Folders](#-rename--rename)
+    - [text / txt — Create Text Files](#-create-text-file--text-txt)
+    - [open — Open Files or Folders](#-open--open)
+    - [find / search — Search](#-search--find-search)
+    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
+    - [help — Show Help](#-help--help)
+  - [Quoting Rules](#-quoting-rules-important)
+  - [Contextual Navigation](#-contextual-navigation)
+  - [Example Session](#-example-session)
+
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
+
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+
+- [📋 CopyDirectory — Code Walkthrough](#copydirectory)
+
+- [🧬 Clones](#clones)
+
+- [📄 License](#license)
+
+- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -285,6 +367,35 @@ New Text File.txt
 ```
 
 ---
+
+## 📂 Open — `open`
+
+**Usage:**  
+```
+open [file_or_directory]
+```
+
+**Description:**  
+Opens a file with its default application, or navigates into a folder.
+
+If no path is provided, the command opens the **currently selected** file or folder in the File Explorer list.
+
+**Examples:**  
+```
+open C:\folder\file.txt
+open "C:\My Folder"
+open
+```
+
+**Behavior:**
+
+- If the target is a **file** → opens it using the default program  
+- If the target is a **folder** → navigates into it  
+- If nothing is selected and no path is provided → shows usage help  
+- Supports quoted paths with spaces  
+
+---
+
 
 ## 🔍 Search — `find`, `search`
 
