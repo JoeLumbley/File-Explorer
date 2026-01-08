@@ -356,7 +356,9 @@ Public Class Form1
             txtPath.Focus()
             txtPath.SelectAll()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         End If
 
@@ -364,31 +366,50 @@ Public Class Form1
         ' Navigation Shortcuts
         ' ============================
         If e.Alt AndAlso e.KeyCode = Keys.Left Then
+
+            ' Go back to the previous folder
             NavigateBackward_Click()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
+
+            ' Go forward to the next folder
             NavigateForward_Click()
             e.Handled = True
+            e.SuppressKeyPress = True
+
+            Return
 
         ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
+
+            ' Move up one level (parent directory)
             NavigateToParent()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
+
+        ElseIf e.KeyCode = Keys.F5 Then
 
             ' Refresh the current folder view
-        ElseIf e.KeyCode = Keys.F5 Then
             NavigateTo(currentFolder, recordHistory:=False)
             UpdateTreeRoots()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
 
-            ' FullScreen
+            Return
+
         ElseIf e.KeyCode = Keys.F11 Then
+
+            'Toggle full‑screen mode
             ToggleFullScreen()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         End If
 
@@ -397,11 +418,15 @@ Public Class Form1
         ' ============================
 
         If e.KeyCode = Keys.F3 OrElse (e.Control AndAlso e.KeyCode = Keys.F) Then
+
+            ' Start a search in the current folder
             txtPath.Focus()
             txtPath.Text = "find "
             txtPath.SelectionStart = txtPath.Text.Length
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         End If
 
@@ -409,43 +434,70 @@ Public Class Form1
         ' File / Folder Operations
         ' ============================
 
-        If e.KeyCode = Keys.F2 Then
-            RenameFile_Click(sender, e)
+
+        If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
+
+            ExpandOneLevel()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
+
+
+        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
+
+            CollapseOneLevel()
+            e.Handled = True
+            e.SuppressKeyPress = True
+
+            Return
 
         ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
             NewFolder_Click(sender, e)
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
 
-        ElseIf e.Control AndAlso e.KeyCode = Keys.C Then
+            Return
+
+        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
+            NewTextFile_Click(sender, e)
+            e.Handled = True
+            e.SuppressKeyPress = True
+
+            Return
+
+        ElseIf e.KeyCode = Keys.F2 Then
+            RenameFile_Click(sender, e)
+            e.Handled = True
+            e.SuppressKeyPress = True
+
+            Return
+
+
+        ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C Then
             CopySelected_Click(sender, e)
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.V Then
             PasteSelected_Click(sender, e)
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.X Then
             CutSelected_Click(sender, e)
             e.Handled = True
+            e.SuppressKeyPress = True
 
-            Exit Sub
+            Return
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
             SelectAllItems()
             lvFiles.Focus()
-            e.Handled = True
-            e.SuppressKeyPress = True
-
-            Exit Sub
-
-        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
-
-            ExpandAllFolders()
             e.Handled = True
             e.SuppressKeyPress = True
 
@@ -454,9 +506,12 @@ Public Class Form1
         ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
             Delete_Click(sender, e)
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         End If
+
 
 
         ' ============================
@@ -465,7 +520,10 @@ Public Class Form1
         If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
             NewTextFile_Click(sender, e)
             e.Handled = True
+            e.SuppressKeyPress = True
+
             Return
+
         End If
 
     End Sub
@@ -527,23 +585,119 @@ Public Class Form1
         Next
     End Sub
 
-    Private Sub ExpandAllFolders()
+    'Private Sub ExpandOneLevel()
 
-        ' If a node is selected, expand the node and it's childeren
-        If tvFolders.SelectedNode IsNot Nothing Then
+    '    ' If a node is selected, expand the node and it's childeren
+    '    If tvFolders.SelectedNode IsNot Nothing Then
 
-            ShowStatus(IconDialog & "  Expanding selected folder...")
+    '        ShowStatus(IconDialog & "  Expanding selected folder...")
+
+    '        tvFolders.BeginUpdate()
+    '        tvFolders.SelectedNode.Expand()
+    '        For Each child As TreeNode In tvFolders.SelectedNode.Nodes
+    '            child.Expand()
+    '        Next
+    '        tvFolders.EndUpdate()
+
+    '        ShowStatus(IconSuccess & "  Expanded: " & tvFolders.SelectedNode.FullPath)
+    '        Return
+    '    End If
+
+    'End Sub
+
+
+    Private Sub ExpandOneLevel()
+
+        Dim node As TreeNode = tvFolders.SelectedNode
+        If node Is Nothing Then Exit Sub
+
+        ' If the node is collapsed, expand it (one level)
+        If Not node.IsExpanded Then
+            ShowStatus(IconDialog & "  Expanding folder...")
 
             tvFolders.BeginUpdate()
-            tvFolders.SelectedNode.Expand()
-            For Each node As TreeNode In tvFolders.SelectedNode.Nodes
-                node.Expand()
+            node.Expand()
+            tvFolders.EndUpdate()
+
+            ShowStatus(IconSuccess & "  Expanded: " & node.FullPath)
+            Return
+        End If
+
+        ' If the node is expanded, move to its first child (like Explorer)
+        If node.Nodes.Count > 0 Then
+            tvFolders.SelectedNode = node.Nodes(0)
+            tvFolders.SelectedNode.EnsureVisible()
+
+            ShowStatus(IconSuccess & "  Navigated into: " & tvFolders.SelectedNode.FullPath)
+            Return
+        End If
+
+        ' If expanded but no children, do nothing
+        ShowStatus(IconDialog & "  No subfolders to expand.")
+
+    End Sub
+
+    Private Sub CollapseAllFolders()
+
+        ' If a node is selected, collapse only that branch
+        If tvFolders.SelectedNode IsNot Nothing Then
+
+            ShowStatus(IconDialog & "  Collapsing selected folder...")
+
+            tvFolders.BeginUpdate()
+            tvFolders.SelectedNode.Collapse(False)   ' False = do not recursively collapse parents
+            For Each child As TreeNode In tvFolders.SelectedNode.Nodes
+                child.Collapse(False)
             Next
             tvFolders.EndUpdate()
 
-            ShowStatus(IconSuccess & "  Expanded: " & tvFolders.SelectedNode.FullPath)
+            ShowStatus(IconSuccess & "  Collapsed: " & tvFolders.SelectedNode.FullPath)
             Return
         End If
+
+        ' Otherwise collapse all root nodes (global collapse)
+        ShowStatus(IconDialog & "  Collapsing all folders...")
+
+        tvFolders.BeginUpdate()
+        For Each node As TreeNode In tvFolders.Nodes
+            node.Collapse(False)
+        Next
+        tvFolders.EndUpdate()
+
+        ShowStatus(IconSuccess & "  All folders collapsed.")
+
+    End Sub
+
+
+
+    Private Sub CollapseOneLevel()
+
+        Dim node As TreeNode = tvFolders.SelectedNode
+        If node Is Nothing Then Exit Sub
+
+        ' If the node is expanded, collapse it (one level)
+        If node.IsExpanded Then
+            ShowStatus(IconDialog & "  Collapsing folder...")
+
+            tvFolders.BeginUpdate()
+            node.Collapse()
+            tvFolders.EndUpdate()
+
+            ShowStatus(IconSuccess & "  Collapsed: " & node.FullPath)
+            Return
+        End If
+
+        ' If the node is collapsed, move selection to its parent
+        If node.Parent IsNot Nothing Then
+            tvFolders.SelectedNode = node.Parent
+            tvFolders.SelectedNode.EnsureVisible()
+
+            ShowStatus(IconSuccess & "  Moved to parent: " & node.Parent.FullPath)
+            Return
+        End If
+
+        ' If it's a root node and already collapsed, do nothing
+        ShowStatus(IconDialog & "  Already at the top level.")
 
     End Sub
 
@@ -563,6 +717,7 @@ Public Class Form1
         ' Check for Enter key
         If e.KeyCode = Keys.Enter Then
 
+            e.Handled = True
             e.SuppressKeyPress = True
 
             Dim command As String = txtPath.Text.Trim()
@@ -1340,6 +1495,70 @@ Public Class Form1
                     ShowStatus(IconError & "  Failed to open help file: " & ex.Message)
                 End Try
 
+            Case "open"
+
+                ' If the user typed: open "C:\path\to\something"
+                If parts.Length > 1 Then
+
+                    Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+
+                    If File.Exists(targetPath) Then
+                        Try
+                            ShowStatus(IconDialog & "  Opening file...")
+                            Process.Start(New ProcessStartInfo() With {
+                                .FileName = targetPath,
+                                .UseShellExecute = True
+                            })
+                            ShowStatus(IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
+                        Catch ex As Exception
+                            ShowStatus(IconError & "  Failed to open file: " & ex.Message)
+                        End Try
+
+                    ElseIf Directory.Exists(targetPath) Then
+                        ShowStatus(IconDialog & "  Navigating to folder...")
+                        NavigateTo(targetPath)
+                        ShowStatus(IconSuccess & "  Navigated to: " & targetPath)
+
+                    Else
+                        ShowStatus(IconError & "  Path not found: " & targetPath)
+                    End If
+
+                    Return
+                End If
+
+
+                ' If no path was typed, use the selected item in the ListView
+                If lvFiles.SelectedItems.Count = 0 Then
+                    ShowStatus(IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
+                    Return
+                End If
+
+                Dim selected As ListViewItem = lvFiles.SelectedItems(0)
+                Dim fullPath As String = selected.Tag.ToString()
+
+                If File.Exists(fullPath) Then
+                    Try
+                        ShowStatus(IconDialog & "  Opening file...")
+                        Process.Start(New ProcessStartInfo() With {
+                            .FileName = fullPath,
+                            .UseShellExecute = True
+                        })
+                        ShowStatus(IconSuccess & "  Opened file: " & selected.Text)
+                    Catch ex As Exception
+                        ShowStatus(IconError & "  Failed to open file: " & ex.Message)
+                    End Try
+
+                ElseIf Directory.Exists(fullPath) Then
+                    ShowStatus(IconDialog & "  Navigating to folder...")
+                    NavigateTo(fullPath)
+                    ShowStatus(IconSuccess & "  Navigated to: " & fullPath)
+
+                Else
+                    ShowStatus(IconError & "  Selected item no longer exists.")
+                End If
+
+
+
             Case "find", "search"
 
                 If parts.Length > 1 Then
@@ -1362,6 +1581,8 @@ Public Class Form1
                     If SearchResults.Count > 0 Then
                         lvFiles.SelectedItems.Clear()
                         SelectListViewItemByPath(SearchResults(0))
+
+                        txtPath.Focus()
 
                         ShowStatus(
                             IconSearch &
