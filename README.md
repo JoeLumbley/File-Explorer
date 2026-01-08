@@ -1445,19 +1445,23 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 
 ---
 
+---
+
 ## 📁 File & Folder Operations
 
 | Shortcut | Action |
 |---------|--------|
 | **F2** | Rename the selected file or folder |
 | **Ctrl + Shift + N** | Create a new folder |
+| **Ctrl + Shift + T** | Create a new text file |
+| **Ctrl + O** | Start an `open` command in the CLI |
 | **Ctrl + C** | Copy selected items |
 | **Ctrl + V** | Paste items |
 | **Ctrl + X** | Cut selected items |
 | **Ctrl + A** | Select all items |
-| **Ctrl + Shift + E** | Expand all folders in the navigation pane |
+| **Ctrl + Shift + E** | Expand the selected folder or drive |
+| **Ctrl + Shift + C** | Collapse the selected folder or drive |
 | **Ctrl + D** (or **Delete**) | Delete selected item to the Recycle Bin |
-
 ---
 
 ## 🔍 Searching & Viewing
