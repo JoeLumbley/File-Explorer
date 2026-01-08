@@ -75,6 +75,12 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
 
+- [📋 CopyDirectory — Code Walkthrough](#copydirectory)
+
+
+CopyDirectory
+
+
 - [🧬 Clones](#clones)
 
 - [📄 License](#license)
