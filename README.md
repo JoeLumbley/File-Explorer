@@ -80,7 +80,7 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 - [📄 License](#license)
 
 
-- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [⌨️Keyboard Shortcuts](#keyboard-shortcuts)
 
 Keyboard Shortcuts
 
