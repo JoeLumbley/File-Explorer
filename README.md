@@ -60,22 +60,6 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 
 
-
-
-
-
-
-
-
----
----
----
----
-
-
-
-
-
 ## Table of Contents
 
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
