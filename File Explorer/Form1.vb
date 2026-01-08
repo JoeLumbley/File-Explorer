@@ -445,8 +445,6 @@ Public Class Form1
 
         End If
 
-
-
         If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
 
             ExpandOneLevel()
