@@ -327,6 +327,160 @@ Public Class Form1
 
     End Sub
 
+
+
+
+
+
+
+
+    Private Sub FileExplorer_KeyDown(sender As Object, e As KeyEventArgs) _
+    Handles Me.KeyDown
+
+        ' ============================
+        ' Address Bar Shortcuts
+        ' ============================
+        If (e.Control AndAlso e.KeyCode = Keys.L) _
+           OrElse (e.Alt AndAlso e.KeyCode = Keys.D) _
+           OrElse (e.KeyCode = Keys.F4) Then
+
+            txtPath.Focus()
+            txtPath.SelectAll()
+            e.Handled = True
+            Exit Sub
+
+        End If
+
+        ' ============================
+        ' Navigation Shortcuts
+        ' ============================
+        If e.Alt AndAlso e.KeyCode = Keys.Left Then
+            NavigateBackward_Click()
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
+            NavigateForward_Click()
+            e.Handled = True
+
+        ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
+            NavigateToParent()
+            e.Handled = True
+            Exit Sub
+
+            ' Refresh the current folder view
+        ElseIf e.KeyCode = Keys.F5 Then
+            NavigateTo(currentFolder, recordHistory:=False)
+            UpdateTreeRoots()
+            e.Handled = True
+            Exit Sub
+
+            ' FullScreen
+        ElseIf e.KeyCode = Keys.F11 Then
+            ToggleFullScreen()
+            e.Handled = True
+            Exit Sub
+
+        End If
+
+        ' ============================
+        ' Search
+        ' ============================
+
+        If e.KeyCode = Keys.F3 OrElse (e.Control AndAlso e.KeyCode = Keys.F) Then
+            txtPath.Focus()
+            txtPath.Text = "find "
+            txtPath.SelectionStart = txtPath.Text.Length
+            e.Handled = True
+            Exit Sub
+
+        End If
+
+        ' ============================
+        ' File / Folder Operations
+        ' ============================
+
+        If e.KeyCode = Keys.F2 Then
+            RenameFile_Click(sender, e)
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
+            NewFolder_Click(sender, e)
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Control AndAlso e.KeyCode = Keys.C Then
+            CopySelected_Click(sender, e)
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Control AndAlso e.KeyCode = Keys.V Then
+            PasteSelected_Click(sender, e)
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Control AndAlso e.KeyCode = Keys.X Then
+            CutSelected_Click(sender, e)
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
+            SelectAllItems()
+            e.Handled = True
+            Exit Sub
+
+        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
+            ExpandAllFolders()
+            e.Handled = True
+            Exit Sub
+
+        ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
+            Delete_Click(sender, e)
+            e.Handled = True
+            Exit Sub
+
+        End If
+
+    End Sub
+
+
+
+    Private Sub NavigateToParent()
+        Dim parent = Directory.GetParent(currentFolder)
+        If parent IsNot Nothing Then
+            NavigateTo(parent.FullName)
+        End If
+    End Sub
+
+
+    Private Sub SelectAllItems()
+        For Each item As ListViewItem In lvFiles.Items
+            item.Selected = True
+        Next
+    End Sub
+
+    Private Sub ExpandAllFolders()
+        For Each node As TreeNode In tvFolders.Nodes
+            node.ExpandAll()
+        Next
+    End Sub
+
+
+    Private Sub ToggleFullScreen()
+        If Me.FormBorderStyle = FormBorderStyle.None Then
+            Me.FormBorderStyle = FormBorderStyle.Sizable
+            Me.WindowState = FormWindowState.Normal
+        Else
+            Me.FormBorderStyle = FormBorderStyle.None
+            Me.WindowState = FormWindowState.Maximized
+        End If
+    End Sub
+
+
+
+
+
     Private Sub Path_KeyDown(e As KeyEventArgs)
         ' Path command input box key handling
 
@@ -2425,6 +2579,8 @@ Public Class Form1
     Private Sub InitApp()
 
         Me.Text = "File Explorer - Code with Joe"
+
+        Me.KeyPreview = True
 
         InitStatusBar()
 
