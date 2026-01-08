@@ -432,18 +432,24 @@ Public Class Form1
         ElseIf e.Control AndAlso e.KeyCode = Keys.X Then
             CutSelected_Click(sender, e)
             e.Handled = True
+
             Exit Sub
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
             SelectAllItems()
+            lvFiles.Focus()
             e.Handled = True
+            e.SuppressKeyPress = True
+
             Exit Sub
 
         ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
 
-            'ExpandAllFolders()
+            ExpandAllFolders()
             e.Handled = True
-            Exit Sub
+            e.SuppressKeyPress = True
+
+            Return
 
         ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
             Delete_Click(sender, e)
@@ -502,6 +508,9 @@ Public Class Form1
         tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
         tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
 
+        tips.SetToolTip(txtPath, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
+
+
     End Sub
 
     Private Sub NavigateToParent()
@@ -518,15 +527,35 @@ Public Class Form1
         Next
     End Sub
 
+    'Private Sub ExpandAllFolders()
+
+    '    ShowStatus(IconDialog & "  Expanding all folders.")
+    '    tvFolders.BeginUpdate()
+    '    For Each node As TreeNode In tvFolders.Nodes
+    '        node.ExpandAll()
+    '    Next
+    '    tvFolders.EndUpdate()
+    '    ShowStatus(IconSuccess & "  All folders expanded.")
+
+    'End Sub
+
     Private Sub ExpandAllFolders()
 
-        ShowStatus(IconDialog & "  Expanding all folders.")
-        tvFolders.BeginUpdate()
-        For Each node As TreeNode In tvFolders.Nodes
-            node.ExpandAll()
-        Next
-        tvFolders.EndUpdate()
-        ShowStatus(IconSuccess & "  All folders expanded.")
+        ' If a node is selected, expand the node and it's childeren
+        If tvFolders.SelectedNode IsNot Nothing Then
+
+            ShowStatus(IconDialog & "  Expanding selected folder...")
+
+            tvFolders.BeginUpdate()
+            tvFolders.SelectedNode.Expand()
+            For Each node As TreeNode In tvFolders.SelectedNode.Nodes
+                node.Expand()
+            Next
+            tvFolders.EndUpdate()
+
+            ShowStatus(IconSuccess & "  Expanded: " & tvFolders.SelectedNode.FullPath)
+            Return
+        End If
 
     End Sub
 
