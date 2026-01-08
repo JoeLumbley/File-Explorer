@@ -73,7 +73,7 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 - [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
 
 - [🧬 Clones](#clones)
 
