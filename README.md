@@ -286,6 +286,35 @@ New Text File.txt
 
 ---
 
+## 📂 Open — `open`
+
+**Usage:**  
+```
+open [file_or_directory]
+```
+
+**Description:**  
+Opens a file with its default application, or navigates into a folder.
+
+If no path is provided, the command opens the **currently selected** file or folder in the File Explorer list.
+
+**Examples:**  
+```
+open C:\folder\file.txt
+open "C:\My Folder"
+open
+```
+
+**Behavior:**
+
+- If the target is a **file** → opens it using the default program  
+- If the target is a **folder** → navigates into it  
+- If nothing is selected and no path is provided → shows usage help  
+- Supports quoted paths with spaces  
+
+---
+
+
 ## 🔍 Search — `find`, `search`
 
 **Usage:**  
