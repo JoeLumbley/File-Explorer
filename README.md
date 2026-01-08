@@ -90,10 +90,92 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 ---
 ---
 ---
+
+
+
+
+
+## Table of Contents
+
+- [🖥️ Command Line Interface (CLI)](#command-line-interface)
+  - [Features Overview](#-features-overview)
+  - [Commands](#-commands)
+    - [cd — Change Directory](#-change-directory--cd)
+    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
+    - [copy — Copy Files or Folders](#-copy--copy)
+    - [move — Move Files or Folders](#-move--move)
+    - [delete — Delete Files or Folders](#-delete--delete)
+    - [rename — Rename Files or Folders](#-rename--rename)
+    - [text / txt — Create Text Files](#-create-text-file--text-txt)
+    - [open — Open Files or Folders](#-open--open)
+    - [find / search — Search](#-search--find-search)
+    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
+    - [help — Show Help](#-help--help)
+  - [Quoting Rules](#-quoting-rules-important)
+  - [Contextual Navigation](#-contextual-navigation)
+  - [Example Session](#-example-session)
+
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
+
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+
+- [📋 CopyDirectory — Code Walkthrough](#copydirectory)
+
+- [🧬 Clones](#clones)
+
+- [📄 License](#license)
+
+- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
