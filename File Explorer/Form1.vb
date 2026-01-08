@@ -1529,7 +1529,6 @@ Public Class Form1
                     Return
                 End If
 
-
                 ' If no path was typed, use the selected item in the ListView
                 If lvFiles.SelectedItems.Count = 0 Then
                     ShowStatus(IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
@@ -1563,8 +1562,6 @@ Public Class Form1
                 Else
                     ShowStatus(IconError & "  Selected item no longer exists.")
                 End If
-
-
 
             Case "find", "search"
 
@@ -1604,7 +1601,6 @@ Public Class Form1
                 Else
                     ShowStatus(IconDialog & "  Usage: find [search_term] - e.g., find document")
                 End If
-
 
             Case "findnext", "searchnext"
 
