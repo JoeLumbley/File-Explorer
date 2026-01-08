@@ -527,18 +527,6 @@ Public Class Form1
         Next
     End Sub
 
-    'Private Sub ExpandAllFolders()
-
-    '    ShowStatus(IconDialog & "  Expanding all folders.")
-    '    tvFolders.BeginUpdate()
-    '    For Each node As TreeNode In tvFolders.Nodes
-    '        node.ExpandAll()
-    '    Next
-    '    tvFolders.EndUpdate()
-    '    ShowStatus(IconSuccess & "  All folders expanded.")
-
-    'End Sub
-
     Private Sub ExpandAllFolders()
 
         ' If a node is selected, expand the node and it's childeren
