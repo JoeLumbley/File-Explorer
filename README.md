@@ -1,46 +1,104 @@
 # 📁 File Explorer
 
-**File Explorer** is a simple and user-friendly file management app designed to provide an intuitive interface for navigating, copying, moving, and deleting files and directories.
-
-
+**File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
 
 <img width="1184" height="662" alt="052" src="https://github.com/user-attachments/assets/5eb1a283-6907-45a1-a605-6bd626519ac2" />
 
-
 ## Features
-- **Navigation**: Easily navigate through directories using a tree view and a list view.
-- **File Operations**: Perform common file operations such as:
+
+### 🗂 Graphical Interface
+- **Navigation**: Browse directories using a tree view and list view.
+- **File Operations**: Perform essential actions such as:
   - Change Directory (`cd`)
   - Copy files and directories
   - Move files and directories
   - Delete files and directories
-- **Clipboard Support**: Supports cut, copy, and paste operations for files and directories.
-- **Context Menu**: Right-click context menu for quick access to file operations.
-- **History Tracking**: Simple navigation history allows users to go back and forward through their directory changes.
-- **File Type Icons**: Visual representation of different file types with corresponding icons.
-- **Status Bar**: Provides feedback on the current operation and status updates.
+- **Clipboard Support**: Cut, copy, and paste files and folders.
+- **Context Menu**: Right‑click menus for quick access to common actions.
+- **History Tracking**: Move backward and forward through previously visited directories.
+- **File Type Icons**: Visual indicators for different file types.
+- **Status Bar**: Real‑time feedback on operations and system status.
+
+### 💻 Integrated Command Line Interface (CLI)
+For users who enjoy the speed and precision of typed commands, the built‑in CLI provides:
+
+- Fast directory navigation (`cd`)
+- File and folder operations (`copy`, `move`, `delete`, `rename`)
+- Text file creation (`text`, `txt`)
+- Search and result cycling (`find`, `findnext`)
+- Contextual path handling (type a path to open it)
+- Quoting rules for paths with spaces
+- Helpful usage messages and error feedback
+- A built‑in `help` command with full documentation
+
+The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
+
+
+
+
+
+
+
 
 ---
 ---
 ---
+---
 
-## 📚 Table of Contents
-- [🖥️ The Command Line Interface (CLI)](#command-line-interface-cli)
 
-- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+
+
+
+
+
+
+## Table of Contents
+
+- [🖥️ Command Line Interface (CLI)](#command-line-interface)
+  - [Features Overview](#-features-overview)
+  - [Commands](#-commands)
+    - [cd — Change Directory](#-change-directory--cd)
+    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
+    - [copy — Copy Files or Folders](#-copy--copy)
+    - [move — Move Files or Folders](#-move--move)
+    - [delete — Delete Files or Folders](#-delete--delete)
+    - [rename — Rename Files or Folders](#-rename--rename)
+    - [text / txt — Create Text Files](#-create-text-file--text-txt)
+    - [find / search — Search](#-search--find-search)
+    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
+    - [help — Show Help](#-help--help)
+  - [Quoting Rules](#-quoting-rules-important)
+  - [Contextual Navigation](#-contextual-navigation)
+  - [Example Session](#-example-session)
+
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory--code-walkthrough)
+
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
+
+- [🧬 Clones](#clones)
 
 - [📄 License](#license)
 
+
+
+
+
+
+---
 ---
 ---
 ---
 
 
----
 
 
-# Command Line Interface (CLI)
+
+
+
+
+
+
+# Command Line Interface
 
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
@@ -79,6 +137,8 @@ If a command doesn’t match a known keyword, the CLI checks:
 - Otherwise → “Unknown command”  
 
 This makes the CLI feel natural and forgiving.
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
@@ -157,6 +217,8 @@ Moves a file or folder to a new location.
 move C:\folderA\file.txt C:\folderB\file.txt
 move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
 ```
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
@@ -263,6 +325,8 @@ Closes the application.
 
 Displays the full list of commands.
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 # 🧠 Quoting Rules (Important)
@@ -334,14 +398,25 @@ The File Explorer CLI provides:
 
 It’s a flexible, efficient alternative to the graphical interface — perfect for users who enjoy command‑driven workflows.
 
+
+[ Table of Contents](#table-of-contents)
+
+
+
+
+
+
+
+
+---
+---
+---
 ---
 
 
 
 
 
-
----
 
 
 # `RenameFileOrDirectory`
@@ -601,10 +676,17 @@ This method teaches six important rules:
 
 
 
-
-
+[ Table of Contents](#table-of-contents)
 
 ---
+---
+---
+---
+
+
+
+
+
 
 # `CopyDirectory`
 
@@ -972,11 +1054,28 @@ This is the simplest way to show the “shape” of recursion.
 > 5. Continue until you climb all the way back to the top.
 
 
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
 ---
 ---
 ---
 
----
+
+
+
+
+
+
 
 # MoveFileOrDirectory
 
@@ -1166,6 +1265,19 @@ This makes the file manager not just functional — but **guiding**.
 
 <img width="1266" height="662" alt="074" src="https://github.com/user-attachments/assets/ea1ecd50-d794-40c9-9723-824487dfff1e" />
 
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
 ---
 
 
@@ -1173,17 +1285,40 @@ This makes the file manager not just functional — but **guiding**.
 
 
 
-
----
-
----
-
----
 
 
 
 ## License
 This project is licensed under the **MIT License**. You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, with the inclusion of the copyright notice and permission notice in all copies or substantial portions of the software.
+
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Installation
 To install and run the File Explorer application:
@@ -1194,12 +1329,64 @@ To install and run the File Explorer application:
 2. Open the solution in Visual Studio.
 3. Build the project and run it.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
 ## Usage
 - Launch the application to access your file system.
 - Use the tree view on the left to navigate through folders.
 - The list view on the right displays the contents of the selected directory.
 - Use the text box to enter commands or navigate directly to a path.
 - Right-click on files or folders for additional options.
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
 
 
 ## Acknowledgements
@@ -1209,6 +1396,37 @@ For more details, check the source code and documentation within the repository.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+# Clones
 
 
 <img width="1920" height="1080" alt="075" src="https://github.com/user-attachments/assets/8ded5094-bc7d-4ed1-b6c2-a105743e33e6" />
@@ -1262,5 +1480,11 @@ For more details, check the source code and documentation within the repository.
 <img width="1920" height="1080" alt="011" src="https://github.com/user-attachments/assets/0b1bff67-26a9-456d-9c42-0b96d4dd1bb8" />
 
 
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
 
 
