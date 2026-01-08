@@ -52,48 +52,6 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 
 
-## Table of Contents
-
-- [🖥️ Command Line Interface (CLI)](#command-line-interface)
-  - [Features Overview](#-features-overview)
-  - [Commands](#-commands)
-    - [cd — Change Directory](#-change-directory--cd)
-    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
-    - [copy — Copy Files or Folders](#-copy--copy)
-    - [move — Move Files or Folders](#-move--move)
-    - [delete — Delete Files or Folders](#-delete--delete)
-    - [rename — Rename Files or Folders](#-rename--rename)
-    - [text / txt — Create Text Files](#-create-text-file--text-txt)
-    - [find / search — Search](#-search--find-search)
-    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
-    - [help — Show Help](#-help--help)
-  - [Quoting Rules](#-quoting-rules-important)
-  - [Contextual Navigation](#-contextual-navigation)
-  - [Example Session](#-example-session)
-
-- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
-
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
-
-- [📋 CopyDirectory — Code Walkthrough](#copydirectory)
-
-
-
-- [🧬 Clones](#clones)
-
-- [📄 License](#license)
-
-
-- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1454,7 +1412,7 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 | **F2** | Rename the selected file or folder |
 | **Ctrl + Shift + N** | Create a new folder |
 | **Ctrl + Shift + T** | Create a new text file |
-| **Ctrl + O** | Start an `open` command in the CLI |
+| **Ctrl + O** | Open the selected file or folder or start an `open` command |
 | **Ctrl + C** | Copy selected items |
 | **Ctrl + V** | Paste items |
 | **Ctrl + X** | Cut selected items |
