@@ -1823,7 +1823,7 @@ Public Class Form1
         ' HELP
         ' ---------------------------------------------------------
         sb.AppendLine("help")
-        sb.AppendLine("  Show this help message.")
+        sb.AppendLine("  Opens this help file.")
         sb.AppendLine()
 
         Return sb.ToString()
