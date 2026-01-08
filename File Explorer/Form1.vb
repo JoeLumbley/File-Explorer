@@ -481,7 +481,7 @@ Public Class Form1
 
             Return
 
-        ElseIf e.Control AndAlso e.KeyCode = Keys.V Then
+        ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
             PasteSelected_Click(sender, e)
             e.Handled = True
             e.SuppressKeyPress = True
@@ -711,18 +711,18 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Path_KeyDown(e As KeyEventArgs)
+    Private Sub Path_KeyDown(ByRef e As KeyEventArgs)
         ' Path command input box key handling
 
         ' Check for Enter key
         If e.KeyCode = Keys.Enter Then
 
-            e.Handled = True
-            e.SuppressKeyPress = True
-
             Dim command As String = txtPath.Text.Trim()
 
             ExecuteCommand(command)
+
+            e.Handled = True
+            e.SuppressKeyPress = True
 
         End If
 
@@ -1510,6 +1510,9 @@ Public Class Form1
                                 .UseShellExecute = True
                             })
                             ShowStatus(IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
+
+                            txtPath.Text = currentFolder
+
                         Catch ex As Exception
                             ShowStatus(IconError & "  Failed to open file: " & ex.Message)
                         End Try
@@ -1544,6 +1547,10 @@ Public Class Form1
                             .UseShellExecute = True
                         })
                         ShowStatus(IconSuccess & "  Opened file: " & selected.Text)
+
+                        'NavigateTo(currentFolder, recordHistory:=False)
+                        txtPath.Text = currentFolder
+
                     Catch ex As Exception
                         ShowStatus(IconError & "  Failed to open file: " & ex.Message)
                     End Try
