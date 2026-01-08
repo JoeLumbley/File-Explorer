@@ -95,6 +95,17 @@ Public Class Form1
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
 
+
+
+    Private ReadOnly tips As New ToolTip()
+
+    'Public Sub New()
+    '    InitializeComponent()
+    '    Me.KeyPreview = True
+
+    '    ConfigureTooltips()
+    'End Sub
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -440,6 +451,56 @@ Public Class Form1
             Exit Sub
 
         End If
+
+
+        ' ============================
+        ' New Text File Shortcut
+        ' ============================
+        If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
+            NewTextFile_Click(sender, e)
+            e.Handled = True
+            Return
+        End If
+
+    End Sub
+
+
+
+    Private Sub ConfigureTooltips()
+
+        ' General tooltip settings
+        tips.AutoPopDelay = 6000
+        tips.InitialDelay = 300
+        tips.ReshowDelay = 100
+        tips.ShowAlways = True
+
+        ' ============================
+        ' Navigation Buttons
+        ' ============================
+        tips.SetToolTip(btnBack, "Go back to the previous folder  (Alt + ← or Backspace)")
+        tips.SetToolTip(btnForward, "Go forward to the next folder  (Alt + →)")
+        tips.SetToolTip(btnRefresh, "Refresh the current folder  (F5)")
+        tips.SetToolTip(bntHome, "Go to your Home directory")
+        tips.SetToolTip(btnGo, "Navigate to the path entered in the address bar")
+
+        ' ============================
+        ' File / Folder Creation
+        ' ============================
+        tips.SetToolTip(btnNewFolder, "Create a new folder  (Ctrl + Shift + N)")
+        tips.SetToolTip(btnNewTextFile, "Create a new text file (Ctrl + Shift + T)")
+
+        ' ============================
+        ' Clipboard Operations
+        ' ============================
+        tips.SetToolTip(btnCut, "Cut selected items  (Ctrl + X)")
+        tips.SetToolTip(btnCopy, "Copy selected items  (Ctrl + C)")
+        tips.SetToolTip(btnPaste, "Paste items  (Ctrl + V)")
+
+        ' ============================
+        ' File Operations
+        ' ============================
+        tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
+        tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
 
     End Sub
 
@@ -2586,6 +2647,8 @@ Public Class Form1
         Me.Text = "File Explorer - Code with Joe"
 
         Me.KeyPreview = True
+
+        ConfigureTooltips()
 
         InitStatusBar()
 
