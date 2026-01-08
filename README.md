@@ -71,9 +71,13 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
 
-- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory--code-walkthrough)
+- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory--code-walkthrough)
+- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+
+- [📋 CopyDirectory — Code Walkthrough](#copydirectory)
+
+
 
 - [🧬 Clones](#clones)
 
@@ -1529,6 +1533,14 @@ For more details, check the source code and documentation within the repository.
 
 
 # Clones
+
+
+
+
+
+<img width="1920" height="1080" alt="078" src="https://github.com/user-attachments/assets/97a346b3-178b-4a57-8b66-200efd2bd42e" />
+
+
 
 
 <img width="1920" height="1080" alt="075" src="https://github.com/user-attachments/assets/8ded5094-bc7d-4ed1-b6c2-a105743e33e6" />
