@@ -469,7 +469,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub ToggleFullScreen()
         If Me.FormBorderStyle = FormBorderStyle.None Then
             Me.FormBorderStyle = FormBorderStyle.Sizable
@@ -479,10 +478,6 @@ Public Class Form1
             Me.WindowState = FormWindowState.Maximized
         End If
     End Sub
-
-
-
-
 
     Private Sub Path_KeyDown(e As KeyEventArgs)
         ' Path command input box key handling
