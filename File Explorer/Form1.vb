@@ -434,6 +434,18 @@ Public Class Form1
         ' File / Folder Operations
         ' ============================
 
+        If e.Control AndAlso e.KeyCode = Keys.O Then
+
+            OpenSelectedOrStartCommand()
+
+            e.Handled = True
+            e.SuppressKeyPress = True
+
+            Return
+
+        End If
+
+
 
         If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
 
@@ -1891,6 +1903,25 @@ Public Class Form1
 
     End Sub
 
+    Private Sub OpenSelectedOrStartCommand()
+
+        ' If a file or folder is selected, open it
+        If lvFiles.SelectedItems.Count > 0 Then
+
+            Dim selected As ListViewItem = lvFiles.SelectedItems(0)
+            Dim fullPath As String = selected.Tag.ToString()
+
+            GoToFolderOrOpenFile(fullPath)
+            Return
+
+        End If
+
+        ' Nothing selected → start an open command
+        txtPath.Focus()
+        txtPath.Text = "open "
+        txtPath.SelectionStart = txtPath.Text.Length
+
+    End Sub
 
     Private Sub CreateDirectory(directoryPath As String)
 
