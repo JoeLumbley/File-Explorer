@@ -1775,6 +1775,19 @@ Public Class Form1
         sb.AppendLine()
 
         ' ---------------------------------------------------------
+        ' OPEN
+        ' ---------------------------------------------------------
+        sb.AppendLine("open")
+        sb.AppendLine("open [file_or_directory]")
+        sb.AppendLine("  Open a file with the default application, or navigate into a folder.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    open C:\folder\file.txt")
+        sb.AppendLine("    open ""C:\My Folder""")
+        sb.AppendLine("    open")
+        sb.AppendLine("      (opens the selected file or folder)")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
         ' TEXT FILE CREATION
         ' ---------------------------------------------------------
         sb.AppendLine("text, txt")
