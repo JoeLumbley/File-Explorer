@@ -80,6 +80,9 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 - [📄 License](#license)
 
 
+- [Keyboard Shortcuts](#keyboard-hortcuts)
+
+Keyboard Shortcuts
 
 
 
@@ -1281,6 +1284,106 @@ This makes the file manager not just functional — but **guiding**.
 ---
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+# ⌨️ Keyboard Shortcuts
+
+The File Explorer supports a set of convenient keyboard shortcuts to speed up navigation and file operations. These shortcuts mirror familiar behaviors from traditional file managers, making the interface fast and intuitive.
+
+---
+
+## 🧭 Navigation
+
+| Shortcut | Action |
+|---------|--------|
+| **Alt + ←** (or **Backspace**) | Go back to the previous folder |
+| **Alt + →** | Go forward to the next folder |
+| **Alt + ↑** | Move up one level (parent directory) |
+| **Ctrl + L** (or **Alt + D**, **F4**) | Focus/select the address bar |
+| **F11** | Toggle full‑screen mode |
+
+---
+
+## 📁 File & Folder Operations
+
+| Shortcut | Action |
+|---------|--------|
+| **F2** | Rename the selected file or folder |
+| **Ctrl + Shift + N** | Create a new folder |
+| **Ctrl + C** | Copy selected items |
+| **Ctrl + V** | Paste items |
+| **Ctrl + X** | Cut selected items |
+| **Ctrl + A** | Select all items |
+| **Ctrl + Shift + E** | Expand all folders in the navigation pane |
+| **Ctrl + D** (or **Delete**) | Delete selected item to the Recycle Bin |
+
+---
+
+## 🔍 Searching & Viewing
+
+| Shortcut | Action |
+|---------|--------|
+| **F3** (or **Ctrl + F**) | Start a search in the current folder |
+| **F5** | Refresh the current folder view |
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[ Table of Contents](#table-of-contents)
+
+---
+---
+---
+---
 
 
 
