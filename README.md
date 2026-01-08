@@ -82,7 +82,6 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
-Keyboard Shortcuts
 
 
 
