@@ -117,11 +117,15 @@ Public Class Form1
         ' Only toggle node when the arrow is clicked
         If info.Location = TreeViewHitTestLocations.StateImage Then
 
+            tvFolders.BeginUpdate()
+
             If e.Node.IsExpanded Then
                 e.Node.Collapse()
             Else
                 e.Node.Expand()
             End If
+
+            tvFolders.EndUpdate()
 
         End If
 
@@ -144,6 +148,7 @@ Public Class Form1
     Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
         Handles tvFolders.BeforeCollapse
 
+        ' Set collapsed icon
         e.Node.StateImageIndex = 0   ' ▶ collapsed
 
     End Sub
@@ -424,7 +429,8 @@ Public Class Form1
             Exit Sub
 
         ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
-            ExpandAllFolders()
+
+            'ExpandAllFolders()
             e.Handled = True
             Exit Sub
 
@@ -452,9 +458,15 @@ Public Class Form1
     End Sub
 
     Private Sub ExpandAllFolders()
+
+        ShowStatus(IconDialog & "  Expanding all folders.")
+        tvFolders.BeginUpdate()
         For Each node As TreeNode In tvFolders.Nodes
             node.ExpandAll()
         Next
+        tvFolders.EndUpdate()
+        ShowStatus(IconSuccess & "  All folders expanded.")
+
     End Sub
 
 
@@ -492,6 +504,8 @@ Public Class Form1
 
         ' Only lazy-load if placeholder exists
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+
+            tvFolders.BeginUpdate()
 
             node.Nodes.Clear()
 
@@ -536,6 +550,8 @@ Public Class Form1
         ' Set expanded icon
         node.StateImageIndex = 1   ' ▼ expanded
 
+        tvFolders.EndUpdate()
+
     End Sub
 
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
@@ -554,7 +570,10 @@ Public Class Form1
 
             ' Prune the tree if the drive is not ready
             If driveInfo.IsReady = False Then
+
+                tvFolders.BeginUpdate()
                 tvFolders.Nodes.Remove(node)
+                tvFolders.EndUpdate()
                 ShowStatus(IconWarning & " Drive is not ready and has been removed.")
                 Return
             End If
