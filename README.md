@@ -1313,7 +1313,7 @@ This makes the file manager not just functional — but **guiding**.
 
 ---
 
-# ⌨️ Keyboard Shortcuts
+# Keyboard Shortcuts
 
 The File Explorer supports a set of convenient keyboard shortcuts to speed up navigation and file operations. These shortcuts mirror familiar behaviors from traditional file managers, making the interface fast and intuitive.
 
