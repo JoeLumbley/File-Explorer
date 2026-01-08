@@ -327,13 +327,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
     Private Sub FileExplorer_KeyDown(sender As Object, e As KeyEventArgs) _
     Handles Me.KeyDown
 
@@ -443,8 +436,6 @@ Public Class Form1
         End If
 
     End Sub
-
-
 
     Private Sub NavigateToParent()
         Dim parent = Directory.GetParent(currentFolder)
