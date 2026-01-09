@@ -90,21 +90,11 @@ Public Class Form1
     Private IconSearch As String = ""
     Private IconMoving As String = ""
 
-
-
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
 
-
-
     Private ReadOnly tips As New ToolTip()
 
-    'Public Sub New()
-    '    InitializeComponent()
-    '    Me.KeyPreview = True
-
-    '    ConfigureTooltips()
-    'End Sub
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
