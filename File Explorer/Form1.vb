@@ -513,8 +513,6 @@ Public Class Form1
 
         End If
 
-
-
         ' ============================
         ' New Text File Shortcut
         ' ============================
@@ -575,7 +573,6 @@ Public Class Form1
             NavigateTo(parent.FullName)
         End If
     End Sub
-
 
     Private Sub SelectAllItems()
         For Each item As ListViewItem In lvFiles.Items
