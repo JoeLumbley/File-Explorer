@@ -529,8 +529,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub ConfigureTooltips()
 
         ' General tooltip settings
@@ -569,7 +567,6 @@ Public Class Form1
 
         tips.SetToolTip(txtPath, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
 
-
     End Sub
 
     Private Sub NavigateToParent()
@@ -585,27 +582,6 @@ Public Class Form1
             item.Selected = True
         Next
     End Sub
-
-    'Private Sub ExpandOneLevel()
-
-    '    ' If a node is selected, expand the node and it's childeren
-    '    If tvFolders.SelectedNode IsNot Nothing Then
-
-    '        ShowStatus(IconDialog & "  Expanding selected folder...")
-
-    '        tvFolders.BeginUpdate()
-    '        tvFolders.SelectedNode.Expand()
-    '        For Each child As TreeNode In tvFolders.SelectedNode.Nodes
-    '            child.Expand()
-    '        Next
-    '        tvFolders.EndUpdate()
-
-    '        ShowStatus(IconSuccess & "  Expanded: " & tvFolders.SelectedNode.FullPath)
-    '        Return
-    '    End If
-
-    'End Sub
-
 
     Private Sub ExpandOneLevel()
 
@@ -637,39 +613,6 @@ Public Class Form1
         ShowStatus(IconDialog & "  No subfolders to expand.")
 
     End Sub
-
-    Private Sub CollapseAllFolders()
-
-        ' If a node is selected, collapse only that branch
-        If tvFolders.SelectedNode IsNot Nothing Then
-
-            ShowStatus(IconDialog & "  Collapsing selected folder...")
-
-            tvFolders.BeginUpdate()
-            tvFolders.SelectedNode.Collapse(False)   ' False = do not recursively collapse parents
-            For Each child As TreeNode In tvFolders.SelectedNode.Nodes
-                child.Collapse(False)
-            Next
-            tvFolders.EndUpdate()
-
-            ShowStatus(IconSuccess & "  Collapsed: " & tvFolders.SelectedNode.FullPath)
-            Return
-        End If
-
-        ' Otherwise collapse all root nodes (global collapse)
-        ShowStatus(IconDialog & "  Collapsing all folders...")
-
-        tvFolders.BeginUpdate()
-        For Each node As TreeNode In tvFolders.Nodes
-            node.Collapse(False)
-        Next
-        tvFolders.EndUpdate()
-
-        ShowStatus(IconSuccess & "  All folders collapsed.")
-
-    End Sub
-
-
 
     Private Sub CollapseOneLevel()
 
