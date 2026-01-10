@@ -60,13 +60,14 @@ Public Class Form1
         {3, ListViewItemComparer.ColumnDataType.DateValue}   ' Modified
     }
 
-    Private Shared ReadOnly SizeUnits As (Unit As String, Factor As Long)() = {
+    Friend Shared ReadOnly SizeUnits As (Unit As String, Factor As Long)() = {
         ("B", 1L), ' Bytes
         ("KB", 1024L), ' Kilobytes
         ("MB", 1024L ^ 2), ' Megabytes
         ("GB", 1024L ^ 3), ' Gigabytes
         ("TB", 1024L ^ 4), ' Terabytes
-        ("PB", 1024L ^ 5) ' Petabytes
+        ("PB", 1024L ^ 5), ' Petabytes
+        ("EB", 1024L ^ 6)  ' Exabytes
     }
 
     Private _lastColumn As Integer = -1
@@ -2796,6 +2797,9 @@ Public Class Form1
     End Function
 
     Private Function FormatSize(bytes As Long) As String
+
+        If bytes = 0 Then Return "0 B"
+
         Dim absBytes = Math.Abs(bytes)
 
         For i = SizeUnits.Length - 1 To 0 Step -1
@@ -2809,51 +2813,97 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
-    Private Function ParseSize(input As String) As Long
-        If String.IsNullOrWhiteSpace(input) Then Return 0
+    'Private Function ParseSize(input As String) As Long
+    '    If String.IsNullOrWhiteSpace(input) Then Return 0
 
-        ' Normalize
-        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+    '    ' Normalize
+    '    Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
 
-        ' Extract sign
-        Dim isNegative As Boolean = text.StartsWith("-")
-        If isNegative Then text = text.Substring(1).Trim()
+    '    ' Extract sign
+    '    Dim isNegative As Boolean = text.StartsWith("-")
+    '    If isNegative Then text = text.Substring(1).Trim()
 
-        ' Split into number + unit
-        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+    '    ' Split into number + unit
+    '    Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
 
-        Dim numberPart As String = parts(0)
-        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+    '    Dim numberPart As String = parts(0)
+    '    Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
 
-        ' Parse numeric portion
-        Dim value As Double
-        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
-                               Globalization.CultureInfo.InvariantCulture, value) Then
-            Return 0
-        End If
+    '    ' Parse numeric portion
+    '    Dim value As Double
+    '    If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+    '                           Globalization.CultureInfo.InvariantCulture, value) Then
+    '        Return 0
+    '    End If
 
-        ' Unit multipliers (binary units)
-        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
-            {"B", 1L},
-            {"KB", 1024L},
-            {"MB", 1024L ^ 2},
-            {"GB", 1024L ^ 3},
-            {"TB", 1024L ^ 4},
-            {"PB", 1024L ^ 5}
-        }
+    '    ' Unit multipliers (binary units)
+    '    Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+    '        {"B", 1L},
+    '        {"KB", 1024L},
+    '        {"MB", 1024L ^ 2},
+    '        {"GB", 1024L ^ 3},
+    '        {"TB", 1024L ^ 4},
+    '        {"PB", 1024L ^ 5}
+    '    }
 
-        ' Resolve multiplier
-        Dim factor As Long = 1
-        If multipliers.ContainsKey(unitPart) Then
-            factor = multipliers(unitPart)
-        End If
+    '    ' Resolve multiplier
+    '    Dim factor As Long = 1
+    '    If multipliers.ContainsKey(unitPart) Then
+    '        factor = multipliers(unitPart)
+    '    End If
 
-        ' Compute final byte count
-        Dim bytes As Double = value * factor
-        Dim result As Long = CLng(Math.Round(bytes))
+    '    ' Compute final byte count
+    '    Dim bytes As Double = value * factor
+    '    Dim result As Long = CLng(Math.Round(bytes))
 
-        Return If(isNegative, -result, result)
-    End Function
+    '    Return If(isNegative, -result, result)
+    'End Function
+
+
+    '    Private Function ParseSize(input As String) As Long
+    '        If String.IsNullOrWhiteSpace(input) Then Return 0
+
+    '        ' Normalize
+    '        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+
+    '        ' Extract sign
+    '        Dim isNegative As Boolean = text.StartsWith("-")
+    '        If isNegative Then text = text.Substring(1).Trim()
+
+    '        ' Split into number + unit
+    '        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+
+    '        Dim numberPart As String = parts(0)
+    '        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+
+    '        ' Parse numeric portion
+    '        Dim value As Double
+    '        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+    '                               Globalization.CultureInfo.InvariantCulture, value) Then
+    '            Return 0
+    '        End If
+
+    '        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+    '    {"B", 1L},
+    '    {"KB", 1024L},
+    '    {"MB", 1024L ^ 2},
+    '    {"GB", 1024L ^ 3},
+    '    {"TB", 1024L ^ 4},
+    '    {"PB", 1024L ^ 5},
+    '    {"EB", 1024L ^ 6}
+    '}
+    '        ' Resolve multiplier
+    '        Dim factor As Long = 1
+    '        If multipliers.ContainsKey(unitPart) Then
+    '            factor = multipliers(unitPart)
+    '        End If
+
+    '        ' Compute final byte count
+    '        Dim bytes As Double = value * factor
+    '        Dim result As Long = CLng(Math.Round(bytes))
+
+    '        Return If(isNegative, -result, result)
+    '    End Function
 
 
     Private Sub InitApp()
@@ -3106,6 +3156,25 @@ Public Class Form1
 
         Test_GetUniqueFilePath()
 
+        Debug.WriteLine("→ Testing FormatSize ↔ ParseSize round‑trip")
+
+        Dim cmp As New ListViewItemComparer(0, SortOrder.Ascending)
+
+        For Each u In SizeUnits
+            Dim unit = u.Unit
+            Dim factor = u.Factor
+
+            ' Pick a representative value for this unit
+            Dim original As Long = factor * 3
+
+            Dim formatted As String = FormatSize(original)
+            Dim parsed As Long = cmp.Test_ParseSize(formatted)
+
+            AssertTrue(parsed = original, $"Round‑trip failed for {unit}: '{formatted}' parsed as {parsed}")
+        Next
+
+        Debug.WriteLine("✓ Round‑trip tests passed")
+
         Debug.WriteLine("All tests executed.")
 
     End Sub
@@ -3179,10 +3248,39 @@ Public Class Form1
         AssertTrue(FormatSize(1048576) = "1 MB", "1,048,576 bytes should format as '1 MB'")
         AssertTrue(FormatSize(1073741824) = "1 GB", "1,073,741,824 bytes should format as '1 GB'")
         AssertTrue(FormatSize(1099511627776) = "1 TB", "1,099,511,627,776 bytes should format as '1 TB'")
+        AssertTrue(FormatSize(1152921504606846976L) = "1 EB", "1 EB should format as '1 EB'")
+        AssertTrue(FormatSize(1152921504606846976L * 2) = "2 EB", "2 EB should format a '2 EB'")
 
         Debug.WriteLine("✓ FormatSize tests passed")
 
     End Sub
+
+    'Private Sub TestParseSize()
+
+    '    Debug.WriteLine("→ Testing ParseSize")
+
+    '    Dim cmp As New ListViewItemComparer(0, SortOrder.Ascending)
+
+    '    AssertTrue(cmp.Test_ParseSize("0 B") = 0, "0 B should parse to 0 bytes")
+    '    AssertTrue(cmp.Test_ParseSize("500 B") = 500, "500 B should parse to 500 bytes")
+    '    AssertTrue(cmp.Test_ParseSize("1 KB") = 1024, "1 KB should parse to 1024 bytes")
+    '    AssertTrue(cmp.Test_ParseSize("1.5 KB") = 1536, "1.5 KB should parse to 1536 bytes")
+    '    AssertTrue(cmp.Test_ParseSize("1 MB") = 1048576, "1 MB should parse to 1,048,576 bytes")
+    '    AssertTrue(cmp.Test_ParseSize("1 GB") = 1073741824, "1 GB should parse to 1,073,741,824 bytes")
+    '    AssertTrue(cmp.Test_ParseSize("1 TB") = 1099511627776, "1 TB should parse to 1,099,511,627,776 bytes")
+
+    '    AssertTrue(cmp.Test_ParseSize("1 EB") = 1152921504606846976L, "1 EB should parse to 1,152,921,504,606,846,976 bytes")
+
+    '    AssertTrue(cmp.Test_ParseSize("2 EB") = 1152921504606846976L * 2, "2 EB should parse to 2,305,843,009,213,693,952 bytes")
+
+    '    AssertTrue(cmp.Test_ParseSize("1.5 EB") = CLng(1.5 * 1152921504606846976L), "1.5 EB should parse to 1,729,382,256,910,270,464 bytes")
+
+
+    '    Debug.WriteLine("✓ ParseSize tests passed")
+
+    'End Sub
+
+
 
     Private Sub TestParseSize()
 
@@ -3198,9 +3296,17 @@ Public Class Form1
         AssertTrue(cmp.Test_ParseSize("1 GB") = 1073741824, "1 GB should parse to 1,073,741,824 bytes")
         AssertTrue(cmp.Test_ParseSize("1 TB") = 1099511627776, "1 TB should parse to 1,099,511,627,776 bytes")
 
+        AssertTrue(cmp.Test_ParseSize("1 EB") = 1152921504606846976L, "1 EB should parse to 1,152,921,504,606,846,976 bytes")
+
+        AssertTrue(cmp.Test_ParseSize("2 EB") = 1152921504606846976L * 2, "2 EB should parse to 2,305,843,009,213,693,952 bytes")
+
+        AssertTrue(cmp.Test_ParseSize("1.5 EB") = CLng(1.5 * 1152921504606846976L), "1.5 EB should parse to 1,729,382,256,910,270,464 bytes")
+
+
         Debug.WriteLine("✓ ParseSize tests passed")
 
     End Sub
+
 
     Private Sub Test_NormalizeTextFilePath()
 
@@ -3361,6 +3467,62 @@ Public Class ListViewItemComparer
     ' -----------------------------
     '   PARSE SIZE (SELF-CONTAINED)
     ' -----------------------------
+    '    Private Function ParseSize(input As String) As Long
+    '        If String.IsNullOrWhiteSpace(input) Then Return 0
+
+    '        ' Normalize
+    '        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+
+    '        ' Extract sign
+    '        Dim isNegative As Boolean = text.StartsWith("-")
+    '        If isNegative Then text = text.Substring(1).Trim()
+
+    '        ' Split into number + unit
+    '        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+
+    '        Dim numberPart As String = parts(0)
+    '        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+
+    '        ' Parse numeric portion
+    '        Dim value As Double
+    '        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+    '                               Globalization.CultureInfo.InvariantCulture, value) Then
+    '            Return 0
+    '        End If
+
+    '        ' Unit multipliers (binary units)
+    '        'Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+    '        '    {"B", 1L},
+    '        '    {"KB", 1024L},
+    '        '    {"MB", 1024L ^ 2},
+    '        '    {"GB", 1024L ^ 3},
+    '        '    {"TB", 1024L ^ 4},
+    '        '    {"PB", 1024L ^ 5}
+    '        '}
+
+
+    '        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
+    '    {"B", 1L},
+    '    {"KB", 1024L},
+    '    {"MB", 1024L ^ 2},
+    '    {"GB", 1024L ^ 3},
+    '    {"TB", 1024L ^ 4},
+    '    {"PB", 1024L ^ 5},
+    '    {"EB", 1024L ^ 6}
+    '}
+
+    '        Dim factor As Long = 1
+    '        If multipliers.ContainsKey(unitPart) Then
+    '            factor = multipliers(unitPart)
+    '        End If
+
+    '        Dim bytes As Double = value * factor
+    '        Dim result As Long = CLng(Math.Round(bytes))
+
+    '        Return If(isNegative, -result, result)
+    '    End Function
+
+
     Private Function ParseSize(input As String) As Long
         If String.IsNullOrWhiteSpace(input) Then Return 0
 
@@ -3373,32 +3535,26 @@ Public Class ListViewItemComparer
 
         ' Split into number + unit
         Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
-
         Dim numberPart As String = parts(0)
         Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
 
         ' Parse numeric portion
         Dim value As Double
         If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
-                               Globalization.CultureInfo.InvariantCulture, value) Then
+                           Globalization.CultureInfo.InvariantCulture, value) Then
             Return 0
         End If
 
-        ' Unit multipliers (binary units)
-        Dim multipliers As New Dictionary(Of String, Long)(StringComparer.OrdinalIgnoreCase) From {
-            {"B", 1L},
-            {"KB", 1024L},
-            {"MB", 1024L ^ 2},
-            {"GB", 1024L ^ 3},
-            {"TB", 1024L ^ 4},
-            {"PB", 1024L ^ 5}
-        }
-
+        ' Look up the factor from the shared SizeUnits array
         Dim factor As Long = 1
-        If multipliers.ContainsKey(unitPart) Then
-            factor = multipliers(unitPart)
-        End If
+        For Each u In Form1.SizeUnits
+            If u.Unit.Equals(unitPart, StringComparison.OrdinalIgnoreCase) Then
+                factor = u.Factor
+                Exit For
+            End If
+        Next
 
+        ' Compute final byte count
         Dim bytes As Double = value * factor
         Dim result As Long = CLng(Math.Round(bytes))
 
