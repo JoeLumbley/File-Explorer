@@ -508,8 +508,6 @@ Public Class Form1
         e.SuppressKeyPress = True
     End Sub
 
-
-
     Private Sub ConfigureTooltips()
 
         ' General tooltip settings
