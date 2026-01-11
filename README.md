@@ -145,6 +145,8 @@ The CLI is designed to be:
 - **Beginner‑friendly** — helpful messages and examples  
 - **Powerful** — supports navigation, search, file operations, and more  
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## 🚀 Features Overview
@@ -200,6 +202,8 @@ cd C:\
 cd "C:\My Folder"
 ```
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## 📁 Create Directory — `mkdir`, `make`
@@ -218,6 +222,8 @@ mkdir C:\newfolder
 make "C:\My New Folder"
 ```
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## 📄 Copy — `copy`
@@ -235,6 +241,8 @@ Copies a file or folder to a destination directory.
 copy C:\folderA\file.txt C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
@@ -274,6 +282,8 @@ delete C:\file.txt
 delete "C:\My Folder"
 ```
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## ✏ Rename — `rename`
@@ -291,6 +301,8 @@ Paths containing spaces **must** be enclosed in quotes.
 rename "C:\folder\oldname.txt" "newname.txt"
 rename "C:\folder\old name.txt" "new name.txt"
 ```
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
@@ -313,6 +325,8 @@ If no file name is provided, the CLI creates a new file named:
 ```
 New Text File.txt
 ```
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
@@ -342,6 +356,8 @@ open
 - If nothing is selected and no path is provided → shows usage help  
 - Supports quoted paths with spaces  
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 
@@ -365,6 +381,8 @@ If results are found:
 - The first result is automatically selected  
 - The status bar shows how many matches were found  
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## ⏭ Next Search Result — `findnext`, `searchnext`
@@ -378,6 +396,8 @@ findnext
 Cycles to the next result from the previous search.  
 Wraps around when reaching the end.
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ## ❌ Exit — `exit`, `quit`
@@ -389,8 +409,6 @@ Closes the application.
 ## ❓ Help — `help`
 
 Displays the full list of commands.
-
-[ Table of Contents](#table-of-contents)
 
 ---
 
@@ -414,6 +432,8 @@ This applies to:
 
 The CLI will warn the user when quotes are required.
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 # 🧭 Contextual Navigation
@@ -425,6 +445,8 @@ If the user enters something that is **not** a command:
 - Otherwise, the CLI shows an “Unknown command” message  
 
 This makes the CLI feel natural and forgiving.
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
