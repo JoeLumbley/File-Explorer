@@ -16,9 +16,9 @@
 - **Navigation**: Browse directories using a tree view and list view.
 - **File Operations**: Perform essential actions such as:
   - Change Directory (`cd`)
-  - Copy files and directories
-  - Move files and directories
-  - Delete files and directories
+  - Copy files and directories (`copy`)
+  - Move files and directories (`move`)
+  - Delete files and directories (`delete`)
 - **Clipboard Support**: Cut, copy, and paste files and folders.
 - **Context Menu**: Right‑click menus for quick access to common actions.
 - **History Tracking**: Move backward and forward through previously visited directories.
