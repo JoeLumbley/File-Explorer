@@ -96,7 +96,6 @@ Public Class Form1
 
     Private ReadOnly tips As New ToolTip()
 
-
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -347,8 +346,9 @@ Public Class Form1
 
             txtPath.Focus()
             txtPath.SelectAll()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -361,8 +361,9 @@ Public Class Form1
 
             ' Go back to the previous folder
             NavigateBackward_Click()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -370,8 +371,9 @@ Public Class Form1
 
             ' Go forward to the next folder
             NavigateForward_Click()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -379,8 +381,9 @@ Public Class Form1
 
             ' Move up one level (parent directory)
             NavigateToParent()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -389,8 +392,9 @@ Public Class Form1
             ' Refresh the current folder view
             NavigateTo(currentFolder, recordHistory:=False)
             UpdateTreeRoots()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -398,8 +402,9 @@ Public Class Form1
 
             'Toggle full‑screen mode
             ToggleFullScreen()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -415,8 +420,9 @@ Public Class Form1
             txtPath.Focus()
             txtPath.Text = "find "
             txtPath.SelectionStart = txtPath.Text.Length
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -430,8 +436,9 @@ Public Class Form1
 
             OpenSelectedOrStartCommand()
 
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -440,8 +447,9 @@ Public Class Form1
         If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
 
             ExpandOneLevel()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
@@ -449,84 +457,103 @@ Public Class Form1
         ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
 
             CollapseOneLevel()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
             NewFolder_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
             NewTextFile_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
+
 
             Return
 
         ElseIf e.KeyCode = Keys.F2 Then
             RenameFile_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
 
         ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C Then
             CopySelected_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
             PasteSelected_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.X Then
             CutSelected_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
             SelectAllItems()
             lvFiles.Focus()
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
             Delete_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+            'e.Handled = True
+            'e.SuppressKeyPress = True
+            ConsumeKey(e)
 
             Return
 
         End If
 
-        ' ============================
-        ' New Text File Shortcut
-        ' ============================
-        If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
-            NewTextFile_Click(sender, e)
-            e.Handled = True
-            e.SuppressKeyPress = True
+        '' ============================
+        '' New Text File Shortcut
+        '' ============================
+        'If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
+        '    NewTextFile_Click(sender, e)
+        '    e.Handled = True
+        '    e.SuppressKeyPress = True
 
-            Return
+        '    Return
 
-        End If
+        'End If
 
     End Sub
+
+
+
+    Private Sub ConsumeKey(e As KeyEventArgs)
+        e.Handled = True
+        e.SuppressKeyPress = True
+    End Sub
+
+
 
     Private Sub ConfigureTooltips()
 
