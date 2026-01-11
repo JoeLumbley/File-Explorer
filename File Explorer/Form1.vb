@@ -817,6 +817,8 @@ Public Class Form1
                     Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
                      ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
                         item.ImageKey = "Executable"
+                    Case ".lnk"
+                        item.ImageKey = "Shortcut"
                     Case Else
                         item.ImageKey = "Documents"
                 End Select
@@ -942,7 +944,7 @@ Public Class Form1
 
 
     Private Sub NewFolder_Click(sender As Object, e As EventArgs)
-        ' Create new folder in current directory - Mouse right-click context menu for lvFiles
+        ' Create new folder in current directory - Mouse right-click context menu for lvFiles or button click 
 
         Dim currentPath As String = currentFolder
         Dim newFolderName As String = "New Folder"
@@ -2963,6 +2965,7 @@ Public Class Form1
         imgList.Images.Add("Optical", My.Resources.Resource1.Optical_16X16)
         imgList.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
         imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
+        imgList.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
 
         ' Assign ImageList to controls
