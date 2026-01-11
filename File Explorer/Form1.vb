@@ -792,7 +792,184 @@ Public Class Form1
                 End If
 
                 Dim item = New ListViewItem(fi.Name)
-                item.SubItems.Add(fi.Extension.ToLowerInvariant())
+                'item.SubItems.Add(fi.Extension.ToLowerInvariant())
+                'If (fi.Extension.ToLowerInvariant() = ".lnk") Then
+                '    item.SubItems.Add("Shortcut")
+                'Else
+                '    item.SubItems.Add(fi.Extension.ToLowerInvariant())
+
+                'End If
+
+                '' Assign File type  based on file type
+                'Select Case fi.Extension.ToLowerInvariant()
+                '    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
+                '     ".m4a", ".alac", ".aiff", ".dsd"
+                '        item.SubItems.Add("Music")
+                '    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
+                '     ".raw", ".cr2", ".nef", ".orf", ".sr2"
+                '        item.SubItems.Add("Picture")
+
+                '    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
+                '     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
+                '        item.SubItems.Add("Document")
+                '    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
+                '     ".3gp", ".vob", ".ogv", ".ts"
+                '        item.SubItems.Add("Videos")
+                '    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
+                '     ".epub", ".mobi", ".apk", ".crx"
+                '        item.SubItems.Add("Downloads")
+                '    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
+                '     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
+                '        item.SubItems.Add("Executable")
+                '    Case ".lnk"
+                '        item.SubItems.Add("Shortcut")
+                '    Case Else
+                '        item.SubItems.Add("Document")
+                'End Select
+
+                ' Assign File type based on extension using a lookup table
+                Dim ext As String = fi.Extension.ToLowerInvariant()
+
+                '                Dim fileTypeMap As New Dictionary(Of String, String) From {
+                '                    {".mp3", "Music"}, {".wav", "Music"}, {".flac", "Music"}, {".aac", "Music"},
+                '                    {".ogg", "Music"}, {".wma", "Music"}, {".m4a", "Music"}, {".alac", "Music"},
+                '                    {".aiff", "Music"}, {".dsd", "Music"},
+                '                    {".jpg", "Picture"}, {".jpeg", "Picture"}, {".png", "Picture"}, {".gif", "Picture"},
+                '                    {".bmp", "Picture"}, {".tiff", "Picture"}, {".svg", "Picture"}, {".webp", "Picture"},
+                '                    {".heic", "Picture"}, {".raw", "Picture"}, {".cr2", "Picture"}, {".nef", "Picture"},
+                '                    {".orf", "Picture"}, {".sr2", "Picture"},
+                '                    {".doc", "Document"}, {".docx", "Document"}, {".pdf", "Document"}, {".txt", "Document"},
+                '                    {".xls", "Document"}, {".xlsx", "Document"}, {".ppt", "Document"}, {".pptx", "Document"},
+                '                    {".odt", "Document"}, {".ods", "Document"}, {".odp", "Document"}, {".rtf", "Document"},
+                '                    {".html", "Document"}, {".htm", "Document"}, {".md", "Document"},
+                '                    {".mp4", "Video"}, {".avi", "Video"}, {".mov", "Video"}, {".wmv", "Video"},
+                '                    {".mkv", "Video"}, {".flv", "Video"}, {".webm", "Video"}, {".mpeg", "Video"},
+                '                    {".mpg", "Video"}, {".3gp", "Video"}, {".vob", "Video"}, {".ogv", "Video"},
+                '                    {".ts", "Video"},
+                '                    {".zip", "Download"}, {".rar", "Download"}, {".iso", "Download"}, {".7z", "Download"},
+                '                    {".tar", "Download"}, {".gz", "Download"}, {".dmg", "Download"}, {".epub", "Download"},
+                '                    {".mobi", "Download"}, {".apk", "Download"}, {".crx", "Download"},
+                '                    {".exe", "Executable"}, {".bat", "Executable"}, {".cmd", "Executable"},
+                '                    {".msi", "Executable"}, {".com", "Executable"}, {".scr", "Executable"},
+                '                    {".pif", "Executable"}, {".jar", "Executable"}, {".vbs", "Executable"},
+                '                    {".ps1", "Executable"}, {".wsf", "Executable"}, {".dll", "Executable"},
+                '                    {".json", "Executable"}, {".pdb", "Executable"}, {".sln", "Executable"},
+                '{".cs", "Code"}, {".vb", "Code"}, {".vbx", "Code"},
+                '{".js", "Code"}, {".ts", "Code"}, {".jsx", "Code"}, {".tsx", "Code"},
+                '{".py", "Code"}, {".rb", "Code"}, {".php", "Code"},
+                '{".java", "Code"}, {".kt", "Code"}, {".kts", "Code"},
+                '{".cpp", "Code"}, {".cxx", "Code"}, {".cc", "Code"}, {".c", "Code"},
+                '{".h", "Code"}, {".hpp", "Code"}, {".hh", "Code"},
+                '{".go", "Code"}, {".rs", "Code"}, {".swift", "Code"},
+                '{".sql", "Code"}, {".psql", "Code"},
+                '{".xml", "Code"}, {".xaml", "Code"}, {".jsonc", "Code"},
+                '{".yaml", "Code"}, {".yml", "Code"},
+                '{".ini", "Code"}, {".cfg", "Code"}, {".toml", "Code"},
+                '{".sh", "Code"}, {".bash", "Code"}, {".zsh", "Code"},
+                '{".lua", "Code"}, {".r", "Code"}, {".m", "Code"}, ' MATLAB / Objective‑C
+                '{".asm", "Code"}, {".s", "Code"},
+                '                    {".lnk", "Shortcut"}
+                '                }
+
+
+                '                Dim fileTypeMap As New Dictionary(Of String, String) From {
+                '    {".mp3", "Music"}, {".wav", "Music"}, {".flac", "Music"}, {".aac", "Music"},
+                '    {".ogg", "Music"}, {".wma", "Music"}, {".m4a", "Music"}, {".alac", "Music"},
+                '    {".aiff", "Music"}, {".dsd", "Music"},
+                '    {".jpg", "Picture"}, {".jpeg", "Picture"}, {".png", "Picture"}, {".gif", "Picture"},
+                '    {".bmp", "Picture"}, {".tiff", "Picture"}, {".svg", "Picture"}, {".webp", "Picture"},
+                '    {".heic", "Picture"}, {".raw", "Picture"}, {".cr2", "Picture"}, {".nef", "Picture"},
+                '    {".orf", "Picture"}, {".sr2", "Picture"},
+                '    {".doc", "Document"}, {".docx", "Document"}, {".pdf", "Document"}, {".txt", "Document"},
+                '    {".xls", "Document"}, {".xlsx", "Document"}, {".ppt", "Document"}, {".pptx", "Document"},
+                '    {".odt", "Document"}, {".ods", "Document"}, {".odp", "Document"}, {".rtf", "Document"},
+                '    {".html", "Document"}, {".htm", "Document"}, {".md", "Document"},
+                '    {".mp4", "Video"}, {".avi", "Video"}, {".mov", "Video"}, {".wmv", "Video"},
+                '    {".mkv", "Video"}, {".flv", "Video"}, {".webm", "Video"}, {".mpeg", "Video"},
+                '    {".mpg", "Video"}, {".3gp", "Video"}, {".vob", "Video"}, {".ogv", "Video"},
+                '    {".zip", "Download"}, {".rar", "Download"}, {".iso", "Download"}, {".7z", "Download"},
+                '    {".tar", "Download"}, {".gz", "Download"}, {".dmg", "Download"}, {".epub", "Download"},
+                '    {".mobi", "Download"}, {".apk", "Download"}, {".crx", "Download"},
+                '    {".exe", "Executable"}, {".bat", "Executable"}, {".cmd", "Executable"},
+                '    {".msi", "Executable"}, {".com", "Executable"}, {".scr", "Executable"},
+                '    {".pif", "Executable"}, {".jar", "Executable"}, {".vbs", "Executable"},
+                '    {".ps1", "Executable"}, {".wsf", "Executable"}, {".dll", "Executable"},
+                '    {".pdb", "Executable"}, {".sln", "Executable"},
+                '    {".json", "Code"}, ' moved from Executable → Code
+                '    {".cs", "Code"}, {".vb", "Code"}, {".vbx", "Code"},
+                '    {".js", "Code"}, {".ts", "Code"}, {".jsx", "Code"}, {".tsx", "Code"},
+                '    {".py", "Code"}, {".rb", "Code"}, {".php", "Code"},
+                '    {".java", "Code"}, {".kt", "Code"}, {".kts", "Code"},
+                '    {".cpp", "Code"}, {".cxx", "Code"}, {".cc", "Code"}, {".c", "Code"},
+                '    {".h", "Code"}, {".hpp", "Code"}, {".hh", "Code"},
+                '    {".go", "Code"}, {".rs", "Code"}, {".swift", "Code"},
+                '    {".sql", "Code"}, {".psql", "Code"},
+                '    {".xml", "Code"}, {".xaml", "Code"}, {".jsonc", "Code"},
+                '    {".yaml", "Code"}, {".yml", "Code"},
+                '    {".ini", "Code"}, {".cfg", "Code"}, {".toml", "Code"},
+                '    {".sh", "Code"}, {".bash", "Code"}, {".zsh", "Code"},
+                '    {".lua", "Code"}, {".r", "Code"}, {".m", "Code"},
+                '    {".asm", "Code"}, {".s", "Code"},
+                '    {".csproj", "Code"}, {".vbproj", "Code"}, {".fsproj", "Code"}, {".slnf", "Code"},
+                '    {".lnk", "Shortcut"}
+                '}
+
+                Dim fileTypeMap As New Dictionary(Of String, String) From {
+    {".aac", "Music"}, {".aiff", "Music"}, {".alac", "Music"},
+    {".dsd", "Music"}, {".flac", "Music"}, {".m4a", "Music"},
+    {".mp3", "Music"}, {".ogg", "Music"}, {".wav", "Music"},
+    {".wma", "Music"},
+    {".bmp", "Picture"}, {".cr2", "Picture"}, {".gif", "Picture"},
+    {".heic", "Picture"}, {".jpeg", "Picture"}, {".jpg", "Picture"},
+    {".nef", "Picture"}, {".orf", "Picture"}, {".png", "Picture"},
+    {".raw", "Picture"}, {".sr2", "Picture"}, {".svg", "Picture"},
+    {".tiff", "Picture"}, {".webp", "Picture"},
+    {".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
+    {".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
+    {".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
+    {".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
+    {".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
+    {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
+    {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
+    {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
+    {".vob", "Video"}, {".webm", "Video"},
+    {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
+    {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
+    {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
+    {".tar", "Archive"}, {".zip", "Archive"},
+    {".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
+    {".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
+    {".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
+    {".ps1", "Executable"}, {".scr", "Executable"}, {".sln", "Executable"},
+    {".vbs", "Executable"}, {".wsf", "Executable"},
+    {".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
+    {".cc", "Code"}, {".cfg", "Code"}, {".cpp", "Code"},
+    {".cs", "Code"}, {".csproj", "Code"}, {".cxx", "Code"},
+    {".fsproj", "Code"}, {".go", "Code"}, {".h", "Code"},
+    {".hh", "Code"}, {".hpp", "Code"}, {".ini", "Code"},
+    {".java", "Code"}, {".js", "Code"}, {".json", "Code"},
+    {".jsonc", "Code"}, {".jsx", "Code"}, {".kts", "Code"},
+    {".kt", "Code"}, {".lua", "Code"}, {".m", "Code"},
+    {".php", "Code"}, {".psql", "Code"}, {".py", "Code"},
+    {".r", "Code"}, {".rb", "Code"}, {".resx", "Code"},
+    {".rs", "Code"}, {".s", "Code"}, {".sh", "Code"},
+    {".slnf", "Code"}, {".sql", "Code"}, {".swift", "Code"},
+    {".toml", "Code"}, {".ts", "Code"}, {".tsx", "Code"},
+    {".vb", "Code"}, {".vbproj", "Code"}, {".user", "Code"},
+    {".vbx", "Code"}, {".xaml", "Code"}, {".xml", "Code"},
+    {".yaml", "Code"}, {".yml", "Code"},
+    {".lnk", "Shortcut"}
+}
+
+
+                Dim fileType As String = Nothing
+
+                If fileTypeMap.TryGetValue(ext, fileType) Then
+                    item.SubItems.Add(fileType)
+                Else
+                    item.SubItems.Add("Document")
+                End If
+
                 item.SubItems.Add(FormatSize(fi.Length))
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
