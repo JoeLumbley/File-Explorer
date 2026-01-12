@@ -797,16 +797,17 @@ Public Class Form1
                 Dim ext As String = fi.Extension.ToLowerInvariant()
 
 
+
                 Dim fileTypeMap As New Dictionary(Of String, String) From {
-    {".aac", "Music"}, {".aiff", "Music"}, {".alac", "Music"},
-    {".dsd", "Music"}, {".flac", "Music"}, {".m4a", "Music"},
-    {".mp3", "Music"}, {".ogg", "Music"}, {".wav", "Music"},
-    {".wma", "Music"},
-    {".bmp", "Picture"}, {".cr2", "Picture"}, {".gif", "Picture"},
-    {".heic", "Picture"}, {".jpeg", "Picture"}, {".jpg", "Picture"},
-    {".nef", "Picture"}, {".orf", "Picture"}, {".png", "Picture"},
-    {".raw", "Picture"}, {".sr2", "Picture"}, {".svg", "Picture"},
-    {".tiff", "Picture"}, {".webp", "Picture"},
+    {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
+    {".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
+    {".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
+    {".wma", "Audio"},
+    {".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
+    {".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
+    {".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
+    {".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
+    {".tiff", "Image"}, {".webp", "Image"},
     {".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
     {".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
     {".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
@@ -823,26 +824,33 @@ Public Class Form1
     {".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
     {".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
     {".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
-    {".ps1", "Executable"}, {".scr", "Executable"}, {".sln", "Executable"},
-    {".vbs", "Executable"}, {".wsf", "Executable"},
+    {".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
+    {".wsf", "Executable"},
     {".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
-    {".cc", "Code"}, {".cfg", "Code"}, {".cpp", "Code"},
-    {".cs", "Code"}, {".csproj", "Code"}, {".cxx", "Code"},
-    {".fsproj", "Code"}, {".go", "Code"}, {".h", "Code"},
-    {".hh", "Code"}, {".hpp", "Code"}, {".ini", "Code"},
-    {".java", "Code"}, {".js", "Code"}, {".json", "Code"},
-    {".jsonc", "Code"}, {".jsx", "Code"}, {".kts", "Code"},
-    {".kt", "Code"}, {".lua", "Code"}, {".m", "Code"},
-    {".php", "Code"}, {".psql", "Code"}, {".py", "Code"},
-    {".r", "Code"}, {".rb", "Code"}, {".resx", "Code"},
-    {".rs", "Code"}, {".s", "Code"}, {".sh", "Code"},
-    {".slnf", "Code"}, {".sql", "Code"}, {".swift", "Code"},
-    {".toml", "Code"}, {".ts", "Code"}, {".tsx", "Code"},
-    {".vb", "Code"}, {".vbproj", "Code"}, {".user", "Code"},
-    {".vbx", "Code"}, {".xaml", "Code"}, {".xml", "Code"},
-    {".yaml", "Code"}, {".yml", "Code"},
+    {".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
+    {".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
+    {".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
+    {".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
+    {".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
+    {".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
+    {".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
+    {".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
+    {".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
+    {".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
+    {".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
+    {".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
+    {".tsx", "Code"}, {".vb", "Visual Basic Source"},
+    {".user", "Project Options"}, {".vbx", "Code"},
+    {".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
+    {".yml", "Code"},
+    {".cfg", "Config"}, {".ini", "Config"},
     {".lnk", "Shortcut"}
 }
+
+
+
+
+
 
 
                 Dim fileType As String = Nothing
