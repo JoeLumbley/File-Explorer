@@ -1843,7 +1843,6 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
@@ -1883,7 +1882,6 @@ Public Class Form1
         UpdateEditButtons()
         UpdateEditContextMenu()
     End Sub
-
 
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
