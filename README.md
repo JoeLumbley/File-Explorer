@@ -852,7 +852,7 @@ Below is the full code, then we’ll walk through it one step at a time.
 ```
 
 
-Here's a detailed breakdown of the updated `CopyDirectory` method in VB.NET, which now supports asynchronous file copying. This ensures that the UI remains responsive during the operation, especially when dealing with large directories.
+Here's a detailed breakdown of the updated `CopyDirectory` method , which now supports asynchronous file copying. This ensures that the UI remains responsive during the operation, especially when dealing with large directories.
 
 ## Updated Method Definition
 
