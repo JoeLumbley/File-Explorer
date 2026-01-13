@@ -860,64 +860,6 @@ Public Class Form1
                 ' Assign File type based on extension using a lookup table
                 Dim ext As String = fi.Extension.ToLowerInvariant()
 
-
-
-                '            Dim fileTypeMap As New Dictionary(Of String, String) From {
-                '                {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
-                '{".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
-                '{".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
-                '{".wma", "Audio"},
-                '{".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
-                '{".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
-                '{".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
-                '{".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
-                '{".tiff", "Image"}, {".webp", "Image"},
-                '{".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
-                '{".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
-                '{".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
-                '{".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
-                '{".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
-                '{".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
-                '{".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
-                '{".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
-                '{".vob", "Video"}, {".webm", "Video"},
-                '{".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
-                '{".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
-                '{".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
-                '{".tar", "Archive"}, {".zip", "Archive"},
-                '{".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
-                '{".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
-                '{".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
-                '{".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
-                '{".wsf", "Executable"},
-                '{".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
-                '{".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
-                '{".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
-                '{".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
-                '{".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
-                '{".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
-                '{".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
-                '{".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
-                '{".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
-                '{".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
-                '{".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
-                '{".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
-                '{".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
-                '{".tsx", "Code"}, {".vb", "Visual Basic Source"},
-                '{".user", "Project Options"}, {".vbx", "Code"},
-                '{".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
-                '{".yml", "Code"},
-                '{".cfg", "Config"}, {".ini", "Config"},
-                '{".lnk", "Shortcut"}
-                '        }
-
-
-
-
-
-
-
-
                 Dim fileType As String = Nothing
 
                 If fileTypeMap.TryGetValue(ext, fileType) Then
@@ -930,33 +872,72 @@ Public Class Form1
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
 
-                ' Assign image based on file type
-                Select Case fi.Extension.ToLowerInvariant()
-                    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
-                     ".m4a", ".alac", ".aiff", ".dsd"
-                        item.ImageKey = "Music"
-                    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
-                     ".raw", ".cr2", ".nef", ".orf", ".sr2"
-                        item.ImageKey = "Pictures"
-                    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
-                     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
-                        item.ImageKey = "Documents"
-                    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
-                     ".3gp", ".vob", ".ogv", ".ts"
-                        item.ImageKey = "Videos"
-                    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
-                     ".epub", ".mobi", ".apk", ".crx"
-                        item.ImageKey = "Downloads"
-                    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
-                     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
-                        item.ImageKey = "Executable"
-                    Case ".lnk"
-                        item.ImageKey = "Shortcut"
-                    Case Else
-                        item.ImageKey = "Documents"
-                End Select
+                '' Assign image based on file type
+                'Select Case fi.Extension.ToLowerInvariant()
+                '    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
+                '     ".m4a", ".alac", ".aiff", ".dsd"
+                '        item.ImageKey = "Music"
+                '    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
+                '     ".raw", ".cr2", ".nef", ".orf", ".sr2"
+                '        item.ImageKey = "Pictures"
+                '    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
+                '     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
+                '        item.ImageKey = "Documents"
+                '    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
+                '     ".3gp", ".vob", ".ogv", ".ts"
+                '        item.ImageKey = "Videos"
+                '    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
+                '     ".epub", ".mobi", ".apk", ".crx"
+                '        item.ImageKey = "Downloads"
+                '    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
+                '     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
+                '        item.ImageKey = "Executable"
+                '    Case ".lnk"
+                '        item.ImageKey = "Shortcut"
+                '    Case Else
+                '        item.ImageKey = "Documents"
+                'End Select
+
+                'lvFiles.Items.Add(item)
+
+                'Dim ext As String = fi.Extension.ToLowerInvariant()
+
+                Dim category As String = Nothing
+                If fileTypeMap.TryGetValue(ext, category) Then
+                    ' Map dictionary category → image key
+                    Select Case category
+                        Case "Audio"
+                            item.ImageKey = "Music"
+
+                        Case "Image"
+                            item.ImageKey = "Pictures"
+
+                        Case "Document"
+                            item.ImageKey = "Documents"
+
+                        Case "Video"
+                            item.ImageKey = "Videos"
+
+                        Case "Archive"
+                            item.ImageKey = "Downloads"
+
+                        Case "Executable"
+                            item.ImageKey = "Executable"
+
+                        Case "Shortcut"
+                            item.ImageKey = "Shortcut"
+
+                        Case Else
+                            ' For Code, Project, Resource, Config, etc.
+                            item.ImageKey = "Documents"
+                    End Select
+                Else
+                    ' Unknown extension → fallback
+                    item.ImageKey = "Documents"
+                End If
 
                 lvFiles.Items.Add(item)
+
 
             Next
 
