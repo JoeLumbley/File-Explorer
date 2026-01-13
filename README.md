@@ -77,6 +77,8 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
   - [📋 CopyDirectory](#copydirectory)
 
+  - [➡️ NavigateTo](#navigateto)
+
 
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
