@@ -96,6 +96,70 @@ Public Class Form1
 
     Private ReadOnly tips As New ToolTip()
 
+
+
+
+
+
+
+
+
+    Private fileTypeMap As New Dictionary(Of String, String) From {
+                    {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
+    {".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
+    {".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
+    {".wma", "Audio"},
+    {".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
+    {".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
+    {".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
+    {".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
+    {".tiff", "Image"}, {".webp", "Image"},
+    {".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
+    {".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
+    {".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
+    {".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
+    {".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
+    {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
+    {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
+    {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
+    {".vob", "Video"}, {".webm", "Video"},
+    {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
+    {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
+    {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
+    {".tar", "Archive"}, {".zip", "Archive"},
+    {".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
+    {".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
+    {".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
+    {".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
+    {".wsf", "Executable"},
+    {".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
+    {".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
+    {".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
+    {".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
+    {".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
+    {".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
+    {".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
+    {".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
+    {".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
+    {".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
+    {".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
+    {".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
+    {".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
+    {".tsx", "Code"}, {".vb", "Visual Basic Source"},
+    {".user", "Project Options"}, {".vbx", "Code"},
+    {".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
+    {".yml", "Code"},
+    {".cfg", "Config"}, {".ini", "Config"},
+    {".lnk", "Shortcut"}
+            }
+
+
+
+
+
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -334,8 +398,8 @@ Public Class Form1
 
     End Sub
 
-    Private Sub FileExplorer_KeyDown(sender As Object, e As KeyEventArgs) _
-    Handles Me.KeyDown
+    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) _
+        Handles Me.KeyDown
 
         ' ============================
         ' Address Bar Shortcuts
@@ -798,54 +862,55 @@ Public Class Form1
 
 
 
-                Dim fileTypeMap As New Dictionary(Of String, String) From {
-    {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
-    {".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
-    {".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
-    {".wma", "Audio"},
-    {".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
-    {".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
-    {".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
-    {".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
-    {".tiff", "Image"}, {".webp", "Image"},
-    {".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
-    {".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
-    {".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
-    {".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
-    {".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
-    {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
-    {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
-    {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
-    {".vob", "Video"}, {".webm", "Video"},
-    {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
-    {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
-    {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
-    {".tar", "Archive"}, {".zip", "Archive"},
-    {".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
-    {".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
-    {".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
-    {".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
-    {".wsf", "Executable"},
-    {".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
-    {".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
-    {".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
-    {".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
-    {".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
-    {".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
-    {".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
-    {".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
-    {".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
-    {".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
-    {".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
-    {".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
-    {".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
-    {".tsx", "Code"}, {".vb", "Visual Basic Source"},
-    {".user", "Project Options"}, {".vbx", "Code"},
-    {".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
-    {".yml", "Code"},
-    {".cfg", "Config"}, {".ini", "Config"},
-    {".lnk", "Shortcut"}
-}
+                '            Dim fileTypeMap As New Dictionary(Of String, String) From {
+                '                {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
+                '{".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
+                '{".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
+                '{".wma", "Audio"},
+                '{".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
+                '{".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
+                '{".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
+                '{".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
+                '{".tiff", "Image"}, {".webp", "Image"},
+                '{".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
+                '{".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
+                '{".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
+                '{".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
+                '{".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
+                '{".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
+                '{".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
+                '{".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
+                '{".vob", "Video"}, {".webm", "Video"},
+                '{".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
+                '{".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
+                '{".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
+                '{".tar", "Archive"}, {".zip", "Archive"},
+                '{".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
+                '{".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
+                '{".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
+                '{".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
+                '{".wsf", "Executable"},
+                '{".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
+                '{".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
+                '{".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
+                '{".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
+                '{".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
+                '{".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
+                '{".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
+                '{".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
+                '{".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
+                '{".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
+                '{".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
+                '{".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
+                '{".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
+                '{".tsx", "Code"}, {".vb", "Visual Basic Source"},
+                '{".user", "Project Options"}, {".vbx", "Code"},
+                '{".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
+                '{".yml", "Code"},
+                '{".cfg", "Config"}, {".ini", "Config"},
+                '{".lnk", "Shortcut"}
+                '        }
+
 
 
 
