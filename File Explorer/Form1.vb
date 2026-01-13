@@ -22,6 +22,7 @@
 ' SOFTWARE.
 
 ' Github repo: https://github.com/JoeLumbley/File-Explorer
+' Documentation: You can find the documentation at the GitHub repository.
 
 
 Imports System.IO
