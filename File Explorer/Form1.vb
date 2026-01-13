@@ -2869,6 +2869,8 @@ Public Class Form1
 
         Me.KeyPreview = True
 
+        Me.CenterToScreen()
+
         ConfigureTooltips()
 
         InitStatusBar()
@@ -2901,10 +2903,10 @@ Public Class Form1
         lvFiles.FullRowSelect = True
         lvFiles.MultiSelect = True
         lvFiles.Columns.Clear()
-        lvFiles.Columns.Add("Name", 550)
-        lvFiles.Columns.Add("Type", 120)
-        lvFiles.Columns.Add("Size", 150)
-        lvFiles.Columns.Add("Modified", 200)
+        lvFiles.Columns.Add("Name", 500)
+        lvFiles.Columns.Add("Type", 175)
+        lvFiles.Columns.Add("Size", 100)
+        lvFiles.Columns.Add("Modified", 150)
 
     End Sub
 

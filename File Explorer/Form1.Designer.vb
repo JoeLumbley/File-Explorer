@@ -61,7 +61,7 @@ Partial Class Form1
         ' SplitContainer1.Panel2
         ' 
         SplitContainer1.Panel2.Controls.Add(TableLayoutPanel1)
-        SplitContainer1.Size = New Size(1264, 630)
+        SplitContainer1.Size = New Size(1264, 681)
         SplitContainer1.SplitterDistance = 238
         SplitContainer1.TabIndex = 0
         ' 
@@ -72,7 +72,7 @@ Partial Class Form1
         tvFolders.Location = New Point(0, 0)
         tvFolders.Name = "tvFolders"
         tvFolders.ShowLines = False
-        tvFolders.Size = New Size(238, 630)
+        tvFolders.Size = New Size(238, 681)
         tvFolders.TabIndex = 0
         ' 
         ' TableLayoutPanel1
@@ -88,7 +88,7 @@ Partial Class Form1
         TableLayoutPanel1.RowCount = 2
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.Size = New Size(1022, 630)
+        TableLayoutPanel1.Size = New Size(1022, 681)
         TableLayoutPanel1.TabIndex = 0
         ' 
         ' lvFiles
@@ -98,7 +98,7 @@ Partial Class Form1
         lvFiles.LabelEdit = True
         lvFiles.Location = New Point(3, 37)
         lvFiles.Name = "lvFiles"
-        lvFiles.Size = New Size(1016, 590)
+        lvFiles.Size = New Size(1016, 641)
         lvFiles.TabIndex = 0
         lvFiles.UseCompatibleStateImageBehavior = False
         ' 
@@ -270,7 +270,7 @@ Partial Class Form1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1264, 630)
+        ClientSize = New Size(1264, 681)
         Controls.Add(SplitContainer1)
         Name = "Form1"
         Text = "Form1"
