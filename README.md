@@ -86,11 +86,14 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
 
-- [📦 MoveFileOrDirectory — Code Walkthrough](#movefileordirectory)
 
-- [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+- Code Walkthrough
+  
+  - [📦 MoveFileOrDirectory](#movefileordirectory)
 
-- [📋 CopyDirectory — Code Walkthrough](#copydirectory)
+  - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+
+  - [📋 CopyDirectory — Code Walkthrough](#copydirectory)
 
 - [🧬 Clones](#clones)
 
