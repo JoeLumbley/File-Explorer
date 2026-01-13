@@ -1977,11 +1977,86 @@ Public Class Form1
     End Sub
 
 
-    Private Sub CopyFile(source As String, destination As String)
+    'Private Sub CopyFile(source As String, destination As String)
+    '    Try
+    '        ' Check if the destination file already exists
+    '        Dim fileName As String = Path.GetFileName(source)
+    '        Dim destDirFileName = Path.Combine(destination, fileName)
+    '        If File.Exists(destDirFileName) Then
+    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
+    '                            "Do you want to overwrite it?"
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '            If result = DialogResult.No Then
+    '                ShowStatus(IconWarning & " Copy operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        File.Copy(source, destDirFileName, overwrite:=True)
+
+
+    '        NavigateTo(destination)
+
+    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
+
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
+    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+
+
+
+
+    'Private Sub CopyFile(source As String, destination As String)
+    '    Try
+    '        ' Validate parameters
+    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+    '            ShowStatus(IconError & " Source or destination path is invalid.")
+    '            Return
+    '        End If
+
+    '        ' Check if the destination file already exists
+    '        Dim fileName As String = Path.GetFileName(source)
+    '        Dim destDirFileName = Path.Combine(destination, fileName)
+
+    '        If File.Exists(destDirFileName) Then
+    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
+    '                            "Do you want to overwrite it?"
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '            If result = DialogResult.No Then
+    '                ShowStatus(IconDialog & " Copy operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        File.Copy(source, destDirFileName, overwrite:=True)
+
+    '        NavigateTo(destination)
+    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
+    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+    Private Async Sub CopyFile(source As String, destination As String)
         Try
+            ' Validate parameters
+            If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+                ShowStatus(IconError & " Source or destination path is invalid.")
+                Return
+            End If
+
             ' Check if the destination file already exists
             Dim fileName As String = Path.GetFileName(source)
             Dim destDirFileName = Path.Combine(destination, fileName)
+
             If File.Exists(destDirFileName) Then
                 Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
                                 "Do you want to overwrite it?"
@@ -1992,19 +2067,30 @@ Public Class Form1
                 End If
             End If
 
-            File.Copy(source, destDirFileName, overwrite:=True)
-
+            ' Asynchronously copy the file
+            Await Task.Run(Sub() File.Copy(source, destDirFileName, overwrite:=True))
 
             NavigateTo(destination)
-
             ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
-
 
         Catch ex As Exception
             ShowStatus(IconError & " Copy Failed: " & ex.Message)
             Debug.WriteLine("CopyFile Error: " & ex.Message)
         End Try
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub MoveFileOrDirectory(source As String, destination As String)
         Try
