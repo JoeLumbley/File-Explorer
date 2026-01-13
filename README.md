@@ -785,7 +785,7 @@ This method copies an entire directory — including all files and all subfolder
 <img width="1266" height="662" alt="050" src="https://github.com/user-attachments/assets/60446ac8-b44a-447c-bcd5-4bffb25e2e8d" />
 
 
-Below is the full code, then we’ll walk through it one small step at a time.
+Below is the full code, then we’ll walk through it one step at a time.
 
 
 ```vb.net
