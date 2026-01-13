@@ -68,6 +68,17 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 ## Table of Contents
 
+
+- Code Walkthrough
+  
+  - [📦 MoveFileOrDirectory](#movefileordirectory)
+
+  - [✏️ RenameFileOrDirectory](#renamefileordirectory)
+
+  - [📋 CopyDirectory](#copydirectory)
+
+
+
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
@@ -86,14 +97,6 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
 
-
-- Code Walkthrough
-  
-  - [📦 MoveFileOrDirectory](#movefileordirectory)
-
-  - [✏️ RenameFileOrDirectory](#renamefileordirectory)
-
-  - [📋 CopyDirectory](#copydirectory)
 
 - [🧬 Clones](#clones)
 
