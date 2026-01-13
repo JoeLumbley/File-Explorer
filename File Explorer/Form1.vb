@@ -875,6 +875,7 @@ Public Class Form1
                 ' Assign image based on file type
                 Dim category As String = Nothing
                 If fileTypeMap.TryGetValue(ext, category) Then
+
                     ' Map dictionary category → image key
                     Select Case category
                         Case "Audio"
@@ -1347,13 +1348,19 @@ Public Class Form1
 
                     ' Check if source file or directory exists
                     If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
-                        ShowStatus(IconWarning & " Copy Failed - Source: ''" & source & "'' does not exist.")
+                        ShowStatus(IconError &
+                                   " Copy Failed - Source: ''" &
+                                   source &
+                                   "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
                         Return
                     End If
 
                     ' Check if destination directory exists
                     If Not Directory.Exists(destination) Then
-                        ShowStatus(IconWarning & " Copy Failed - Destination folder: ''" & destination & "'' does not exist.")
+                        ShowStatus(IconError &
+                                   " Copy Failed - Destination folder: ''" &
+                                   destination &
+                                   "'' does not exist.Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
                         Return
                     End If
 
@@ -1363,6 +1370,7 @@ Public Class Form1
                     Else
                         ' If source is a directory, copy it
                         CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source)))
+
                     End If
 
                 Else
@@ -1985,9 +1993,11 @@ Public Class Form1
 
             File.Copy(source, destDirFileName, overwrite:=True)
 
-            ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
 
             NavigateTo(destination)
+
+            ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
+
 
         Catch ex As Exception
             ShowStatus(IconError & " Copy Failed: " & ex.Message)
