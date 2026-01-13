@@ -91,9 +91,9 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
   
   - [📦 MoveFileOrDirectory](#movefileordirectory)
 
-  - [✏️ RenameFileOrDirectory — Code Walkthrough](#renamefileordirectory)
+  - [✏️ RenameFileOrDirectory](#renamefileordirectory)
 
-  - [📋 CopyDirectory — Code Walkthrough](#copydirectory)
+  - [📋 CopyDirectory](#copydirectory)
 
 - [🧬 Clones](#clones)
 
