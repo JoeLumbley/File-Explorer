@@ -79,6 +79,11 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 
 
+- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
+
+
+
+
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
@@ -97,7 +102,6 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
 
-- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
 - [📄 License](#license)
 
