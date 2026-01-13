@@ -97,12 +97,11 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
 
-
-- [🧬 Clones](#clones)
+- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
 - [📄 License](#license)
 
-- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
+- [🧬 Clones](#clones)
 
 
 
