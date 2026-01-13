@@ -1348,7 +1348,7 @@ This makes the file manager not just functional — but **guiding**.
 
 # `NavigateTo`
 
-The `NavigateTo` method in VB.NET, which is responsible for navigating to a specified folder path.
+The `NavigateTo` method is responsible for navigating to a specified folder path.
 
 
 
