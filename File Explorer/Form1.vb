@@ -1842,10 +1842,45 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
+    'Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
+    '    ' Navigate to the specified folder path.
+
+    '    '  Updates the current folder, path textbox, and file list.
+    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+
+    '    ' Validate that the folder exists
+    '    If Not Directory.Exists(path) Then
+    '        MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    '        ShowStatus(IconWarning & " Folder not found: " & path)
+    '        Exit Sub
+    '    End If
+
+    '    ShowStatus(IconNavigate & " Navigated To: " & path)
+
+    '    currentFolder = path
+    '    txtPath.Text = path
+    '    PopulateFiles(path)
+
+    '    If recordHistory Then
+    '        ' Trim forward history if we branch
+    '        If _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1 Then
+    '            _history.RemoveRange(_historyIndex + 1, _history.Count - (_historyIndex + 1))
+    '        End If
+    '        _history.Add(path)
+    '        _historyIndex = _history.Count - 1
+    '        UpdateNavButtons()
+    '    End If
+
+    '    UpdateFileButtons()
+    '    UpdateEditButtons()
+    '    UpdateEditContextMenu()
+
+    'End Sub
+
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
 
-        '  Updates the current folder, path textbox, and file list.
+        ' Updates the current folder, path textbox, and file list.
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
 
         ' Validate that the folder exists
@@ -1853,6 +1888,12 @@ Public Class Form1
             MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
             ShowStatus(IconWarning & " Folder not found: " & path)
             Exit Sub
+        End If
+
+        ' If this method is called from a background thread, invoke it on the UI thread
+        If txtPath.InvokeRequired Then
+            txtPath.Invoke(New Action(Of String)(AddressOf NavigateTo), path, recordHistory)
+            Return
         End If
 
         ShowStatus(IconNavigate & " Navigated To: " & path)
@@ -1874,8 +1915,8 @@ Public Class Form1
         UpdateFileButtons()
         UpdateEditButtons()
         UpdateEditContextMenu()
-
     End Sub
+
 
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
@@ -2192,49 +2233,248 @@ Public Class Form1
 
     End Sub
 
-    Private Sub CopyDirectory(sourceDir As String, destDir As String)
+    'Private Sub CopyDirectory(sourceDir As String, destDir As String)
 
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        ShowStatus(IconError & "  Source directory not found: " & sourceDir)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+
+    '        ShowStatus(IconCopy & "  Create destination directory:" & destDir)
+
+    '        ' Create destination directory
+    '        Directory.CreateDirectory(destDir)
+
+    '        ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
+
+    '        ' Copy files
+    '        For Each file In dirInfo.GetFiles()
+    '            Dim targetFilePath = Path.Combine(destDir, file.Name)
+    '            file.CopyTo(targetFilePath, overwrite:=True)
+    '        Next
+
+    '        ShowStatus(IconCopy & "  Copying subdirectories.")
+
+    '        ' Copy subdirectories recursively
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            CopyDirectory(subDir.FullName, newDest)
+    '        Next
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(destDir)
+
+    '        ShowStatus(IconSuccess & "  Copied into " & destDir)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & "  Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+    'Private Async Sub CopyDirectory(sourceDir As String, destDir As String)
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        ShowStatus(IconError & " Source directory not found: " & sourceDir)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        ShowStatus(IconCopy & " Creating destination directory: " & destDir)
+
+    '        ' Create destination directory
+    '        Directory.CreateDirectory(destDir)
+
+    '        ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
+
+    '        ' Copy files asynchronously
+    '        Await Task.Run(Sub()
+    '                           For Each file In dirInfo.GetFiles()
+    '                               Dim targetFilePath = Path.Combine(destDir, file.Name)
+    '                               file.CopyTo(targetFilePath, overwrite:=True)
+    '                           Next
+    '                       End Sub)
+
+    '        ShowStatus(IconCopy & " Copying subdirectories.")
+
+    '        ' Copy subdirectories recursively asynchronously
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            Await Task.Run(Sub() CopyDirectory(subDir.FullName, newDest))
+    '        Next
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(destDir)
+
+    '        ShowStatus(IconSuccess & " Copied into " & destDir)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+    'Private Async Sub CopyDirectoryAsync(sourceDir As String, destDir As String)
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        UpdateStatus("Source directory not found: " & sourceDir)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        UpdateStatus("Creating destination directory: " & destDir)
+
+    '        ' Create destination directory
+    '        Directory.CreateDirectory(destDir)
+
+    '        UpdateStatus("Copying files to destination directory: " & destDir)
+
+    '        ' Copy files asynchronously
+    '        Await Task.Run(Sub()
+    '                           For Each file In dirInfo.GetFiles()
+    '                               Dim targetFilePath = Path.Combine(destDir, file.Name)
+    '                               file.CopyTo(targetFilePath, overwrite:=True)
+    '                           Next
+    '                       End Sub)
+
+    '        UpdateStatus("Copying subdirectories.")
+
+    '        ' Copy subdirectories recursively asynchronously
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            Await Task.Run(Sub() CopyDirectoryAsync(subDir.FullName, newDest))
+    '        Next
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(destDir)
+
+    '        UpdateStatus("Copied into " & destDir)
+
+    '    Catch ex As Exception
+    '        UpdateStatus("Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+    ' Method to update UI safely
+    'Private Sub UpdateStatus(message As String)
+    '    If txtPath.InvokeRequired Then
+    '        txtPath.Invoke(New Action(Of String)(AddressOf UpdateStatus), message)
+    '    Else
+    '        txtPath.Text &= message & Environment.NewLine
+    '    End If
+    'End Sub
+
+
+
+
+    'Private Async Sub CopyDirectory(sourceDir As String, destDir As String)
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        ShowStatus("Source directory not found: " & sourceDir)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        ShowStatus("Creating destination directory: " & destDir)
+
+    '        ' Create destination directory
+    '        Directory.CreateDirectory(destDir)
+
+    '        ShowStatus("Copying files to destination directory: " & destDir)
+
+    '        ' Copy files asynchronously
+    '        Await Task.Run(Sub()
+    '                           For Each file In dirInfo.GetFiles()
+    '                               Dim targetFilePath = Path.Combine(destDir, file.Name)
+    '                               file.CopyTo(targetFilePath, overwrite:=True)
+    '                           Next
+    '                       End Sub)
+
+    '        ShowStatus("Copying subdirectories.")
+
+    '        ' Copy subdirectories recursively asynchronously
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            Await Task.Run(Sub() CopyDirectory(subDir.FullName, newDest))
+    '        Next
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(destDir)
+
+    '        ShowStatus("Copied into " & destDir)
+
+    '    Catch ex As Exception
+    '        ShowStatus("Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+    Private Sub CopyDirectory(sourceDir As String, destDir As String)
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
         If Not dirInfo.Exists Then
-            ShowStatus(IconError & "  Source directory not found: " & sourceDir)
+            ShowStatus(IconError & " Source directory not found: " & sourceDir)
             Exit Sub
         End If
 
         Try
-
-            ShowStatus(IconCopy & "  Create destination directory:" & destDir)
+            ShowStatus(IconCopy & " Creating destination directory: " & destDir)
 
             ' Create destination directory
             Directory.CreateDirectory(destDir)
 
-            ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
+            ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
 
             ' Copy files
             For Each file In dirInfo.GetFiles()
-                Dim targetFilePath = Path.Combine(destDir, file.Name)
-                file.CopyTo(targetFilePath, overwrite:=True)
+                Try
+                    Dim targetFilePath = Path.Combine(destDir, file.Name)
+                    file.CopyTo(targetFilePath, overwrite:=True)
+                Catch ex As UnauthorizedAccessException
+                    Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
+                    ShowStatus(IconError & " Unauthorized access: " & file.FullName)
+                Catch ex As Exception
+                    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+                    ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
+                End Try
             Next
 
-            ShowStatus(IconCopy & "  Copying subdirectories.")
+            ShowStatus(IconCopy & " Copying subdirectories.")
 
             ' Copy subdirectories recursively
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
-                CopyDirectory(subDir.FullName, newDest)
+                Try
+                    CopyDirectory(subDir.FullName, newDest)
+                Catch ex As Exception
+                    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+                End Try
             Next
 
             ' Refresh the view to show the copied directory
             NavigateTo(destDir)
 
-            ShowStatus(IconSuccess & "  Copied into " & destDir)
+            ShowStatus(IconSuccess & " Copied into " & destDir)
 
         Catch ex As Exception
-            ShowStatus(IconError & "  Copy failed: " & ex.Message)
+            ShowStatus(IconError & " Copy failed: " & ex.Message)
             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
         End Try
-
     End Sub
+
+
 
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
 
@@ -2635,12 +2875,64 @@ Public Class Form1
         Next
     End Sub
 
+    'Private Sub ShowStatus(message As String)
+    '    lblStatus.Text = message
+    '    statusTimer.Stop()
+    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
+    '    statusTimer.Start()
+    'End Sub
+
+    'Private Sub ShowStatus(message As String)
+    '    If lblStatus.InvokeRequired Then
+    '        lblStatus.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
+    '    Else
+    '        lblStatus.Text = message
+    '        statusTimer.Stop()
+    '        AddHandler statusTimer.Tick, AddressOf ClearStatus
+    '        statusTimer.Start()
+    '    End If
+    'End Sub
+
+    'Private Sub ShowStatus(message As String)
+    '    ' Ensure lblStatus is a valid control
+    '    If lblStatus IsNot Nothing Then
+    '        If lblStatus.InvokeRequired Then
+    '            ' If we are on a different thread, invoke the method on the UI thread
+    '            lblStatus.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
+    '        Else
+    '            ' Update the label text and manage the status timer
+    '            lblStatus.Text = message
+    '            statusTimer.Stop()
+    '            AddHandler statusTimer.Tick, AddressOf ClearStatus
+    '            statusTimer.Start()
+    '        End If
+    '    Else
+    '        ' Handle the case where lblStatus is not initialized
+    '        Debug.WriteLine("lblStatus control is not initialized.")
+    '    End If
+    'End Sub
+
     Private Sub ShowStatus(message As String)
-        lblStatus.Text = message
-        statusTimer.Stop()
-        AddHandler statusTimer.Tick, AddressOf ClearStatus
-        statusTimer.Start()
+        ' Check if lblStatus is not null
+        If lblStatus IsNot Nothing Then
+            ' Use the parent control's Invoke method
+            If lblStatus.GetCurrentParent.InvokeRequired Then
+                lblStatus.GetCurrentParent.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
+            Else
+                ' Update the ToolStripStatusLabel text
+                lblStatus.Text = message
+                statusTimer.Stop()
+                AddHandler statusTimer.Tick, AddressOf ClearStatus
+                statusTimer.Start()
+            End If
+        Else
+            ' Handle the case where lblStatus is not initialized
+            Debug.WriteLine("lblStatus control is not initialized.")
+        End If
     End Sub
+
+
+
 
     Private Sub ClearStatus(sender As Object, e As EventArgs)
         lblStatus.Text = ""
