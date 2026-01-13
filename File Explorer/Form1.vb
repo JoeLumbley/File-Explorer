@@ -1843,45 +1843,11 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-    'Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
-    '    ' Navigate to the specified folder path.
-
-    '    '  Updates the current folder, path textbox, and file list.
-    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
-
-    '    ' Validate that the folder exists
-    '    If Not Directory.Exists(path) Then
-    '        MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '        ShowStatus(IconWarning & " Folder not found: " & path)
-    '        Exit Sub
-    '    End If
-
-    '    ShowStatus(IconNavigate & " Navigated To: " & path)
-
-    '    currentFolder = path
-    '    txtPath.Text = path
-    '    PopulateFiles(path)
-
-    '    If recordHistory Then
-    '        ' Trim forward history if we branch
-    '        If _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1 Then
-    '            _history.RemoveRange(_historyIndex + 1, _history.Count - (_historyIndex + 1))
-    '        End If
-    '        _history.Add(path)
-    '        _historyIndex = _history.Count - 1
-    '        UpdateNavButtons()
-    '    End If
-
-    '    UpdateFileButtons()
-    '    UpdateEditButtons()
-    '    UpdateEditContextMenu()
-
-    'End Sub
 
     Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
-
         ' Updates the current folder, path textbox, and file list.
+
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
 
         ' Validate that the folder exists
