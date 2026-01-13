@@ -1371,6 +1371,7 @@ Public Class Form1
                     Else
                         ' If source is a directory, copy it
                         CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source)))
+                        'Await Task.Run(Sub() CopyDirectory(subDir.FullName, newDest))
 
                     End If
 
@@ -2421,27 +2422,86 @@ Public Class Form1
 
 
 
-    Private Sub CopyDirectory(sourceDir As String, destDir As String)
+    'Private Sub CopyDirectory(sourceDir As String, destDir As String)
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        ShowStatus(IconError & " Source directory not found: " & sourceDir)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        ShowStatus(IconCopy & " Creating destination directory: " & destDir)
+
+    '        ' Create destination directory
+    '        Directory.CreateDirectory(destDir)
+
+    '        ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
+
+    '        ' Copy files
+    '        For Each file In dirInfo.GetFiles()
+    '            Try
+    '                Dim targetFilePath = Path.Combine(destDir, file.Name)
+    '                file.CopyTo(targetFilePath, overwrite:=True)
+    '            Catch ex As UnauthorizedAccessException
+    '                Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
+    '                ShowStatus(IconError & " Unauthorized access: " & file.FullName)
+    '            Catch ex As Exception
+    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '                ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
+    '            End Try
+    '        Next
+
+    '        ShowStatus(IconCopy & " Copying subdirectories.")
+
+    '        ' Copy subdirectories recursively
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            Try
+    '                CopyDirectory(subDir.FullName, newDest)
+    '            Catch ex As Exception
+    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '            End Try
+    '        Next
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(destDir)
+
+    '        ShowStatus(IconSuccess & " Copied into " & destDir)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+    Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
         If Not dirInfo.Exists Then
             ShowStatus(IconError & " Source directory not found: " & sourceDir)
-            Exit Sub
+            Return
         End If
 
         Try
             ShowStatus(IconCopy & " Creating destination directory: " & destDir)
 
             ' Create destination directory
-            Directory.CreateDirectory(destDir)
+            Try
+                Directory.CreateDirectory(destDir)
+            Catch ex As Exception
+                ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
+                Return
+            End Try
 
             ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
 
-            ' Copy files
+            ' Copy files asynchronously
             For Each file In dirInfo.GetFiles()
                 Try
                     Dim targetFilePath = Path.Combine(destDir, file.Name)
-                    file.CopyTo(targetFilePath, overwrite:=True)
+                    Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
+                    Debug.WriteLine("Copied file: " & targetFilePath) ' Log successful copy
                 Catch ex As UnauthorizedAccessException
                     Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
                     ShowStatus(IconError & " Unauthorized access: " & file.FullName)
@@ -2453,11 +2513,11 @@ Public Class Form1
 
             ShowStatus(IconCopy & " Copying subdirectories.")
 
-            ' Copy subdirectories recursively
+            ' Copy subdirectories recursively asynchronously
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
                 Try
-                    CopyDirectory(subDir.FullName, newDest)
+                    Await CopyDirectory(subDir.FullName, newDest)
                 Catch ex As Exception
                     Debug.WriteLine("CopyDirectory Error: " & ex.Message)
                 End Try
@@ -2472,8 +2532,7 @@ Public Class Form1
             ShowStatus(IconError & " Copy failed: " & ex.Message)
             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
         End Try
-    End Sub
-
+    End Function
 
 
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
