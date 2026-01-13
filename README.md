@@ -785,7 +785,8 @@ This method copies an entire directory — including all files and all subfolder
 
 
 
-<img width="1266" height="662" alt="050" src="https://github.com/user-attachments/assets/60446ac8-b44a-447c-bcd5-4bffb25e2e8d" />
+<img width="1266" height="713" alt="086" src="https://github.com/user-attachments/assets/b40cb697-3ba8-4363-8e4b-1e7277661b1b" />
+
 
 
 Below is the full code, then we’ll walk through it one step at a time.
@@ -980,7 +981,11 @@ End Try
 This updated method demonstrates how to effectively manage file copying operations while maintaining a responsive user interface.
 
 
-<img width="1266" height="662" alt="051" src="https://github.com/user-attachments/assets/1ec25af2-62d5-4877-a9d6-4210342ae4e3" />
+
+
+<img width="1266" height="713" alt="087" src="https://github.com/user-attachments/assets/a2106467-9423-4698-b605-88a6e484a6ce" />
+
+
 
 
 [ Table of Contents](#table-of-contents)
