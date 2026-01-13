@@ -790,242 +790,191 @@ Below is the full code, then we’ll walk through it one small step at a time.
 
 ```vb.net
 
-    Private Sub CopyDirectory(sourceDir As String, destDir As String)
-
+    Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
         If Not dirInfo.Exists Then
-
-            ShowStatus(IconError & "  Source directory not found: " & sourceDir)
-
-            Exit Sub
-
+            ShowStatus(IconError & " Source directory not found: " & sourceDir)
+            Return
         End If
 
         Try
-
-            ShowStatus(IconCopy & "  Create destination directory:" & destDir)
+            ShowStatus(IconCopy & " Creating destination directory: " & destDir)
 
             ' Create destination directory
-            Directory.CreateDirectory(destDir)
+            Try
+                Directory.CreateDirectory(destDir)
+            Catch ex As Exception
+                ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
+                Return
+            End Try
 
-            ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
+            ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
 
-            ' Copy files
+            ' Copy files asynchronously
             For Each file In dirInfo.GetFiles()
-                Dim targetFilePath = Path.Combine(destDir, file.Name)
-                file.CopyTo(targetFilePath, overwrite:=True)
+                Try
+                    Dim targetFilePath = Path.Combine(destDir, file.Name)
+                    Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
+                    Debug.WriteLine("Copied file: " & targetFilePath) ' Log successful copy
+                Catch ex As UnauthorizedAccessException
+                    Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
+                    ShowStatus(IconError & " Unauthorized access: " & file.FullName)
+                Catch ex As Exception
+                    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+                    ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
+                End Try
             Next
 
-            ShowStatus(IconCopy & "  Copying subdirectories.")
+            ShowStatus(IconCopy & " Copying subdirectories.")
 
-            ' Copy subdirectories recursively
+            ' Copy subdirectories recursively asynchronously
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
-                CopyDirectory(subDir.FullName, newDest)
+                Try
+                    Await CopyDirectory(subDir.FullName, newDest)
+                Catch ex As Exception
+                    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+                End Try
             Next
 
             ' Refresh the view to show the copied directory
             NavigateTo(destDir)
 
-            ShowStatus(IconSuccess & "  Copied into " & destDir)
+            ShowStatus(IconSuccess & " Copied into " & destDir)
 
         Catch ex As Exception
-            ShowStatus(IconError & "  Copy failed: " & ex.Message)
+            ShowStatus(IconError & " Copy failed: " & ex.Message)
             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
         End Try
-
-    End Sub
-
-
+    End Function
 
 ```
 
 
+Here's a detailed breakdown of the updated `CopyDirectory` method in VB.NET, which now supports asynchronous file copying. This ensures that the UI remains responsive during the operation, especially when dealing with large directories.
 
-
-## 🔧 Method Definition
+## Updated Method Definition
 
 ```vb.net
-Private Sub CopyDirectory(sourceDir As String, destDir As String)
+Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
 ```
 
-- **sourceDir** — the folder you want to copy  
-- **destDir** — where the copy should be created  
+- **sourceDir**: The folder you want to copy.
+- **destDir**: The location where the copy should be created.
 
-
-
-## Create a DirectoryInfo object for the source
+## Create a DirectoryInfo Object for the Source
 
 ```vb.net
 Dim dirInfo As New DirectoryInfo(sourceDir)
 ```
 
-- `DirectoryInfo` gives you access to:
-  - the folder’s files  
-  - its subfolders  
-  - metadata  
-- It’s a convenient wrapper around a directory path.
+- This creates a `DirectoryInfo` object that provides access to the folder's files and subfolders.
 
-
-
-## Make sure the source directory exists
+## Ensure the Source Directory Exists
 
 ```vb.net
 If Not dirInfo.Exists Then
-    ShowStatus(IconError & "  Source directory not found: " & sourceDir)
-    Exit Sub
+    ShowStatus(IconError & " Source directory not found: " & sourceDir)
+    Return
 End If
 ```
 
-- If the folder doesn’t exist, we stop immediately.  
-- Beginners often mistype paths, so this prevents confusing errors.  
-- The user gets a clear, friendly message.
+- Checks if the source directory exists. If not, it shows an error message and exits the method.
 
-
-
-## Start a Try/Catch block
+## Start a Try/Catch Block
 
 ```vb.net
 Try
 ```
 
-Everything inside this block is protected.  
-If anything goes wrong (permissions, locked files, etc.), the `Catch` block will handle it gracefully.
+- Initiates a block to handle exceptions that may occur during the operation.
 
-
-
-## Tell the user we’re creating the destination directory
+## Create the Destination Directory
 
 ```vb.net
-ShowStatus(IconCopy & "  Create destination directory:" & destDir)
+Try
+    Directory.CreateDirectory(destDir)
+Catch ex As Exception
+    ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
+    Return
+End Try
 ```
 
-This gives immediate feedback so the UI feels alive and responsive.
+- Attempts to create the destination directory. If it fails, an error message is shown, and the method exits.
 
-
-
-## Create the destination directory
-
-```vb.net
-Directory.CreateDirectory(destDir)
-```
-
-- If the folder already exists, nothing bad happens.  
-- If it doesn’t exist, it is created.  
-- Either way, the destination is now ready.
-
-
-
-## Tell the user we’re copying files
-
-```vb.net
-ShowStatus(IconCopy & "  Copying files to destination directory:" & destDir)
-```
-
-This message helps user understand the sequence of operations.
-
-
-
-## Copy all files in the current directory
+## Copy Files Asynchronously
 
 ```vb.net
 For Each file In dirInfo.GetFiles()
-    Dim targetFilePath = Path.Combine(destDir, file.Name)
-    file.CopyTo(targetFilePath, overwrite:=True)
+    Try
+        Dim targetFilePath = Path.Combine(destDir, file.Name)
+        Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
+        Debug.WriteLine("Copied file: " & targetFilePath) ' Log successful copy
+    Catch ex As UnauthorizedAccessException
+        Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
+        ShowStatus(IconError & " Unauthorized access: " & file.FullName)
+    Catch ex As Exception
+        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+        ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
+    End Try
 Next
 ```
 
-- `GetFiles()` returns all files directly inside the folder.  
-- `Path.Combine` builds the full destination path.  
-- `CopyTo(..., overwrite:=True)` ensures:
-  - files are copied  
-  - existing files are replaced  
+- Iterates through each file in the source directory and copies it to the destination asynchronously. 
+- Uses `Await Task.Run(...)` to ensure the UI remains responsive during the file copy process.
+- Handles exceptions specifically for unauthorized access and general errors.
 
-This loop handles only the files — not subfolders.
-
-
-
-## Tell the user we’re copying subdirectories
-
-```vb.net
-ShowStatus(IconCopy & "  Copying subdirectories.")
-```
-
-This prepares the user for the next step: recursion.
-
-
-
-## Copy all subdirectories (recursively)
+## Copy Subdirectories Recursively
 
 ```vb.net
 For Each subDir In dirInfo.GetDirectories()
     Dim newDest = Path.Combine(destDir, subDir.Name)
-    CopyDirectory(subDir.FullName, newDest)
+    Try
+        Await CopyDirectory(subDir.FullName, newDest)
+    Catch ex As Exception
+        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    End Try
 Next
 ```
 
-This is the heart of the algorithm.
+- For each subdirectory, constructs a new destination path and calls `CopyDirectory` recursively.
+- Utilizes `Await` for asynchronous execution.
 
-- `GetDirectories()` returns all subfolders.  
-- For each subfolder:
-  - Build a new destination path  
-  - Call **CopyDirectory again** on that subfolder  
-
-This technique is called **recursion** — the function keeps calling itself until it reaches the deepest level of the folder tree.
-
-Beginners often find this magical once they see it in action.
-
-
-
-## Refresh the UI to show the copied directory
+## Refresh the UI
 
 ```vb.net
 NavigateTo(destDir)
 ```
 
-This helps the user visually confirm the copy succeeded.
+- Updates the UI to reflect the new state after the copy operation is complete.
 
-
-
-## Show a success message
+## Show Success Message
 
 ```vb.net
-ShowStatus(IconSuccess & "  Copied into " & destDir)
+ShowStatus(IconSuccess & " Copied into " & destDir)
 ```
 
-Clear, friendly confirmation that the operation completed.
+- Displays a success message once the operation is completed.
 
-
-
-## Handle any errors
+## Handle Any Errors
 
 ```vb.net
 Catch ex As Exception
-    ShowStatus(IconError & "  Copy failed: " & ex.Message)
+    ShowStatus(IconError & " Copy failed: " & ex.Message)
     Debug.WriteLine("CopyDirectory Error: " & ex.Message)
 End Try
 ```
 
-If anything goes wrong:
+- If any errors occur during the overall operation, they are caught here, and an appropriate message is displayed.
 
-- The user gets a helpful message  
-- You get a debug log for troubleshooting  
+## Summary
 
-This keeps the app stable and user‑friendly.
+- **Asynchronous Support**: The method now uses `Async` and `Await` to ensure the application remains responsive during file operations.
+- **Enhanced Error Handling**: Specific handling for unauthorized access and general exceptions.
+- **User Feedback**: Continuous feedback is provided to the user throughout the process.
 
-
-
-This method shows:
-
-- How to check whether a directory exists  
-- How to create directories safely  
-- How to copy files  
-- How to copy subfolders using **recursion**  
-- How to build paths correctly  
-- How to give user feedback  
-- How to handle errors without crashing  
-
+This updated method demonstrates how to effectively manage file copying operations while maintaining a responsive user interface.
 
 
 <img width="1266" height="662" alt="051" src="https://github.com/user-attachments/assets/1ec25af2-62d5-4877-a9d6-4210342ae4e3" />
