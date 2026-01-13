@@ -2862,7 +2862,6 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
-
     Private Sub InitApp()
 
         Me.Text = "File Explorer - Code with Joe"
