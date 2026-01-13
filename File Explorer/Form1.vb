@@ -872,36 +872,7 @@ Public Class Form1
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
 
-                '' Assign image based on file type
-                'Select Case fi.Extension.ToLowerInvariant()
-                '    Case ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma",
-                '     ".m4a", ".alac", ".aiff", ".dsd"
-                '        item.ImageKey = "Music"
-                '    Case ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".webp", ".heic",
-                '     ".raw", ".cr2", ".nef", ".orf", ".sr2"
-                '        item.ImageKey = "Pictures"
-                '    Case ".doc", ".docx", ".pdf", ".txt", ".xls", ".xlsx", ".ppt", ".pptx",
-                '     ".odt", ".ods", ".odp", ".rtf", ".html", ".htm", ".md"
-                '        item.ImageKey = "Documents"
-                '    Case ".mp4", ".avi", ".mov", ".wmv", ".mkv", ".flv", ".webm", ".mpeg", ".mpg",
-                '     ".3gp", ".vob", ".ogv", ".ts"
-                '        item.ImageKey = "Videos"
-                '    Case ".zip", ".rar", ".iso", ".7z", ".tar", ".gz", ".dmg",
-                '     ".epub", ".mobi", ".apk", ".crx"
-                '        item.ImageKey = "Downloads"
-                '    Case ".exe", ".bat", ".cmd", ".msi", ".com", ".scr", ".pif",
-                '     ".jar", ".vbs", ".ps1", ".wsf", ".dll", ".json", ".pdb", ".sln"
-                '        item.ImageKey = "Executable"
-                '    Case ".lnk"
-                '        item.ImageKey = "Shortcut"
-                '    Case Else
-                '        item.ImageKey = "Documents"
-                'End Select
-
-                'lvFiles.Items.Add(item)
-
-                'Dim ext As String = fi.Extension.ToLowerInvariant()
-
+                ' Assign image based on file type
                 Dim category As String = Nothing
                 If fileTypeMap.TryGetValue(ext, category) Then
                     ' Map dictionary category → image key
@@ -937,7 +908,6 @@ Public Class Form1
                 End If
 
                 lvFiles.Items.Add(item)
-
 
             Next
 
