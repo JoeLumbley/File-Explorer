@@ -386,176 +386,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) _
-    '    Handles Me.KeyDown
-
-
-    '    ' ============================
-    '    ' Address Bar Shortcuts
-    '    ' ============================
-    '    If (e.Control AndAlso e.KeyCode = Keys.L) _
-    '       OrElse (e.Alt AndAlso e.KeyCode = Keys.D) _
-    '       OrElse (e.KeyCode = Keys.F4) Then
-
-    '        txtPath.Focus()
-    '        txtPath.SelectAll()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    End If
-
-    '    ' ============================
-    '    ' Navigation Shortcuts
-    '    ' ============================
-    '    If e.Alt AndAlso e.KeyCode = Keys.Left Then
-
-    '        ' Go back to the previous folder
-    '        NavigateBackward_Click()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
-
-    '        ' Go forward to the next folder
-    '        NavigateForward_Click()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
-
-    '        ' Move up one level (parent directory)
-    '        NavigateToParent()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.KeyCode = Keys.F5 Then
-
-    '        ' Refresh the current folder view
-    '        NavigateTo(currentFolder, recordHistory:=False)
-    '        UpdateTreeRoots()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.KeyCode = Keys.F11 Then
-
-    '        'Toggle full‑screen mode
-    '        ToggleFullScreen()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    End If
-
-    '    ' ============================
-    '    ' Search
-    '    ' ============================
-
-    '    If e.KeyCode = Keys.F3 OrElse (e.Control AndAlso e.KeyCode = Keys.F) Then
-
-    '        ' Start a search in the current folder
-    '        txtPath.Focus()
-    '        txtPath.Text = "find "
-    '        txtPath.SelectionStart = txtPath.Text.Length
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    End If
-
-    '    ' ============================
-    '    ' File / Folder Operations
-    '    ' ============================
-
-    '    If e.Control AndAlso e.KeyCode = Keys.O Then
-
-    '        OpenSelectedOrStartCommand()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    End If
-
-    '    If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
-
-    '        ExpandOneLevel()
-    '        ConsumeKey(e)
-
-    '        Return
-
-
-    '    ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
-
-    '        CollapseOneLevel()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
-
-    '        NewFolder_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
-
-    '        NewTextFile_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.KeyCode = Keys.F2 Then
-
-    '        RenameFile_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtPath.Focused Then
-
-    '        CopySelected_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
-
-    '        PasteSelected_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtPath.Focused Then
-
-    '        CutSelected_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
-
-    '        SelectAllItems()
-    '        lvFiles.Focus()
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
-
-    '        Delete_Click(sender, e)
-    '        ConsumeKey(e)
-
-    '        Return
-
-    '    End If
-
-
-    'End Sub
 
 
 
@@ -605,22 +435,20 @@ Public Class Form1
     End Function
 
     Private Function HandleSearchShortcuts(e As KeyEventArgs) As Boolean
-        ' Find (Ctrl + F)
 
+        ' Find (Ctrl + F)
         If e.Control AndAlso e.KeyCode = Keys.F Then
             InitiateSearch()
             ConsumeKey(e)
             Return True
         End If
 
-        ' Find Next F3
+        ' Find Next (F3)
         If e.KeyCode = Keys.F3 Then
             HandleFindNextCommand()
             ConsumeKey(e)
             Return True
         End If
-
-
 
         Return False
     End Function
@@ -649,15 +477,17 @@ Public Class Form1
         ' Select the next result
         lvFiles.SelectedItems.Clear()
         Dim nextPath As String = SearchResults(SearchIndex)
+
         SelectListViewItemByPath(nextPath)
+        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
         ShowStatus(
         IconSearch &
-        " Showing result " &
+        "  Showing result " &
         (SearchIndex + 1) &
         " of " &
         SearchResults.Count &
-        ". To show the next result, enter: findnext"
+        $"  - '{fileName}'  -  Next result press: F3 or enter: findnext  -  Open Ctrl + O"
     )
     End Sub
 
