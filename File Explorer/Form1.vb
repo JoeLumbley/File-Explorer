@@ -936,20 +936,24 @@ Public Class Form1
             ' Load directories asynchronously
             ' -------------------------------
             Dim directories = Await Task.Run(Function()
+
                                                  Dim dirList As New List(Of String)()
                                                  Try
+
                                                      dirList.AddRange(
-                                             Directory.GetDirectories(path).
-                                             Where(Function(d) ShowHiddenFiles OrElse
-                                                         Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0))
-                                         )
+                                                     Directory.GetDirectories(path).
+                                                     Where(Function(d) _
+                                                     ShowHiddenFiles OrElse
+                                                     Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0)))
+
                                                  Catch ex As UnauthorizedAccessException
                                                      ShowStatus(IconWarning & " Access denied to some directories in: " & path)
-                                                     Debug.WriteLine($"PopulateFiles - UnauthorizedAccessException: {ex.Message}") ' Log exception details
+                                                     Debug.WriteLine($"PopulateFiles - {path} - Directories - UnauthorizedAccessException - {ex.Message}") ' Log exception details
                                                  Catch ex As Exception
                                                      ShowStatus(IconError & " An error occurred: " & ex.Message)
-                                                     Debug.WriteLine($"PopulateFiles - Error in loading directories: {ex.Message}")
+                                                     Debug.WriteLine($"PopulateFiles - {path} - Directories - Error - {ex.Message}")
                                                  End Try
+
                                                  Return dirList ' Ensure that an empty list is returned if an exception occurs
                                              End Function)
 
@@ -978,21 +982,26 @@ Public Class Form1
             ' Load files asynchronously
             ' ---------------------------
             Dim files = Await Task.Run(Function()
+
                                            Dim fileList As New List(Of String)
                                            Try
+
                                                fileList.AddRange(
                                                Directory.GetFiles(path).
-                                               Where(Function(f)
-                                                         Return ShowHiddenFiles OrElse
-                                                         (New FileInfo(f).Attributes And
-                                                         (FileAttributes.Hidden Or FileAttributes.System)) = 0
-                                                     End Function))
+                                               Where(Function(f) _
+                                               ShowHiddenFiles OrElse
+                                               (New FileInfo(f).Attributes And
+                                               (FileAttributes.Hidden Or FileAttributes.System)) = 0))
 
                                            Catch ex As UnauthorizedAccessException
                                                ShowStatus(IconError & " Access denied to some files in: " & path)
-                                               Debug.WriteLine("PopulateFiles - Access denied to some files in: " & path & " - UnauthorizedAccessException - " & ex.Message)
+                                               Debug.WriteLine($"PopulateFiles - {path} - Files - UnauthorizedAccessException - {ex.Message}")
+                                           Catch ex As Exception
+                                               ShowStatus(IconError & " An error occurred: " & ex.Message)
+                                               Debug.WriteLine($"PopulateFiles - {path} - Files - Error - {ex.Message}")
 
                                            End Try
+
                                            Return fileList
                                        End Function)
 
@@ -2295,7 +2304,10 @@ Public Class Form1
             UpdateNavButtons()
         End If
 
-        UpdateFileButtons()
+        'UpdateFileButtons()
+        'UpdateFileContextMenu()
+        UpdateFileButtonsAndMenus()
+
         UpdateEditButtons()
         UpdateEditContextMenu()
     End Sub
@@ -3091,23 +3103,74 @@ Public Class Form1
 
     End Sub
 
-    Private Sub UpdateFileButtons()
+    'Private Sub UpdateFileButtonsAndMenus()
 
-        If HasWriteAccessToDirectory(currentFolder) Then
-            ' Enable buttons if current folder is valid and writable
-            btnNewTextFile.Enabled = True
-        Else
-            ' Disable buttons if current folder is invalid
-            btnNewTextFile.Enabled = False
-        End If
+    '    ' Update file buttons
+    '    If HasWriteAccessToDirectory(currentFolder) Then
+    '        ' Enable buttons if current folder is valid and writable
+    '        btnNewTextFile.Enabled = True
+    '    Else
+    '        ' Disable buttons if current folder is invalid
+    '        btnNewTextFile.Enabled = False
+    '    End If
 
-        If HasDirectoryCreationAccessToDirectory(currentFolder) Then
-            btnNewFolder.Enabled = True
-        Else
-            btnNewFolder.Enabled = False
-        End If
+    '    If HasDirectoryCreationAccessToDirectory(currentFolder) Then
+    '        btnNewFolder.Enabled = True
+    '    Else
+    '        btnNewFolder.Enabled = False
+    '    End If
+
+    '    ' Update context menu as well
+    '    If cmsFiles.Items.Count = 0 Then Return
+    '    ' New Folder
+    '    If HasDirectoryCreationAccessToDirectory(currentFolder) Then
+    '        cmsFiles.Items("NewFolder").Enabled = True
+    '    Else
+    '        cmsFiles.Items("NewFolder").Enabled = False
+    '    End If
+    '    ' New Text File
+    '    If HasWriteAccessToDirectory(currentFolder) Then
+    '        cmsFiles.Items("NewTextFile").Enabled = True
+    '    Else
+    '        cmsFiles.Items("NewTextFile").Enabled = False
+    '    End If
+
+
+    Private Sub UpdateFileButtonsAndMenus()
+
+        Dim canWrite As Boolean = HasWriteAccessToDirectory(currentFolder)
+        Dim canCreateFolders As Boolean = HasDirectoryCreationAccessToDirectory(currentFolder)
+
+        ' --- Toolbar buttons ---
+        btnNewTextFile.Enabled = canWrite
+        btnNewFolder.Enabled = canCreateFolders
+
+        ' --- Context menu items ---
+        If cmsFiles.Items.Count = 0 Then Exit Sub
+
+        cmsFiles.Items("NewFolder").Enabled = canCreateFolders
+        cmsFiles.Items("NewTextFile").Enabled = canWrite
 
     End Sub
+
+
+    'End Sub
+
+    'Private Sub UpdateFileContextMenu()
+    '    If cmsFiles.Items.Count = 0 Then Return
+    '    ' New Folder
+    '    If HasDirectoryCreationAccessToDirectory(currentFolder) Then
+    '        cmsFiles.Items("NewFolder").Enabled = True
+    '    Else
+    '        cmsFiles.Items("NewFolder").Enabled = False
+    '    End If
+    '    ' New Text File
+    '    If HasWriteAccessToDirectory(currentFolder) Then
+    '        cmsFiles.Items("NewTextFile").Enabled = True
+    '    Else
+    '        cmsFiles.Items("NewTextFile").Enabled = False
+    '    End If
+    'End Sub
 
 
     Private Sub UpdateEditContextMenu()
@@ -3262,11 +3325,11 @@ Public Class Form1
             Return True
 
         Catch ex As UnauthorizedAccessException
-            Debug.WriteLine("HasWriteAccessToDirectory - " & dirPath & " - False - UnauthorizedAccessException " & ex.Message)
+            Debug.WriteLine("HasWriteAccessToDirectory - " & dirPath & " - False - UnauthorizedAccessException - " & ex.Message)
 
             Return False
         Catch ex As IOException
-            Debug.WriteLine("HasWriteAccessToDirectory - " & dirPath & " - False - IOException " & ex.Message)
+            Debug.WriteLine("HasWriteAccessToDirectory - " & dirPath & " - False - IOException - " & ex.Message)
 
             Return False
         End Try
@@ -3370,20 +3433,42 @@ Public Class Form1
         Next
     End Sub
 
+    'Private Function HasSubdirectories(path As String) As Boolean
+
+    '    Try
+
+    '        Return Directory.EnumerateDirectories(path).Any()
+
+
+    '    Catch ex As UnauthorizedAccessException
+
+    '        Debug.WriteLine($"HasSubdirectories - {path} - False - UnauthorizedAccessException - {ex.Message}")
+
+
+    '    Catch ex As Exception
+
+    '        Debug.WriteLine($"HasSubdirectories - {path} - False - Error - {ex.Message}")
+
+    '        Return False
+
+    '    End Try
+
+    '    Return False
+
+    'End Function
+
     Private Function HasSubdirectories(path As String) As Boolean
-
         Try
-
             Return Directory.EnumerateDirectories(path).Any()
 
-        Catch ex As Exception
-
-            Debug.WriteLine($"HasSubdirectories: Access denied or error for path: {path}")
-
+        Catch ex As UnauthorizedAccessException
+            Debug.WriteLine($"HasSubdirectories - {path} - False - UnauthorizedAccessException - {ex.Message}")
             Return False
 
+        Catch ex As Exception
+            Debug.WriteLine($"HasSubdirectories - {path} - False - Error - {ex.Message}")
+            Return False
         End Try
-
     End Function
 
     Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
