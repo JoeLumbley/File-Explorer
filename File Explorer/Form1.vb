@@ -806,62 +806,271 @@ Public Class Form1
     End Sub
 
 
-    Private Sub PopulateFiles(path As String)
+    'Private Sub PopulateFiles(path As String)
 
+    '    lvFiles.BeginUpdate()
+
+    '    lvFiles.Items.Clear()
+
+    '    ' Folders first
+    '    Try
+
+    '        For Each mDir In Directory.GetDirectories(path)
+
+    '            Dim di = New DirectoryInfo(mDir)
+
+    '            ' Skip hidden/system folders unless checkbox is checked
+    '            If Not ShowHiddenFiles AndAlso
+    '               (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+    '                Continue For
+    '            End If
+
+    '            Dim item = New ListViewItem(di.Name)
+    '            item.SubItems.Add("Folder")
+    '            item.SubItems.Add("") ' size blank for folders
+    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = di.FullName
+    '            item.ImageKey = "Folder"
+
+    '            lvFiles.Items.Add(item)
+
+    '        Next
+
+    '    Catch ex As UnauthorizedAccessException
+    '        ShowStatus(IconError & " Access Denied")
+    '        Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
+    '    End Try
+
+
+    '    ' Files
+    '    Try
+    '        For Each file In Directory.GetFiles(path)
+    '            Dim fi = New FileInfo(file)
+
+    '            ' Skip hidden/system files unless checkbox is checked
+    '            If Not ShowHiddenFiles AndAlso
+    '           (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+    '                Continue For
+    '            End If
+
+    '            Dim item = New ListViewItem(fi.Name)
+
+    '            ' Assign File type based on extension using a lookup table
+    '            Dim ext As String = fi.Extension.ToLowerInvariant()
+
+    '            Dim fileType As String = Nothing
+
+    '            If fileTypeMap.TryGetValue(ext, fileType) Then
+    '                item.SubItems.Add(fileType)
+    '            Else
+    '                item.SubItems.Add("Document")
+    '            End If
+
+    '            item.SubItems.Add(FormatSize(fi.Length))
+    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = fi.FullName
+
+    '            ' Assign image based on file type
+    '            Dim category As String = Nothing
+    '            If fileTypeMap.TryGetValue(ext, category) Then
+
+    '                ' Map dictionary category → image key
+    '                Select Case category
+    '                    Case "Audio"
+    '                        item.ImageKey = "Music"
+
+    '                    Case "Image"
+    '                        item.ImageKey = "Pictures"
+
+    '                    Case "Document"
+    '                        item.ImageKey = "Documents"
+
+    '                    Case "Video"
+    '                        item.ImageKey = "Videos"
+
+    '                    Case "Archive"
+    '                        item.ImageKey = "Downloads"
+
+    '                    Case "Executable"
+    '                        item.ImageKey = "Executable"
+
+    '                    Case "Shortcut"
+    '                        item.ImageKey = "Shortcut"
+
+    '                    Case Else
+    '                        ' For Code, Project, Resource, Config, etc.
+    '                        item.ImageKey = "Documents"
+    '                End Select
+    '            Else
+    '                ' Unknown extension → fallback
+    '                item.ImageKey = "Documents"
+    '            End If
+
+    '            lvFiles.Items.Add(item)
+
+    '        Next
+
+    '    Catch ex As UnauthorizedAccessException
+    '        ShowStatus(IconError & " Access Denied")
+    '        Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
+    '    End Try
+
+    '    lvFiles.EndUpdate()
+
+    'End Sub
+
+
+
+    'Private Async Sub PopulateFilesAsync(path As String)
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.Items.Clear()
+
+    '    Try
+    '        ' Load directories
+    '        Dim directories = Directory.GetDirectories(path).Where(Function(d) ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0)
+
+    '        Dim itemsToAdd As New List(Of ListViewItem)
+
+    '        For Each mDir In directories
+    '            Dim di = New DirectoryInfo(mDir)
+    '            Dim item = New ListViewItem(di.Name) With {
+    '            .SubItems = {
+    '                New ListViewItem.ListViewSubItem(item, "Folder"),
+    '                New ListViewItem.ListViewSubItem(item, ""),
+    '                New ListViewItem.ListViewSubItem(item, di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            },
+    '            .Tag = di.FullName,
+    '            .ImageKey = "Folder"
+    '        }
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        ' Load files
+    '        Dim files = Directory.GetFiles(path).Where(Function(f) ShowHiddenFiles OrElse (New FileInfo(f).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0)
+
+    '        For Each file In files
+    '            Dim fi = New FileInfo(file)
+    '            Dim item = New ListViewItem(fi.Name)
+    '            Dim ext = fi.Extension.ToLowerInvariant()
+    '            Dim fileType = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '            item.SubItems.Add(fileType)
+    '            item.SubItems.Add(FormatSize(fi.Length))
+    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = fi.FullName
+    '            item.ImageKey = fileTypeMap.GetValueOrDefault(ext, "Documents")
+
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
+
+    '    Catch ex As UnauthorizedAccessException
+    '        ShowStatus(IconError & " Access Denied: " & ex.Message)
+    '        Debug.WriteLine($"Access Denied: {ex.Message}")
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"General Error: {ex.Message}")
+    '    Finally
+    '        lvFiles.EndUpdate()
+    '    End Try
+    'End Sub
+
+    'Private Async Sub PopulateFiles(path As String)
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.Items.Clear()
+
+    '    Try
+    '        ' Load directories
+    '        Dim directories = Directory.GetDirectories(path).Where(Function(d) ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0)
+
+    '        Dim itemsToAdd As New List(Of ListViewItem)
+
+    '        For Each mDir In directories
+    '            Dim di = New DirectoryInfo(mDir)
+    '            Dim item As New ListViewItem(di.Name)
+    '            item.SubItems.Add("Folder")
+    '            item.SubItems.Add("") ' Size blank for folders
+    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = di.FullName
+    '            item.ImageKey = "Folder"
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        ' Load files
+    '        Dim files = Directory.GetFiles(path).Where(Function(f) ShowHiddenFiles OrElse (New FileInfo(f).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0)
+
+    '        For Each file In files
+    '            Dim fi = New FileInfo(file)
+    '            Dim item As New ListViewItem(fi.Name)
+    '            Dim ext = fi.Extension.ToLowerInvariant()
+    '            Dim fileType = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '            item.SubItems.Add(fileType)
+    '            item.SubItems.Add(FormatSize(fi.Length))
+    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = fi.FullName
+    '            item.ImageKey = fileTypeMap.GetValueOrDefault(ext, "Documents")
+
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
+
+    '    Catch ex As UnauthorizedAccessException
+    '        ShowStatus(IconError & " Access Denied: " & ex.Message)
+    '        Debug.WriteLine($"Access Denied: {ex.Message}")
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"General Error: {ex.Message}")
+    '    Finally
+    '        lvFiles.EndUpdate()
+    '    End Try
+    'End Sub
+
+
+
+
+
+
+
+    Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
-
         lvFiles.Items.Clear()
 
-        ' Folders first
         Try
+            ' Load directories asynchronously
+            Dim directories = Await Task.Run(Function() Directory.GetDirectories(path).Where(Function(d) ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
 
-            For Each mDir In Directory.GetDirectories(path)
+            Dim itemsToAdd As New List(Of ListViewItem)
 
+            For Each mDir In directories
                 Dim di = New DirectoryInfo(mDir)
-
-                ' Skip hidden/system folders unless checkbox is checked
-                If Not ShowHiddenFiles AndAlso
-                   (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                    Continue For
-                End If
-
-                Dim item = New ListViewItem(di.Name)
+                Dim item As New ListViewItem(di.Name)
                 item.SubItems.Add("Folder")
-                item.SubItems.Add("") ' size blank for folders
+                item.SubItems.Add("") ' Size blank for folders
                 item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = di.FullName
                 item.ImageKey = "Folder"
-
-                lvFiles.Items.Add(item)
-
+                itemsToAdd.Add(item)
             Next
 
-        Catch ex As UnauthorizedAccessException
-            ShowStatus(IconError & " Access Denied")
-            Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
-        Catch ex As Exception
-            ShowStatus(IconError & $" Error: {ex.Message}")
-            Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
-        End Try
+            ' Load files asynchronously
+            Dim files = Await Task.Run(Function() Directory.GetFiles(path).Where(Function(f) ShowHiddenFiles OrElse (New FileInfo(f).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
 
-
-        ' Files
-        Try
-            For Each file In Directory.GetFiles(path)
+            For Each file In files
                 Dim fi = New FileInfo(file)
+                Dim item As New ListViewItem(fi.Name)
 
-                ' Skip hidden/system files unless checkbox is checked
-                If Not ShowHiddenFiles AndAlso
-               (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-                    Continue For
-                End If
+                Dim ext = fi.Extension.ToLowerInvariant()
+                Dim fileType = fileTypeMap.GetValueOrDefault(ext, "Document")
 
-                Dim item = New ListViewItem(fi.Name)
-
-                ' Assign File type based on extension using a lookup table
-                Dim ext As String = fi.Extension.ToLowerInvariant()
-
-                Dim fileType As String = Nothing
 
                 If fileTypeMap.TryGetValue(ext, fileType) Then
                     item.SubItems.Add(fileType)
@@ -869,9 +1078,16 @@ Public Class Form1
                     item.SubItems.Add("Document")
                 End If
 
+
+
+                'item.SubItems.Add(fileType)
                 item.SubItems.Add(FormatSize(fi.Length))
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
+
+
+
+
 
                 ' Assign image based on file type
                 Dim category As String = Nothing
@@ -909,21 +1125,46 @@ Public Class Form1
                     item.ImageKey = "Documents"
                 End If
 
-                lvFiles.Items.Add(item)
 
+                itemsToAdd.Add(item)
             Next
 
+            lvFiles.Items.AddRange(itemsToAdd.ToArray())
+
         Catch ex As UnauthorizedAccessException
-            ShowStatus(IconError & " Access Denied")
-            Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
+            ShowStatus(IconError & " Access Denied: " & ex.Message)
+            Debug.WriteLine($"Access Denied: {ex.Message}")
         Catch ex As Exception
             ShowStatus(IconError & $" Error: {ex.Message}")
-            Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
+            Debug.WriteLine($"General Error: {ex.Message}")
+        Finally
+            lvFiles.EndUpdate()
         End Try
+    End Function
 
-        lvFiles.EndUpdate()
 
-    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
@@ -1164,42 +1405,219 @@ Public Class Form1
 
     End Sub
 
-    Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
+    'Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
-        ' Is a file or folder selected?
-        If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
+    '    ' Is a file or folder selected?
+    '    If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
 
-        Dim destDir = currentFolder
-        Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+    '    Dim destDir = currentFolder
+    '    Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
 
-        If destPath = Nothing Then
+    '    If destPath = Nothing Then
 
-            ShowStatus(IconError & "Paste failed: No Path")
+    '        ShowStatus(IconError & "Paste failed: No Path")
 
+    '        Exit Sub
+
+    '    End If
+
+    '    Try
+    '        If File.Exists(_clipboardPath) Then
+    '            If _clipboardIsCut Then
+    '                File.Move(_clipboardPath, destPath)
+    '            Else
+    '                File.Copy(_clipboardPath, destPath, overwrite:=False)
+    '            End If
+    '        ElseIf Directory.Exists(_clipboardPath) Then
+    '            If _clipboardIsCut Then
+    '                Directory.Move(_clipboardPath, destPath)
+    '            Else
+    '                CopyDirectory(_clipboardPath, destPath)
+    '            End If
+
+    '        Else
+
+    '            ShowStatus("Paste failed: No Path")
+
+    '            Exit Sub
+
+    '        End If
+
+    '        ' Clear cut state
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        ' Refresh current folder view
+    '        PopulateFiles(destDir)
+
+    '        ResetCutVisuals()
+
+    '        ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+    'Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
+    '    ' Check if a file or folder is selected
+    '    If String.IsNullOrEmpty(_clipboardPath) Then
+    '        ShowStatus(IconError & " Paste failed: No item in clipboard")
+    '        Exit Sub
+    '    End If
+
+    '    Dim destDir As String = currentFolder
+    '    Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+    '    ' Ensure destination path is valid
+    '    If String.IsNullOrEmpty(destPath) Then
+    '        ShowStatus(IconError & " Paste failed: Invalid destination path")
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        If File.Exists(_clipboardPath) Then
+    '            ' Handle file paste
+    '            If _clipboardIsCut Then
+    '                File.Move(_clipboardPath, destPath)
+    '            Else
+    '                File.Copy(_clipboardPath, destPath, overwrite:=False)
+    '            End If
+    '        ElseIf Directory.Exists(_clipboardPath) Then
+    '            ' Handle directory paste
+    '            If _clipboardIsCut Then
+    '                Directory.Move(_clipboardPath, destPath)
+    '            Else
+    '                CopyDirectory(_clipboardPath, destPath)
+    '            End If
+    '        Else
+    '            ShowStatus(IconError & " Paste failed: Source not found")
+    '            Exit Sub
+    '        End If
+
+    '        ' Clear cut state
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        ' Refresh current folder view
+    '        PopulateFiles(destDir)
+
+    '        ResetCutVisuals()
+
+    '        ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
+    '    Catch ex As IOException
+    '        MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: I/O Error - " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
+    '    Catch ex As UnauthorizedAccessException
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: Access Denied - " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
+    '    Catch ex As Exception
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+    '    ' Check if a file or folder is selected
+    '    If String.IsNullOrEmpty(_clipboardPath) Then
+    '        ShowStatus(IconError & " Paste failed: No item in clipboard")
+    '        Exit Sub
+    '    End If
+
+    '    Dim destDir As String = currentFolder
+    '    Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+    '    ' Ensure destination path is valid
+    '    If String.IsNullOrEmpty(destPath) Then
+    '        ShowStatus(IconError & " Paste failed: Invalid destination path")
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        If File.Exists(_clipboardPath) Then
+    '            ' Handle file paste
+    '            If _clipboardIsCut Then
+    '                File.Move(_clipboardPath, destPath)
+    '            Else
+    '                File.Copy(_clipboardPath, destPath, overwrite:=True)
+    '            End If
+    '        ElseIf Directory.Exists(_clipboardPath) Then
+    '            ' Handle directory paste
+    '            If _clipboardIsCut Then
+    '                Directory.Move(_clipboardPath, destPath)
+    '            Else
+    '                Await CopyDirectory(_clipboardPath, destPath) ' Await the async copy method
+    '            End If
+    '        Else
+    '            ShowStatus(IconError & " Paste failed: Source not found")
+    '            Exit Sub
+    '        End If
+
+    '        ' Clear cut state
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        ' Refresh current folder view
+    '        PopulateFiles(destDir)
+
+    '        ResetCutVisuals()
+
+    '        ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
+    '    Catch ex As IOException
+    '        MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: I/O Error - " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
+    '    Catch ex As UnauthorizedAccessException
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: Access Denied - " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
+    '    Catch ex As Exception
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(IconError & " Paste failed: " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+    Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+        ' Check if a file or folder is selected
+        If String.IsNullOrEmpty(_clipboardPath) Then
+            ShowStatus(IconError & " Paste failed: No item in clipboard")
             Exit Sub
+        End If
 
+        Dim destDir As String = currentFolder
+        Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+        ' Ensure destination path is valid
+        If String.IsNullOrEmpty(destPath) Then
+            ShowStatus(IconError & " Paste failed: Invalid destination path")
+            Exit Sub
         End If
 
         Try
             If File.Exists(_clipboardPath) Then
+                ' Handle file paste
                 If _clipboardIsCut Then
                     File.Move(_clipboardPath, destPath)
                 Else
-                    File.Copy(_clipboardPath, destPath, overwrite:=False)
+                    File.Copy(_clipboardPath, destPath, overwrite:=True)
                 End If
             ElseIf Directory.Exists(_clipboardPath) Then
+                ' Handle directory paste
                 If _clipboardIsCut Then
                     Directory.Move(_clipboardPath, destPath)
                 Else
-                    CopyDirectory(_clipboardPath, destPath)
+                    Await CopyDirectory(_clipboardPath, destPath) ' Await the async copy method
                 End If
-
             Else
-
-                ShowStatus("Paste failed: No Path")
-
+                ShowStatus(IconError & " Paste failed: Source not found")
                 Exit Sub
-
             End If
 
             ' Clear cut state
@@ -1207,18 +1625,24 @@ Public Class Form1
             _clipboardIsCut = False
 
             ' Refresh current folder view
-            PopulateFiles(destDir)
+            Await PopulateFiles(destDir) ' Await the async method
 
             ResetCutVisuals()
 
             ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
-
+        Catch ex As IOException
+            MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus(IconError & " Paste failed: I/O Error - " & ex.Message)
+            Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
+        Catch ex As UnauthorizedAccessException
+            MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowStatus(IconError & " Paste failed: Access Denied - " & ex.Message)
+            Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
         Catch ex As Exception
             MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(IconError & " Paste failed: " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
-
     End Sub
 
 
@@ -1314,7 +1738,7 @@ Public Class Form1
     End Sub
 
 
-    Private Sub ExecuteCommand(command As String)
+    Private Async Sub ExecuteCommand(command As String)
 
         ' Use regex to split by spaces but keep quoted substrings together
         Dim parts As String() = Regex.Matches(command, "[\""].+?[\""]|[^ ]+").
@@ -1340,44 +1764,75 @@ Public Class Form1
                     ShowStatus(IconDialog & " Usage: cd [directory] - cd C:\ ")
                 End If
 
+            'Case "copy"
+
+            '    If parts.Length > 2 Then
+
+            '        Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+            '        Dim destination As String = parts(parts.Length - 1).Trim()
+
+            '        ' Check if source file or directory exists
+            '        If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
+            '            ShowStatus(IconError &
+            '                       " Copy Failed - Source: ''" &
+            '                       source &
+            '                       "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+            '            Return
+            '        End If
+
+            '        ' Check if destination directory exists
+            '        If Not Directory.Exists(destination) Then
+            '            ShowStatus(IconError &
+            '                       " Copy Failed - Destination folder: ''" &
+            '                       destination &
+            '                       "'' does not exist.Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+            '            Return
+            '        End If
+
+            '        ' If source is a file, copy it
+            '        If File.Exists(source) Then
+            '            CopyFile(source, destination)
+            '        Else
+            '            ' If source is a directory, copy it
+            '            CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source)))
+            '            'Await Task.Run(Sub() CopyDirectory(subDir.FullName, newDest))
+
+            '        End If
+
+            '    Else
+            '        ShowStatus(IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
+            '    End If
+
+
             Case "copy"
-
                 If parts.Length > 2 Then
-
                     Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
                     Dim destination As String = parts(parts.Length - 1).Trim()
 
                     ' Check if source file or directory exists
                     If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
                         ShowStatus(IconError &
-                                   " Copy Failed - Source: ''" &
-                                   source &
-                                   "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+                       " Copy Failed - Source: ''" &
+                       source &
+                       "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
                         Return
                     End If
 
                     ' Check if destination directory exists
                     If Not Directory.Exists(destination) Then
                         ShowStatus(IconError &
-                                   " Copy Failed - Destination folder: ''" &
-                                   destination &
-                                   "'' does not exist.Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+                       " Copy Failed - Destination folder: ''" &
+                       destination &
+                       "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
                         Return
                     End If
 
-                    ' If source is a file, copy it
-                    If File.Exists(source) Then
-                        CopyFile(source, destination)
-                    Else
-                        ' If source is a directory, copy it
-                        CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source)))
-                        'Await Task.Run(Sub() CopyDirectory(subDir.FullName, newDest))
-
-                    End If
+                    Await CopyFileOrDirectory(source, destination)
 
                 Else
                     ShowStatus(IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
                 End If
+
 
             Case "move"
 
@@ -1679,6 +2134,30 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub CopyFileOrDirectory(source As String, destination As String)
+    '    ' If source is a file, copy it
+    '    If File.Exists(source) Then
+    '        CopyFile(source, destination)
+    '    Else
+    '        ' If source is a directory, copy it asynchronously
+    '        Await CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source))) ' Await the async method
+
+    '    End If
+    'End Sub
+
+
+    Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
+        ' If source is a file, copy it
+        If File.Exists(source) Then
+            CopyFile(source, destination) ' Assuming CopyFile is a synchronous method
+        ElseIf Directory.Exists(source) Then
+            ' If source is a directory, copy it asynchronously
+            Await CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source))) ' Await the async method
+        Else
+            ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
+        End If
+    End Function
+
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
@@ -1843,10 +2322,58 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-    Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
+    'Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
+    '    ' Navigate to the specified folder path.
+    '    ' Updates the current folder, path textbox, and file list.
+
+    '    ' Validate input
+    '    ' Checks if the provided path is null, empty, or consists only of whitespace. If so, the method exits early.
+    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+
+    '    ' Validate that the folder exists
+    '    If Not Directory.Exists(path) Then
+    '        MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    '        ShowStatus(IconWarning & " Folder not found: " & path)
+    '        Exit Sub
+    '    End If
+
+    '    ' If this method is called from a background thread, invoke it on the UI thread
+    '    If txtPath.InvokeRequired Then
+    '        txtPath.Invoke(New Action(Of String)(AddressOf NavigateTo), path, recordHistory)
+    '        Return
+    '    End If
+
+    '    ShowStatus(IconNavigate & " Navigated To: " & path)
+
+    '    currentFolder = path
+    '    txtPath.Text = path
+    '    PopulateFiles(path)
+
+    '    If recordHistory Then
+    '        ' Trim forward history if we branch
+    '        If _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1 Then
+    '            _history.RemoveRange(_historyIndex + 1, _history.Count - (_historyIndex + 1))
+    '        End If
+    '        _history.Add(path)
+    '        _historyIndex = _history.Count - 1
+    '        UpdateNavButtons()
+    '    End If
+
+    '    UpdateFileButtons()
+    '    UpdateEditButtons()
+    '    UpdateEditContextMenu()
+    'End Sub
+
+
+
+
+
+
+    Private Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
 
+        ' Validate input
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
 
         ' Validate that the folder exists
@@ -1866,7 +2393,7 @@ Public Class Form1
 
         currentFolder = path
         txtPath.Text = path
-        PopulateFiles(path)
+        Await PopulateFiles(path) ' Await the async method
 
         If recordHistory Then
             ' Trim forward history if we branch
@@ -1882,6 +2409,19 @@ Public Class Form1
         UpdateEditButtons()
         UpdateEditContextMenu()
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
@@ -2117,8 +2657,90 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub DeleteFileOrDirectory(path2Delete As String)
+    'Private Sub DeleteFileOrDirectory(path2Delete As String)
 
+    '    ' Reject relative paths outright
+    '    If Not Path.IsPathRooted(path2Delete) Then
+    '        ShowStatus(IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
+    '        Exit Sub
+    '    End If
+
+    '    ' Check if the path is in the protected list
+    '    If IsProtectedPathOrFolder(path2Delete) Then
+    '        ' Navigate to the protected path so the user can see it was not deleted
+    '        NavigateTo(path2Delete)
+    '        ' Inform the user that deletion was prevented
+    '        ShowStatus(IconProtect & "  Deletion prevented for protected path: " & path2Delete)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+
+    '        ' Check if it's a file
+    '        If File.Exists(path2Delete) Then
+
+    '            ' Goto the directory of the file to be deleted so the user can see what is about to be deleted.
+    '            Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
+    '            NavigateTo(destDir)
+
+    '            ' Make the user confirm file deletion.
+    '            Dim fileName As String = Path.GetFileName(path2Delete)
+    '            Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
+    '                                        "''" & fileName & "''?"
+    '            Dim result = MessageBox.Show(confirmMsg,
+    '                                         "Confirm File Deletion",
+    '                                         MessageBoxButtons.YesNo,
+    '                                         MessageBoxIcon.Question)
+    '            If result <> DialogResult.Yes Then Exit Sub
+
+    '            File.Delete(path2Delete)
+
+    '            ' Refresh the view to show the file is deleted
+    '            PopulateFiles(destDir)
+
+    '            ShowStatus(IconDelete & "  Deleted file: " & fileName)
+
+    '            ' Check if it's a directory
+    '        ElseIf Directory.Exists(path2Delete) Then
+
+    '            ' Navigate into the folder to be deleted
+    '            NavigateTo(path2Delete)
+
+    '            ' Get the parent directory so we can navigate there after deletion
+    '            Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
+
+    '            ' Ask the user to confirm deletion
+    '            Dim folderName As String = Path.GetFileName(path2Delete)
+    '            Dim confirmMsg As String =
+    '                "Are you sure you want to delete the following folder:" & Environment.NewLine &
+    '                "''" & folderName & "'' and all of its contents?"
+    '            Dim result = MessageBox.Show(confirmMsg,
+    '                                         "Confirm Folder Deletion",
+    '                                         MessageBoxButtons.YesNo,
+    '                                         MessageBoxIcon.Question)
+    '            If result <> DialogResult.Yes Then Exit Sub
+
+    '            Directory.Delete(path2Delete, recursive:=True)
+
+    '            ' Navigate to the parent so the user sees the result
+    '            NavigateTo(parentDir, True)
+
+    '            ShowStatus(IconDelete & "  Deleted folder: " & folderName)
+
+    '        Else
+    '            ShowStatus(IconWarning & "  Delete failed: Path not found.")
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Delete failed: " & ex.Message)
+    '        Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
+
+    Private Async Sub DeleteFileOrDirectory(path2Delete As String)
         ' Reject relative paths outright
         If Not Path.IsPathRooted(path2Delete) Then
             ShowStatus(IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
@@ -2135,34 +2757,31 @@ Public Class Form1
         End If
 
         Try
-
             ' Check if it's a file
             If File.Exists(path2Delete) Then
-
-                ' Goto the directory of the file to be deleted so the user can see what is about to be deleted.
+                ' Go to the directory of the file to be deleted so the user can see what is about to be deleted.
                 Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(destDir)
 
                 ' Make the user confirm file deletion.
                 Dim fileName As String = Path.GetFileName(path2Delete)
                 Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
-                                            "''" & fileName & "''?"
+                                        "''" & fileName & "''?"
                 Dim result = MessageBox.Show(confirmMsg,
-                                             "Confirm File Deletion",
-                                             MessageBoxButtons.YesNo,
-                                             MessageBoxIcon.Question)
+                                         "Confirm File Deletion",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
                 File.Delete(path2Delete)
 
                 ' Refresh the view to show the file is deleted
-                PopulateFiles(destDir)
+                Await PopulateFiles(destDir) ' Await the async method
 
                 ShowStatus(IconDelete & "  Deleted file: " & fileName)
 
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
-
                 ' Navigate into the folder to be deleted
                 NavigateTo(path2Delete)
 
@@ -2172,18 +2791,21 @@ Public Class Form1
                 ' Ask the user to confirm deletion
                 Dim folderName As String = Path.GetFileName(path2Delete)
                 Dim confirmMsg As String =
-                    "Are you sure you want to delete the following folder:" & Environment.NewLine &
-                    "''" & folderName & "'' and all of its contents?"
+                "Are you sure you want to delete the following folder:" & Environment.NewLine &
+                "''" & folderName & "'' and all of its contents?"
                 Dim result = MessageBox.Show(confirmMsg,
-                                             "Confirm Folder Deletion",
-                                             MessageBoxButtons.YesNo,
-                                             MessageBoxIcon.Question)
+                                         "Confirm Folder Deletion",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
                 Directory.Delete(path2Delete, recursive:=True)
 
                 ' Navigate to the parent so the user sees the result
                 NavigateTo(parentDir, True)
+
+                ' Refresh the view to show the folder is deleted
+                Await PopulateFiles(parentDir) ' Await the async method
 
                 ShowStatus(IconDelete & "  Deleted folder: " & folderName)
 
@@ -2195,8 +2817,8 @@ Public Class Form1
             ShowStatus(IconError & " Delete failed: " & ex.Message)
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
-
     End Sub
+
 
 
     Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
