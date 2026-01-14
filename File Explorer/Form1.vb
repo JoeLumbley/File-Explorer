@@ -514,7 +514,7 @@ Public Class Form1
 
             Return
 
-        ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C Then
+        ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtPath.Focused Then
 
             CopySelected_Click(sender, e)
             ConsumeKey(e)
@@ -528,7 +528,7 @@ Public Class Form1
 
             Return
 
-        ElseIf e.Control AndAlso e.KeyCode = Keys.X Then
+        ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtPath.Focused Then
 
             CutSelected_Click(sender, e)
             ConsumeKey(e)
@@ -551,6 +551,7 @@ Public Class Form1
             Return
 
         End If
+
 
     End Sub
 
