@@ -24,6 +24,7 @@
 ' Github repo: https://github.com/JoeLumbley/File-Explorer
 ' Documentation: You can find the documentation at the GitHub repository.
 
+' Maximum Effort
 
 Imports System.IO
 Imports System.Text
@@ -385,180 +386,356 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) _
-        Handles Me.KeyDown
+    'Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) _
+    '    Handles Me.KeyDown
 
-        ' ============================
-        ' Address Bar Shortcuts
-        ' ============================
-        If (e.Control AndAlso e.KeyCode = Keys.L) _
-           OrElse (e.Alt AndAlso e.KeyCode = Keys.D) _
-           OrElse (e.KeyCode = Keys.F4) Then
+
+    '    ' ============================
+    '    ' Address Bar Shortcuts
+    '    ' ============================
+    '    If (e.Control AndAlso e.KeyCode = Keys.L) _
+    '       OrElse (e.Alt AndAlso e.KeyCode = Keys.D) _
+    '       OrElse (e.KeyCode = Keys.F4) Then
+
+    '        txtPath.Focus()
+    '        txtPath.SelectAll()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    End If
+
+    '    ' ============================
+    '    ' Navigation Shortcuts
+    '    ' ============================
+    '    If e.Alt AndAlso e.KeyCode = Keys.Left Then
+
+    '        ' Go back to the previous folder
+    '        NavigateBackward_Click()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
+
+    '        ' Go forward to the next folder
+    '        NavigateForward_Click()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
+
+    '        ' Move up one level (parent directory)
+    '        NavigateToParent()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.KeyCode = Keys.F5 Then
+
+    '        ' Refresh the current folder view
+    '        NavigateTo(currentFolder, recordHistory:=False)
+    '        UpdateTreeRoots()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.KeyCode = Keys.F11 Then
+
+    '        'Toggle full‑screen mode
+    '        ToggleFullScreen()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    End If
+
+    '    ' ============================
+    '    ' Search
+    '    ' ============================
+
+    '    If e.KeyCode = Keys.F3 OrElse (e.Control AndAlso e.KeyCode = Keys.F) Then
+
+    '        ' Start a search in the current folder
+    '        txtPath.Focus()
+    '        txtPath.Text = "find "
+    '        txtPath.SelectionStart = txtPath.Text.Length
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    End If
+
+    '    ' ============================
+    '    ' File / Folder Operations
+    '    ' ============================
+
+    '    If e.Control AndAlso e.KeyCode = Keys.O Then
+
+    '        OpenSelectedOrStartCommand()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    End If
+
+    '    If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
+
+    '        ExpandOneLevel()
+    '        ConsumeKey(e)
+
+    '        Return
+
+
+    '    ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
+
+    '        CollapseOneLevel()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
+
+    '        NewFolder_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
+
+    '        NewTextFile_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.KeyCode = Keys.F2 Then
+
+    '        RenameFile_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtPath.Focused Then
+
+    '        CopySelected_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
+
+    '        PasteSelected_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtPath.Focused Then
+
+    '        CutSelected_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
+
+    '        SelectAllItems()
+    '        lvFiles.Focus()
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
+
+    '        Delete_Click(sender, e)
+    '        ConsumeKey(e)
+
+    '        Return
+
+    '    End If
+
+
+    'End Sub
+
+
+
+    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+        If HandleAddressBarShortcuts(e) Then Return
+        If HandleNavigationShortcuts(e) Then Return
+        If HandleSearchShortcuts(e) Then Return
+        If HandleFileFolderOperations(sender, e) Then Return
+    End Sub
+
+    Private Function HandleAddressBarShortcuts(e As KeyEventArgs) As Boolean
+        If (e.Control AndAlso e.KeyCode = Keys.L) OrElse
+       (e.Alt AndAlso e.KeyCode = Keys.D) OrElse
+       (e.KeyCode = Keys.F4) Then
 
             txtPath.Focus()
             txtPath.SelectAll()
             ConsumeKey(e)
-
-            Return
-
+            Return True
         End If
+        Return False
+    End Function
 
-        ' ============================
-        ' Navigation Shortcuts
-        ' ============================
+    Private Function HandleNavigationShortcuts(e As KeyEventArgs) As Boolean
         If e.Alt AndAlso e.KeyCode = Keys.Left Then
-
-            ' Go back to the previous folder
             NavigateBackward_Click()
             ConsumeKey(e)
-
-            Return
-
+            Return True
         ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
-
-            ' Go forward to the next folder
             NavigateForward_Click()
             ConsumeKey(e)
-
-            Return
-
+            Return True
         ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
-
-            ' Move up one level (parent directory)
             NavigateToParent()
             ConsumeKey(e)
-
-            Return
-
+            Return True
         ElseIf e.KeyCode = Keys.F5 Then
-
-            ' Refresh the current folder view
-            NavigateTo(currentFolder, recordHistory:=False)
-            UpdateTreeRoots()
+            RefreshCurrentFolder()
             ConsumeKey(e)
-
-            Return
-
+            Return True
         ElseIf e.KeyCode = Keys.F11 Then
-
-            'Toggle full‑screen mode
             ToggleFullScreen()
             ConsumeKey(e)
+            Return True
+        End If
+        Return False
+    End Function
 
-            Return
+    Private Function HandleSearchShortcuts(e As KeyEventArgs) As Boolean
+        ' Find (Ctrl + F)
 
+        If e.Control AndAlso e.KeyCode = Keys.F Then
+            InitiateSearch()
+            ConsumeKey(e)
+            Return True
         End If
 
-        ' ============================
-        ' Search
-        ' ============================
-
-        If e.KeyCode = Keys.F3 OrElse (e.Control AndAlso e.KeyCode = Keys.F) Then
-
-            ' Start a search in the current folder
-            txtPath.Focus()
-            txtPath.Text = "find "
-            txtPath.SelectionStart = txtPath.Text.Length
+        ' Find Next F3
+        If e.KeyCode = Keys.F3 Then
+            HandleFindNextCommand()
             ConsumeKey(e)
-
-            Return
-
-        End If
-
-        ' ============================
-        ' File / Folder Operations
-        ' ============================
-
-        If e.Control AndAlso e.KeyCode = Keys.O Then
-
-            OpenSelectedOrStartCommand()
-            ConsumeKey(e)
-
-            Return
-
-        End If
-
-        If e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
-
-            ExpandOneLevel()
-            ConsumeKey(e)
-
-            Return
-
-
-        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
-
-            CollapseOneLevel()
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
-
-            NewFolder_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
-
-            NewTextFile_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.KeyCode = Keys.F2 Then
-
-            RenameFile_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtPath.Focused Then
-
-            CopySelected_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
-
-            PasteSelected_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtPath.Focused Then
-
-            CutSelected_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
-
-            SelectAllItems()
-            lvFiles.Focus()
-            ConsumeKey(e)
-
-            Return
-
-        ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
-
-            Delete_Click(sender, e)
-            ConsumeKey(e)
-
-            Return
-
+            Return True
         End If
 
 
+
+        Return False
+    End Function
+
+    Private Sub InitiateSearch()
+        txtPath.Focus()
+        txtPath.Text = "find "
+        txtPath.SelectionStart = txtPath.Text.Length
     End Sub
+
+    Private Sub HandleFindNextCommand()
+
+        If SearchResults.Count = 0 Then
+            ShowStatus(IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
+            Return
+        End If
+
+        ' Advance index
+        SearchIndex += 1
+
+        ' Wrap around
+        If SearchIndex >= SearchResults.Count Then
+            SearchIndex = 0
+        End If
+
+        ' Select the next result
+        lvFiles.SelectedItems.Clear()
+        Dim nextPath As String = SearchResults(SearchIndex)
+        SelectListViewItemByPath(nextPath)
+
+        ShowStatus(
+        IconSearch &
+        " Showing result " &
+        (SearchIndex + 1) &
+        " of " &
+        SearchResults.Count &
+        ". To show the next result, enter: findnext"
+    )
+    End Sub
+
+
+
+
+
+
+    Private Function HandleFileFolderOperations(sender As Object, e As KeyEventArgs) As Boolean
+        Try
+            If e.Control AndAlso e.KeyCode = Keys.O Then
+                OpenSelectedOrStartCommand()
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
+                ExpandOneLevel()
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
+                CollapseOneLevel()
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
+                NewFolder_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
+                NewTextFile_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            ElseIf e.KeyCode = Keys.F2 Then
+                RenameFile_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtPath.Focused Then
+                CopySelected_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
+                PasteSelected_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtPath.Focused Then
+                CutSelected_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
+                SelectAllItems()
+                lvFiles.Focus()
+                ConsumeKey(e)
+                Return True
+            ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
+                Delete_Click(sender, e)
+                ConsumeKey(e)
+                Return True
+            End If
+        Catch ex As Exception
+            MessageBox.Show("An error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+        Return False
+    End Function
 
     Private Sub ConsumeKey(e As KeyEventArgs)
         e.Handled = True
         e.SuppressKeyPress = True
     End Sub
+
+    Private Sub RefreshCurrentFolder()
+        ' Refresh the current folder view
+        NavigateTo(currentFolder, recordHistory:=False)
+        UpdateTreeRoots()
+    End Sub
+
+
+    'Private Sub ConsumeKey(e As KeyEventArgs)
+    '    e.Handled = True
+    '    e.SuppressKeyPress = True
+    'End Sub
 
     Private Sub ConfigureTooltips()
 
@@ -1803,7 +1980,8 @@ Public Class Form1
 
                     ShowStatus(IconSearch & " Searching for: " & searchTerm)
 
-                    SearchInCurrentFolder(searchTerm)
+                    'SearchInCurrentFolder(searchTerm)
+                    OnlySearchForFilesInCurrentFolder(searchTerm)
 
                     ' Reset index for new search
                     SearchIndex = 0
@@ -2696,7 +2874,47 @@ Public Class Form1
 
     End Sub
 
-    Private Sub SearchInCurrentFolder(searchTerm As String)
+    'Private Sub SearchInCurrentFolder(searchTerm As String)
+
+    '    ' Clear item selection for lvFiles
+    '    lvFiles.SelectedItems.Clear()
+
+    '    Try
+    '        SearchResults = New List(Of String)
+
+    '        ' Search files
+    '        For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
+    '            If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '                SearchResults.Add(filePath)
+    '            End If
+    '        Next
+
+    '        '' Search directories
+    '        'For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
+    '        '    If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '        '        SearchResults.Add(dirPath)
+    '        '    End If
+    '        'Next
+
+    '        ' Highlight first match in ListView
+    '        If SearchResults.Count > 0 Then
+    '            SelectListViewItemByPath(SearchResults(0))
+    '            lvFiles.Focus()
+
+    '            ShowStatus(IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
+    '        Else
+    '            ShowStatus(IconDialog & " No items found matching: " & searchTerm)
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Search failed: " & ex.Message)
+    '        Debug.WriteLine("SearchInCurrentFolder Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
+    Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
 
         ' Clear item selection for lvFiles
         lvFiles.SelectedItems.Clear()
@@ -2704,17 +2922,10 @@ Public Class Form1
         Try
             SearchResults = New List(Of String)
 
-            ' Search files
-            For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
+            ' Search files only in the current folder
+            For Each filePath In Directory.GetFiles(currentFolder, "*.*")
                 If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
                     SearchResults.Add(filePath)
-                End If
-            Next
-
-            ' Search directories
-            For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
-                If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-                    SearchResults.Add(dirPath)
                 End If
             Next
 
@@ -2730,10 +2941,11 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & " Search failed: " & ex.Message)
-            Debug.WriteLine("SearchInCurrentFolder Error: " & ex.Message)
+            Debug.WriteLine("OnlySearchForFilesInCurrentFolder Error: " & ex.Message)
         End Try
 
     End Sub
+
 
 
     Private Sub UpdateNavButtons()
