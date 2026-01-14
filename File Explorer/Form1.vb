@@ -481,16 +481,6 @@ Public Class Form1
         SelectListViewItemByPath(nextPath)
         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
-        'ShowStatus(
-        '    "  " & IconSearch &
-        '    "  Showing result " &
-        '    (SearchIndex + 1) &
-        '    " of " &
-        '    SearchResults.Count &
-        '    $"  - '{fileName}'  -  Next result press: F3 or enter: findnext  -  Open Ctrl + O"
-        ')
-
-
         ShowStatus(
             "  " & IconSearch &
             "    Result " &
@@ -500,15 +490,7 @@ Public Class Form1
             $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
         )
 
-
-
     End Sub
-
-
-
-
-
-
 
     Private Function HandleFileFolderOperations(sender As Object, e As KeyEventArgs) As Boolean
         Try
@@ -574,12 +556,6 @@ Public Class Form1
         NavigateTo(currentFolder, recordHistory:=False)
         UpdateTreeRoots()
     End Sub
-
-
-    'Private Sub ConsumeKey(e As KeyEventArgs)
-    '    e.Handled = True
-    '    e.SuppressKeyPress = True
-    'End Sub
 
     Private Sub ConfigureTooltips()
 
@@ -1839,12 +1815,6 @@ Public Class Form1
                         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
                         txtPath.Focus()
-
-                        'ShowStatus(
-                        '    IconSearch &
-                        '    "  Found " & SearchResults.Count & $" result(s). Showing result 1 -  '{fileName}'  -  " &
-                        '    " -  Next result press: F3 or enter: 'findnext'  -  Open Ctrl + O"
-                        ')
 
                         ShowStatus(
                             "  " & IconSearch &
