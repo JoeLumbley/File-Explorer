@@ -1040,13 +1040,131 @@ Public Class Form1
 
 
 
+    'Private Async Function PopulateFiles(path As String) As Task
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.Items.Clear()
+
+    '    Try
+    '        ' Load directories asynchronously
+    '        Dim directories = Await Task.Run(Function() Directory.GetDirectories(path).Where(Function(d) ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+
+    '        Dim itemsToAdd As New List(Of ListViewItem)
+
+    '        For Each mDir In directories
+    '            Dim di = New DirectoryInfo(mDir)
+    '            Dim item As New ListViewItem(di.Name)
+    '            item.SubItems.Add("Folder")
+    '            item.SubItems.Add("") ' Size blank for folders
+    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = di.FullName
+    '            item.ImageKey = "Folder"
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        ' Load files asynchronously
+    '        Dim files = Await Task.Run(Function() Directory.GetFiles(path).Where(Function(f) ShowHiddenFiles OrElse (New FileInfo(f).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+
+    '        For Each file In files
+    '            Dim fi = New FileInfo(file)
+    '            Dim item As New ListViewItem(fi.Name)
+
+    '            Dim ext = fi.Extension.ToLowerInvariant()
+    '            Dim fileType = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+
+    '            If fileTypeMap.TryGetValue(ext, fileType) Then
+    '                item.SubItems.Add(fileType)
+    '            Else
+    '                item.SubItems.Add("Document")
+    '            End If
+
+
+
+    '            'item.SubItems.Add(fileType)
+    '            item.SubItems.Add(FormatSize(fi.Length))
+    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = fi.FullName
+
+
+    '            ' Assign image based on file type
+    '            Dim category As String = Nothing
+    '            If fileTypeMap.TryGetValue(ext, category) Then
+
+    '                ' Map dictionary category → image key
+    '                Select Case category
+    '                    Case "Audio"
+    '                        item.ImageKey = "Music"
+
+    '                    Case "Image"
+    '                        item.ImageKey = "Pictures"
+
+    '                    Case "Document"
+    '                        item.ImageKey = "Documents"
+
+    '                    Case "Video"
+    '                        item.ImageKey = "Videos"
+
+    '                    Case "Archive"
+    '                        item.ImageKey = "Downloads"
+
+    '                    Case "Executable"
+    '                        item.ImageKey = "Executable"
+
+    '                    Case "Shortcut"
+    '                        item.ImageKey = "Shortcut"
+
+    '                    Case Else
+    '                        ' For Code, Project, Resource, Config, etc.
+    '                        item.ImageKey = "Documents"
+    '                End Select
+    '            Else
+    '                ' Unknown extension → fallback
+    '                item.ImageKey = "Documents"
+    '            End If
+
+
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
+
+    '    Catch ex As UnauthorizedAccessException
+    '        ShowStatus(IconError & " Access Denied: " & ex.Message)
+    '        Debug.WriteLine($"Access Denied: {ex.Message}")
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"General Error: {ex.Message}")
+    '    Finally
+    '        lvFiles.EndUpdate()
+    '    End Try
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
 
         Try
             ' Load directories asynchronously
-            Dim directories = Await Task.Run(Function() Directory.GetDirectories(path).Where(Function(d) ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+            Dim directories = Await Task.Run(Function()
+                                                 Dim dirList As New List(Of String)()
+                                                 Try
+                                                     dirList.AddRange(Directory.GetDirectories(path).Where(Function(d) ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+                                                 Catch ex As UnauthorizedAccessException
+                                                     ShowStatus(IconWarning & " Access denied to some directories in: " & path)
+                                                 End Try
+                                                 Return dirList
+                                             End Function)
 
             Dim itemsToAdd As New List(Of ListViewItem)
 
@@ -1062,7 +1180,15 @@ Public Class Form1
             Next
 
             ' Load files asynchronously
-            Dim files = Await Task.Run(Function() Directory.GetFiles(path).Where(Function(f) ShowHiddenFiles OrElse (New FileInfo(f).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+            Dim files = Await Task.Run(Function()
+                                           Dim fileList As New List(Of String)()
+                                           Try
+                                               fileList.AddRange(Directory.GetFiles(path).Where(Function(f) ShowHiddenFiles OrElse (New FileInfo(f).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+                                           Catch ex As UnauthorizedAccessException
+                                               ShowStatus(IconError & " Access denied to some files in: " & path)
+                                           End Try
+                                           Return fileList
+                                       End Function)
 
             For Each file In files
                 Dim fi = New FileInfo(file)
@@ -1071,66 +1197,46 @@ Public Class Form1
                 Dim ext = fi.Extension.ToLowerInvariant()
                 Dim fileType = fileTypeMap.GetValueOrDefault(ext, "Document")
 
-
                 If fileTypeMap.TryGetValue(ext, fileType) Then
                     item.SubItems.Add(fileType)
                 Else
                     item.SubItems.Add("Document")
                 End If
 
-
-
-                'item.SubItems.Add(fileType)
                 item.SubItems.Add(FormatSize(fi.Length))
                 item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
                 item.Tag = fi.FullName
 
-
                 ' Assign image based on file type
                 Dim category As String = Nothing
                 If fileTypeMap.TryGetValue(ext, category) Then
-
-                    ' Map dictionary category → image key
                     Select Case category
                         Case "Audio"
                             item.ImageKey = "Music"
-
                         Case "Image"
                             item.ImageKey = "Pictures"
-
                         Case "Document"
                             item.ImageKey = "Documents"
-
                         Case "Video"
                             item.ImageKey = "Videos"
-
                         Case "Archive"
                             item.ImageKey = "Downloads"
-
                         Case "Executable"
                             item.ImageKey = "Executable"
-
                         Case "Shortcut"
                             item.ImageKey = "Shortcut"
-
                         Case Else
-                            ' For Code, Project, Resource, Config, etc.
                             item.ImageKey = "Documents"
                     End Select
                 Else
-                    ' Unknown extension → fallback
                     item.ImageKey = "Documents"
                 End If
-
 
                 itemsToAdd.Add(item)
             Next
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
 
-        Catch ex As UnauthorizedAccessException
-            ShowStatus(IconError & " Access Denied: " & ex.Message)
-            Debug.WriteLine($"Access Denied: {ex.Message}")
         Catch ex As Exception
             ShowStatus(IconError & $" Error: {ex.Message}")
             Debug.WriteLine($"General Error: {ex.Message}")
