@@ -223,9 +223,12 @@ Public Class Form1
     Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
         Handles lvFiles.ItemSelectionChanged
 
-        UpdateEditButtons()
+        UpdateEditButtonsAndMenus()
 
-        UpdateEditContextMenu()
+        UpdateFileButtonsAndMenus()
+
+
+        'UpdateEditContextMenu()
 
     End Sub
 
@@ -274,7 +277,7 @@ Public Class Form1
             parentDir = Path.GetDirectoryName(fullPath)
         End If
 
-        If Not HasWriteAccessToDirectory(parentDir) Then
+        If Not HasWriteAccess(parentDir) Then
             e.CancelEdit = True
             ShowStatus(IconError & " This location does not allow renaming.")
             Exit Sub
@@ -1294,8 +1297,11 @@ Public Class Form1
 
         ShowStatus(IconCopy & " Copied to clipboard: " & _clipboardPath)
 
-        UpdateEditButtons()
-        UpdateEditContextMenu()
+        UpdateEditButtonsAndMenus()
+
+        UpdateFileButtonsAndMenus()
+
+        'UpdateEditContextMenu()
 
 
     End Sub
@@ -2307,9 +2313,10 @@ Public Class Form1
         'UpdateFileButtons()
         'UpdateFileContextMenu()
         UpdateFileButtonsAndMenus()
+        'UpdateDestructiveButtonsAndMenus()
 
-        UpdateEditButtons()
-        UpdateEditContextMenu()
+        UpdateEditButtonsAndMenus()
+        'UpdateEditContextMenu()
     End Sub
 
 
@@ -2896,14 +2903,90 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
-    Private Sub UpdateDestructiveButton()
+    'Private Sub UpdateDestructiveButtonsAndMenus()
+
+    '    ' --- Rule 0: Something must be selected ---
+    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    If Not itemSelected Then
+    '        btnCut.Enabled = False
+    '        btnRename.Enabled = False
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' --- Rule 1: Path must exist ---
+    '    If Not PathExists(fullPath) Then
+    '        btnCut.Enabled = False
+    '        btnRename.Enabled = False
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 2: Protected items cannot be renamed ---
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        btnCut.Enabled = False
+    '        btnRename.Enabled = False
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 3: User must have rename permission ---
+    '    Dim parentDir As String =
+    '    If(Directory.Exists(fullPath),
+    '       fullPath,                          ' Folder → check write access ON the folder
+    '       path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
+
+    '    If Not HasWriteAccess(parentDir) Then
+    '        btnRename.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- All rules passed ---
+    '    btnCut.Enabled = True
+    '    btnRename.Enabled = True
+    '    btnDelete.Enabled = True
+
+
+    '    ' update context menu
+    '    If lvFiles.SelectedItems.Count = 0 Then
+
+    '        ' Context menu items
+    '        cmsFiles.Items("Cut").Enabled = False
+    '        cmsFiles.Items("Copy").Enabled = False
+    '        cmsFiles.Items("Rename").Enabled = False
+    '        cmsFiles.Items("Delete").Enabled = False
+    '        cmsFiles.Items("Open").Enabled = False
+    '        cmsFiles.Items("CopyPath").Enabled = False
+
+    '        Exit Sub
+
+    '    End If
+
+    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+    '    Dim exists As Boolean = PathExists(path)
+
+    '    ' Context menu items
+    '    cmsFiles.Items("Cut").Enabled = exists
+    '    cmsFiles.Items("Copy").Enabled = exists
+    '    cmsFiles.Items("Rename").Enabled = exists
+    '    cmsFiles.Items("Delete").Enabled = exists
+    '    cmsFiles.Items("Open").Enabled = exists
+    '    cmsFiles.Items("CopyPath").Enabled = exists
+
+
+    'End Sub
+
+
+
+    Private Sub UpdateDestructiveButtonsAndMenus()
 
         ' --- Rule 0: Something must be selected ---
-        Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-        If Not itemSelected Then
-            btnCut.Enabled = False
-            btnRename.Enabled = False
-            btnDelete.Enabled = False
+        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+        If Not hasSelection Then
+            SetDestructiveButtons(False, False, False)
+            SetContextDestructiveItems(False)
             Exit Sub
         End If
 
@@ -2911,17 +2994,15 @@ Public Class Form1
 
         ' --- Rule 1: Path must exist ---
         If Not PathExists(fullPath) Then
-            btnCut.Enabled = False
-            btnRename.Enabled = False
-            btnDelete.Enabled = False
+            SetDestructiveButtons(False, False, False)
+            SetContextDestructiveItems(False)
             Exit Sub
         End If
 
-        ' --- Rule 2: Protected items cannot be renamed ---
+        ' --- Rule 2: Protected items cannot be renamed or deleted ---
         If IsProtectedPathOrFolder(fullPath) Then
-            btnCut.Enabled = False
-            btnRename.Enabled = False
-            btnDelete.Enabled = False
+            SetDestructiveButtons(False, False, False)
+            SetContextDestructiveItems(False)
             Exit Sub
         End If
 
@@ -2931,174 +3012,246 @@ Public Class Form1
            fullPath,                          ' Folder → check write access ON the folder
            Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
 
-        If Not HasWriteAccessToDirectory(parentDir) Then
-            btnRename.Enabled = False
-            Exit Sub
-        End If
+        Dim canRename As Boolean = HasWriteAccess(parentDir)
 
-        ' --- All rules passed ---
-        btnCut.Enabled = True
-        btnRename.Enabled = True
-        btnDelete.Enabled = True
+        ' --- Apply toolbar rules ---
+        btnCut.Enabled = canRename
+        btnRename.Enabled = canRename
+        btnDelete.Enabled = True   ' Delete allowed if path exists + not protected
 
-    End Sub
-
-    Private Sub UpdateRenameButton()
-
-        ' --- Rule 0: Something must be selected ---
-        Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-        If Not itemSelected Then
-            btnRename.Enabled = False
-            Exit Sub
-        End If
-
-        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-        ' --- Rule 1: Path must exist ---
-        If Not PathExists(fullPath) Then
-            btnRename.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- Rule 2: Protected items cannot be renamed ---
-        If IsProtectedPathOrFolder(fullPath) Then
-            btnRename.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- Rule 3: User must have rename permission ---
-        Dim parentDir As String =
-        If(Directory.Exists(fullPath),
-           fullPath,                          ' Folder → check write access ON the folder
-           Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-        If Not HasWriteAccessToDirectory(parentDir) Then
-            btnRename.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- All rules passed ---
-        btnRename.Enabled = True
+        ' --- Apply context menu rules ---
+        SetContextDestructiveItems(True)
 
     End Sub
 
-    Private Sub UpdateDeleteButton()
 
-        ' --- Rule 0: Something must be selected ---
-        Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-        If Not itemSelected Then
-            btnDelete.Enabled = False
-            Exit Sub
+
+
+
+    Private Sub SetDestructiveButtons(cut As Boolean, rename As Boolean, delete As Boolean)
+        btnCut.Enabled = cut
+        btnRename.Enabled = rename
+        btnDelete.Enabled = delete
+    End Sub
+
+    Private Sub SetContextDestructiveItems(enabled As Boolean)
+        cmsFiles.Items("Cut").Enabled = enabled
+        'cmsFiles.Items("Copy").Enabled = enabled
+        cmsFiles.Items("Rename").Enabled = enabled
+        cmsFiles.Items("Delete").Enabled = enabled
+        'cmsFiles.Items("Open").Enabled = enabled
+        'cmsFiles.Items("CopyPath").Enabled = enabled
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub UpdateRenameButton()
+
+    '    ' --- Rule 0: Something must be selected ---
+    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    If Not itemSelected Then
+    '        btnRename.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' --- Rule 1: Path must exist ---
+    '    If Not PathExists(fullPath) Then
+    '        btnRename.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 2: Protected items cannot be renamed ---
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        btnRename.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 3: User must have rename permission ---
+    '    Dim parentDir As String =
+    '    If(Directory.Exists(fullPath),
+    '       fullPath,                          ' Folder → check write access ON the folder
+    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
+
+    '    If Not HasWriteAccess(parentDir) Then
+    '        btnRename.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- All rules passed ---
+    '    btnRename.Enabled = True
+
+    'End Sub
+
+    'Private Sub UpdateDeleteButton()
+
+    '    ' --- Rule 0: Something must be selected ---
+    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    If Not itemSelected Then
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' --- Rule 1: Path must exist ---
+    '    If Not PathExists(fullPath) Then
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 2: Protected items cannot be renamed ---
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 3: User must have rename permission ---
+    '    Dim parentDir As String =
+    '    If(Directory.Exists(fullPath),
+    '       fullPath,                          ' Folder → check write access ON the folder
+    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
+
+    '    If Not HasWriteAccess(parentDir) Then
+    '        btnDelete.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- All rules passed ---
+    '    btnDelete.Enabled = True
+
+    'End Sub
+
+    'Private Sub UpdateCutButton()
+
+    '    ' --- Rule 0: Something must be selected ---
+    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    If Not itemSelected Then
+    '        btnCut.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' --- Rule 1: Path must exist ---
+    '    If Not PathExists(fullPath) Then
+    '        btnCut.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 2: Protected items cannot be cut ---
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        btnCut.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Rule 3: User must have cut permission ---
+    '    Dim parentDir As String =
+    '    If(Directory.Exists(fullPath),
+    '       fullPath,                          ' Folder → check write access ON the folder
+    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
+
+    '    If Not HasWriteAccess(parentDir) Then
+    '        btnCut.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' --- All rules passed ---
+    '    btnCut.Enabled = True
+
+    'End Sub
+
+    'Private Sub UpdateCopyButtonAndMenus()
+
+    '    ' --- Rule 0: Something must be selected ---
+    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    If Not itemSelected Then
+    '        btnCopy.Enabled = False
+    '        cmsFiles.Items("Copy").Enabled = False
+
+    '        Exit Sub
+    '    End If
+
+    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' --- Rule 1: Path must exist ---
+    '    If Not PathExists(fullPath) Then
+    '        btnCopy.Enabled = False
+    '        cmsFiles.Items("Copy").Enabled = False
+
+    '        Exit Sub
+    '    End If
+
+    '    ' --- All rules passed ---
+    '    btnCopy.Enabled = True
+    '    cmsFiles.Items("Copy").Enabled = True
+
+
+
+
+    'End Sub
+
+
+
+
+
+
+    Private Sub UpdateCopyButtonAndMenus()
+
+        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+        Dim fullPath As String = If(hasSelection, CStr(lvFiles.SelectedItems(0).Tag), Nothing)
+        Dim exists As Boolean = hasSelection AndAlso PathExists(fullPath)
+
+        Dim canCopy As Boolean = exists
+
+        btnCopy.Enabled = canCopy
+
+        If cmsFiles.Items.Count > 0 Then
+            cmsFiles.Items("Copy").Enabled = canCopy
         End If
-
-        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-        ' --- Rule 1: Path must exist ---
-        If Not PathExists(fullPath) Then
-            btnDelete.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- Rule 2: Protected items cannot be renamed ---
-        If IsProtectedPathOrFolder(fullPath) Then
-            btnDelete.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- Rule 3: User must have rename permission ---
-        Dim parentDir As String =
-        If(Directory.Exists(fullPath),
-           fullPath,                          ' Folder → check write access ON the folder
-           Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-        If Not HasWriteAccessToDirectory(parentDir) Then
-            btnDelete.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- All rules passed ---
-        btnDelete.Enabled = True
 
     End Sub
 
-    Private Sub UpdateCutButton()
 
-        ' --- Rule 0: Something must be selected ---
-        Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-        If Not itemSelected Then
-            btnCut.Enabled = False
-            Exit Sub
-        End If
 
-        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
 
-        ' --- Rule 1: Path must exist ---
-        If Not PathExists(fullPath) Then
-            btnCut.Enabled = False
-            Exit Sub
-        End If
 
-        ' --- Rule 2: Protected items cannot be cut ---
-        If IsProtectedPathOrFolder(fullPath) Then
-            btnCut.Enabled = False
-            Exit Sub
-        End If
 
-        ' --- Rule 3: User must have cut permission ---
-        Dim parentDir As String =
-        If(Directory.Exists(fullPath),
-           fullPath,                          ' Folder → check write access ON the folder
-           Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
 
-        If Not HasWriteAccessToDirectory(parentDir) Then
-            btnCut.Enabled = False
-            Exit Sub
-        End If
+    Private Sub UpdateEditButtonsAndMenus()
 
-        ' --- All rules passed ---
-        btnCut.Enabled = True
+        UpdateCopyButtonAndMenus()
 
-    End Sub
+        UpdateDestructiveButtonsAndMenus()
 
-    Private Sub UpdateCopyButton()
 
-        ' --- Rule 0: Something must be selected ---
-        Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-        If Not itemSelected Then
-            btnCopy.Enabled = False
-            Exit Sub
-        End If
 
-        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
 
-        ' --- Rule 1: Path must exist ---
-        If Not PathExists(fullPath) Then
-            btnCopy.Enabled = False
-            Exit Sub
-        End If
-
-        ' --- All rules passed ---
-        btnCopy.Enabled = True
-
-    End Sub
-
-    Private Sub UpdateEditButtons()
-
-        'UpdateCutButton()
-
-        UpdateCopyButton()
-
-        'UpdateRenameButton()
-
-        'UpdateDeleteButton()
-
-        UpdateDestructiveButton()
 
         ' Update Paste button
         If _clipboardIsCut Then
             btnPaste.Enabled = True
         Else
             btnPaste.Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+        End If
+
+        If cmsFiles.Items.Count = 0 Then Return
+
+        If _clipboardIsCut Then
+            cmsFiles.Items("Paste").Enabled = True
+        Else
+            cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
         End If
 
     End Sub
@@ -3136,20 +3289,83 @@ Public Class Form1
     '    End If
 
 
+    'Private Sub UpdateFileButtonsAndMenus()
+
+    '    Dim canWrite As Boolean = HasWriteAccess(currentFolder)
+    '    Dim canCreateFolders As Boolean = HasDirectoryCreationAccess(currentFolder)
+
+    '    ' --- Toolbar buttons ---
+    '    btnNewTextFile.Enabled = canWrite
+    '    btnNewFolder.Enabled = canCreateFolders
+
+    '    ' --- Context menu items ---
+    '    If cmsFiles.Items.Count = 0 Then Exit Sub
+
+    '    cmsFiles.Items("NewFolder").Enabled = canCreateFolders
+    '    cmsFiles.Items("NewTextFile").Enabled = canWrite
+
+
+
+
+    '    If lvFiles.SelectedItems.Count = 0 Then
+
+
+
+    '        ' Context menu items
+    '        cmsFiles.Items("Open").Enabled = False
+    '        cmsFiles.Items("CopyPath").Enabled = False
+
+    '        Exit Sub
+
+    '    End If
+
+    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+    '    Dim exists As Boolean = PathExists(path)
+
+    '    ' Context menu items
+    '    cmsFiles.Items("Open").Enabled = exists
+    '    cmsFiles.Items("CopyPath").Enabled = exists
+
+
+    'End Sub
+
+
+
+
+
+
+
+
+
     Private Sub UpdateFileButtonsAndMenus()
 
-        Dim canWrite As Boolean = HasWriteAccessToDirectory(currentFolder)
-        Dim canCreateFolders As Boolean = HasDirectoryCreationAccessToDirectory(currentFolder)
+        ' --- Folder-level permissions ---
+        Dim canWrite As Boolean = HasWriteAccess(currentFolder)
+        Dim canCreateFolders As Boolean = HasDirectoryCreationAccess(currentFolder)
 
-        ' --- Toolbar buttons ---
         btnNewTextFile.Enabled = canWrite
         btnNewFolder.Enabled = canCreateFolders
 
-        ' --- Context menu items ---
         If cmsFiles.Items.Count = 0 Then Exit Sub
 
         cmsFiles.Items("NewFolder").Enabled = canCreateFolders
         cmsFiles.Items("NewTextFile").Enabled = canWrite
+
+
+        ' --- Item-level actions ---
+        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+
+        If Not hasSelection Then
+            cmsFiles.Items("Open").Enabled = False
+            cmsFiles.Items("CopyPath").Enabled = False
+            Exit Sub
+        End If
+
+        Dim selectedPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+        Dim exists As Boolean = PathExists(selectedPath)
+
+        cmsFiles.Items("Open").Enabled = exists
+        cmsFiles.Items("CopyPath").Enabled = exists
 
     End Sub
 
@@ -3173,48 +3389,46 @@ Public Class Form1
     'End Sub
 
 
-    Private Sub UpdateEditContextMenu()
+    'Private Sub UpdateEditContextMenu()
 
-        If cmsFiles.Items.Count = 0 Then Return
+    '    If cmsFiles.Items.Count = 0 Then Return
 
-        If _clipboardIsCut Then
-            cmsFiles.Items("Paste").Enabled = True
-        Else
-            cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
-        End If
-
-
+    '    If _clipboardIsCut Then
+    '        cmsFiles.Items("Paste").Enabled = True
+    '    Else
+    '        cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+    '    End If
 
 
 
-        If lvFiles.SelectedItems.Count = 0 Then
 
-            ' Context menu items
-            cmsFiles.Items("Cut").Enabled = False
-            cmsFiles.Items("Copy").Enabled = False
-            cmsFiles.Items("Rename").Enabled = False
-            cmsFiles.Items("Delete").Enabled = False
-            cmsFiles.Items("Open").Enabled = False
-            'cmsFiles.Items("CopyName").Enabled = False
-            cmsFiles.Items("CopyPath").Enabled = False
 
-            Exit Sub
+    '    If lvFiles.SelectedItems.Count = 0 Then
 
-        End If
+    '        ' Context menu items
+    '        cmsFiles.Items("Cut").Enabled = False
+    '        cmsFiles.Items("Copy").Enabled = False
+    '        cmsFiles.Items("Rename").Enabled = False
+    '        cmsFiles.Items("Delete").Enabled = False
+    '        cmsFiles.Items("Open").Enabled = False
+    '        cmsFiles.Items("CopyPath").Enabled = False
 
-        Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-        Dim exists As Boolean = PathExists(path)
+    '        Exit Sub
 
-        ' Context menu items
-        cmsFiles.Items("Cut").Enabled = exists
-        cmsFiles.Items("Copy").Enabled = exists
-        cmsFiles.Items("Rename").Enabled = exists
-        cmsFiles.Items("Delete").Enabled = exists
-        cmsFiles.Items("Open").Enabled = exists
-        'cmsFiles.Items("CopyName").Enabled = exists
-        cmsFiles.Items("CopyPath").Enabled = exists
+    '    End If
 
-    End Sub
+    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+    '    Dim exists As Boolean = PathExists(path)
+
+    '    ' Context menu items
+    '    cmsFiles.Items("Cut").Enabled = exists
+    '    cmsFiles.Items("Copy").Enabled = exists
+    '    cmsFiles.Items("Rename").Enabled = exists
+    '    cmsFiles.Items("Delete").Enabled = exists
+    '    cmsFiles.Items("Open").Enabled = exists
+    '    cmsFiles.Items("CopyPath").Enabled = exists
+
+    'End Sub
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
@@ -3303,7 +3517,7 @@ Public Class Form1
         Return File.Exists(path) OrElse Directory.Exists(path)
     End Function
 
-    Private Function HasWriteAccessToDirectory(dirPath As String) As Boolean
+    Private Function HasWriteAccess(dirPath As String) As Boolean
         ' Check if we can create, rename, and delete a temporary file in the directory to test write access 
 
         Dim testFile As String =
@@ -3340,7 +3554,7 @@ Public Class Form1
 
 
 
-    Private Function HasDirectoryCreationAccessToDirectory(dirPath As String) As Boolean
+    Private Function HasDirectoryCreationAccess(dirPath As String) As Boolean
         ' Tests whether we can create, rename, and delete a directory inside dirPath.
 
         Dim testDir As String =
