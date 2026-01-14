@@ -1325,10 +1325,10 @@ Public Class Form1
                                          )
                                                  Catch ex As UnauthorizedAccessException
                                                      ShowStatus(IconWarning & " Access denied to some directories in: " & path)
-                                                     Debug.WriteLine($"UnauthorizedAccessException: {ex.Message}") ' Log exception details
+                                                     Debug.WriteLine($"PopulateFiles - UnauthorizedAccessException: {ex.Message}") ' Log exception details
                                                  Catch ex As Exception
                                                      ShowStatus(IconError & " An error occurred: " & ex.Message)
-                                                     Debug.WriteLine($"Error in loading directories: {ex.Message}")
+                                                     Debug.WriteLine($"PopulateFiles - Error in loading directories: {ex.Message}")
                                                  End Try
                                                  Return dirList ' Ensure that an empty list is returned if an exception occurs
                                              End Function)
@@ -1370,6 +1370,8 @@ Public Class Form1
 
                                            Catch ex As UnauthorizedAccessException
                                                ShowStatus(IconError & " Access denied to some files in: " & path)
+                                               Debug.WriteLine("PopulateFiles - Access denied to some files in: " & path & " - UnauthorizedAccessException - " & ex.Message)
+
                                            End Try
                                            Return fileList
                                        End Function)
@@ -2241,6 +2243,7 @@ Public Class Form1
 
                 Catch ex As Exception
                     ShowStatus(IconError & "  Failed to open help file: " & ex.Message)
+                    Debug.WriteLine("Failed to open help file: " & ex.Message)
                 End Try
 
             Case "open"
@@ -2263,6 +2266,7 @@ Public Class Form1
 
                         Catch ex As Exception
                             ShowStatus(IconError & "  Failed to open file: " & ex.Message)
+                            Debug.WriteLine("Failed to open file: " & ex.Message)
                         End Try
 
                     ElseIf Directory.Exists(targetPath) Then
@@ -2300,6 +2304,7 @@ Public Class Form1
 
                     Catch ex As Exception
                         ShowStatus(IconError & "  Failed to open file: " & ex.Message)
+                        Debug.WriteLine("Failed to open file: " & ex.Message)
                     End Try
 
                 ElseIf Directory.Exists(fullPath) Then
@@ -2456,6 +2461,7 @@ Public Class Form1
 
         Catch ex As Exception
             ShowStatus(IconError & "  Unable to create help file: " & ex.Message)
+            Debug.WriteLine("Unable to create help file: " & ex.Message)
         End Try
 
     End Sub
@@ -3112,6 +3118,7 @@ Public Class Form1
                 Directory.CreateDirectory(destDir)
             Catch ex As Exception
                 ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
+                Debug.WriteLine(" Failed to create destination directory: " & ex.Message)
                 Return
             End Try
 
@@ -3646,8 +3653,12 @@ Public Class Form1
             Return True
 
         Catch ex As UnauthorizedAccessException
+            Debug.WriteLine("HasWriteAccessToDirectory - " & dirPath & " - False - UnauthorizedAccessException " & ex.Message)
+
             Return False
         Catch ex As IOException
+            Debug.WriteLine("HasWriteAccessToDirectory - " & dirPath & " - False - IOException " & ex.Message)
+
             Return False
         End Try
 
@@ -3678,11 +3689,16 @@ Public Class Form1
             Return True
 
         Catch ex As UnauthorizedAccessException
+            Debug.WriteLine("HasDirectoryCreationAccessToDirectory - " & dirPath & " - False - UnauthorizedAccessException:  " & ex.Message)
+
             Return False
 
         Catch ex As IOException
             ' Could be permissions, could be other IO issues.
             ' For access testing, treat as failure.
+            'Debug.WriteLine(dirPath & " HasDirectoryCreationAccessToDirectory - IOException " & ex.Message)
+            Debug.WriteLine("HasDirectoryCreationAccessToDirectory - " & dirPath & " - False - IOException:  " & ex.Message)
+
             Return False
 
         Finally
@@ -3695,8 +3711,10 @@ Public Class Form1
                 If Directory.Exists(testDirRenamed) Then
                     Directory.Delete(testDirRenamed, recursive:=False)
                 End If
-            Catch
+            Catch ex As Exception
                 ' Swallow cleanup errors intentionally.
+                Debug.WriteLine(dirPath & " Swallow cleanup errors intentionally " & ex.Message)
+
             End Try
         End Try
     End Function
