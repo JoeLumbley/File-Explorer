@@ -97,68 +97,54 @@ Public Class Form1
 
     Private ReadOnly tips As New ToolTip()
 
-
-
-
-
-
-
-
-
     Private fileTypeMap As New Dictionary(Of String, String) From {
-                    {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
-    {".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
-    {".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
-    {".wma", "Audio"},
-    {".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
-    {".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
-    {".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
-    {".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
-    {".tiff", "Image"}, {".webp", "Image"},
-    {".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
-    {".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
-    {".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
-    {".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
-    {".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
-    {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
-    {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
-    {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
-    {".vob", "Video"}, {".webm", "Video"},
-    {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
-    {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
-    {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
-    {".tar", "Archive"}, {".zip", "Archive"},
-    {".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
-    {".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
-    {".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
-    {".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
-    {".wsf", "Executable"},
-    {".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
-    {".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
-    {".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
-    {".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
-    {".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
-    {".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
-    {".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
-    {".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
-    {".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
-    {".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
-    {".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
-    {".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
-    {".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
-    {".tsx", "Code"}, {".vb", "Visual Basic Source"},
-    {".user", "Project Options"}, {".vbx", "Code"},
-    {".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
-    {".yml", "Code"},
-    {".cfg", "Config"}, {".ini", "Config"},
-    {".lnk", "Shortcut"}
-            }
-
-
-
-
-
-
+        {".aac", "Audio"}, {".aiff", "Audio"}, {".alac", "Audio"},
+        {".dsd", "Audio"}, {".flac", "Audio"}, {".m4a", "Audio"},
+        {".mp3", "Audio"}, {".ogg", "Audio"}, {".wav", "Audio"},
+        {".wma", "Audio"},
+        {".bmp", "Image"}, {".cr2", "Image"}, {".gif", "Image"},
+        {".heic", "Image"}, {".jpeg", "Image"}, {".jpg", "Image"},
+        {".nef", "Image"}, {".orf", "Image"}, {".png", "Image"},
+        {".raw", "Image"}, {".sr2", "Image"}, {".svg", "Image"},
+        {".tiff", "Image"}, {".webp", "Image"},
+        {".doc", "Document"}, {".docx", "Document"}, {".htm", "Document"},
+        {".html", "Document"}, {".md", "Document"}, {".odp", "Document"},
+        {".ods", "Document"}, {".odt", "Document"}, {".pdf", "Document"},
+        {".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
+        {".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
+        {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
+        {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
+        {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
+        {".vob", "Video"}, {".webm", "Video"},
+        {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
+        {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
+        {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
+        {".tar", "Archive"}, {".zip", "Archive"},
+        {".bat", "Executable"}, {".cmd", "Executable"}, {".com", "Executable"},
+        {".dll", "Executable"}, {".exe", "Executable"}, {".jar", "Executable"},
+        {".msi", "Executable"}, {".pdb", "Executable"}, {".pif", "Executable"},
+        {".ps1", "Executable"}, {".scr", "Executable"}, {".vbs", "Executable"},
+        {".wsf", "Executable"},
+        {".asm", "Code"}, {".bash", "Code"}, {".c", "Code"},
+        {".cc", "Code"}, {".cpp", "Code"}, {".cs", "Code"},
+        {".csproj", "C# Project"}, {".vbproj", "Visual Basic Project"},
+        {".fsproj", "F# Project"}, {".sln", "Visual Studio Solution"},
+        {".cxx", "Code"}, {".go", "Code"}, {".h", "Code"},
+        {".hh", "Code"}, {".hpp", "Code"}, {".java", "Code"},
+        {".js", "Code"}, {".json", "Code"}, {".jsonc", "Code"},
+        {".jsx", "Code"}, {".kts", "Code"}, {".kt", "Code"},
+        {".lua", "Code"}, {".m", "Code"}, {".php", "Code"},
+        {".psql", "Code"}, {".py", "Code"}, {".r", "Code"},
+        {".rb", "Code"}, {".resx", "Resource"}, {".rs", "Code"},
+        {".s", "Code"}, {".sh", "Code"}, {".sql", "Code"},
+        {".swift", "Code"}, {".toml", "Code"}, {".ts", "Code"},
+        {".tsx", "Code"}, {".vb", "Visual Basic Source"},
+        {".user", "Project Options"}, {".vbx", "Code"},
+        {".xaml", "Code"}, {".xml", "Code"}, {".yaml", "Code"},
+        {".yml", "Code"},
+        {".cfg", "Config"}, {".ini", "Config"},
+        {".lnk", "Shortcut"}
+    }
 
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
@@ -226,9 +212,6 @@ Public Class Form1
         UpdateEditButtonsAndMenus()
 
         UpdateFileButtonsAndMenus()
-
-
-        'UpdateEditContextMenu()
 
     End Sub
 
@@ -1050,19 +1033,7 @@ Public Class Form1
             lvFiles.EndUpdate()
         End Try
 
-
-
     End Function
-
-
-
-
-
-
-
-
-
-
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
@@ -1361,128 +1332,6 @@ Public Class Form1
     '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
     '    End Try
 
-    'End Sub
-    'Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
-    '    ' Check if a file or folder is selected
-    '    If String.IsNullOrEmpty(_clipboardPath) Then
-    '        ShowStatus(IconError & " Paste failed: No item in clipboard")
-    '        Exit Sub
-    '    End If
-
-    '    Dim destDir As String = currentFolder
-    '    Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
-
-    '    ' Ensure destination path is valid
-    '    If String.IsNullOrEmpty(destPath) Then
-    '        ShowStatus(IconError & " Paste failed: Invalid destination path")
-    '        Exit Sub
-    '    End If
-
-    '    Try
-    '        If File.Exists(_clipboardPath) Then
-    '            ' Handle file paste
-    '            If _clipboardIsCut Then
-    '                File.Move(_clipboardPath, destPath)
-    '            Else
-    '                File.Copy(_clipboardPath, destPath, overwrite:=False)
-    '            End If
-    '        ElseIf Directory.Exists(_clipboardPath) Then
-    '            ' Handle directory paste
-    '            If _clipboardIsCut Then
-    '                Directory.Move(_clipboardPath, destPath)
-    '            Else
-    '                CopyDirectory(_clipboardPath, destPath)
-    '            End If
-    '        Else
-    '            ShowStatus(IconError & " Paste failed: Source not found")
-    '            Exit Sub
-    '        End If
-
-    '        ' Clear cut state
-    '        _clipboardPath = Nothing
-    '        _clipboardIsCut = False
-
-    '        ' Refresh current folder view
-    '        PopulateFiles(destDir)
-
-    '        ResetCutVisuals()
-
-    '        ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
-    '    Catch ex As IOException
-    '        MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: I/O Error - " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
-    '    Catch ex As UnauthorizedAccessException
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: Access Denied - " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
-    '    Catch ex As Exception
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
-    '    End Try
-    'End Sub
-
-
-    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-    '    ' Check if a file or folder is selected
-    '    If String.IsNullOrEmpty(_clipboardPath) Then
-    '        ShowStatus(IconError & " Paste failed: No item in clipboard")
-    '        Exit Sub
-    '    End If
-
-    '    Dim destDir As String = currentFolder
-    '    Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
-
-    '    ' Ensure destination path is valid
-    '    If String.IsNullOrEmpty(destPath) Then
-    '        ShowStatus(IconError & " Paste failed: Invalid destination path")
-    '        Exit Sub
-    '    End If
-
-    '    Try
-    '        If File.Exists(_clipboardPath) Then
-    '            ' Handle file paste
-    '            If _clipboardIsCut Then
-    '                File.Move(_clipboardPath, destPath)
-    '            Else
-    '                File.Copy(_clipboardPath, destPath, overwrite:=True)
-    '            End If
-    '        ElseIf Directory.Exists(_clipboardPath) Then
-    '            ' Handle directory paste
-    '            If _clipboardIsCut Then
-    '                Directory.Move(_clipboardPath, destPath)
-    '            Else
-    '                Await CopyDirectory(_clipboardPath, destPath) ' Await the async copy method
-    '            End If
-    '        Else
-    '            ShowStatus(IconError & " Paste failed: Source not found")
-    '            Exit Sub
-    '        End If
-
-    '        ' Clear cut state
-    '        _clipboardPath = Nothing
-    '        _clipboardIsCut = False
-
-    '        ' Refresh current folder view
-    '        PopulateFiles(destDir)
-
-    '        ResetCutVisuals()
-
-    '        ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
-    '    Catch ex As IOException
-    '        MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: I/O Error - " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
-    '    Catch ex As UnauthorizedAccessException
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: Access Denied - " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
-    '    Catch ex As Exception
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
-    '    End Try
     'End Sub
 
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
@@ -2320,18 +2169,6 @@ Public Class Form1
     End Sub
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub GoToFolderOrOpenFile(Path As String)
         ' Navigate to folder or open file.
 
@@ -3055,153 +2892,6 @@ Public Class Form1
 
 
 
-    'Private Sub UpdateRenameButton()
-
-    '    ' --- Rule 0: Something must be selected ---
-    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-    '    If Not itemSelected Then
-    '        btnRename.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-    '    ' --- Rule 1: Path must exist ---
-    '    If Not PathExists(fullPath) Then
-    '        btnRename.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 2: Protected items cannot be renamed ---
-    '    If IsProtectedPathOrFolder(fullPath) Then
-    '        btnRename.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 3: User must have rename permission ---
-    '    Dim parentDir As String =
-    '    If(Directory.Exists(fullPath),
-    '       fullPath,                          ' Folder → check write access ON the folder
-    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-    '    If Not HasWriteAccess(parentDir) Then
-    '        btnRename.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- All rules passed ---
-    '    btnRename.Enabled = True
-
-    'End Sub
-
-    'Private Sub UpdateDeleteButton()
-
-    '    ' --- Rule 0: Something must be selected ---
-    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-    '    If Not itemSelected Then
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-    '    ' --- Rule 1: Path must exist ---
-    '    If Not PathExists(fullPath) Then
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 2: Protected items cannot be renamed ---
-    '    If IsProtectedPathOrFolder(fullPath) Then
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 3: User must have rename permission ---
-    '    Dim parentDir As String =
-    '    If(Directory.Exists(fullPath),
-    '       fullPath,                          ' Folder → check write access ON the folder
-    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-    '    If Not HasWriteAccess(parentDir) Then
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- All rules passed ---
-    '    btnDelete.Enabled = True
-
-    'End Sub
-
-    'Private Sub UpdateCutButton()
-
-    '    ' --- Rule 0: Something must be selected ---
-    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-    '    If Not itemSelected Then
-    '        btnCut.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-    '    ' --- Rule 1: Path must exist ---
-    '    If Not PathExists(fullPath) Then
-    '        btnCut.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 2: Protected items cannot be cut ---
-    '    If IsProtectedPathOrFolder(fullPath) Then
-    '        btnCut.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 3: User must have cut permission ---
-    '    Dim parentDir As String =
-    '    If(Directory.Exists(fullPath),
-    '       fullPath,                          ' Folder → check write access ON the folder
-    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-    '    If Not HasWriteAccess(parentDir) Then
-    '        btnCut.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- All rules passed ---
-    '    btnCut.Enabled = True
-
-    'End Sub
-
-    'Private Sub UpdateCopyButtonAndMenus()
-
-    '    ' --- Rule 0: Something must be selected ---
-    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-    '    If Not itemSelected Then
-    '        btnCopy.Enabled = False
-    '        cmsFiles.Items("Copy").Enabled = False
-
-    '        Exit Sub
-    '    End If
-
-    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-    '    ' --- Rule 1: Path must exist ---
-    '    If Not PathExists(fullPath) Then
-    '        btnCopy.Enabled = False
-    '        cmsFiles.Items("Copy").Enabled = False
-
-    '        Exit Sub
-    '    End If
-
-    '    ' --- All rules passed ---
-    '    btnCopy.Enabled = True
-    '    cmsFiles.Items("Copy").Enabled = True
-
-
-
-
-    'End Sub
-
 
 
 
@@ -3223,21 +2913,11 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
     Private Sub UpdateEditButtonsAndMenus()
 
         UpdateCopyButtonAndMenus()
 
         UpdateDestructiveButtonsAndMenus()
-
-
-
-
 
         ' Update Paste button
         If _clipboardIsCut Then
@@ -3255,81 +2935,6 @@ Public Class Form1
         End If
 
     End Sub
-
-    'Private Sub UpdateFileButtonsAndMenus()
-
-    '    ' Update file buttons
-    '    If HasWriteAccessToDirectory(currentFolder) Then
-    '        ' Enable buttons if current folder is valid and writable
-    '        btnNewTextFile.Enabled = True
-    '    Else
-    '        ' Disable buttons if current folder is invalid
-    '        btnNewTextFile.Enabled = False
-    '    End If
-
-    '    If HasDirectoryCreationAccessToDirectory(currentFolder) Then
-    '        btnNewFolder.Enabled = True
-    '    Else
-    '        btnNewFolder.Enabled = False
-    '    End If
-
-    '    ' Update context menu as well
-    '    If cmsFiles.Items.Count = 0 Then Return
-    '    ' New Folder
-    '    If HasDirectoryCreationAccessToDirectory(currentFolder) Then
-    '        cmsFiles.Items("NewFolder").Enabled = True
-    '    Else
-    '        cmsFiles.Items("NewFolder").Enabled = False
-    '    End If
-    '    ' New Text File
-    '    If HasWriteAccessToDirectory(currentFolder) Then
-    '        cmsFiles.Items("NewTextFile").Enabled = True
-    '    Else
-    '        cmsFiles.Items("NewTextFile").Enabled = False
-    '    End If
-
-
-    'Private Sub UpdateFileButtonsAndMenus()
-
-    '    Dim canWrite As Boolean = HasWriteAccess(currentFolder)
-    '    Dim canCreateFolders As Boolean = HasDirectoryCreationAccess(currentFolder)
-
-    '    ' --- Toolbar buttons ---
-    '    btnNewTextFile.Enabled = canWrite
-    '    btnNewFolder.Enabled = canCreateFolders
-
-    '    ' --- Context menu items ---
-    '    If cmsFiles.Items.Count = 0 Then Exit Sub
-
-    '    cmsFiles.Items("NewFolder").Enabled = canCreateFolders
-    '    cmsFiles.Items("NewTextFile").Enabled = canWrite
-
-
-
-
-    '    If lvFiles.SelectedItems.Count = 0 Then
-
-
-
-    '        ' Context menu items
-    '        cmsFiles.Items("Open").Enabled = False
-    '        cmsFiles.Items("CopyPath").Enabled = False
-
-    '        Exit Sub
-
-    '    End If
-
-    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-    '    Dim exists As Boolean = PathExists(path)
-
-    '    ' Context menu items
-    '    cmsFiles.Items("Open").Enabled = exists
-    '    cmsFiles.Items("CopyPath").Enabled = exists
-
-
-    'End Sub
-
-
 
 
 
@@ -3370,65 +2975,6 @@ Public Class Form1
     End Sub
 
 
-    'End Sub
-
-    'Private Sub UpdateFileContextMenu()
-    '    If cmsFiles.Items.Count = 0 Then Return
-    '    ' New Folder
-    '    If HasDirectoryCreationAccessToDirectory(currentFolder) Then
-    '        cmsFiles.Items("NewFolder").Enabled = True
-    '    Else
-    '        cmsFiles.Items("NewFolder").Enabled = False
-    '    End If
-    '    ' New Text File
-    '    If HasWriteAccessToDirectory(currentFolder) Then
-    '        cmsFiles.Items("NewTextFile").Enabled = True
-    '    Else
-    '        cmsFiles.Items("NewTextFile").Enabled = False
-    '    End If
-    'End Sub
-
-
-    'Private Sub UpdateEditContextMenu()
-
-    '    If cmsFiles.Items.Count = 0 Then Return
-
-    '    If _clipboardIsCut Then
-    '        cmsFiles.Items("Paste").Enabled = True
-    '    Else
-    '        cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
-    '    End If
-
-
-
-
-
-    '    If lvFiles.SelectedItems.Count = 0 Then
-
-    '        ' Context menu items
-    '        cmsFiles.Items("Cut").Enabled = False
-    '        cmsFiles.Items("Copy").Enabled = False
-    '        cmsFiles.Items("Rename").Enabled = False
-    '        cmsFiles.Items("Delete").Enabled = False
-    '        cmsFiles.Items("Open").Enabled = False
-    '        cmsFiles.Items("CopyPath").Enabled = False
-
-    '        Exit Sub
-
-    '    End If
-
-    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-    '    Dim exists As Boolean = PathExists(path)
-
-    '    ' Context menu items
-    '    cmsFiles.Items("Cut").Enabled = exists
-    '    cmsFiles.Items("Copy").Enabled = exists
-    '    cmsFiles.Items("Rename").Enabled = exists
-    '    cmsFiles.Items("Delete").Enabled = exists
-    '    cmsFiles.Items("Open").Enabled = exists
-    '    cmsFiles.Items("CopyPath").Enabled = exists
-
-    'End Sub
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
@@ -3455,36 +3001,6 @@ Public Class Form1
     '    statusTimer.Start()
     'End Sub
 
-    'Private Sub ShowStatus(message As String)
-    '    If lblStatus.InvokeRequired Then
-    '        lblStatus.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
-    '    Else
-    '        lblStatus.Text = message
-    '        statusTimer.Stop()
-    '        AddHandler statusTimer.Tick, AddressOf ClearStatus
-    '        statusTimer.Start()
-    '    End If
-    'End Sub
-
-    'Private Sub ShowStatus(message As String)
-    '    ' Ensure lblStatus is a valid control
-    '    If lblStatus IsNot Nothing Then
-    '        If lblStatus.InvokeRequired Then
-    '            ' If we are on a different thread, invoke the method on the UI thread
-    '            lblStatus.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
-    '        Else
-    '            ' Update the label text and manage the status timer
-    '            lblStatus.Text = message
-    '            statusTimer.Stop()
-    '            AddHandler statusTimer.Tick, AddressOf ClearStatus
-    '            statusTimer.Start()
-    '        End If
-    '    Else
-    '        ' Handle the case where lblStatus is not initialized
-    '        Debug.WriteLine("lblStatus control is not initialized.")
-    '    End If
-    'End Sub
-
     Private Sub ShowStatus(message As String)
         ' Check if lblStatus is not null
         If lblStatus IsNot Nothing Then
@@ -3503,8 +3019,6 @@ Public Class Form1
             Debug.WriteLine("lblStatus control is not initialized.")
         End If
     End Sub
-
-
 
 
     Private Sub ClearStatus(sender As Object, e As EventArgs)
@@ -3551,9 +3065,6 @@ Public Class Form1
     End Function
 
 
-
-
-
     Private Function HasDirectoryCreationAccess(dirPath As String) As Boolean
         ' Tests whether we can create, rename, and delete a directory inside dirPath.
 
@@ -3582,7 +3093,6 @@ Public Class Form1
         Catch ex As IOException
             ' Could be permissions, could be other IO issues.
             ' For access testing, treat as failure.
-            'Debug.WriteLine(dirPath & " HasDirectoryCreationAccessToDirectory - IOException " & ex.Message)
             Debug.WriteLine("HasDirectoryCreationAccessToDirectory - " & dirPath & " - False - IOException:  " & ex.Message)
 
             Return False
