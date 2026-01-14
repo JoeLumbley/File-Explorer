@@ -1905,17 +1905,117 @@ Public Class Form1
     'End Sub
 
 
+    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
+    '    ' If source is a file, copy it
+    '    If File.Exists(source) Then
+    '        Await CopyFile(source, destination)
+    '    ElseIf Directory.Exists(source) Then
+    '        ' If source is a directory, copy it asynchronously
+    '        Await CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source))) ' Await the async method
+    '    Else
+    '        ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
+    '    End If
+    'End Function
+
+    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
+    '    If File.Exists(source) Then
+    '        Await CopyFile(source, destination)
+
+    '        Refresh the view to show the copied directory
+    '        NavigateTo(destination)
+
+    '    ElseIf Directory.Exists(source) Then
+    '        Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
+    '        Await CopyDirectory(source, targetDir)
+
+    '        Refresh the view to show the copied directory
+    '        Dim parentDir = Directory.GetParent(targetDir)
+    '        NavigateTo(parentDir)
+
+
+    '    Else
+    '        ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
+    '        Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
+
+    '    End If
+    'End Function
+
+
+    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
+    '    If File.Exists(source) Then
+
+    '        ' Destination directory
+    '        NavigateTo(destination)
+
+
+    '        Await CopyFile(source, destination)
+
+    '        ' Refresh the view to show the copied file
+    '        NavigateTo(destination)
+
+    '    ElseIf Directory.Exists(source) Then
+
+    '        Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
+
+    '        Dim parentDir As String = Directory.GetParent(targetDir).FullName
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(parentDir)
+
+    '        Await CopyDirectory(source, targetDir)
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(parentDir)
+
+    '    Else
+
+    '        ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
+    '        Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
+
+    '    End If
+    'End Function
+
+
+
+
+
     Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
-        ' If source is a file, copy it
         If File.Exists(source) Then
-            CopyFile(source, destination) ' Assuming CopyFile is a synchronous method
+
+            Await CopyFile(source, destination)
+
+            ' Navigate after the file is copied
+            NavigateTo(destination)
+
         ElseIf Directory.Exists(source) Then
-            ' If source is a directory, copy it asynchronously
-            Await CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source))) ' Await the async method
+
+            Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
+            Dim parentDir As String = Directory.GetParent(targetDir).FullName
+
+            Await CopyDirectory(source, targetDir)
+
+            ' Navigate after the directory is copied
+            NavigateTo(parentDir)
+
         Else
+
             ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
+            Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
+
         End If
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
@@ -2144,8 +2244,13 @@ Public Class Form1
         End If
 
         ' If this method is called from a background thread, invoke it on the UI thread
+        'If txtPath.InvokeRequired Then
+        '    txtPath.Invoke(New Action(Of String)(AddressOf NavigateTo), path, recordHistory)
+        '    Return
+        'End If
+
         If txtPath.InvokeRequired Then
-            txtPath.Invoke(New Action(Of String)(AddressOf NavigateTo), path, recordHistory)
+            txtPath.Invoke(Sub() NavigateTo(path, recordHistory))
             Return
         End If
 
@@ -2274,7 +2379,121 @@ Public Class Form1
 
     End Sub
 
-    Private Async Sub CopyFile(source As String, destination As String)
+    'Private Async Sub CopyFile(source As String, destination As String) 
+    '    Try
+    '        ' Validate parameters
+    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+    '            ShowStatus(IconError & " Source or destination path is invalid.")
+    '            Return
+    '        End If
+
+    '        ' Check if the destination file already exists
+    '        Dim fileName As String = Path.GetFileName(source)
+    '        Dim destDirFileName = Path.Combine(destination, fileName)
+
+    '        If File.Exists(destDirFileName) Then
+    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
+    '                            "Do you want to overwrite it?"
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '            If result = DialogResult.No Then
+    '                ShowStatus(IconWarning & " Copy operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        ' Asynchronously copy the file
+    '        Await Task.Run(Sub() File.Copy(source, destDirFileName, overwrite:=True))
+
+    '        NavigateTo(destination)
+    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
+    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+    'Private Async Function CopyFile(source As String, destination As String) As Task
+    '    Try
+    '        ' Validate parameters
+    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+    '            ShowStatus(IconError & " Source or destination path is invalid.")
+    '            Return
+    '        End If
+
+    '        ' Check if the destination file already exists
+    '        Dim fileName As String = Path.GetFileName(source)
+    '        Dim destDirFileName = Path.Combine(destination, fileName)
+
+    '        If File.Exists(destDirFileName) Then
+    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
+    '                            "Do you want to overwrite it?"
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '            If result = DialogResult.No Then
+    '                ShowStatus(IconWarning & " Copy operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        ' Asynchronously copy the file
+    '        Await Task.Run(Sub() File.Copy(source, destDirFileName, overwrite:=True))
+
+    '        NavigateTo(destination)
+    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
+    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
+    '    End Try
+    'End Function
+
+
+    'Private Async Function CopyFile(source As String, destination As String) As Task
+    '    Try
+    '        ' Validate parameters
+    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
+    '            ShowStatus(IconError & " Source or destination path is invalid.")
+    '            Return
+    '        End If
+
+    '        Dim fileName As String = Path.GetFileName(source)
+    '        Dim destDirFileName As String = Path.Combine(destination, fileName)
+
+    '        ' Check if the destination file already exists
+    '        If File.Exists(destDirFileName) Then
+    '            Dim msg As String =
+    '            "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
+    '            "Do you want to overwrite it?"
+
+    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+
+    '            If result = DialogResult.No Then
+    '                ShowStatus(IconWarning & " Copy operation canceled.")
+    '                Return
+    '            End If
+    '        End If
+
+    '        ' Perform the copy asynchronously
+    '        Await Task.Run(Sub()
+    '                           File.Copy(source, destDirFileName, overwrite:=True)
+    '                       End Sub)
+
+    '        NavigateTo(destination)
+    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
+    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
+    '    End Try
+    'End Function
+
+
+
+
+
+    Private Async Function CopyFile(source As String, destination As String) As Task
         Try
             ' Validate parameters
             If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
@@ -2282,31 +2501,44 @@ Public Class Form1
                 Return
             End If
 
-            ' Check if the destination file already exists
             Dim fileName As String = Path.GetFileName(source)
-            Dim destDirFileName = Path.Combine(destination, fileName)
+            Dim destDirFileName As String = Path.Combine(destination, fileName)
 
+            ' Check if the destination file already exists
             If File.Exists(destDirFileName) Then
-                Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-                                "Do you want to overwrite it?"
+                Dim msg As String =
+                "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
+                "Do you want to overwrite it?"
+
                 Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+
                 If result = DialogResult.No Then
                     ShowStatus(IconWarning & " Copy operation canceled.")
                     Return
                 End If
             End If
 
-            ' Asynchronously copy the file
-            Await Task.Run(Sub() File.Copy(source, destDirFileName, overwrite:=True))
+            ' Perform the copy asynchronously
+            Await Task.Run(Sub()
+                               File.Copy(source, destDirFileName, overwrite:=True)
+                           End Sub)
 
-            NavigateTo(destination)
+            'NavigateTo(destination)
             ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
 
         Catch ex As Exception
             ShowStatus(IconError & " Copy Failed: " & ex.Message)
             Debug.WriteLine("CopyFile Error: " & ex.Message)
         End Try
-    End Sub
+    End Function
+
+
+
+
+
+
+
+
 
     Private Sub MoveFileOrDirectory(source As String, destination As String)
         Try
@@ -2573,6 +2805,69 @@ Public Class Form1
 
 
 
+    'Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        ShowStatus(IconError & " Source directory not found: " & sourceDir)
+    '        Return
+    '    End If
+
+    '    Try
+    '        ShowStatus(IconCopy & " Creating destination directory: " & destDir)
+
+    '        ' Create destination directory
+    '        Try
+    '            Directory.CreateDirectory(destDir)
+    '        Catch ex As Exception
+    '            ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
+    '            Debug.WriteLine(" Failed to create destination directory: " & ex.Message)
+    '            Return
+    '        End Try
+
+    '        ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
+
+    '        ' Copy files asynchronously
+    '        For Each file In dirInfo.GetFiles()
+    '            Try
+    '                Dim targetFilePath = Path.Combine(destDir, file.Name)
+    '                Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
+    '                Debug.WriteLine("Copied file: " & targetFilePath) ' Log successful copy
+    '            Catch ex As UnauthorizedAccessException
+    '                Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
+    '                ShowStatus(IconError & " Unauthorized access: " & file.FullName)
+    '            Catch ex As Exception
+    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '                ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
+    '            End Try
+    '        Next
+
+    '        ShowStatus(IconCopy & " Copying subdirectories.")
+
+    '        ' Copy subdirectories recursively asynchronously
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            Try
+    '                Await CopyDirectory(subDir.FullName, newDest)
+    '            Catch ex As Exception
+    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '            End Try
+    '        Next
+
+    '        ' Refresh the view to show the copied directory
+    '        NavigateTo(destDir)
+
+    '        ShowStatus(IconSuccess & " Copied into " & destDir)
+
+    '    Catch ex As Exception
+    '        ShowStatus(IconError & " Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+    '    End Try
+    'End Function
+
+
+
+
     Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
@@ -2589,7 +2884,7 @@ Public Class Form1
                 Directory.CreateDirectory(destDir)
             Catch ex As Exception
                 ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
-                Debug.WriteLine(" Failed to create destination directory: " & ex.Message)
+                Debug.WriteLine("Failed to create destination directory: " & ex.Message)
                 Return
             End Try
 
@@ -2600,7 +2895,7 @@ Public Class Form1
                 Try
                     Dim targetFilePath = Path.Combine(destDir, file.Name)
                     Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
-                    Debug.WriteLine("Copied file: " & targetFilePath) ' Log successful copy
+                    Debug.WriteLine("Copied file: " & targetFilePath)
                 Catch ex As UnauthorizedAccessException
                     Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
                     ShowStatus(IconError & " Unauthorized access: " & file.FullName)
@@ -2610,20 +2905,29 @@ Public Class Form1
                 End Try
             Next
 
-            ShowStatus(IconCopy & " Copying subdirectories.")
+            ShowStatus(IconCopy & " Copying subdirectories in parallel.")
 
-            ' Copy subdirectories recursively asynchronously
+            ' Collect recursive copy tasks
+            Dim subDirTasks As New List(Of Task)
+
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
-                Try
-                    Await CopyDirectory(subDir.FullName, newDest)
-                Catch ex As Exception
-                    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-                End Try
+
+                ' Add each recursive call as a task
+                subDirTasks.Add(Task.Run(Async Function()
+                                             Try
+                                                 Await CopyDirectory(subDir.FullName, newDest)
+                                             Catch ex As Exception
+                                                 Debug.WriteLine("CopyDirectory Error: " & ex.Message)
+                                             End Try
+                                         End Function))
             Next
 
-            ' Refresh the view to show the copied directory
-            NavigateTo(destDir)
+            ' Await all subdirectory copies in parallel
+            Await Task.WhenAll(subDirTasks)
+
+            '' Refresh the view to show the copied directory
+            'NavigateTo(destDir)
 
             ShowStatus(IconSuccess & " Copied into " & destDir)
 
