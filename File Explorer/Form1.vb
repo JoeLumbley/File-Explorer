@@ -1086,9 +1086,6 @@ Public Class Form1
                 item.Tag = fi.FullName
 
 
-
-
-
                 ' Assign image based on file type
                 Dim category As String = Nothing
                 If fileTypeMap.TryGetValue(ext, category) Then
