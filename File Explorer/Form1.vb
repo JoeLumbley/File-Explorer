@@ -462,7 +462,7 @@ Public Class Form1
     Private Sub HandleFindNextCommand()
 
         If SearchResults.Count = 0 Then
-            ShowStatus(IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
+            ShowStatus(IconDialog & "  No previous search results. Press: Ctrl + F or enter: 'find [search_term]' to start a search.")
             Return
         End If
 
@@ -481,15 +481,29 @@ Public Class Form1
         SelectListViewItemByPath(nextPath)
         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
+        'ShowStatus(
+        '    "  " & IconSearch &
+        '    "  Showing result " &
+        '    (SearchIndex + 1) &
+        '    " of " &
+        '    SearchResults.Count &
+        '    $"  - '{fileName}'  -  Next result press: F3 or enter: findnext  -  Open Ctrl + O"
+        ')
+
+
         ShowStatus(
-        IconSearch &
-        "  Showing result " &
-        (SearchIndex + 1) &
-        " of " &
-        SearchResults.Count &
-        $"  - '{fileName}'  -  Next result press: F3 or enter: findnext  -  Open Ctrl + O"
-    )
+            "  " & IconSearch &
+            "    Result " &
+            (SearchIndex + 1) &
+            " of " &
+            SearchResults.Count &
+            $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
+        )
+
+
+
     End Sub
+
 
 
 
@@ -1821,13 +1835,26 @@ Public Class Form1
                         lvFiles.SelectedItems.Clear()
                         SelectListViewItemByPath(SearchResults(0))
 
+                        Dim nextPath As String = SearchResults(SearchIndex)
+                        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
                         txtPath.Focus()
 
+                        'ShowStatus(
+                        '    IconSearch &
+                        '    "  Found " & SearchResults.Count & $" result(s). Showing result 1 -  '{fileName}'  -  " &
+                        '    " -  Next result press: F3 or enter: 'findnext'  -  Open Ctrl + O"
+                        ')
+
                         ShowStatus(
-                            IconSearch &
-                            "  Found " & SearchResults.Count & " result(s). Showing result 1. " &
-                            "To show the next result, enter: findnext"
+                            "  " & IconSearch &
+                            "    Result " &
+                            (SearchIndex + 1) &
+                            " of " &
+                            SearchResults.Count &
+                            $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
                         )
+
 
                     Else
                         ShowStatus(IconDialog & "  No results found for: " & searchTerm)
@@ -1858,7 +1885,7 @@ Public Class Form1
                 SelectListViewItemByPath(nextPath)
 
                 ShowStatus(
-                    IconSearch &
+                    "  " & IconSearch &
                     " Showing result " &
                     (SearchIndex + 1) &
                     " of " &
