@@ -1253,26 +1253,93 @@ Public Class Form1
         lvFiles.Items.Clear()
 
         Try
-            ' -------------------------------
-            ' Load directories asynchronously
-            ' -------------------------------
+            '    ' -------------------------------
+            '    ' Load directories asynchronously
+            '    ' -------------------------------
+            '    Dim directories = Await Task.Run(Function()
+            '                                         Dim dirList As New List(Of String)
+            '                                         Try
+            '                                             dirList.AddRange(
+            '                                             Directory.GetDirectories(path).Where(Function(d) Return ShowHiddenFiles OrElse (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System)) = 0 End Function))
+
+            '                                         Catch ex As UnauthorizedAccessException
+            '                                             ShowStatus(IconWarning & " Access denied to some directories in: " & path)
+            '                                         End Try
+            '                                         Return dirList
+            '                                     End Function)
+
+            '    Dim itemsToAdd As New List(Of ListViewItem)
+
+            'Try
+            '    ' -------------------------------
+            '    ' Load directories asynchronously
+            '    ' -------------------------------
+            '    Dim directories = Await Task.Run(Function()
+            '                                         Dim dirList As New List(Of String)
+            '                                         Try
+            '                                             dirList.AddRange(
+            '                                                 Directory.GetDirectories(path).
+            '                                                 Where(Function(d)
+            '                                                           ShowHiddenFiles OrElse
+            '                                                           (New DirectoryInfo(d).Attributes And
+            '                                                            (FileAttributes.Hidden Or FileAttributes.System)) = 0
+            '                                                       End Function))
+            '                                         Catch ex As UnauthorizedAccessException
+            '                                             ShowStatus(IconWarning & " Access denied to some directories in: " & path)
+            '                                         End Try
+            '                                         Return dirList
+            '                                     End Function)
+
+            '    Dim itemsToAdd As New List(Of ListViewItem)
+
+
+
+
+
+
+
+            'Dim directories = Await Task.Run(Function()
+            '                                     Dim dirList As New List(Of String)
+            '                                     Try
+            '                                         dirList.AddRange(
+            '                                         Directory.GetDirectories(path).
+            '                                         Where(Function(d) _
+            '                                                    ShowHiddenFiles OrElse
+            '                                                    (New DirectoryInfo(d).Attributes And
+            '                                                    (FileAttributes.Hidden Or FileAttributes.System)) = 0 _
+            '                                               End Function))
+
+            '                                     Catch ex As UnauthorizedAccessException
+            '                                         ShowStatus(IconWarning & " Access denied to some directories in: " & path)
+            '                                     End Try
+            '                                     Return dirList
+            '                                 End Function)
+
             Dim directories = Await Task.Run(Function()
-                                                 Dim dirList As New List(Of String)
+                                                 Dim dirList As New List(Of String)()
                                                  Try
                                                      dirList.AddRange(
-                                                     Directory.GetDirectories(path).
-                                                     Where(Function(d) _
-                                                               ShowHiddenFiles OrElse
-                                                               (New DirectoryInfo(d).Attributes And
-                                                                (FileAttributes.Hidden Or FileAttributes.System)) = 0))
-
+                                             Directory.GetDirectories(path).
+                                             Where(Function(d) ShowHiddenFiles OrElse
+                                                         Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0))
+                                         )
                                                  Catch ex As UnauthorizedAccessException
                                                      ShowStatus(IconWarning & " Access denied to some directories in: " & path)
+                                                     Debug.WriteLine($"UnauthorizedAccessException: {ex.Message}") ' Log exception details
+                                                 Catch ex As Exception
+                                                     ShowStatus(IconError & " An error occurred: " & ex.Message)
+                                                     Debug.WriteLine($"Error in loading directories: {ex.Message}")
                                                  End Try
-                                                 Return dirList
+                                                 Return dirList ' Ensure that an empty list is returned if an exception occurs
                                              End Function)
 
+
+
             Dim itemsToAdd As New List(Of ListViewItem)
+
+
+
+
 
             For Each mDir In directories
                 Dim di As New DirectoryInfo(mDir)
@@ -1298,7 +1365,7 @@ Public Class Form1
                                                Where(Function(f)
                                                          Return ShowHiddenFiles OrElse
                                                          (New FileInfo(f).Attributes And
-                                                          (FileAttributes.Hidden Or FileAttributes.System)) = 0
+                                                         (FileAttributes.Hidden Or FileAttributes.System)) = 0
                                                      End Function))
 
                                            Catch ex As UnauthorizedAccessException
@@ -1348,6 +1415,9 @@ Public Class Form1
         Finally
             lvFiles.EndUpdate()
         End Try
+
+
+
     End Function
 
 
