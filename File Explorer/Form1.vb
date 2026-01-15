@@ -3645,26 +3645,139 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub InitContextMenu()
+
+    '    cmsFiles.Items.Add("Open                    Ctrl + O", Nothing, AddressOf Open_Click).Name = "Open"
+
+
+    '    cmsFiles.Items("Open"). = canCreateFolders
+
+
+    '    cmsFiles.Items.Add("New Folder          Ctrl + Shift + N", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
+    '    cmsFiles.Items.Add("New Text File       Ctrl + Shift + T", Nothing, AddressOf NewTextFile_Click).Name = "NewTextFile"
+
+    '    cmsFiles.Items.Add("Cut                     Ctrl + X", Nothing, AddressOf CutSelected_Click).Name = "Cut"
+    '    cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
+    '    cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
+
+    '    cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
+    '    cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
+
+    '    'cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
+    '    cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
+
+    '    lvFiles.ContextMenuStrip = cmsFiles
+
+    'End Sub
+
+
+    'Private Sub InitContextMenu()
+    '    ' Add menu items with labels, shortcuts, and event handlers
+    '    cmsFiles.Items.Add("Open                    Ctrl + O", Nothing, AddressOf Open_Click).Name = "Open"
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.O
+
+    '    cmsFiles.Items.Add("New Folder          Ctrl + Shift + N", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.N
+
+    '    cmsFiles.Items.Add("New Text File       Ctrl + Shift + T", Nothing, AddressOf NewTextFile_Click).Name = "NewTextFile"
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.T
+
+    '    cmsFiles.Items.Add("Cut                     Ctrl + X", Nothing, AddressOf CutSelected_Click).Name = "Cut"
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.X
+
+    '    cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.C
+
+    '    cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.V
+
+    '    cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
+    '    ' Optional: Add a shortcut for Rename, e.g., F2
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.F2
+
+    '    cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
+    '    ' Optional: Add a shortcut for Delete, e.g., Delete key
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Delete
+
+    '    ' Uncomment to enable the Copy Name feature
+    '    ' cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
+
+    '    cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
+    '    ' Optional: Add a shortcut for Copy Path
+    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.P
+
+    '    ' Assign the context menu to the ListView
+    '    lvFiles.ContextMenuStrip = cmsFiles
+    'End Sub
+
+
+
     Private Sub InitContextMenu()
+        ' Add menu items with labels, shortcuts, and event handlers
+        Dim openItem As New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
+            .Name = "Open",
+            .ShortcutKeys = Keys.Control Or Keys.O
+        }
+        cmsFiles.Items.Add(openItem)
 
-        cmsFiles.Items.Add("Open", Nothing, AddressOf Open_Click).Name = "Open"
+        Dim newFolderItem As New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
+            .Name = "NewFolder",
+            .ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.N
+        }
+        cmsFiles.Items.Add(newFolderItem)
 
-        cmsFiles.Items.Add("New Folder", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
-        cmsFiles.Items.Add("New Text File", Nothing, AddressOf NewTextFile_Click).Name = "NewTextFile"
+        Dim newTextFileItem As New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
+            .Name = "NewTextFile",
+            .ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.T
+        }
+        cmsFiles.Items.Add(newTextFileItem)
 
-        cmsFiles.Items.Add("Cut", Nothing, AddressOf CutSelected_Click).Name = "Cut"
-        cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
-        cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
+        Dim cutItem As New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
+            .Name = "Cut",
+            .ShortcutKeys = Keys.Control Or Keys.X
+        }
+        cmsFiles.Items.Add(cutItem)
 
-        cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
-        cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
+        Dim copyItem As New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
+            .Name = "Copy",
+            .ShortcutKeys = Keys.Control Or Keys.C
+        }
+        cmsFiles.Items.Add(copyItem)
 
-        'cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
-        cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
+        Dim pasteItem As New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
+            .Name = "Paste",
+            .ShortcutKeys = Keys.Control Or Keys.V
+        }
+        cmsFiles.Items.Add(pasteItem)
 
+        Dim renameItem As New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
+            .Name = "Rename",
+            .ShortcutKeys = Keys.F2
+        }
+        cmsFiles.Items.Add(renameItem)
+
+        Dim deleteItem As New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
+            .Name = "Delete",
+            .ShortcutKeys = Keys.Delete
+        }
+        cmsFiles.Items.Add(deleteItem)
+
+        ' Uncomment to enable the Copy Name feature
+        ' Dim copyNameItem As New ToolStripMenuItem("Copy Name", Nothing, AddressOf CopyFileName_Click) With {
+        '     .Name = "CopyName"
+        ' }
+        ' cmsFiles.Items.Add(copyNameItem)
+
+        Dim copyPathItem As New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
+            .Name = "CopyPath",
+            .ShortcutKeys = Keys.Control Or Keys.P
+        }
+        cmsFiles.Items.Add(copyPathItem)
+
+        ' Assign the context menu to the ListView
         lvFiles.ContextMenuStrip = cmsFiles
-
     End Sub
+
 
 
     Private Sub RunTests()
