@@ -1268,8 +1268,6 @@ Public Class Form1
 
         UpdateFileButtonsAndMenus()
 
-        'UpdateEditContextMenu()
-
 
     End Sub
 
@@ -2971,7 +2969,6 @@ Public Class Form1
 
     'End Sub
 
-
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
 
         ' Clear item selection for lvFiles
@@ -3003,8 +3000,6 @@ Public Class Form1
         End Try
 
     End Sub
-
-
 
     Private Sub UpdateNavButtons()
         btnBack.Enabled = _historyIndex > 0
@@ -3086,8 +3081,6 @@ Public Class Form1
 
     'End Sub
 
-
-
     Private Sub UpdateDestructiveButtonsAndMenus()
 
         ' --- Rule 0: Something must be selected ---
@@ -3132,10 +3125,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
     Private Sub SetDestructiveButtons(cut As Boolean, rename As Boolean, delete As Boolean)
         btnCut.Enabled = cut
         btnRename.Enabled = rename
@@ -3144,29 +3133,9 @@ Public Class Form1
 
     Private Sub SetContextDestructiveItems(enabled As Boolean)
         cmsFiles.Items("Cut").Enabled = enabled
-        'cmsFiles.Items("Copy").Enabled = enabled
         cmsFiles.Items("Rename").Enabled = enabled
         cmsFiles.Items("Delete").Enabled = enabled
-        'cmsFiles.Items("Open").Enabled = enabled
-        'cmsFiles.Items("CopyPath").Enabled = enabled
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub UpdateCopyButtonAndMenus()
 
@@ -3207,12 +3176,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
     Private Sub UpdateFileButtonsAndMenus()
 
         ' --- Folder-level permissions ---
@@ -3244,8 +3207,6 @@ Public Class Form1
         cmsFiles.Items("CopyPath").Enabled = exists
 
     End Sub
-
-
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
@@ -3385,8 +3346,6 @@ Public Class Form1
             End Try
         End Try
     End Function
-
-
 
     Private Function NormalizeTextFilePath(raw As String) As String
         If raw Is Nothing Then Return Nothing
