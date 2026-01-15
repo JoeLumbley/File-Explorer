@@ -2713,82 +2713,6 @@ Public Class Form1
     '    End Try
     'End Function
 
-
-
-
-    'Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
-    '    Dim dirInfo As New DirectoryInfo(sourceDir)
-
-    '    If Not dirInfo.Exists Then
-    '        ShowStatus(IconError & " Source directory not found: " & sourceDir)
-    '        Return
-    '    End If
-
-    '    Try
-    '        ShowStatus(IconCopy & " Creating destination directory: " & destDir)
-
-    '        ' Create destination directory
-    '        Try
-    '            Directory.CreateDirectory(destDir)
-    '        Catch ex As Exception
-    '            ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
-    '            Debug.WriteLine("Failed to create destination directory: " & ex.Message)
-    '            Return
-    '        End Try
-
-    '        'ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
-
-    '        ShowStatus("  " & IconCopy & "  Copying files...")
-
-
-    '        ' Copy files asynchronously
-    '        For Each file In dirInfo.GetFiles()
-    '            Try
-    '                Dim targetFilePath = Path.Combine(destDir, file.Name)
-    '                Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
-    '                Debug.WriteLine("Copied file: " & targetFilePath)
-    '            Catch ex As UnauthorizedAccessException
-    '                Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
-    '                ShowStatus(IconError & " Unauthorized access: " & file.FullName)
-    '            Catch ex As Exception
-    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '                ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ShowStatus("  " & IconCopy & "  Copying subdirectories in parallel.")
-
-    '        ' Collect recursive copy tasks
-    '        Dim subDirTasks As New List(Of Task)
-
-    '        For Each subDir In dirInfo.GetDirectories()
-    '            Dim newDest = Path.Combine(destDir, subDir.Name)
-
-    '            ' Add each recursive call as a task
-    '            subDirTasks.Add(Task.Run(Async Function()
-    '                                         Try
-    '                                             Await CopyDirectory(subDir.FullName, newDest)
-    '                                         Catch ex As Exception
-    '                                             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '                                         End Try
-    '                                     End Function))
-    '        Next
-
-    '        ' Await all subdirectory copies in parallel
-    '        Await Task.WhenAll(subDirTasks)
-
-    '        '' Refresh the view to show the copied directory
-    '        'NavigateTo(destDir)
-
-    '        'ShowStatus(IconSuccess & " Copied into " & destDir)
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Copy failed: " & ex.Message)
-    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '    End Try
-    'End Function
-
-
     Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task(Of Boolean)
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
@@ -2798,7 +2722,6 @@ Public Class Form1
         End If
 
         Try
-            'ShowStatus(IconCopy & " Creating destination directory: " & destDir)
 
             ' Create destination directory
             Try
