@@ -387,9 +387,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
     Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
         If HandleAddressBarShortcuts(e) Then Return
         If HandleNavigationShortcuts(e) Then Return
@@ -1560,19 +1557,29 @@ Public Class Form1
 
                     ' Check if source file or directory exists
                     If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
-                        ShowStatus(IconError &
-                       " Copy Failed - Source: ''" &
-                       source &
-                       "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+
+                        ShowStatus("  " & IconError &
+                                   " Copy failed:  Source """ &
+                                   source &
+                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
                         Return
                     End If
 
                     ' Check if destination directory exists
                     If Not Directory.Exists(destination) Then
-                        ShowStatus(IconError &
-                       " Copy Failed - Destination folder: ''" &
-                       destination &
-                       "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+
+                        ' ShowStatus(IconError &
+                        '" Copy Failed - Destination folder: ''" &
+                        'destination &
+                        '"'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
+
+
+                        ShowStatus("  " & IconError &
+                                   " Copy failed.  Destination: """ &
+                                   destination &
+                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
+
+
                         Return
                     End If
 
@@ -1608,7 +1615,7 @@ Public Class Form1
                     ShowStatus(IconDialog & " Usage: delete [file_or_directory]")
                 End If
 
-            Case "mkdir", "make" ' You can use "mkdir" or "make" as the command
+            Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
                 If parts.Length > 1 Then
                     Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
 
@@ -1905,81 +1912,6 @@ Public Class Form1
     '    End If
     'End Sub
 
-
-    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
-    '    ' If source is a file, copy it
-    '    If File.Exists(source) Then
-    '        Await CopyFile(source, destination)
-    '    ElseIf Directory.Exists(source) Then
-    '        ' If source is a directory, copy it asynchronously
-    '        Await CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source))) ' Await the async method
-    '    Else
-    '        ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
-    '    End If
-    'End Function
-
-    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
-    '    If File.Exists(source) Then
-    '        Await CopyFile(source, destination)
-
-    '        Refresh the view to show the copied directory
-    '        NavigateTo(destination)
-
-    '    ElseIf Directory.Exists(source) Then
-    '        Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
-    '        Await CopyDirectory(source, targetDir)
-
-    '        Refresh the view to show the copied directory
-    '        Dim parentDir = Directory.GetParent(targetDir)
-    '        NavigateTo(parentDir)
-
-
-    '    Else
-    '        ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
-    '        Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
-
-    '    End If
-    'End Function
-
-
-    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
-    '    If File.Exists(source) Then
-
-    '        ' Destination directory
-    '        NavigateTo(destination)
-
-
-    '        Await CopyFile(source, destination)
-
-    '        ' Refresh the view to show the copied file
-    '        NavigateTo(destination)
-
-    '    ElseIf Directory.Exists(source) Then
-
-    '        Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
-
-    '        Dim parentDir As String = Directory.GetParent(targetDir).FullName
-
-    '        ' Refresh the view to show the copied directory
-    '        NavigateTo(parentDir)
-
-    '        Await CopyDirectory(source, targetDir)
-
-    '        ' Refresh the view to show the copied directory
-    '        NavigateTo(parentDir)
-
-    '    Else
-
-    '        ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
-    '        Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
-
-    '    End If
-    'End Function
-
-
-
-
-
     Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
         If File.Exists(source) Then
 
@@ -1988,7 +1920,7 @@ Public Class Form1
 
                 NavigateTo(destination)
 
-                ShowStatus("  " & IconSuccess & "  Copy complete.")
+                'ShowStatus("  " & IconSuccess & "  Copy complete.")
 
             End If
 
@@ -2011,7 +1943,7 @@ Public Class Form1
 
                 NavigateTo(parentDir)
 
-                ShowStatus("  " & IconSuccess & "  Copy complete.")
+                'ShowStatus("  " & IconSuccess & "  Copy complete.")
 
             End If
 
@@ -2023,19 +1955,6 @@ Public Class Form1
 
         End If
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
@@ -2243,11 +2162,6 @@ Public Class Form1
     '    UpdateEditContextMenu()
     'End Sub
 
-
-
-
-
-
     Private Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
@@ -2299,24 +2213,26 @@ Public Class Form1
     End Sub
 
 
-    Private Sub GoToFolderOrOpenFile(Path As String)
+    Private Sub GoToFolderOrOpenFile(FileOrFolder As String)
         ' Navigate to folder or open file.
 
         ' If folder exists, go there
-        If Directory.Exists(Path) Then
+        If Directory.Exists(FileOrFolder) Then
 
-            NavigateTo(Path, True)
+            NavigateTo(FileOrFolder, True)
 
             ' If file exists, open it
-        ElseIf File.Exists(Path) Then
+        ElseIf File.Exists(FileOrFolder) Then
 
             Try
 
                 ' Open file with default application.
-                Dim processStartInfo As New ProcessStartInfo(Path) With {.UseShellExecute = True}
+                Dim processStartInfo As New ProcessStartInfo(FileOrFolder) With {.UseShellExecute = True}
                 Dim process As Process = Process.Start(processStartInfo)
 
-                ShowStatus(IconOpen & " Opened " & Path)
+                Dim fileName As String = Path.GetFileNameWithoutExtension(FileOrFolder)
+
+                ShowStatus("  " & IconOpen & $"  Opened:  ""{fileName}""")
 
             Catch ex As Exception
                 ShowStatus(IconError & " Cannot open: " & ex.Message)
@@ -2325,7 +2241,7 @@ Public Class Form1
             End Try
 
         Else
-            ShowStatus(IconWarning & " Path does not exist: " & Path)
+            ShowStatus(IconWarning & " Path does not exist: " & FileOrFolder)
         End If
 
     End Sub
@@ -2432,129 +2348,6 @@ Public Class Form1
     '    End Try
     'End Sub
 
-
-
-    'Private Async Function CopyFile(source As String, destination As String) As Task
-    '    Try
-    '        ' Validate parameters
-    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-    '            ShowStatus(IconError & " Source or destination path is invalid.")
-    '            Return
-    '        End If
-
-    '        ' Check if the destination file already exists
-    '        Dim fileName As String = Path.GetFileName(source)
-    '        Dim destDirFileName = Path.Combine(destination, fileName)
-
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-    '                            "Do you want to overwrite it?"
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-    '            If result = DialogResult.No Then
-    '                ShowStatus(IconWarning & " Copy operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        ' Asynchronously copy the file
-    '        Await Task.Run(Sub() File.Copy(source, destDirFileName, overwrite:=True))
-
-    '        NavigateTo(destination)
-    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
-    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
-    '    End Try
-    'End Function
-
-
-    'Private Async Function CopyFile(source As String, destination As String) As Task
-    '    Try
-    '        ' Validate parameters
-    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-    '            ShowStatus(IconError & " Source or destination path is invalid.")
-    '            Return
-    '        End If
-
-    '        Dim fileName As String = Path.GetFileName(source)
-    '        Dim destDirFileName As String = Path.Combine(destination, fileName)
-
-    '        ' Check if the destination file already exists
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String =
-    '            "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-    '            "Do you want to overwrite it?"
-
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-
-    '            If result = DialogResult.No Then
-    '                ShowStatus(IconWarning & " Copy operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        ' Perform the copy asynchronously
-    '        Await Task.Run(Sub()
-    '                           File.Copy(source, destDirFileName, overwrite:=True)
-    '                       End Sub)
-
-    '        NavigateTo(destination)
-    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
-    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
-    '    End Try
-    'End Function
-
-
-
-
-
-    'Private Async Function CopyFile(source As String, destination As String) As Task
-    '    Try
-    '        ' Validate parameters
-    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-    '            ShowStatus(IconError & " Source or destination path is invalid.")
-    '            Return
-    '        End If
-
-    '        Dim fileName As String = Path.GetFileName(source)
-    '        Dim destDirFileName As String = Path.Combine(destination, fileName)
-
-    '        ' Check if the destination file already exists
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String =
-    '            "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-    '            "Do you want to overwrite it?"
-
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-
-    '            If result = DialogResult.No Then
-    '                ShowStatus(IconWarning & " Copy operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        ShowStatus("  " & IconCopy & "  Copying files...")
-
-
-    '        ' Perform the copy asynchronously
-    '        Await Task.Run(Sub()
-    '                           File.Copy(source, destDirFileName, overwrite:=True)
-    '                       End Sub)
-
-    '        'NavigateTo(destination)
-    '        'ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
-    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
-    '    End Try
-    'End Function
-
-
     Private Async Function CopyFile(source As String, destination As String) As Task(Of Boolean)
         Try
             ' Validate parameters
@@ -2596,11 +2389,6 @@ Public Class Form1
             Return False
         End Try
     End Function
-
-
-
-
-
 
     Private Sub MoveFileOrDirectory(source As String, destination As String)
         Try
