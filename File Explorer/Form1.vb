@@ -224,7 +224,7 @@ Public Class Form1
 
         ' Validate selection
         If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
-            ShowStatus(IconError & " The selected item isn't a file or folder and can't be opened.")
+            ShowStatus("  " & IconError & " The selected item isn't a file or folder and can't be opened.")
             Exit Sub
         End If
 
@@ -264,7 +264,7 @@ Public Class Form1
 
         If Not HasWriteAccess(parentDir) Then
             e.CancelEdit = True
-            ShowStatus(IconError & " This location does not allow renaming.")
+            ShowStatus("  " & IconError & " This location does not allow renaming.")
             Exit Sub
         End If
 
@@ -460,7 +460,7 @@ Public Class Form1
     Private Sub HandleFindNextCommand()
 
         If SearchResults.Count = 0 Then
-            ShowStatus(IconDialog & "  No previous search results. Press: Ctrl + F or enter: 'find [search_term]' to start a search.")
+            ShowStatus("  " & IconDialog & "  No previous search results. Press: Ctrl + F or enter: 'find [search_term]' to start a search.")
             Return
         End If
 
@@ -615,13 +615,13 @@ Public Class Form1
 
         ' If the node is collapsed, expand it (one level)
         If Not node.IsExpanded Then
-            ShowStatus(IconDialog & "  Expanding folder...")
+            ShowStatus("  " & IconDialog & "  Expanding folder...")
 
             tvFolders.BeginUpdate()
             node.Expand()
             tvFolders.EndUpdate()
 
-            ShowStatus(IconSuccess & "  Expanded: " & node.FullPath)
+            ShowStatus("  " & IconSuccess & "  Expanded: " & node.FullPath)
             Return
         End If
 
@@ -630,12 +630,12 @@ Public Class Form1
             tvFolders.SelectedNode = node.Nodes(0)
             tvFolders.SelectedNode.EnsureVisible()
 
-            ShowStatus(IconSuccess & "  Navigated into: " & tvFolders.SelectedNode.FullPath)
+            ShowStatus("  " & IconSuccess & "  Navigated into: " & tvFolders.SelectedNode.FullPath)
             Return
         End If
 
         ' If expanded but no children, do nothing
-        ShowStatus(IconDialog & "  No subfolders to expand.")
+        ShowStatus("  " & IconDialog & "  No subfolders to expand.")
 
     End Sub
 
@@ -646,13 +646,13 @@ Public Class Form1
 
         ' If the node is expanded, collapse it (one level)
         If node.IsExpanded Then
-            ShowStatus(IconDialog & "  Collapsing folder...")
+            ShowStatus("  " & IconDialog & "  Collapsing folder...")
 
             tvFolders.BeginUpdate()
             node.Collapse()
             tvFolders.EndUpdate()
 
-            ShowStatus(IconSuccess & "  Collapsed: " & node.FullPath)
+            ShowStatus("  " & IconSuccess & "  Collapsed: " & node.FullPath)
             Return
         End If
 
@@ -661,12 +661,12 @@ Public Class Form1
             tvFolders.SelectedNode = node.Parent
             tvFolders.SelectedNode.EnsureVisible()
 
-            ShowStatus(IconSuccess & "  Moved to parent: " & node.Parent.FullPath)
+            ShowStatus("  " & IconSuccess & "  Moved to parent: " & node.Parent.FullPath)
             Return
         End If
 
         ' If it's a root node and already collapsed, do nothing
-        ShowStatus(IconDialog & "  Already at the top level.")
+        ShowStatus("  " & IconDialog & "  Already at the top level.")
 
     End Sub
 
@@ -771,13 +771,13 @@ Public Class Form1
                 tvFolders.BeginUpdate()
                 tvFolders.Nodes.Remove(node)
                 tvFolders.EndUpdate()
-                ShowStatus(IconWarning & " Drive is not ready and has been removed.")
+                ShowStatus("  " & IconWarning & " Drive is not ready and has been removed.")
                 Return
             End If
 
         Catch ex As Exception
             ' Handle any exceptions when accessing DriveInfo
-            ShowStatus(IconError & " NavTree: Error accessing drive: " & ex.Message)
+            ShowStatus("  " & IconError & " NavTree: Error accessing drive: " & ex.Message)
             Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
             Return
         End Try
@@ -929,10 +929,10 @@ Public Class Form1
                                                      Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0)))
 
                                                  Catch ex As UnauthorizedAccessException
-                                                     ShowStatus(IconWarning & " Access denied to some directories in: " & path)
+                                                     ShowStatus("  " & IconWarning & " Access denied to some directories in: " & path)
                                                      Debug.WriteLine($"PopulateFiles - {path} - Directories - UnauthorizedAccessException - {ex.Message}") ' Log exception details
                                                  Catch ex As Exception
-                                                     ShowStatus(IconError & " An error occurred: " & ex.Message)
+                                                     ShowStatus("  " & IconError & " An error occurred: " & ex.Message)
                                                      Debug.WriteLine($"PopulateFiles - {path} - Directories - Error - {ex.Message}")
                                                  End Try
 
@@ -976,10 +976,10 @@ Public Class Form1
                                                (FileAttributes.Hidden Or FileAttributes.System)) = 0))
 
                                            Catch ex As UnauthorizedAccessException
-                                               ShowStatus(IconError & " Access denied to some files in: " & path)
+                                               ShowStatus("  " & IconError & " Access denied to some files in: " & path)
                                                Debug.WriteLine($"PopulateFiles - {path} - Files - UnauthorizedAccessException - {ex.Message}")
                                            Catch ex As Exception
-                                               ShowStatus(IconError & " An error occurred: " & ex.Message)
+                                               ShowStatus("  " & IconError & " An error occurred: " & ex.Message)
                                                Debug.WriteLine($"PopulateFiles - {path} - Files - Error - {ex.Message}")
 
                                            End Try
@@ -1022,7 +1022,7 @@ Public Class Form1
             ShowStatus("  " & lvFiles.Items.Count & "  items")
 
         Catch ex As Exception
-            ShowStatus(IconError & $" Error: {ex.Message}")
+            ShowStatus("  " & IconError & $" Error: {ex.Message}")
             Debug.WriteLine($"General Error: {ex.Message}")
 
         Finally
@@ -1064,13 +1064,13 @@ Public Class Form1
 
                 Directory.Move(oldPath, newPath)
 
-                ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+                ShowStatus("  " & IconSuccess & " Renamed Folder to: " & newName)
 
             ElseIf File.Exists(oldPath) Then
 
                 File.Move(oldPath, newPath)
 
-                ShowStatus(IconSuccess & " Renamed File to: " & newName)
+                ShowStatus("  " & IconSuccess & " Renamed File to: " & newName)
 
             End If
 
@@ -1080,7 +1080,7 @@ Public Class Form1
 
             e.CancelEdit = True
 
-            ShowStatus(IconError & " Rename Failed. " & ex.Message)
+            ShowStatus("  " & IconError & " Rename Failed. " & ex.Message)
 
             Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
 
@@ -1168,11 +1168,11 @@ Public Class Form1
 
             item.BeginEdit() ' allow user to rename immediately
 
-            ShowStatus(IconNewFolder & " Created folder: " & di.Name)
+            ShowStatus("  " & IconNewFolder & " Created folder: " & di.Name)
 
         Catch ex As Exception
 
-            ShowStatus(IconError & " New folder creation failed. " & ex.Message)
+            ShowStatus("  " & IconError & " New folder creation failed. " & ex.Message)
 
             Debug.WriteLine("NewFolder_Click Error: " & ex.Message)
 
@@ -1186,7 +1186,7 @@ Public Class Form1
 
         ' Validate destination folder
         If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
-            ShowStatus(IconWarning & " Invalid folder. Cannot create file.")
+            ShowStatus("  " & IconWarning & " Invalid folder. Cannot create file.")
             Return
         End If
 
@@ -1205,7 +1205,7 @@ Public Class Form1
             ' Create the file with initial content
             File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
 
-            ShowStatus(IconSuccess & " Text file created: " & newFilePath)
+            ShowStatus("  " & IconSuccess & " Text file created: " & newFilePath)
 
             ' Refresh the folder view so the user sees the new file
             NavigateTo(destDir)
@@ -1215,7 +1215,7 @@ Public Class Form1
 
         Catch ex As Exception
 
-            ShowStatus(IconError & " New text file creation failed. " & ex.Message)
+            ShowStatus("  " & IconError & " New text file creation failed. " & ex.Message)
 
             Debug.WriteLine("NewTextFile_Click Error: " & ex.Message)
 
@@ -1239,7 +1239,7 @@ Public Class Form1
         sel.ForeColor = Color.Gray
         sel.Font = New Font(sel.Font, FontStyle.Italic)
 
-        ShowStatus(IconCut & " Cut to clipboard: " & _clipboardPath)
+        ShowStatus("  " & IconCut & " Cut to clipboard: " & _clipboardPath)
 
     End Sub
 
@@ -1251,7 +1251,7 @@ Public Class Form1
 
         ' Validate that the selected item actually exists
         If Not PathExists(path) Then
-            ShowStatus(IconWarning & " Copy failed: Selected item does not exist.")
+            ShowStatus("  " & IconWarning & " Copy failed: Selected item does not exist.")
             Exit Sub
         End If
 
@@ -1262,7 +1262,7 @@ Public Class Form1
         _clipboardPath = path
         _clipboardIsCut = False
 
-        ShowStatus(IconCopy & " Copied to clipboard: " & _clipboardPath)
+        ShowStatus("  " & IconCopy & " Copied to clipboard: " & _clipboardPath)
 
         UpdateEditButtonsAndMenus()
 
@@ -1331,7 +1331,7 @@ Public Class Form1
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
         ' Check if a file or folder is selected
         If String.IsNullOrEmpty(_clipboardPath) Then
-            ShowStatus(IconError & " Paste failed: No item in clipboard")
+            ShowStatus("  " & IconError & " Paste failed: No item in clipboard")
             Exit Sub
         End If
 
@@ -1340,7 +1340,7 @@ Public Class Form1
 
         ' Ensure destination path is valid
         If String.IsNullOrEmpty(destPath) Then
-            ShowStatus(IconError & " Paste failed: Invalid destination path")
+            ShowStatus("  " & IconError & " Paste failed: Invalid destination path")
             Exit Sub
         End If
 
@@ -1360,7 +1360,7 @@ Public Class Form1
                     Await CopyDirectory(_clipboardPath, destPath) ' Await the async copy method
                 End If
             Else
-                ShowStatus(IconError & " Paste failed: Source not found")
+                ShowStatus("  " & IconError & " Paste failed: Source not found")
                 Exit Sub
             End If
 
@@ -1373,18 +1373,18 @@ Public Class Form1
 
             ResetCutVisuals()
 
-            ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
+            ShowStatus("  " & IconPaste & " Pasted into " & txtPath.Text)
         Catch ex As IOException
             MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(IconError & " Paste failed: I/O Error - " & ex.Message)
+            ShowStatus("  " & IconError & " Paste failed: I/O Error - " & ex.Message)
             Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
         Catch ex As UnauthorizedAccessException
             MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(IconError & " Paste failed: Access Denied - " & ex.Message)
+            ShowStatus("  " & IconError & " Paste failed: Access Denied - " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
         Catch ex As Exception
             MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(IconError & " Paste failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Paste failed: " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
     End Sub
@@ -1411,7 +1411,7 @@ Public Class Form1
         ' Reject relative paths outright
         If Not Path.IsPathRooted(fullPath) Then
 
-            ShowStatus(IconWarning & " Delete failed: Path must be absolute. Example: C:\folder")
+            ShowStatus("  " & IconWarning & " Delete failed: Path must be absolute. Example: C:\folder")
 
             Exit Sub
 
@@ -1420,7 +1420,7 @@ Public Class Form1
         ' Check if the path is in the protected list
         If IsProtectedPathOrFolder(fullPath) Then
             ' The path is protected; prevent deletion
-            ShowStatus(IconProtect & " Deletion prevented for protected path: " & fullPath)
+            ShowStatus("  " & IconProtect & " Deletion prevented for protected path: " & fullPath)
             Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
             MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
             Exit Sub
@@ -1435,19 +1435,19 @@ Public Class Form1
             If Directory.Exists(fullPath) Then
                 Directory.Delete(fullPath, recursive:=True)
                 lvFiles.Items.Remove(item)
-                ShowStatus(IconDelete & " Deleted folder: " & item.Text)
+                ShowStatus("  " & IconDelete & " Deleted folder: " & item.Text)
                 ' Check if it's a file
             ElseIf File.Exists(fullPath) Then
                 File.Delete(fullPath)
                 lvFiles.Items.Remove(item)
-                ShowStatus(IconDelete & " Deleted file: " & item.Text)
+                ShowStatus("  " & IconDelete & " Deleted file: " & item.Text)
             Else
-                ShowStatus(IconWarning & " Path not found.")
+                ShowStatus("  " & IconWarning & " Path not found.")
             End If
         Catch ex As Exception
 
             'MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(IconError & " Delete failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Delete failed: " & ex.Message)
 
             Debug.WriteLine("Delete_Click Error: " & ex.Message)
 
@@ -1464,7 +1464,7 @@ Public Class Form1
 
         Clipboard.SetText(lvFiles.SelectedItems(0).Text)
 
-        ShowStatus(IconCopy & " Copied File Name " & lvFiles.SelectedItems(0).Text)
+        ShowStatus("  " & IconCopy & " Copied File Name " & lvFiles.SelectedItems(0).Text)
 
     End Sub
 
@@ -1477,7 +1477,7 @@ Public Class Form1
         ' Copy the full path stored in the Tag property to clipboard
         Clipboard.SetText(CStr(lvFiles.SelectedItems(0).Tag))
 
-        ShowStatus(IconCopy & " Copied File Path " & lvFiles.SelectedItems(0).Tag)
+        ShowStatus("  " & IconCopy & " Copied File Path " & lvFiles.SelectedItems(0).Tag)
 
     End Sub
 
@@ -1491,7 +1491,7 @@ Public Class Form1
         ToArray()
 
         If parts.Length = 0 Then
-            ShowStatus(IconDialog & " No command entered.")
+            ShowStatus("  " & IconDialog & " No command entered.")
             Return
         End If
 
@@ -1505,7 +1505,7 @@ Public Class Form1
                     Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
                     NavigateTo(newPath)
                 Else
-                    ShowStatus(IconDialog & " Usage: cd [directory] - cd C:\ ")
+                    ShowStatus("  " & IconDialog & " Usage: cd [directory] - cd C:\ ")
                 End If
 
             'Case "copy"
@@ -1584,7 +1584,7 @@ Public Class Form1
                     Await CopyFileOrDirectory(source, destination)
 
                 Else
-                    ShowStatus(IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
+                    ShowStatus("  " & IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
                 End If
 
 
@@ -1598,7 +1598,7 @@ Public Class Form1
                     MoveFileOrDirectory(source, destination)
 
                 Else
-                    ShowStatus(IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
+                    ShowStatus("  " & IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
                 End If
 
             Case "delete", "rm"
@@ -1610,7 +1610,7 @@ Public Class Form1
                     DeleteFileOrDirectory(pathToDelete)
 
                 Else
-                    ShowStatus(IconDialog & " Usage: delete [file_or_directory]")
+                    ShowStatus("  " & IconDialog & " Usage: delete [file_or_directory]")
                 End If
 
             Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
@@ -1619,14 +1619,14 @@ Public Class Form1
 
                     ' Validate the directory path
                     If String.IsNullOrWhiteSpace(directoryPath) Then
-                        ShowStatus(IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                        ShowStatus("  " & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
                         Return
                     End If
 
                     CreateDirectory(directoryPath)
 
                 Else
-                    ShowStatus(IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                    ShowStatus("  " & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
                 End If
 
             Case "rename"
@@ -1641,7 +1641,7 @@ Public Class Form1
                     RenameFileOrDirectory(sourcePath, newName)
 
                 Else
-                    ShowStatus(IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
+                    ShowStatus("  " & IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
                 End If
 
             Case "text", "txt"
@@ -1654,7 +1654,7 @@ Public Class Form1
 
                     If filePath Is Nothing Then
 
-                        ShowStatus(IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
+                        ShowStatus("  " & IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
 
                         Return
 
@@ -1672,7 +1672,7 @@ Public Class Form1
                 ' Validate destination folder
                 If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
 
-                    ShowStatus(IconWarning & " Invalid folder. Cannot create file.")
+                    ShowStatus("  " & IconWarning & " Invalid folder. Cannot create file.")
 
                     Return
 
@@ -1686,7 +1686,7 @@ Public Class Form1
                     ' Create the file with initial content
                     File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
 
-                    ShowStatus(IconSuccess & " Text file created: " & newFilePath)
+                    ShowStatus("  " & IconSuccess & " Text file created: " & newFilePath)
 
                     ' Refresh the folder view so the user sees the new file
                     NavigateTo(destDir)
@@ -1695,7 +1695,7 @@ Public Class Form1
                     GoToFolderOrOpenFile(newFilePath)
 
                 Catch ex As Exception
-                    ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+                    ShowStatus("  " & IconError & " Failed to create text file: " & ex.Message)
                     Debug.WriteLine("Text Command Error: " & ex.Message)
                 End Try
 
@@ -1708,7 +1708,7 @@ Public Class Form1
 
                 Try
                     'ShowStatus(helpText)
-                    ShowStatus(IconDialog & "  Opening help file.")
+                    ShowStatus("  " & IconDialog & "  Opening help file.")
 
                     ' Open the help file in the default text editor
                     Process.Start(New ProcessStartInfo() With {
@@ -1716,10 +1716,10 @@ Public Class Form1
                         .UseShellExecute = True
                     })
 
-                    ShowStatus(IconSuccess & "  Opened help file.")
+                    ShowStatus("  " & IconSuccess & "  Opened help file.")
 
                 Catch ex As Exception
-                    ShowStatus(IconError & "  Failed to open help file: " & ex.Message)
+                    ShowStatus("  " & IconError & "  Failed to open help file: " & ex.Message)
                     Debug.WriteLine("Failed to open help file: " & ex.Message)
                 End Try
 
@@ -1732,27 +1732,27 @@ Public Class Form1
 
                     If File.Exists(targetPath) Then
                         Try
-                            ShowStatus(IconDialog & "  Opening file...")
+                            ShowStatus("  " & IconDialog & "  Opening file...")
                             Process.Start(New ProcessStartInfo() With {
                                 .FileName = targetPath,
                                 .UseShellExecute = True
                             })
-                            ShowStatus(IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
+                            ShowStatus("  " & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
 
                             txtPath.Text = currentFolder
 
                         Catch ex As Exception
-                            ShowStatus(IconError & "  Failed to open file: " & ex.Message)
+                            ShowStatus("  " & IconError & "  Failed to open file: " & ex.Message)
                             Debug.WriteLine("Failed to open file: " & ex.Message)
                         End Try
 
                     ElseIf Directory.Exists(targetPath) Then
-                        ShowStatus(IconDialog & "  Navigating to folder...")
+                        ShowStatus("  " & IconDialog & "  Navigating to folder...")
                         NavigateTo(targetPath)
-                        ShowStatus(IconSuccess & "  Navigated to: " & targetPath)
+                        ShowStatus("  " & IconSuccess & "  Navigated to: " & targetPath)
 
                     Else
-                        ShowStatus(IconError & "  Path not found: " & targetPath)
+                        ShowStatus("  " & IconError & "  Path not found: " & targetPath)
                     End If
 
                     Return
@@ -1760,7 +1760,7 @@ Public Class Form1
 
                 ' If no path was typed, use the selected item in the ListView
                 If lvFiles.SelectedItems.Count = 0 Then
-                    ShowStatus(IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
+                    ShowStatus("  " & IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
                     Return
                 End If
 
@@ -1769,28 +1769,28 @@ Public Class Form1
 
                 If File.Exists(fullPath) Then
                     Try
-                        ShowStatus(IconDialog & "  Opening file...")
+                        ShowStatus("  " & IconDialog & "  Opening file...")
                         Process.Start(New ProcessStartInfo() With {
                             .FileName = fullPath,
                             .UseShellExecute = True
                         })
-                        ShowStatus(IconSuccess & "  Opened file: " & selected.Text)
+                        ShowStatus("  " & IconSuccess & "  Opened file: " & selected.Text)
 
                         'NavigateTo(currentFolder, recordHistory:=False)
                         txtPath.Text = currentFolder
 
                     Catch ex As Exception
-                        ShowStatus(IconError & "  Failed to open file: " & ex.Message)
+                        ShowStatus("  " & IconError & "  Failed to open file: " & ex.Message)
                         Debug.WriteLine("Failed to open file: " & ex.Message)
                     End Try
 
                 ElseIf Directory.Exists(fullPath) Then
-                    ShowStatus(IconDialog & "  Navigating to folder...")
+                    ShowStatus("  " & IconDialog & "  Navigating to folder...")
                     NavigateTo(fullPath)
-                    ShowStatus(IconSuccess & "  Navigated to: " & fullPath)
+                    ShowStatus("  " & IconSuccess & "  Navigated to: " & fullPath)
 
                 Else
-                    ShowStatus(IconError & "  Selected item no longer exists.")
+                    ShowStatus("  " & IconError & "  Selected item no longer exists.")
                 End If
 
             Case "find", "search"
@@ -1800,11 +1800,11 @@ Public Class Form1
                     Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
                     If String.IsNullOrWhiteSpace(searchTerm) Then
-                        ShowStatus(IconDialog & " Usage: find [search_term] - e.g., find document")
+                        ShowStatus("  " & IconDialog & " Usage: find [search_term] - e.g., find document")
                         Return
                     End If
 
-                    ShowStatus(IconSearch & " Searching for: " & searchTerm)
+                    ShowStatus("  " & IconSearch & " Searching for: " & searchTerm)
 
                     'SearchInCurrentFolder(searchTerm)
                     OnlySearchForFilesInCurrentFolder(searchTerm)
@@ -1833,17 +1833,17 @@ Public Class Form1
 
 
                     Else
-                        ShowStatus(IconDialog & "  No results found for: " & searchTerm)
+                        ShowStatus("  " & IconDialog & "  No results found for: " & searchTerm)
                     End If
 
                 Else
-                    ShowStatus(IconDialog & "  Usage: find [search_term] - e.g., find document")
+                    ShowStatus("  " & IconDialog & "  Usage: find [search_term] - e.g., find document")
                 End If
 
             Case "findnext", "searchnext"
 
                 If SearchResults.Count = 0 Then
-                    ShowStatus(IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
+                    ShowStatus("  " & IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
                     Return
                 End If
 
@@ -1891,7 +1891,7 @@ Public Class Form1
 
                     ' The input isn't a folder or a file,
                     ' at this point, the interpreter treats it as an unknown command.
-                    ShowStatus(IconDialog & " Unknown command: " & cmd)
+                    ShowStatus("  " & IconDialog & " Unknown command: " & cmd)
 
                 End If
 
@@ -1948,10 +1948,12 @@ Public Class Form1
 
         Else
 
-            ShowStatus(IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
+            ShowStatus("  " & IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
             Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
 
         End If
+
+
     End Function
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
@@ -1961,7 +1963,7 @@ Public Class Form1
                 Exit Sub
             End If
 
-            ShowStatus(IconDialog & "  Creating help file.")
+            ShowStatus("  " & IconDialog & "  Creating help file.")
 
             Dim helpText As String = BuildHelpText()
 
@@ -1972,10 +1974,10 @@ Public Class Form1
 
             File.WriteAllText(helpFilePath, helpText)
 
-            ShowStatus(IconSuccess & "  Help file created.")
+            ShowStatus("  " & IconSuccess & "  Help file created.")
 
         Catch ex As Exception
-            ShowStatus(IconError & "  Unable to create help file: " & ex.Message)
+            ShowStatus("  " & IconError & "  Unable to create help file: " & ex.Message)
             Debug.WriteLine("Unable to create help file: " & ex.Message)
         End Try
 
@@ -2170,7 +2172,7 @@ Public Class Form1
         ' Validate that the folder exists
         If Not Directory.Exists(path) Then
             MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            ShowStatus(IconWarning & " Folder not found: " & path)
+            ShowStatus("  " & IconWarning & " Folder not found: " & path)
             Exit Sub
         End If
 
@@ -2185,7 +2187,7 @@ Public Class Form1
             Return
         End If
 
-        ShowStatus(IconNavigate & " Navigated To: " & path)
+        ShowStatus("  " & IconNavigate & " Navigated To: " & path)
 
         currentFolder = path
         txtPath.Text = path
@@ -2233,13 +2235,13 @@ Public Class Form1
                 ShowStatus("  " & IconOpen & $"  Opened:  ""{fileName}""")
 
             Catch ex As Exception
-                ShowStatus(IconError & " Cannot open: " & ex.Message)
+                ShowStatus("  " & IconError & " Cannot open: " & ex.Message)
 
                 Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
             End Try
 
         Else
-            ShowStatus(IconWarning & " Path does not exist: " & FileOrFolder)
+            ShowStatus("  " & IconWarning & " Path does not exist: " & FileOrFolder)
         End If
 
     End Sub
@@ -2270,12 +2272,12 @@ Public Class Form1
             ' Create the directory
             Dim dirInfo As DirectoryInfo = Directory.CreateDirectory(directoryPath)
 
-            ShowStatus(IconNewFolder & " Directory created: " & dirInfo.FullName)
+            ShowStatus("  " & IconNewFolder & " Directory created: " & dirInfo.FullName)
 
             NavigateTo(directoryPath, True)
 
         Catch ex As Exception
-            ShowStatus(IconError & " Failed to create directory: " & ex.Message)
+            ShowStatus("  " & IconError & " Failed to create directory: " & ex.Message)
             Debug.WriteLine("CreateDirectory Error: " & ex.Message)
         End Try
 
@@ -2292,10 +2294,10 @@ Public Class Form1
                 ' Create the file with initial content
                 File.WriteAllText(filePath, $"Created on {DateTime.Now:G}")
 
-                ShowStatus(IconSuccess & " Text file created: " & filePath)
+                ShowStatus("  " & IconSuccess & " Text file created: " & filePath)
 
             Else
-                ShowStatus(IconDialog & " File already exists: " & filePath)
+                ShowStatus("  " & IconDialog & " File already exists: " & filePath)
             End If
 
             ' Refresh the folder view so the user sees the new or existing file
@@ -2305,7 +2307,7 @@ Public Class Form1
             GoToFolderOrOpenFile(filePath)
 
         Catch ex As Exception
-            ShowStatus(IconError & " Failed to create text file: " & ex.Message)
+            ShowStatus("  " & IconError & " Failed to create text file: " & ex.Message)
             Debug.WriteLine("CreateTextFile Error: " & ex.Message)
 
         End Try
@@ -2350,7 +2352,7 @@ Public Class Form1
         Try
             ' Validate parameters
             If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-                ShowStatus(IconError & " Source or destination path is invalid.")
+                ShowStatus("  " & IconError & " Source or destination path is invalid.")
                 Return False
             End If
 
@@ -2366,7 +2368,7 @@ Public Class Form1
                 Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 
                 If result = DialogResult.No Then
-                    ShowStatus(IconWarning & " Copy operation canceled.")
+                    ShowStatus("  " & IconWarning & " Copy operation canceled.")
                     Return False
                 End If
             End If
@@ -2382,7 +2384,7 @@ Public Class Form1
             Return True
 
         Catch ex As Exception
-            ShowStatus(IconError & " Copy Failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Copy Failed: " & ex.Message)
             Debug.WriteLine("CopyFile Error: " & ex.Message)
             Return False
         End Try
@@ -2392,25 +2394,25 @@ Public Class Form1
         Try
             ' Validate parameters
             If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-                ShowStatus(IconWarning & " Source or destination path is invalid.")
+                ShowStatus("  " & IconWarning & " Source or destination path is invalid.")
                 Return
             End If
 
             ' if source and destination are the same, do nothing
             If String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) Then
-                ShowStatus(IconWarning & " Source and destination paths are the same. Move operation canceled.")
+                ShowStatus("  " & IconWarning & " Source and destination paths are the same. Move operation canceled.")
                 Return
             End If
 
             ' Is source on the protected paths list?
             If IsProtectedPathOrFolder(source) Then
-                ShowStatus(IconProtect & " Move operation prevented for protected path: " & source)
+                ShowStatus("  " & IconProtect & " Move operation prevented for protected path: " & source)
                 Return
             End If
 
             ' Is destination on the protected paths list?
             If IsProtectedPathOrFolder(destination) Then
-                ShowStatus(IconProtect & " Move operation prevented for protected path: " & destination)
+                ShowStatus("  " & IconProtect & " Move operation prevented for protected path: " & destination)
                 Return
             End If
 
@@ -2418,7 +2420,7 @@ Public Class Form1
             If Directory.Exists(source) AndAlso
                (String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) OrElse
                 destination.StartsWith(source.TrimEnd("\"c) & "\", StringComparison.OrdinalIgnoreCase)) Then
-                ShowStatus(IconWarning & " Cannot move a directory into itself or its subdirectory.")
+                ShowStatus("  " & IconWarning & " Cannot move a directory into itself or its subdirectory.")
                 Return
             End If
 
@@ -2431,7 +2433,7 @@ Public Class Form1
                     ' Navigate to the directory of the source file
                     NavigateTo(Path.GetDirectoryName(source))
 
-                    ShowStatus(IconMoving & "  Moving file to: " & destination)
+                    ShowStatus("  " & IconMoving & "  Moving file to: " & destination)
 
 
                     ' Ensure destination directory exists
@@ -2444,10 +2446,10 @@ Public Class Form1
                     ' Navigate to the destination folder (corrected)
                     NavigateTo(Path.GetDirectoryName(destination))
 
-                    ShowStatus(IconMoving & "  Moved file to: " & destination)
+                    ShowStatus("  " & IconMoving & "  Moved file to: " & destination)
 
                 Else
-                    ShowStatus(IconWarning & " Destination file already exists.")
+                    ShowStatus("  " & IconWarning & " Destination file already exists.")
                 End If
 
             ElseIf Directory.Exists(source) Then
@@ -2458,7 +2460,7 @@ Public Class Form1
                     ' Navigate to the directory being moved so the user can see it
                     NavigateTo(source)
 
-                    ShowStatus(IconMoving & "  Moving directory to: " & destination)
+                    ShowStatus("  " & IconMoving & "  Moving directory to: " & destination)
 
                     ' Ensure destination parent exists
                     Directory.CreateDirectory(Path.GetDirectoryName(destination))
@@ -2472,19 +2474,19 @@ Public Class Form1
                     ' Now refresh the tree roots
                     UpdateTreeRoots()
 
-                    ShowStatus(IconMoving & "  Moved directory to: " & destination)
+                    ShowStatus("  " & IconMoving & "  Moved directory to: " & destination)
 
                 Else
-                    ShowStatus(IconWarning & " Destination directory already exists.")
+                    ShowStatus("  " & IconWarning & " Destination directory already exists.")
                 End If
 
             Else
-                ShowStatus(IconWarning & "  Move failed: Source path not found. Paths with spaces must be enclosed in quotes. Example: move ""C:\folder A"" ""C:\folder B""")
+                ShowStatus("  " & IconWarning & "  Move failed: Source path not found. Paths with spaces must be enclosed in quotes. Example: move ""C:\folder A"" ""C:\folder B""")
             End If
 
 
         Catch ex As Exception
-            ShowStatus(IconError & " Move failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Move failed: " & ex.Message)
             Debug.WriteLine("MoveFileOrDirectory Error: " & ex.Message)
         End Try
     End Sub
@@ -2575,7 +2577,7 @@ Public Class Form1
     Private Async Sub DeleteFileOrDirectory(path2Delete As String)
         ' Reject relative paths outright
         If Not Path.IsPathRooted(path2Delete) Then
-            ShowStatus(IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
+            ShowStatus("  " & IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
             Exit Sub
         End If
 
@@ -2584,7 +2586,7 @@ Public Class Form1
             ' Navigate to the protected path so the user can see it was not deleted
             NavigateTo(path2Delete)
             ' Inform the user that deletion was prevented
-            ShowStatus(IconProtect & "  Deletion prevented for protected path: " & path2Delete)
+            ShowStatus("  " & IconProtect & "  Deletion prevented for protected path: " & path2Delete)
             Exit Sub
         End If
 
@@ -2610,7 +2612,7 @@ Public Class Form1
                 ' Refresh the view to show the file is deleted
                 Await PopulateFiles(destDir) ' Await the async method
 
-                ShowStatus(IconDelete & "  Deleted file: " & fileName)
+                ShowStatus("  " & IconDelete & "  Deleted file: " & fileName)
 
                 ' Check if it's a directory
             ElseIf Directory.Exists(path2Delete) Then
@@ -2639,14 +2641,14 @@ Public Class Form1
                 ' Refresh the view to show the folder is deleted
                 Await PopulateFiles(parentDir) ' Await the async method
 
-                ShowStatus(IconDelete & "  Deleted folder: " & folderName)
+                ShowStatus("  " & IconDelete & "  Deleted folder: " & folderName)
 
             Else
-                ShowStatus(IconWarning & "  Delete failed: Path not found.")
+                ShowStatus("  " & IconWarning & "  Delete failed: Path not found.")
             End If
 
         Catch ex As Exception
-            ShowStatus(IconError & " Delete failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Delete failed: " & ex.Message)
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
     End Sub
@@ -2717,7 +2719,7 @@ Public Class Form1
         Dim dirInfo As New DirectoryInfo(sourceDir)
 
         If Not dirInfo.Exists Then
-            ShowStatus(IconError & " Source directory not found: " & sourceDir)
+            ShowStatus("  " & IconError & " Source directory not found: " & sourceDir)
             Return False
         End If
 
@@ -2727,7 +2729,7 @@ Public Class Form1
             Try
                 Directory.CreateDirectory(destDir)
             Catch ex As Exception
-                ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
+                ShowStatus("  " & IconError & " Failed to create destination directory: " & ex.Message)
                 Debug.WriteLine("Failed to create destination directory: " & ex.Message)
                 Return False
             End Try
@@ -2745,11 +2747,11 @@ Public Class Form1
                     Debug.WriteLine("Copied file: " & targetFilePath)
                 Catch ex As UnauthorizedAccessException
                     Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
-                    ShowStatus(IconError & " Unauthorized access: " & file.FullName)
+                    ShowStatus("  " & IconError & " Unauthorized access: " & file.FullName)
                     allFilesCopied = False
                 Catch ex As Exception
                     Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-                    ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
+                    ShowStatus("  " & IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
                     allFilesCopied = False
                 End Try
             Next
@@ -2779,7 +2781,7 @@ Public Class Form1
             Return allFilesCopied AndAlso subDirResults.All(Function(r) r = True)
 
         Catch ex As Exception
-            ShowStatus(IconError & " Copy failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Copy failed: " & ex.Message)
             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
             Return False
         End Try
@@ -2793,7 +2795,7 @@ Public Class Form1
         ' Rule 1: Path must be absolute (start with C:\ or similar).
         ' Reject relative paths outright
         If Not Path.IsPathRooted(sourcePath) Then
-            ShowStatus(IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
+            ShowStatus("  " & IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
             Exit Sub
         End If
 
@@ -2806,7 +2808,7 @@ Public Class Form1
             NavigateTo(sourcePath)
 
             ' Notify the user of the prevention so the user knows why it didn't rename.
-            ShowStatus(IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
+            ShowStatus("  " & IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
 
             Exit Sub
 
@@ -2824,7 +2826,7 @@ Public Class Form1
                 ' Navigate to the renamed directory
                 NavigateTo(newPath)
 
-                ShowStatus(IconSuccess & " Renamed Folder to: " & newName)
+                ShowStatus("  " & IconSuccess & " Renamed Folder to: " & newName)
 
                 ' Rule 4: If it’s a file, rename the file and show its folder.
                 ' If source is a file
@@ -2836,7 +2838,7 @@ Public Class Form1
                 ' Navigate to the directory of the renamed file
                 NavigateTo(Path.GetDirectoryName(sourcePath))
 
-                ShowStatus(IconSuccess & " Renamed File to: " & newName)
+                ShowStatus("  " & IconSuccess & " Renamed File to: " & newName)
 
                 ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
             Else
