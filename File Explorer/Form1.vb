@@ -1508,46 +1508,6 @@ Public Class Form1
                     ShowStatus("  " & IconDialog & " Usage: cd [directory] - cd C:\ ")
                 End If
 
-            'Case "copy"
-
-            '    If parts.Length > 2 Then
-
-            '        Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-            '        Dim destination As String = parts(parts.Length - 1).Trim()
-
-            '        ' Check if source file or directory exists
-            '        If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
-            '            ShowStatus(IconError &
-            '                       " Copy Failed - Source: ''" &
-            '                       source &
-            '                       "'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
-            '            Return
-            '        End If
-
-            '        ' Check if destination directory exists
-            '        If Not Directory.Exists(destination) Then
-            '            ShowStatus(IconError &
-            '                       " Copy Failed - Destination folder: ''" &
-            '                       destination &
-            '                       "'' does not exist.Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
-            '            Return
-            '        End If
-
-            '        ' If source is a file, copy it
-            '        If File.Exists(source) Then
-            '            CopyFile(source, destination)
-            '        Else
-            '            ' If source is a directory, copy it
-            '            CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source)))
-            '            'Await Task.Run(Sub() CopyDirectory(subDir.FullName, newDest))
-
-            '        End If
-
-            '    Else
-            '        ShowStatus(IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
-            '    End If
-
-
             Case "copy", "cp"
                 If parts.Length > 2 Then
                     Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
@@ -1566,17 +1526,10 @@ Public Class Form1
                     ' Check if destination directory exists
                     If Not Directory.Exists(destination) Then
 
-                        ' ShowStatus(IconError &
-                        '" Copy Failed - Destination folder: ''" &
-                        'destination &
-                        '"'' does not exist. Paths with spaces must be enclosed in quotes. Example: copy ""C:\folder A"" ""C:\folder B""")
-
-
                         ShowStatus("  " & IconError &
                                    " Copy failed.  Destination: """ &
                                    destination &
                                    """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
-
 
                         Return
                     End If
@@ -1899,16 +1852,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub CopyFileOrDirectory(source As String, destination As String)
-    '    ' If source is a file, copy it
-    '    If File.Exists(source) Then
-    '        CopyFile(source, destination)
-    '    Else
-    '        ' If source is a directory, copy it asynchronously
-    '        Await CopyDirectory(source, Path.Combine(destination, Path.GetFileName(source))) ' Await the async method
-
-    '    End If
-    'End Sub
 
     Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
         If File.Exists(source) Then
@@ -1918,33 +1861,18 @@ Public Class Form1
 
                 NavigateTo(destination)
 
-                'ShowStatus("  " & IconSuccess & "  Copy complete.")
-
             End If
-
-            'Await CopyFile(source, destination)
-
-            ' Navigate after the file is copied
-            'NavigateTo(destination)
 
         ElseIf Directory.Exists(source) Then
 
             Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
             Dim parentDir As String = Directory.GetParent(targetDir).FullName
 
-            'Await CopyDirectory(source, targetDir)
-
-            '' Navigate after the directory is copied
-            'NavigateTo(parentDir)
-
             If Await CopyDirectory(source, targetDir) Then
 
                 NavigateTo(parentDir)
 
-                'ShowStatus("  " & IconSuccess & "  Copy complete.")
-
             End If
-
 
         Else
 
@@ -1952,7 +1880,6 @@ Public Class Form1
             Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
 
         End If
-
 
     End Function
 
@@ -2120,48 +2047,6 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-    'Private Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
-    '    ' Navigate to the specified folder path.
-    '    ' Updates the current folder, path textbox, and file list.
-
-    '    ' Validate input
-    '    ' Checks if the provided path is null, empty, or consists only of whitespace. If so, the method exits early.
-    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
-
-    '    ' Validate that the folder exists
-    '    If Not Directory.Exists(path) Then
-    '        MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '        ShowStatus(IconWarning & " Folder not found: " & path)
-    '        Exit Sub
-    '    End If
-
-    '    ' If this method is called from a background thread, invoke it on the UI thread
-    '    If txtPath.InvokeRequired Then
-    '        txtPath.Invoke(New Action(Of String)(AddressOf NavigateTo), path, recordHistory)
-    '        Return
-    '    End If
-
-    '    ShowStatus(IconNavigate & " Navigated To: " & path)
-
-    '    currentFolder = path
-    '    txtPath.Text = path
-    '    PopulateFiles(path)
-
-    '    If recordHistory Then
-    '        ' Trim forward history if we branch
-    '        If _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1 Then
-    '            _history.RemoveRange(_historyIndex + 1, _history.Count - (_historyIndex + 1))
-    '        End If
-    '        _history.Add(path)
-    '        _historyIndex = _history.Count - 1
-    '        UpdateNavButtons()
-    '    End If
-
-    '    UpdateFileButtons()
-    '    UpdateEditButtons()
-    '    UpdateEditContextMenu()
-    'End Sub
-
     Private Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
@@ -2175,12 +2060,6 @@ Public Class Form1
             ShowStatus("  " & IconWarning & " Folder not found: " & path)
             Exit Sub
         End If
-
-        ' If this method is called from a background thread, invoke it on the UI thread
-        'If txtPath.InvokeRequired Then
-        '    txtPath.Invoke(New Action(Of String)(AddressOf NavigateTo), path, recordHistory)
-        '    Return
-        'End If
 
         If txtPath.InvokeRequired Then
             txtPath.Invoke(Sub() NavigateTo(path, recordHistory))
@@ -2203,13 +2082,9 @@ Public Class Form1
             UpdateNavButtons()
         End If
 
-        'UpdateFileButtons()
-        'UpdateFileContextMenu()
         UpdateFileButtonsAndMenus()
-        'UpdateDestructiveButtonsAndMenus()
 
         UpdateEditButtonsAndMenus()
-        'UpdateEditContextMenu()
     End Sub
 
 
@@ -2314,40 +2189,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Async Sub CopyFile(source As String, destination As String) 
-    '    Try
-    '        ' Validate parameters
-    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-    '            ShowStatus(IconError & " Source or destination path is invalid.")
-    '            Return
-    '        End If
-
-    '        ' Check if the destination file already exists
-    '        Dim fileName As String = Path.GetFileName(source)
-    '        Dim destDirFileName = Path.Combine(destination, fileName)
-
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String = "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-    '                            "Do you want to overwrite it?"
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-    '            If result = DialogResult.No Then
-    '                ShowStatus(IconWarning & " Copy operation canceled.")
-    '                Return
-    '            End If
-    '        End If
-
-    '        ' Asynchronously copy the file
-    '        Await Task.Run(Sub() File.Copy(source, destDirFileName, overwrite:=True))
-
-    '        NavigateTo(destination)
-    '        ShowStatus(IconCopy & " Copied file: " & fileName & " to: " & destination)
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Copy Failed: " & ex.Message)
-    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
-    '    End Try
-    'End Sub
-
     Private Async Function CopyFile(source As String, destination As String) As Task(Of Boolean)
         Try
             ' Validate parameters
@@ -2440,8 +2281,6 @@ Public Class Form1
                     Directory.CreateDirectory(Path.GetDirectoryName(destination))
 
                     File.Move(source, destination)
-                    'File.Move(source, destination)
-
 
                     ' Navigate to the destination folder (corrected)
                     NavigateTo(Path.GetDirectoryName(destination))
@@ -2490,89 +2329,6 @@ Public Class Form1
             Debug.WriteLine("MoveFileOrDirectory Error: " & ex.Message)
         End Try
     End Sub
-
-    'Private Sub DeleteFileOrDirectory(path2Delete As String)
-
-    '    ' Reject relative paths outright
-    '    If Not Path.IsPathRooted(path2Delete) Then
-    '        ShowStatus(IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
-    '        Exit Sub
-    '    End If
-
-    '    ' Check if the path is in the protected list
-    '    If IsProtectedPathOrFolder(path2Delete) Then
-    '        ' Navigate to the protected path so the user can see it was not deleted
-    '        NavigateTo(path2Delete)
-    '        ' Inform the user that deletion was prevented
-    '        ShowStatus(IconProtect & "  Deletion prevented for protected path: " & path2Delete)
-    '        Exit Sub
-    '    End If
-
-    '    Try
-
-    '        ' Check if it's a file
-    '        If File.Exists(path2Delete) Then
-
-    '            ' Goto the directory of the file to be deleted so the user can see what is about to be deleted.
-    '            Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
-    '            NavigateTo(destDir)
-
-    '            ' Make the user confirm file deletion.
-    '            Dim fileName As String = Path.GetFileName(path2Delete)
-    '            Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
-    '                                        "''" & fileName & "''?"
-    '            Dim result = MessageBox.Show(confirmMsg,
-    '                                         "Confirm File Deletion",
-    '                                         MessageBoxButtons.YesNo,
-    '                                         MessageBoxIcon.Question)
-    '            If result <> DialogResult.Yes Then Exit Sub
-
-    '            File.Delete(path2Delete)
-
-    '            ' Refresh the view to show the file is deleted
-    '            PopulateFiles(destDir)
-
-    '            ShowStatus(IconDelete & "  Deleted file: " & fileName)
-
-    '            ' Check if it's a directory
-    '        ElseIf Directory.Exists(path2Delete) Then
-
-    '            ' Navigate into the folder to be deleted
-    '            NavigateTo(path2Delete)
-
-    '            ' Get the parent directory so we can navigate there after deletion
-    '            Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
-
-    '            ' Ask the user to confirm deletion
-    '            Dim folderName As String = Path.GetFileName(path2Delete)
-    '            Dim confirmMsg As String =
-    '                "Are you sure you want to delete the following folder:" & Environment.NewLine &
-    '                "''" & folderName & "'' and all of its contents?"
-    '            Dim result = MessageBox.Show(confirmMsg,
-    '                                         "Confirm Folder Deletion",
-    '                                         MessageBoxButtons.YesNo,
-    '                                         MessageBoxIcon.Question)
-    '            If result <> DialogResult.Yes Then Exit Sub
-
-    '            Directory.Delete(path2Delete, recursive:=True)
-
-    '            ' Navigate to the parent so the user sees the result
-    '            NavigateTo(parentDir, True)
-
-    '            ShowStatus(IconDelete & "  Deleted folder: " & folderName)
-
-    '        Else
-    '            ShowStatus(IconWarning & "  Delete failed: Path not found.")
-    '        End If
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Delete failed: " & ex.Message)
-    '        Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
-    '    End Try
-
-    'End Sub
-
-
 
     Private Async Sub DeleteFileOrDirectory(path2Delete As String)
         ' Reject relative paths outright
@@ -2652,68 +2408,6 @@ Public Class Form1
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
     End Sub
-
-
-
-    'Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task
-    '    Dim dirInfo As New DirectoryInfo(sourceDir)
-
-    '    If Not dirInfo.Exists Then
-    '        ShowStatus(IconError & " Source directory not found: " & sourceDir)
-    '        Return
-    '    End If
-
-    '    Try
-    '        ShowStatus(IconCopy & " Creating destination directory: " & destDir)
-
-    '        ' Create destination directory
-    '        Try
-    '            Directory.CreateDirectory(destDir)
-    '        Catch ex As Exception
-    '            ShowStatus(IconError & " Failed to create destination directory: " & ex.Message)
-    '            Debug.WriteLine(" Failed to create destination directory: " & ex.Message)
-    '            Return
-    '        End Try
-
-    '        ShowStatus(IconCopy & " Copying files to destination directory: " & destDir)
-
-    '        ' Copy files asynchronously
-    '        For Each file In dirInfo.GetFiles()
-    '            Try
-    '                Dim targetFilePath = Path.Combine(destDir, file.Name)
-    '                Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
-    '                Debug.WriteLine("Copied file: " & targetFilePath) ' Log successful copy
-    '            Catch ex As UnauthorizedAccessException
-    '                Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
-    '                ShowStatus(IconError & " Unauthorized access: " & file.FullName)
-    '            Catch ex As Exception
-    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '                ShowStatus(IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ShowStatus(IconCopy & " Copying subdirectories.")
-
-    '        ' Copy subdirectories recursively asynchronously
-    '        For Each subDir In dirInfo.GetDirectories()
-    '            Dim newDest = Path.Combine(destDir, subDir.Name)
-    '            Try
-    '                Await CopyDirectory(subDir.FullName, newDest)
-    '            Catch ex As Exception
-    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Refresh the view to show the copied directory
-    '        NavigateTo(destDir)
-
-    '        ShowStatus(IconSuccess & " Copied into " & destDir)
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Copy failed: " & ex.Message)
-    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '    End Try
-    'End Function
 
     Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task(Of Boolean)
         Dim dirInfo As New DirectoryInfo(sourceDir)
@@ -2855,44 +2549,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub SearchInCurrentFolder(searchTerm As String)
-
-    '    ' Clear item selection for lvFiles
-    '    lvFiles.SelectedItems.Clear()
-
-    '    Try
-    '        SearchResults = New List(Of String)
-
-    '        ' Search files
-    '        For Each filePath In Directory.GetFiles(currentFolder, "*", SearchOption.AllDirectories)
-    '            If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '                SearchResults.Add(filePath)
-    '            End If
-    '        Next
-
-    '        '' Search directories
-    '        'For Each dirPath In Directory.GetDirectories(currentFolder, "*", SearchOption.AllDirectories)
-    '        '    If Path.GetFileName(dirPath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '        '        SearchResults.Add(dirPath)
-    '        '    End If
-    '        'Next
-
-    '        ' Highlight first match in ListView
-    '        If SearchResults.Count > 0 Then
-    '            SelectListViewItemByPath(SearchResults(0))
-    '            lvFiles.Focus()
-
-    '            ShowStatus(IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
-    '        Else
-    '            ShowStatus(IconDialog & " No items found matching: " & searchTerm)
-    '        End If
-
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & " Search failed: " & ex.Message)
-    '        Debug.WriteLine("SearchInCurrentFolder Error: " & ex.Message)
-    '    End Try
-
-    'End Sub
 
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
 
@@ -2930,81 +2586,6 @@ Public Class Form1
         btnBack.Enabled = _historyIndex > 0
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
-
-    'Private Sub UpdateDestructiveButtonsAndMenus()
-
-    '    ' --- Rule 0: Something must be selected ---
-    '    Dim itemSelected As Boolean = (lvFiles.SelectedItems.Count > 0)
-    '    If Not itemSelected Then
-    '        btnCut.Enabled = False
-    '        btnRename.Enabled = False
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-    '    ' --- Rule 1: Path must exist ---
-    '    If Not PathExists(fullPath) Then
-    '        btnCut.Enabled = False
-    '        btnRename.Enabled = False
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 2: Protected items cannot be renamed ---
-    '    If IsProtectedPathOrFolder(fullPath) Then
-    '        btnCut.Enabled = False
-    '        btnRename.Enabled = False
-    '        btnDelete.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- Rule 3: User must have rename permission ---
-    '    Dim parentDir As String =
-    '    If(Directory.Exists(fullPath),
-    '       fullPath,                          ' Folder → check write access ON the folder
-    '       path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
-
-    '    If Not HasWriteAccess(parentDir) Then
-    '        btnRename.Enabled = False
-    '        Exit Sub
-    '    End If
-
-    '    ' --- All rules passed ---
-    '    btnCut.Enabled = True
-    '    btnRename.Enabled = True
-    '    btnDelete.Enabled = True
-
-
-    '    ' update context menu
-    '    If lvFiles.SelectedItems.Count = 0 Then
-
-    '        ' Context menu items
-    '        cmsFiles.Items("Cut").Enabled = False
-    '        cmsFiles.Items("Copy").Enabled = False
-    '        cmsFiles.Items("Rename").Enabled = False
-    '        cmsFiles.Items("Delete").Enabled = False
-    '        cmsFiles.Items("Open").Enabled = False
-    '        cmsFiles.Items("CopyPath").Enabled = False
-
-    '        Exit Sub
-
-    '    End If
-
-    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-    '    Dim exists As Boolean = PathExists(path)
-
-    '    ' Context menu items
-    '    cmsFiles.Items("Cut").Enabled = exists
-    '    cmsFiles.Items("Copy").Enabled = exists
-    '    cmsFiles.Items("Rename").Enabled = exists
-    '    cmsFiles.Items("Delete").Enabled = exists
-    '    cmsFiles.Items("Open").Enabled = exists
-    '    cmsFiles.Items("CopyPath").Enabled = exists
-
-
-    'End Sub
 
     Private Sub UpdateDestructiveButtonsAndMenus()
 
@@ -3151,13 +2732,6 @@ Public Class Form1
         Next
     End Sub
 
-    'Private Sub ShowStatus(message As String)
-    '    lblStatus.Text = message
-    '    statusTimer.Stop()
-    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
-    '    statusTimer.Start()
-    'End Sub
-
     Private Sub ShowStatus(message As String)
         ' Check if lblStatus is not null
         If lblStatus IsNot Nothing Then
@@ -3220,7 +2794,6 @@ Public Class Form1
         End Try
 
     End Function
-
 
     Private Function HasDirectoryCreationAccess(dirPath As String) As Boolean
         ' Tests whether we can create, rename, and delete a directory inside dirPath.
@@ -3312,29 +2885,6 @@ Public Class Form1
         Next
     End Sub
 
-    'Private Function HasSubdirectories(path As String) As Boolean
-
-    '    Try
-
-    '        Return Directory.EnumerateDirectories(path).Any()
-
-
-    '    Catch ex As UnauthorizedAccessException
-
-    '        Debug.WriteLine($"HasSubdirectories - {path} - False - UnauthorizedAccessException - {ex.Message}")
-
-
-    '    Catch ex As Exception
-
-    '        Debug.WriteLine($"HasSubdirectories - {path} - False - Error - {ex.Message}")
-
-    '        Return False
-
-    '    End Try
-
-    '    Return False
-
-    'End Function
 
     Private Function HasSubdirectories(path As String) As Boolean
         Try
@@ -3647,73 +3197,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub InitContextMenu()
-
-    '    cmsFiles.Items.Add("Open                    Ctrl + O", Nothing, AddressOf Open_Click).Name = "Open"
-
-
-    '    cmsFiles.Items("Open"). = canCreateFolders
-
-
-    '    cmsFiles.Items.Add("New Folder          Ctrl + Shift + N", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
-    '    cmsFiles.Items.Add("New Text File       Ctrl + Shift + T", Nothing, AddressOf NewTextFile_Click).Name = "NewTextFile"
-
-    '    cmsFiles.Items.Add("Cut                     Ctrl + X", Nothing, AddressOf CutSelected_Click).Name = "Cut"
-    '    cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
-    '    cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
-
-    '    cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
-    '    cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
-
-    '    'cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
-    '    cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
-
-    '    lvFiles.ContextMenuStrip = cmsFiles
-
-    'End Sub
-
-
-    'Private Sub InitContextMenu()
-    '    ' Add menu items with labels, shortcuts, and event handlers
-    '    cmsFiles.Items.Add("Open                    Ctrl + O", Nothing, AddressOf Open_Click).Name = "Open"
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.O
-
-    '    cmsFiles.Items.Add("New Folder          Ctrl + Shift + N", Nothing, AddressOf NewFolder_Click).Name = "NewFolder"
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.N
-
-    '    cmsFiles.Items.Add("New Text File       Ctrl + Shift + T", Nothing, AddressOf NewTextFile_Click).Name = "NewTextFile"
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.T
-
-    '    cmsFiles.Items.Add("Cut                     Ctrl + X", Nothing, AddressOf CutSelected_Click).Name = "Cut"
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.X
-
-    '    cmsFiles.Items.Add("Copy", Nothing, AddressOf CopySelected_Click).Name = "Copy"
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.C
-
-    '    cmsFiles.Items.Add("Paste", Nothing, AddressOf PasteSelected_Click).Name = "Paste"
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.V
-
-    '    cmsFiles.Items.Add("Rename", Nothing, AddressOf RenameFile_Click).Name = "Rename"
-    '    ' Optional: Add a shortcut for Rename, e.g., F2
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.F2
-
-    '    cmsFiles.Items.Add("Delete", Nothing, AddressOf Delete_Click).Name = "Delete"
-    '    ' Optional: Add a shortcut for Delete, e.g., Delete key
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Delete
-
-    '    ' Uncomment to enable the Copy Name feature
-    '    ' cmsFiles.Items.Add("Copy Name", Nothing, AddressOf CopyFileName_Click).Name = "CopyName"
-
-    '    cmsFiles.Items.Add("Copy Path", Nothing, AddressOf CopyFilePath_Click).Name = "CopyPath"
-    '    ' Optional: Add a shortcut for Copy Path
-    '    cmsFiles.Items(cmsFiles.Items.Count - 1).ShortcutKeys = Keys.Control Or Keys.P
-
-    '    ' Assign the context menu to the ListView
-    '    lvFiles.ContextMenuStrip = cmsFiles
-    'End Sub
-
-
-
     Private Sub InitContextMenu()
         ' Add menu items with labels, shortcuts, and event handlers
         Dim openItem As New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
@@ -3763,12 +3246,6 @@ Public Class Form1
             .ShortcutKeys = Keys.Delete
         }
         cmsFiles.Items.Add(deleteItem)
-
-        ' Uncomment to enable the Copy Name feature
-        ' Dim copyNameItem As New ToolStripMenuItem("Copy Name", Nothing, AddressOf CopyFileName_Click) With {
-        '     .Name = "CopyName"
-        ' }
-        ' cmsFiles.Items.Add(copyNameItem)
 
         Dim copyPathItem As New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
             .Name = "CopyPath",
@@ -3998,7 +3475,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub AssertTrue(condition As Boolean, message As String)
         Debug.Assert(condition, message)
     End Sub
@@ -4006,7 +3482,6 @@ Public Class Form1
     Private Sub AssertFalse(condition As Boolean, message As String)
         Debug.Assert(Not condition, message)
     End Sub
-
 
 End Class
 
