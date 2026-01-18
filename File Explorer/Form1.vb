@@ -241,14 +241,14 @@ Public Class Form1
         ' Rule 1: Path must exist
         If Not PathExists(fullPath) Then
             e.CancelEdit = True
-            ShowStatus(IconError & " The selected item doesn't exist and cannot be renamed.")
+            ShowStatus("  " & IconError & " The selected item doesn't exist and cannot be renamed.")
             Exit Sub
         End If
 
         ' Rule 2: Protected items cannot be renamed
         If IsProtectedPathOrFolder(fullPath) Then
             e.CancelEdit = True
-            ShowStatus(IconProtect & " This item is protected and cannot be renamed.")
+            ShowStatus("  " & IconProtect & " This item is protected and cannot be renamed.")
             Exit Sub
         End If
 
@@ -2843,13 +2843,13 @@ Public Class Form1
                 ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
             Else
                 ' Path does not exist
-                ShowStatus(IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
+                ShowStatus("  " & IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
 
             End If
 
         Catch ex As Exception
             ' Rule 6: If anything goes wrong,show a status message.
-            ShowStatus(IconError & " Rename failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Rename failed: " & ex.Message)
             Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
         End Try
 
@@ -2914,13 +2914,13 @@ Public Class Form1
                 SelectListViewItemByPath(SearchResults(0))
                 lvFiles.Focus()
 
-                ShowStatus(IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
+                ShowStatus("  " & IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
             Else
-                ShowStatus(IconDialog & " No items found matching: " & searchTerm)
+                ShowStatus("  " & IconDialog & " No items found matching: " & searchTerm)
             End If
 
         Catch ex As Exception
-            ShowStatus(IconError & " Search failed: " & ex.Message)
+            ShowStatus("  " & IconError & " Search failed: " & ex.Message)
             Debug.WriteLine("OnlySearchForFilesInCurrentFolder Error: " & ex.Message)
         End Try
 
@@ -3442,7 +3442,7 @@ Public Class Form1
 
         InitStatusBar()
 
-        ShowStatus(IconDialog & " Loading...")
+        ShowStatus("  " & IconDialog & " Loading...")
 
         InitContextMenu()
 
@@ -3461,7 +3461,7 @@ Public Class Form1
 
         RunTests()
 
-        ShowStatus(IconSuccess & "  Ready")
+        ShowStatus("  " & IconSuccess & "  Ready")
 
     End Sub
 
