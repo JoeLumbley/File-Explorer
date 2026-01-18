@@ -787,127 +787,6 @@ Public Class Form1
 
     End Sub
 
-
-    'Private Sub PopulateFiles(path As String)
-
-    '    lvFiles.BeginUpdate()
-
-    '    lvFiles.Items.Clear()
-
-    '    ' Folders first
-    '    Try
-
-    '        For Each mDir In Directory.GetDirectories(path)
-
-    '            Dim di = New DirectoryInfo(mDir)
-
-    '            ' Skip hidden/system folders unless checkbox is checked
-    '            If Not ShowHiddenFiles AndAlso
-    '               (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-    '                Continue For
-    '            End If
-
-    '            Dim item = New ListViewItem(di.Name)
-    '            item.SubItems.Add("Folder")
-    '            item.SubItems.Add("") ' size blank for folders
-    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '            item.Tag = di.FullName
-    '            item.ImageKey = "Folder"
-
-    '            lvFiles.Items.Add(item)
-
-    '        Next
-
-    '    Catch ex As UnauthorizedAccessException
-    '        ShowStatus(IconError & " Access Denied")
-    '        Debug.WriteLine($"PopulateFiles [Folder Access Denied]: {ex.Message}")
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & $" Error: {ex.Message}")
-    '        Debug.WriteLine($"PopulateFiles Folder [Error]: {ex.Message}")
-    '    End Try
-
-
-    '    ' Files
-    '    Try
-    '        For Each file In Directory.GetFiles(path)
-    '            Dim fi = New FileInfo(file)
-
-    '            ' Skip hidden/system files unless checkbox is checked
-    '            If Not ShowHiddenFiles AndAlso
-    '           (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-    '                Continue For
-    '            End If
-
-    '            Dim item = New ListViewItem(fi.Name)
-
-    '            ' Assign File type based on extension using a lookup table
-    '            Dim ext As String = fi.Extension.ToLowerInvariant()
-
-    '            Dim fileType As String = Nothing
-
-    '            If fileTypeMap.TryGetValue(ext, fileType) Then
-    '                item.SubItems.Add(fileType)
-    '            Else
-    '                item.SubItems.Add("Document")
-    '            End If
-
-    '            item.SubItems.Add(FormatSize(fi.Length))
-    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '            item.Tag = fi.FullName
-
-    '            ' Assign image based on file type
-    '            Dim category As String = Nothing
-    '            If fileTypeMap.TryGetValue(ext, category) Then
-
-    '                ' Map dictionary category → image key
-    '                Select Case category
-    '                    Case "Audio"
-    '                        item.ImageKey = "Music"
-
-    '                    Case "Image"
-    '                        item.ImageKey = "Pictures"
-
-    '                    Case "Document"
-    '                        item.ImageKey = "Documents"
-
-    '                    Case "Video"
-    '                        item.ImageKey = "Videos"
-
-    '                    Case "Archive"
-    '                        item.ImageKey = "Downloads"
-
-    '                    Case "Executable"
-    '                        item.ImageKey = "Executable"
-
-    '                    Case "Shortcut"
-    '                        item.ImageKey = "Shortcut"
-
-    '                    Case Else
-    '                        ' For Code, Project, Resource, Config, etc.
-    '                        item.ImageKey = "Documents"
-    '                End Select
-    '            Else
-    '                ' Unknown extension → fallback
-    '                item.ImageKey = "Documents"
-    '            End If
-
-    '            lvFiles.Items.Add(item)
-
-    '        Next
-
-    '    Catch ex As UnauthorizedAccessException
-    '        ShowStatus(IconError & " Access Denied")
-    '        Debug.WriteLine($"PopulateFiles [File Access Denied]: {ex.Message}")
-    '    Catch ex As Exception
-    '        ShowStatus(IconError & $" Error: {ex.Message}")
-    '        Debug.WriteLine($"PopulateFiles File [Error]: {ex.Message}")
-    '    End Try
-
-    '    lvFiles.EndUpdate()
-
-    'End Sub
-
-
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
@@ -942,9 +821,6 @@ Public Class Form1
 
 
             Dim itemsToAdd As New List(Of ListViewItem)
-
-
-
 
 
             For Each mDir In directories
@@ -1255,9 +1131,6 @@ Public Class Form1
             Exit Sub
         End If
 
-        ' Copy to system clipboard
-        'Clipboard.SetText(path)
-
         ' Update internal clipboard
         _clipboardPath = path
         _clipboardIsCut = False
@@ -1271,62 +1144,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub PasteSelected_Click(sender As Object, e As EventArgs)
-
-    '    ' Is a file or folder selected?
-    '    If String.IsNullOrEmpty(_clipboardPath) Then Exit Sub
-
-    '    Dim destDir = currentFolder
-    '    Dim destPath = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
-
-    '    If destPath = Nothing Then
-
-    '        ShowStatus(IconError & "Paste failed: No Path")
-
-    '        Exit Sub
-
-    '    End If
-
-    '    Try
-    '        If File.Exists(_clipboardPath) Then
-    '            If _clipboardIsCut Then
-    '                File.Move(_clipboardPath, destPath)
-    '            Else
-    '                File.Copy(_clipboardPath, destPath, overwrite:=False)
-    '            End If
-    '        ElseIf Directory.Exists(_clipboardPath) Then
-    '            If _clipboardIsCut Then
-    '                Directory.Move(_clipboardPath, destPath)
-    '            Else
-    '                CopyDirectory(_clipboardPath, destPath)
-    '            End If
-
-    '        Else
-
-    '            ShowStatus("Paste failed: No Path")
-
-    '            Exit Sub
-
-    '        End If
-
-    '        ' Clear cut state
-    '        _clipboardPath = Nothing
-    '        _clipboardIsCut = False
-
-    '        ' Refresh current folder view
-    '        PopulateFiles(destDir)
-
-    '        ResetCutVisuals()
-
-    '        ShowStatus(IconPaste & " Pasted into " & txtPath.Text)
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(IconError & " Paste failed: " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
-    '    End Try
-
-    'End Sub
 
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
         ' Check if a file or folder is selected
@@ -1729,7 +1546,6 @@ Public Class Form1
                         })
                         ShowStatus("  " & IconSuccess & "  Opened file: " & selected.Text)
 
-                        'NavigateTo(currentFolder, recordHistory:=False)
                         txtPath.Text = currentFolder
 
                     Catch ex As Exception
