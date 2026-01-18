@@ -1154,8 +1154,69 @@ Public Class Form1
     End Sub
 
 
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+    '    ' Check if a file or folder is selected
+    '    If String.IsNullOrEmpty(_clipboardPath) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard")
+    '        Exit Sub
+    '    End If
+
+    '    Dim destDir As String = currentFolder
+    '    Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
+
+    '    ' Ensure destination path is valid
+    '    If String.IsNullOrEmpty(destPath) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination path")
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        If File.Exists(_clipboardPath) Then
+    '            ' Handle file paste
+    '            If _clipboardIsCut Then
+    '                File.Move(_clipboardPath, destPath)
+    '            Else
+    '                File.Copy(_clipboardPath, destPath, overwrite:=True)
+    '            End If
+    '        ElseIf Directory.Exists(_clipboardPath) Then
+    '            ' Handle directory paste
+    '            If _clipboardIsCut Then
+    '                Directory.Move(_clipboardPath, destPath)
+    '            Else
+    '                Await CopyDirectory(_clipboardPath, destPath, copyCts.Token) ' Await the async copy method
+    '            End If
+    '        Else
+    '            ShowStatus(StatusPad & IconError & " Paste failed: Source not found")
+    '            Exit Sub
+    '        End If
+
+    '        ' Clear cut state
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        ' Refresh current folder view
+    '        Await PopulateFiles(destDir) ' Await the async method
+
+    '        ResetCutVisuals()
+
+    '        ShowStatus(StatusPad & IconPaste & " Pasted into " & txtPath.Text)
+    '    Catch ex As IOException
+    '        MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(StatusPad & IconError & " Paste failed: I/O Error - " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
+    '    Catch ex As UnauthorizedAccessException
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Access Denied - " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
+    '    Catch ex As Exception
+    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-        ' Check if a file or folder is selected
+
         If String.IsNullOrEmpty(_clipboardPath) Then
             ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard")
             Exit Sub
@@ -1164,55 +1225,76 @@ Public Class Form1
         Dim destDir As String = currentFolder
         Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
 
-        ' Ensure destination path is valid
         If String.IsNullOrEmpty(destPath) Then
             ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination path")
             Exit Sub
         End If
 
+        ' Always create a fresh CTS for each paste operation
+        copyCts = New CancellationTokenSource()
+        Dim ct = copyCts.Token
+
         Try
+            ct.ThrowIfCancellationRequested()
+
             If File.Exists(_clipboardPath) Then
-                ' Handle file paste
+
                 If _clipboardIsCut Then
-                    File.Move(_clipboardPath, destPath)
+                    Await Task.Run(Sub()
+                                       ct.ThrowIfCancellationRequested()
+                                       File.Move(_clipboardPath, destPath)
+                                   End Sub, ct)
                 Else
-                    File.Copy(_clipboardPath, destPath, overwrite:=True)
+                    Await Task.Run(Sub()
+                                       ct.ThrowIfCancellationRequested()
+                                       File.Copy(_clipboardPath, destPath, overwrite:=True)
+                                   End Sub, ct)
                 End If
+
             ElseIf Directory.Exists(_clipboardPath) Then
-                ' Handle directory paste
+
                 If _clipboardIsCut Then
-                    Directory.Move(_clipboardPath, destPath)
+                    Await Task.Run(Sub()
+                                       ct.ThrowIfCancellationRequested()
+                                       Directory.Move(_clipboardPath, destPath)
+                                   End Sub, ct)
                 Else
-                    Await CopyDirectory(_clipboardPath, destPath, copyCts.Token) ' Await the async copy method
+                    Await CopyDirectory(_clipboardPath, destPath, ct)
                 End If
+
             Else
                 ShowStatus(StatusPad & IconError & " Paste failed: Source not found")
                 Exit Sub
             End If
 
-            ' Clear cut state
             _clipboardPath = Nothing
             _clipboardIsCut = False
 
-            ' Refresh current folder view
-            Await PopulateFiles(destDir) ' Await the async method
-
+            Await PopulateFiles(destDir)
             ResetCutVisuals()
 
             ShowStatus(StatusPad & IconPaste & " Pasted into " & txtPath.Text)
+
+        Catch ex As OperationCanceledException
+            ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+            Debug.WriteLine("PasteSelected_Click Canceled: " & ex.Message)
+
         Catch ex As IOException
             MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(StatusPad & IconError & " Paste failed: I/O Error - " & ex.Message)
             Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
+
         Catch ex As UnauthorizedAccessException
             MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(StatusPad & IconError & " Paste failed: Access Denied - " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
+
         Catch ex As Exception
             MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
+
     End Sub
 
 
@@ -1844,7 +1926,7 @@ Public Class Form1
                 Return False
             End Try
 
-            ShowStatus(StatusPad & IconCopy & " Copying files...")
+            'ShowStatus(StatusPad & IconCopy & " Copying files...")
 
             Dim allFilesCopied As Boolean = True
 
@@ -1861,6 +1943,14 @@ Public Class Form1
                                    End Sub, ct)
 
                     Debug.WriteLine("Copied file: " & targetFile)
+                    ShowStatus(StatusPad & IconCopy & "Copied file: " & targetFile)
+
+
+                Catch ex As IOException
+                    ShowStatus(StatusPad & IconError & " Paste failed: Not enough disk space.")
+                    MessageBox.Show("There is not enough space on the destination drive.",
+                                    "Disk Full", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Exit Function
 
                 Catch ex As OperationCanceledException
                     ShowStatus(StatusPad & IconWarning & " Copy canceled.")
@@ -1881,7 +1971,7 @@ Public Class Form1
                 End Try
             Next
 
-            ShowStatus(StatusPad & IconCopy & " Copying subdirectories...")
+            'ShowStatus(StatusPad & IconCopy & " Copying subdirectories...")
 
             ' Copy subdirectories in parallel (no Task.Run wrapper)
             Dim subDirTasks As New List(Of Task(Of Boolean))
