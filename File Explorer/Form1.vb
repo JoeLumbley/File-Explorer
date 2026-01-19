@@ -1154,117 +1154,440 @@ Public Class Form1
     End Sub
 
 
-    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-    '    ' Check if a file or folder is selected
-    '    If String.IsNullOrEmpty(_clipboardPath) Then
-    '        ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard")
-    '        Exit Sub
-    '    End If
 
-    '    Dim destDir As String = currentFolder
-    '    Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
 
-    '    ' Ensure destination path is valid
-    '    If String.IsNullOrEmpty(destPath) Then
-    '        ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination path")
-    '        Exit Sub
-    '    End If
 
-    '    Try
-    '        If File.Exists(_clipboardPath) Then
-    '            ' Handle file paste
-    '            If _clipboardIsCut Then
-    '                File.Move(_clipboardPath, destPath)
-    '            Else
-    '                File.Copy(_clipboardPath, destPath, overwrite:=True)
-    '            End If
-    '        ElseIf Directory.Exists(_clipboardPath) Then
-    '            ' Handle directory paste
-    '            If _clipboardIsCut Then
-    '                Directory.Move(_clipboardPath, destPath)
-    '            Else
-    '                Await CopyDirectory(_clipboardPath, destPath, copyCts.Token) ' Await the async copy method
-    '            End If
-    '        Else
-    '            ShowStatus(StatusPad & IconError & " Paste failed: Source not found")
-    '            Exit Sub
-    '        End If
 
-    '        ' Clear cut state
-    '        _clipboardPath = Nothing
-    '        _clipboardIsCut = False
+    Private Function ResolveDestinationPathWithAutoRename(
+        initialDestPath As String,
+        isDirectory As Boolean
+    ) As String
+        ' Generates a non‑conflicting destination path using Windows‑style
+        ' rename‑on‑copy semantics:
+        '   File.txt → File - Copy.txt → File - Copy (2).txt → ...
+        ' For directories, the extension is omitted.
 
-    '        ' Refresh current folder view
-    '        Await PopulateFiles(destDir) ' Await the async method
+        If String.IsNullOrWhiteSpace(initialDestPath) Then
+            Return initialDestPath
+        End If
 
-    '        ResetCutVisuals()
+        Dim dir As String = Path.GetDirectoryName(initialDestPath)
+        Dim baseName As String = Path.GetFileNameWithoutExtension(initialDestPath)
+        Dim ext As String = If(isDirectory, String.Empty, Path.GetExtension(initialDestPath))
 
-    '        ShowStatus(StatusPad & IconPaste & " Pasted into " & txtPath.Text)
-    '    Catch ex As IOException
-    '        MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(StatusPad & IconError & " Paste failed: I/O Error - " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
-    '    Catch ex As UnauthorizedAccessException
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(StatusPad & IconError & " Paste failed: Access Denied - " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
-    '    Catch ex As Exception
-    '        MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
-    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
-    '    End Try
-    'End Sub
+        ' If the directory doesn't exist, we can't check collisions
+        If String.IsNullOrWhiteSpace(dir) OrElse Not Directory.Exists(dir) Then
+            Return initialDestPath
+        End If
 
+        Dim candidate As String = initialDestPath
+        Dim index As Integer = 1
+
+        While (Not isDirectory AndAlso File.Exists(candidate)) OrElse
+          (isDirectory AndAlso Directory.Exists(candidate))
+
+            If index = 1 Then
+                candidate = Path.Combine(dir, $"{baseName} - Copy{ext}")
+            Else
+                candidate = Path.Combine(dir, $"{baseName} - Copy ({index}){ext}")
+            End If
+
+            index += 1
+        End While
+
+        Return candidate
+    End Function
+
+
+
+
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Copy a single file with structured result and error taxonomy
+    ' ------------------------------------------------------------
+    Private Async Function CopyFile(
+    source As String,
+    destination As String,
+    ct As CancellationToken
+) As Task(Of CopyResult)
+
+        Dim result As New CopyResult()
+
+        Try
+            ct.ThrowIfCancellationRequested()
+
+            Await Task.Run(Sub()
+                               ct.ThrowIfCancellationRequested()
+                               File.Copy(source, destination, overwrite:=False)
+                           End Sub, ct)
+
+            result.FilesCopied = 1
+            ShowStatus(StatusPad & IconCopy & " Copied file: " & destination)
+            Debug.WriteLine("Copied file: " & destination)
+
+        Catch ex As IOException When ex.HResult = &H80070050
+            ' File already exists
+            result.FilesSkipped = 1
+            result.Errors.Add("File already exists: " & destination)
+            ShowStatus(StatusPad & IconWarning &
+                   " Copy skipped: File already exists → " & Path.GetFileName(destination))
+            Debug.WriteLine("File exists, skipping: " & destination)
+
+        Catch ex As IOException When ex.HResult = &H80070070
+            ' Disk full
+            result.FilesSkipped = 1
+            result.Errors.Add("Disk full while copying: " & source)
+            ShowStatus(StatusPad & IconError & " Copy failed: Not enough disk space.")
+            MessageBox.Show("There is not enough space on the destination drive.",
+                        "Disk Full",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+            Debug.WriteLine("Disk full: " & ex.Message)
+
+        Catch ex As IOException
+            result.FilesSkipped = 1
+            result.Errors.Add("I/O error: " & source & " - " & ex.Message)
+            ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
+            Debug.WriteLine("I/O error: " & ex.Message)
+
+        Catch ex As UnauthorizedAccessException
+            result.FilesSkipped = 1
+            result.Errors.Add("Unauthorized: " & source)
+            ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
+            Debug.WriteLine("Unauthorized: " & ex.Message)
+
+        Catch ex As Exception
+            result.FilesSkipped = 1
+            result.Errors.Add("Copy failed: " & source & " - " & ex.Message)
+            ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
+            Debug.WriteLine("Copy failed: " & ex.Message)
+        End Try
+
+        Return result
+    End Function
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Recursive directory copy with full error taxonomy and results
+    ' ------------------------------------------------------------
+    Public Async Function CopyDirectory(
+    sourceDir As String,
+    destDir As String,
+    ct As CancellationToken
+) As Task(Of CopyResult)
+
+        Dim result As New CopyResult()
+        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+        If Not dirInfo.Exists Then
+            result.Errors.Add("Source directory not found: " & sourceDir)
+            ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
+            Return result
+        End If
+
+        Try
+            ct.ThrowIfCancellationRequested()
+
+            ' Create destination directory
+            Try
+                Directory.CreateDirectory(destDir)
+                result.DirectoriesCreated += 1
+            Catch ex As Exception
+                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+                ShowStatus(StatusPad & IconError & " Failed to create directory: " & destDir)
+                Return result
+            End Try
+
+            ' ------------------------------------------------------------
+            ' Copy files
+            ' ------------------------------------------------------------
+            For Each file In dirInfo.GetFiles()
+                ct.ThrowIfCancellationRequested()
+
+                Dim targetFile = Path.Combine(destDir, file.Name)
+
+                ' Locked file skip
+                If IsFileLocked(file) Then
+                    result.FilesSkipped += 1
+                    ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & file.FullName)
+                    Debug.WriteLine("Locked file skipped: " & file.FullName)
+                    Continue For
+                End If
+
+                Try
+                    Await Task.Run(Sub()
+                                       ct.ThrowIfCancellationRequested()
+                                       file.CopyTo(targetFile, overwrite:=False)
+                                   End Sub, ct)
+
+                    result.FilesCopied += 1
+                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+                    Debug.WriteLine("Copied file: " & targetFile)
+
+                    ' Disk full
+                Catch ex As IOException When ex.HResult = &H80070070
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Disk full while copying: " & file.FullName)
+                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & file.Name)
+                    MessageBox.Show("There is not enough space on the destination drive.",
+                                "Disk Full",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error)
+                    Debug.WriteLine("Disk full: " & ex.Message)
+
+                    ' File already exists
+                Catch ex As IOException When ex.HResult = &H80070050
+                    result.FilesSkipped += 1
+                    result.Errors.Add("File already exists: " & file.FullName)
+                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & file.Name)
+                    Debug.WriteLine("File exists, skipping: " & file.FullName)
+
+                    ' Generic I/O
+                Catch ex As IOException
+                    result.FilesSkipped += 1
+                    result.Errors.Add("I/O error: " & file.FullName & " - " & ex.Message)
+                    ShowStatus(StatusPad & IconError & " I/O error copying: " & file.Name)
+                    Debug.WriteLine("I/O error: " & ex.Message)
+
+                    ' Unauthorized
+                Catch ex As UnauthorizedAccessException
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Unauthorized: " & file.FullName)
+                    ShowStatus(StatusPad & IconError & " Unauthorized: " & file.Name)
+                    Debug.WriteLine("Unauthorized: " & ex.Message)
+
+                    ' Generic catch-all
+                Catch ex As Exception
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Copy failed: " & file.FullName & " - " & ex.Message)
+                    ShowStatus(StatusPad & IconError & " Copy failed: " & file.Name)
+                    Debug.WriteLine("Copy failed: " & ex.Message)
+                End Try
+            Next
+
+            ' ------------------------------------------------------------
+            ' Copy subdirectories in parallel
+            ' ------------------------------------------------------------
+            Dim subTasks As New List(Of Task(Of CopyResult))()
+
+            For Each subDir In dirInfo.GetDirectories()
+                Dim newDest = Path.Combine(destDir, subDir.Name)
+                subTasks.Add(CopyDirectory(subDir.FullName, newDest, ct))
+            Next
+
+            Dim subResults = Await Task.WhenAll(subTasks)
+
+            For Each r In subResults
+                result.FilesCopied += r.FilesCopied
+                result.FilesSkipped += r.FilesSkipped
+                result.DirectoriesCreated += r.DirectoriesCreated
+                result.Errors.AddRange(r.Errors)
+            Next
+
+        Catch ex As OperationCanceledException
+            result.Errors.Add("Canceled: " & ex.Message)
+            ShowStatus(StatusPad & IconWarning & " Directory copy canceled.")
+            Debug.WriteLine("CopyDirectory canceled: " & ex.Message)
+
+        Catch ex As Exception
+            result.Errors.Add("Error: " & ex.Message)
+            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+            Debug.WriteLine("CopyDirectory error: " & ex.Message)
+        End Try
+
+        Return result
+    End Function
+
+
+
+
+    ' ------------------------------------------------------------
+    ' High-level helper: copy file or directory with navigation
+    ' ------------------------------------------------------------
+    Private Async Function CopyFileOrDirectory(
+    source As String,
+    destination As String,
+    ct As CancellationToken
+) As Task
+
+        Try
+            ct.ThrowIfCancellationRequested()
+
+            ' FILE COPY
+            If File.Exists(source) Then
+                Dim result As CopyResult = Await CopyFile(source, destination, ct)
+
+                If result.Success Then
+                    NavigateTo(destination)
+                End If
+
+                ShowStatus(StatusPad & IconDialog &
+                       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+                Return
+            End If
+
+            ' DIRECTORY COPY
+            If Directory.Exists(source) Then
+                Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
+                Dim parentDir = Directory.GetParent(targetDir).FullName
+
+                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
+
+                If result.Success Then
+                    NavigateTo(parentDir)
+                End If
+
+                ShowStatus(StatusPad & IconDialog &
+                       $" Copied {result.FilesCopied} files, " &
+                       $"{result.FilesSkipped} skipped, " &
+                       $"{result.DirectoriesCreated} folders created.")
+                Return
+            End If
+
+            ' SOURCE NOT FOUND
+            ShowStatus(StatusPad & IconError &
+                   " Copy failed: Source does not exist or is not a valid file or directory.")
+            Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
+
+        Catch ex As OperationCanceledException
+            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
+            Debug.WriteLine("CopyFileOrDirectory Canceled: " & ex.Message)
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+            Debug.WriteLine("CopyFileOrDirectory Error: " & ex.Message)
+        End Try
+
+    End Function
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Paste handler: uses clipboard path + current folder
+    ' ------------------------------------------------------------
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
-        If String.IsNullOrEmpty(_clipboardPath) Then
-            ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard")
+        If String.IsNullOrWhiteSpace(_clipboardPath) Then
+            ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
             Exit Sub
         End If
 
+        Dim sourcePath As String = _clipboardPath
         Dim destDir As String = currentFolder
-        Dim destPath As String = Path.Combine(destDir, Path.GetFileName(_clipboardPath))
 
-        If String.IsNullOrEmpty(destPath) Then
-            ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination path")
+        If String.IsNullOrWhiteSpace(destDir) OrElse Not Path.IsPathRooted(destDir) Then
+            ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination folder.")
             Exit Sub
         End If
 
-        ' Always create a fresh CTS for each paste operation
+        If IsProtectedPathOrFolder(destDir) Then
+            ShowStatus(StatusPad & IconProtect & " Paste prevented: Destination is protected.")
+            MessageBox.Show("Paste prevented for protected destination:" & Environment.NewLine & destDir,
+                        "Paste Prevented",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning)
+            Exit Sub
+        End If
+
+        Dim name As String = Path.GetFileName(sourcePath)
+        If String.IsNullOrWhiteSpace(name) Then
+            ShowStatus(StatusPad & IconError & " Paste failed: Invalid source name.")
+            Exit Sub
+        End If
+
+        Dim destPath As String = Path.Combine(destDir, name)
+        Dim isFile As Boolean = File.Exists(sourcePath)
+        Dim isDir As Boolean = Directory.Exists(sourcePath)
+
+        If Not isFile AndAlso Not isDir Then
+            ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
+            Exit Sub
+        End If
+
+        ' For copy operations, resolve collisions with rename-on-copy
+        If Not _clipboardIsCut Then
+            destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
+        Else
+            ' Cut + same path = no-op
+            If String.Equals(sourcePath, destPath, StringComparison.OrdinalIgnoreCase) Then
+                ShowStatus(StatusPad & IconWarning & " Paste skipped: Source and destination are the same.")
+                Exit Sub
+            End If
+        End If
+
         copyCts = New CancellationTokenSource()
         Dim ct = copyCts.Token
 
         Try
             ct.ThrowIfCancellationRequested()
 
-            If File.Exists(_clipboardPath) Then
+            If isFile Then
+                Dim result As CopyResult
 
                 If _clipboardIsCut Then
-                    Await Task.Run(Sub()
-                                       ct.ThrowIfCancellationRequested()
-                                       File.Move(_clipboardPath, destPath)
-                                   End Sub, ct)
+                    ' Move file with collision handling
+                    Try
+                        Await Task.Run(Sub()
+                                           ct.ThrowIfCancellationRequested()
+                                           File.Move(sourcePath, destPath)
+                                       End Sub, ct)
+                        result = New CopyResult() With {.FilesCopied = 1}
+                    Catch ex As IOException When ex.HResult = &H80070050
+                        ShowStatus(StatusPad & IconWarning &
+                               " Move skipped: File already exists → " & Path.GetFileName(destPath))
+                        Debug.WriteLine("Move skipped (exists): " & destPath)
+                        result = New CopyResult() With {.FilesSkipped = 1}
+                    Catch ex As IOException When ex.HResult = &H80070070
+                        ShowStatus(StatusPad & IconError & " Move failed: Not enough disk space.")
+                        MessageBox.Show("There is not enough space on the destination drive.",
+                                    "Disk Full",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error)
+                        result = New CopyResult()
+                    End Try
                 Else
-                    Await Task.Run(Sub()
-                                       ct.ThrowIfCancellationRequested()
-                                       File.Copy(_clipboardPath, destPath, overwrite:=True)
-                                   End Sub, ct)
+                    result = Await CopyFile(sourcePath, destPath, ct)
                 End If
 
-            ElseIf Directory.Exists(_clipboardPath) Then
+                If result.Success Then
+                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtPath.Text)
+                End If
+
+            ElseIf isDir Then
+                Dim result As CopyResult
 
                 If _clipboardIsCut Then
-                    Await Task.Run(Sub()
-                                       ct.ThrowIfCancellationRequested()
-                                       Directory.Move(_clipboardPath, destPath)
-                                   End Sub, ct)
+                    Try
+                        Await Task.Run(Sub()
+                                           ct.ThrowIfCancellationRequested()
+                                           Directory.Move(sourcePath, destPath)
+                                       End Sub, ct)
+                        result = New CopyResult() With {.DirectoriesCreated = 1}
+                    Catch ex As IOException When ex.HResult = &H80070050
+                        ShowStatus(StatusPad & IconWarning &
+                               " Move skipped: Folder already exists → " & Path.GetFileName(destPath))
+                        Debug.WriteLine("Move skipped (exists): " & destPath)
+                        result = New CopyResult() With {.FilesSkipped = 0}
+                    Catch ex As IOException When ex.HResult = &H80070070
+                        ShowStatus(StatusPad & IconError & " Move failed: Not enough disk space.")
+                        MessageBox.Show("There is not enough space on the destination drive.",
+                                    "Disk Full",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error)
+                        result = New CopyResult()
+                    End Try
                 Else
-                    Await CopyDirectory(_clipboardPath, destPath, ct)
+                    result = Await CopyDirectory(sourcePath, destPath, ct)
                 End If
 
-            Else
-                ShowStatus(StatusPad & IconError & " Paste failed: Source not found")
-                Exit Sub
+                ShowStatus(StatusPad & IconPaste &
+                       $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
             End If
 
             _clipboardPath = Nothing
@@ -1273,29 +1596,29 @@ Public Class Form1
             Await PopulateFiles(destDir)
             ResetCutVisuals()
 
-            ShowStatus(StatusPad & IconPaste & " Pasted into " & txtPath.Text)
-
         Catch ex As OperationCanceledException
             ShowStatus(StatusPad & IconWarning & " Paste canceled.")
             Debug.WriteLine("PasteSelected_Click Canceled: " & ex.Message)
 
-        Catch ex As IOException
-            MessageBox.Show("Paste failed: " & ex.Message, "I/O Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(StatusPad & IconError & " Paste failed: I/O Error - " & ex.Message)
-            Debug.WriteLine("PasteSelected_Click I/O Error: " & ex.Message)
-
-        Catch ex As UnauthorizedAccessException
-            MessageBox.Show("Paste failed: " & ex.Message, "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(StatusPad & IconError & " Paste failed: Access Denied - " & ex.Message)
-            Debug.WriteLine("PasteSelected_Click Access Denied: " & ex.Message)
-
         Catch ex As Exception
-            MessageBox.Show("Paste failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
             Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub RenameFile_Click(sender As Object, e As EventArgs)
@@ -1762,241 +2085,409 @@ Public Class Form1
     End Sub
 
 
-    'Private Async Function CopyFileOrDirectory(source As String, destination As String) As Task
-    '    If File.Exists(source) Then
 
 
-    '        If Await CopyFile(source, destination) Then
 
-    '            NavigateTo(destination)
 
+
+    '    Private Async Function CopyFileOrDirectory(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' -------------------------
+    '            ' FILE COPY
+    '            ' -------------------------
+    '            If File.Exists(source) Then
+
+    '                Dim result As CopyResult = Await CopyFile(source, destination, ct)
+
+    '                If result.Success Then
+    '                    NavigateTo(destination)
+    '                End If
+
+    '                ' Optional summary
+    '                ShowStatus(StatusPad & IconDialog &
+    '                       $" Copied {result.FilesCopied} file(s), " &
+    '                       $"{result.FilesSkipped} skipped.")
+
+    '                Return
+    '            End If
+
+
+    '            ' -------------------------
+    '            ' DIRECTORY COPY
+    '            ' -------------------------
+    '            If Directory.Exists(source) Then
+
+    '                Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
+    '                Dim parentDir = Directory.GetParent(targetDir).FullName
+
+    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
+
+    '                If result.Success Then
+    '                    NavigateTo(parentDir)
+    '                End If
+
+    '                ShowStatus(StatusPad & IconDialog &
+    '                       $" Copied {result.FilesCopied} files, " &
+    '                       $"{result.FilesSkipped} skipped, " &
+    '                       $"{result.DirectoriesCreated} folders created.")
+
+    '                Return
+    '            End If
+
+
+    '            ' -------------------------
+    '            ' SOURCE NOT FOUND
+    '            ' -------------------------
+    '            ShowStatus(StatusPad & IconError &
+    '                   " Copy failed: Source does not exist or is not a valid file or directory.")
+    '            Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
+
+
+    '        Catch ex As OperationCanceledException
+    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
+    '            Debug.WriteLine("CopyFileOrDirectory Canceled: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+    '            Debug.WriteLine("CopyFileOrDirectory Error: " & ex.Message)
+    '        End Try
+
+    '    End Function
+
+
+
+    '    Private Async Function CopyFile(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            Await Task.Run(Sub()
+    '                               ct.ThrowIfCancellationRequested()
+    '                               File.Copy(source, destination, overwrite:=False)
+    '                           End Sub, ct)
+
+    '            result.FilesCopied = 1
+    '            ShowStatus(StatusPad & IconCopy & " Copied file: " & destination)
+    '            Debug.WriteLine("Copied file: " & destination)
+
+    '        Catch ex As IOException When ex.HResult = &H80070070
+    '            ' Disk full
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Disk full while copying: " & source)
+    '            ShowStatus(StatusPad & IconError & " Disk full, skipping: " & Path.GetFileName(source))
+    '            MessageBox.Show("There is not enough space on the destination drive.",
+    '                        "Disk Full",
+    '                        MessageBoxButtons.OK,
+    '                        MessageBoxIcon.Error)
+
+    '        Catch ex As IOException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("I/O error: " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
+
+    '        Catch ex As UnauthorizedAccessException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Unauthorized: " & source)
+    '            ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
+
+    '        Catch ex As Exception
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Copy failed: " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+    '    Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+    '        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '        ' Validate source
+    '        If Not dirInfo.Exists Then
+    '            result.Errors.Add("Source directory not found: " & sourceDir)
+    '            ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
+    '            Return result
     '        End If
 
-    '    ElseIf Directory.Exists(source) Then
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
 
-    '        Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
-    '        Dim parentDir As String = Directory.GetParent(targetDir).FullName
+    '            ' ------------------------------------------------------------
+    '            ' Create destination directory
+    '            ' ------------------------------------------------------------
+    '            Try
+    '                Directory.CreateDirectory(destDir)
+    '                result.DirectoriesCreated += 1
+    '            Catch ex As Exception
+    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+    '                ShowStatus(StatusPad & IconError & " Failed to create directory: " & destDir)
+    '                Return result
+    '            End Try
 
-    '        If Await CopyDirectory(source, targetDir) Then
 
-    '            NavigateTo(parentDir)
+    '            ' ------------------------------------------------------------
+    '            ' Copy files
+    '            ' ------------------------------------------------------------
+    '            For Each file In dirInfo.GetFiles()
+    '                ct.ThrowIfCancellationRequested()
 
+    '                Dim targetFile = Path.Combine(destDir, file.Name)
+
+    '                ' Locked file skip
+    '                If IsFileLocked(file) Then
+    '                    result.FilesSkipped += 1
+    '                    ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & file.FullName)
+    '                    Debug.WriteLine("Locked file skipped: " & file.FullName)
+    '                    Continue For
+    '                End If
+
+    '                Try
+    '                    Await Task.Run(Sub()
+    '                                       ct.ThrowIfCancellationRequested()
+    '                                       file.CopyTo(targetFile, overwrite:=False)
+    '                                   End Sub, ct)
+
+    '                    result.FilesCopied += 1
+    '                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+    '                    Debug.WriteLine("Copied file: " & targetFile)
+
+
+    '                    ' ------------------------------------------------------------
+    '                    ' Disk full
+    '                    ' ------------------------------------------------------------
+    '                Catch ex As IOException When ex.HResult = &H80070070
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Disk full while copying: " & file.FullName)
+    '                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & file.Name)
+    '                    MessageBox.Show("There is not enough space on the destination drive.",
+    '                                "Disk Full",
+    '                                MessageBoxButtons.OK,
+    '                                MessageBoxIcon.Error)
+    '                    Debug.WriteLine("Disk full: " & ex.Message)
+
+
+    '                    ' ------------------------------------------------------------
+    '                    ' File already exists
+    '                    ' ------------------------------------------------------------
+    '                Catch ex As IOException When ex.HResult = &H80070050
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("File already exists: " & file.FullName)
+    '                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & file.Name)
+    '                    Debug.WriteLine("File exists, skipping: " & file.FullName)
+
+
+    '                    ' ------------------------------------------------------------
+    '                    ' Generic I/O
+    '                    ' ------------------------------------------------------------
+    '                Catch ex As IOException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("I/O error: " & file.FullName & " - " & ex.Message)
+    '                    ShowStatus(StatusPad & IconError & " I/O error copying: " & file.Name)
+    '                    Debug.WriteLine("I/O error: " & ex.Message)
+
+
+    '                    ' ------------------------------------------------------------
+    '                    ' Unauthorized
+    '                    ' ------------------------------------------------------------
+    '                Catch ex As UnauthorizedAccessException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Unauthorized: " & file.FullName)
+    '                    ShowStatus(StatusPad & IconError & " Unauthorized: " & file.Name)
+    '                    Debug.WriteLine("Unauthorized: " & ex.Message)
+
+
+    '                    ' ------------------------------------------------------------
+    '                    ' Generic catch-all
+    '                    ' ------------------------------------------------------------
+    '                Catch ex As Exception
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Copy failed: " & file.FullName & " - " & ex.Message)
+    '                    ShowStatus(StatusPad & IconError & " Copy failed: " & file.Name)
+    '                    Debug.WriteLine("Copy failed: " & ex.Message)
+    '                End Try
+    '            Next
+
+
+    '            ' ------------------------------------------------------------
+    '            ' Copy subdirectories in parallel
+    '            ' ------------------------------------------------------------
+    '            Dim subTasks As New List(Of Task(Of CopyResult))()
+
+    '            For Each subDir In dirInfo.GetDirectories()
+    '                Dim newDest = Path.Combine(destDir, subDir.Name)
+    '                subTasks.Add(CopyDirectory(subDir.FullName, newDest, ct))
+    '            Next
+
+    '            Dim subResults = Await Task.WhenAll(subTasks)
+
+    '            ' Merge results
+    '            For Each r In subResults
+    '                result.FilesCopied += r.FilesCopied
+    '                result.FilesSkipped += r.FilesSkipped
+    '                result.DirectoriesCreated += r.DirectoriesCreated
+    '                result.Errors.AddRange(r.Errors)
+    '            Next
+
+
+    '            ' ------------------------------------------------------------
+    '            ' Cancellation
+    '            ' ------------------------------------------------------------
+    '        Catch ex As OperationCanceledException
+    '            result.Errors.Add("Canceled: " & ex.Message)
+    '            ShowStatus(StatusPad & IconWarning & " Directory copy canceled.")
+    '            Debug.WriteLine("CopyDirectory canceled: " & ex.Message)
+
+
+    '            ' ------------------------------------------------------------
+    '            ' Unexpected error
+    '            ' ------------------------------------------------------------
+    '        Catch ex As Exception
+    '            result.Errors.Add("Error: " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+    '            Debug.WriteLine("CopyDirectory error: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '    Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+    '        If String.IsNullOrWhiteSpace(_clipboardPath) Then
+    '            ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
+    '            Exit Sub
     '        End If
 
-    '    Else
+    '        Dim sourcePath = _clipboardPath
+    '        Dim destDir = currentFolder
 
-    '        ShowStatus(StatusPad & IconError & " Copy failed: Source does not exist or is not a valid file or directory.")
-    '        Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
+    '        If IsProtectedPathOrFolder(destDir) Then
+    '            ShowStatus(StatusPad & IconProtect & " Paste prevented: Destination is protected.")
+    '            Exit Sub
+    '        End If
 
-    '    End If
+    '        Dim name = Path.GetFileName(sourcePath)
+    '        Dim destPath = Path.Combine(destDir, name)
 
-    'End Function
+    '        copyCts = New CancellationTokenSource()
+    '        Dim ct = copyCts.Token
 
-    ' ------------------------------------------------------------
-    ' Dispatcher: Copies either a file or a directory
-    ' ------------------------------------------------------------
-    Private Async Function CopyFileOrDirectory(
-    source As String,
-    destination As String,
-    ct As CancellationToken
-) As Task
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
 
+    '            If File.Exists(sourcePath) Then
+
+    '                Dim result = Await CopyFile(sourcePath, destPath, ct)
+
+    '                If result.Success Then
+    '                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtPath.Text)
+    '                End If
+
+    '            ElseIf Directory.Exists(sourcePath) Then
+
+    '                Dim result = Await CopyDirectory(sourcePath, destPath, ct)
+
+    '                ShowStatus(StatusPad & IconPaste &
+    '                       $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
+
+    '            Else
+    '                ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
+    '            End If
+
+    '            _clipboardPath = Nothing
+    '            _clipboardIsCut = False
+    '            Await PopulateFiles(destDir)
+    '            ResetCutVisuals()
+
+    '        Catch ex As OperationCanceledException
+    '            ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
+    '        End Try
+
+    '    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Private Function IsFileLocked(file As FileInfo) As Boolean
         Try
-            ct.ThrowIfCancellationRequested()
-
-            If File.Exists(source) Then
-
-                If Await CopyFile(source, destination, ct) Then
-                    NavigateTo(destination)
-                End If
-
-            ElseIf Directory.Exists(source) Then
-
-                Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
-                Dim parentDir = Directory.GetParent(targetDir).FullName
-
-                If Await CopyDirectory(source, targetDir, ct) Then
-                    NavigateTo(parentDir)
-                End If
-
-            Else
-                ShowStatus(StatusPad & IconError &
-                       " Copy failed: Source does not exist or is not a valid file or directory.")
-                Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
-            End If
-
-        Catch ex As OperationCanceledException
-            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-            Debug.WriteLine("CopyFileOrDirectory Canceled: " & ex.Message)
-
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-            Debug.WriteLine("CopyFileOrDirectory Error: " & ex.Message)
-        End Try
-
-    End Function
-
-
-    ' ------------------------------------------------------------
-    ' Copies a single file with overwrite prompt + cancellation
-    ' ------------------------------------------------------------
-    Private Async Function CopyFile(
-    source As String,
-    destination As String,
-    ct As CancellationToken
-) As Task(Of Boolean)
-
-        Try
-            ct.ThrowIfCancellationRequested()
-
-            If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-                ShowStatus(StatusPad & IconError & " Source or destination path is invalid.")
-                Return False
-            End If
-
-            Dim fileName = Path.GetFileName(source)
-            Dim destPath = Path.Combine(destination, fileName)
-
-            ' Overwrite prompt
-            If File.Exists(destPath) Then
-                Dim msg =
-                "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-                "Do you want to overwrite it?"
-
-                Dim result = MessageBox.Show(msg, "File Exists",
-                                         MessageBoxButtons.YesNo,
-                                         MessageBoxIcon.Warning)
-
-                If result = DialogResult.No Then
-                    ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-                    Return False
-                End If
-            End If
-
-            ShowStatus(StatusPad & IconCopy & " Copying file...")
-
-            ' File.Copy is I/O-bound; no need for Task.Run
-            Await Task.Run(Sub()
-                               ct.ThrowIfCancellationRequested()
-                               File.Copy(source, destPath, overwrite:=True)
-                           End Sub, ct)
-
+            Using stream As FileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)
+                ' If we can open it with no sharing, it's not locked
+            End Using
+            Return False
+        Catch ex As IOException
+            ' Sharing violation or lock
             Return True
-
-        Catch ex As OperationCanceledException
-            ShowStatus(StatusPad & IconWarning & " File copy canceled.")
-            Debug.WriteLine("CopyFile Canceled: " & ex.Message)
-            Return False
-
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Copy Failed: " & ex.Message)
-            Debug.WriteLine("CopyFile Error: " & ex.Message)
-            Return False
+        Catch ex As UnauthorizedAccessException
+            ' File may be a directory or protected
+            Return True
         End Try
-
     End Function
 
 
-    ' ------------------------------------------------------------
-    ' Recursively copies a directory with parallel subdirectory tasks
-    ' ------------------------------------------------------------
-    Private Async Function CopyDirectory(
-    sourceDir As String,
-    destDir As String,
-    ct As CancellationToken
-) As Task(Of Boolean)
-
-        Dim dirInfo As New DirectoryInfo(sourceDir)
-
-        If Not dirInfo.Exists Then
-            ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
-            Return False
-        End If
-
-        Try
-            ct.ThrowIfCancellationRequested()
-
-            ' Create destination directory
-            Try
-                Directory.CreateDirectory(destDir)
-            Catch ex As Exception
-                ShowStatus(StatusPad & IconError &
-                       " Failed to create destination directory: " & ex.Message)
-                Debug.WriteLine("CreateDirectory Error: " & ex.Message)
-                Return False
-            End Try
-
-            'ShowStatus(StatusPad & IconCopy & " Copying files...")
-
-            Dim allFilesCopied As Boolean = True
-
-            ' Copy files
-            For Each file In dirInfo.GetFiles()
-                Try
-                    ct.ThrowIfCancellationRequested()
-
-                    Dim targetFile = Path.Combine(destDir, file.Name)
-
-                    Await Task.Run(Sub()
-                                       ct.ThrowIfCancellationRequested()
-                                       file.CopyTo(targetFile, overwrite:=True)
-                                   End Sub, ct)
-
-                    Debug.WriteLine("Copied file: " & targetFile)
-                    ShowStatus(StatusPad & IconCopy & "Copied file: " & targetFile)
 
 
-                Catch ex As IOException
-                    ShowStatus(StatusPad & IconError & " Paste failed: Not enough disk space.")
-                    MessageBox.Show("There is not enough space on the destination drive.",
-                                    "Disk Full", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    Exit Function
 
-                Catch ex As OperationCanceledException
-                    ShowStatus(StatusPad & IconWarning & " Copy canceled.")
-                    Debug.WriteLine("CopyDirectory File Canceled: " & ex.Message)
-                    Return False
 
-                Catch ex As UnauthorizedAccessException
-                    ShowStatus(StatusPad & IconError &
-                           " Unauthorized access: " & file.FullName)
-                    Debug.WriteLine("CopyDirectory Unauthorized: " & ex.Message)
-                    allFilesCopied = False
 
-                Catch ex As Exception
-                    ShowStatus(StatusPad & IconError &
-                           " Copy failed for file: " & file.FullName & " - " & ex.Message)
-                    Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-                    allFilesCopied = False
-                End Try
-            Next
 
-            'ShowStatus(StatusPad & IconCopy & " Copying subdirectories...")
 
-            ' Copy subdirectories in parallel (no Task.Run wrapper)
-            Dim subDirTasks As New List(Of Task(Of Boolean))
 
-            For Each subDir In dirInfo.GetDirectories()
-                Dim newDest = Path.Combine(destDir, subDir.Name)
-                subDirTasks.Add(CopyDirectory(subDir.FullName, newDest, ct))
-            Next
 
-            Dim subDirResults = Await Task.WhenAll(subDirTasks)
 
-            Return allFilesCopied AndAlso subDirResults.All(Function(r) r)
-
-        Catch ex As OperationCanceledException
-            ShowStatus(StatusPad & IconWarning & " Directory copy canceled.")
-            Debug.WriteLine("CopyDirectory Canceled: " & ex.Message)
-            Return False
-
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-            Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-            Return False
-        End Try
-
-    End Function
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
@@ -3715,4 +4206,56 @@ Public Class ListViewItemComparer
         Return ParseSize(input)
     End Function
 
+End Class
+
+
+
+
+
+
+
+
+
+
+
+
+' ------------------------------------------------------------
+' Result object for directory copy operations
+' ------------------------------------------------------------
+Public Class CopyDirectoryResult
+    Public Property FilesCopied As Integer
+    Public Property FilesSkipped As Integer
+    Public Property DirectoriesCreated As Integer
+    Public Property Errors As New List(Of String)
+
+    Public ReadOnly Property Success As Boolean
+        Get
+            Return Errors.Count = 0
+        End Get
+    End Property
+End Class
+
+
+
+
+
+
+
+
+
+
+' ------------------------------------------------------------
+' Unified result object for file and directory copy operations
+' ------------------------------------------------------------
+Public Class CopyResult
+    Public Property FilesCopied As Integer
+    Public Property FilesSkipped As Integer
+    Public Property DirectoriesCreated As Integer
+    Public Property Errors As New List(Of String)
+
+    Public ReadOnly Property Success As Boolean
+        Get
+            Return Errors.Count = 0
+        End Get
+    End Property
 End Class
