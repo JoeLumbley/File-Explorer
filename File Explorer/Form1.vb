@@ -1746,7 +1746,7 @@ Public Class Form1
                     Dim drive As New DriveInfo(root)
 
                     If totalSize > drive.AvailableFreeSpace Then
-                        ShowStatus(StatusPad & IconError & " Not enough space to paste folder.")
+                        ShowStatus(StatusPad & IconError & "  Not enough space to paste folder.")
                         Exit Sub
                     End If
                 End If
@@ -1762,6 +1762,8 @@ Public Class Form1
 
             Await PopulateFiles(destDir)
             ResetCutVisuals()
+
+            UpdateEditButtonsAndMenus()
 
         Catch ex As OperationCanceledException
             ShowStatus(StatusPad & IconWarning & " Paste canceled.")
