@@ -1154,10 +1154,6 @@ Public Class Form1
     End Sub
 
 
-
-
-
-
     Private Function ResolveDestinationPathWithAutoRename(
         initialDestPath As String,
         isDirectory As Boolean
@@ -1197,12 +1193,6 @@ Public Class Form1
 
         Return candidate
     End Function
-
-
-
-
-
-
 
 
     '    ' ------------------------------------------------------------
@@ -1778,283 +1768,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '    ' ------------------------------------------------------------
-    '    ' High-level helper: copy file or directory with navigation
-    '    ' ------------------------------------------------------------
-    '    Private Async Function CopyFileOrDirectory(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            ' FILE COPY
-    '            If File.Exists(source) Then
-    '                Dim result As CopyResult = Await CopyFile(source, destination, ct)
-
-    '                If result.Success Then
-    '                    NavigateTo(destination)
-    '                End If
-
-    '                ShowStatus(StatusPad & IconDialog &
-    '                       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
-    '                Return
-    '            End If
-
-    '            ' DIRECTORY COPY
-    '            If Directory.Exists(source) Then
-    '                Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
-    '                Dim parentDir = Directory.GetParent(targetDir).FullName
-
-    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
-
-    '                If result.Success Then
-    '                    NavigateTo(parentDir)
-    '                End If
-
-    '                ShowStatus(StatusPad & IconDialog &
-    '                       $" Copied {result.FilesCopied} files, " &
-    '                       $"{result.FilesSkipped} skipped, " &
-    '                       $"{result.DirectoriesCreated} folders created.")
-    '                Return
-    '            End If
-
-    '            ' SOURCE NOT FOUND
-    '            ShowStatus(StatusPad & IconError &
-    '                   " Copy failed: Source does not exist or is not a valid file or directory.")
-    '            Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
-
-    '        Catch ex As OperationCanceledException
-    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-    '            Debug.WriteLine("CopyFileOrDirectory Canceled: " & ex.Message)
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '            Debug.WriteLine("CopyFileOrDirectory Error: " & ex.Message)
-    '        End Try
-
-    '    End Function
-
-
-
-
-    '    ' ------------------------------------------------------------
-    '    ' Paste handler: uses clipboard path + current folder
-    '    ' ------------------------------------------------------------
-    '    Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-
-    '        If String.IsNullOrWhiteSpace(_clipboardPath) Then
-    '            ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
-    '            Exit Sub
-    '        End If
-
-    '        Dim sourcePath As String = _clipboardPath
-    '        Dim destDir As String = currentFolder
-
-    '        If String.IsNullOrWhiteSpace(destDir) OrElse Not Path.IsPathRooted(destDir) Then
-    '            ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination folder.")
-    '            Exit Sub
-    '        End If
-
-    '        If IsProtectedPathOrFolder(destDir) Then
-    '            ShowStatus(StatusPad & IconProtect & " Paste prevented: Destination is protected.")
-    '            MessageBox.Show("Paste prevented for protected destination:" & Environment.NewLine & destDir,
-    '                        "Paste Prevented",
-    '                        MessageBoxButtons.OK,
-    '                        MessageBoxIcon.Warning)
-    '            Exit Sub
-    '        End If
-
-    '        Dim name As String = Path.GetFileName(sourcePath)
-    '        If String.IsNullOrWhiteSpace(name) Then
-    '            ShowStatus(StatusPad & IconError & " Paste failed: Invalid source name.")
-    '            Exit Sub
-    '        End If
-
-    '        Dim destPath As String = Path.Combine(destDir, name)
-    '        Dim isFile As Boolean = File.Exists(sourcePath)
-    '        Dim isDir As Boolean = Directory.Exists(sourcePath)
-
-    '        If Not isFile AndAlso Not isDir Then
-    '            ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
-    '            Exit Sub
-    '        End If
-
-    '        ' For copy operations, resolve collisions with rename-on-copy
-    '        If Not _clipboardIsCut Then
-    '            destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
-    '        Else
-    '            ' Cut + same path = no-op
-    '            If String.Equals(sourcePath, destPath, StringComparison.OrdinalIgnoreCase) Then
-    '                ShowStatus(StatusPad & IconWarning & " Paste skipped: Source and destination are the same.")
-    '                Exit Sub
-    '            End If
-    '        End If
-
-    '        copyCts = New CancellationTokenSource()
-    '        Dim ct = copyCts.Token
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            If isFile Then
-    '                Dim result As CopyResult
-
-
-
-
-
-
-
-
-
-
-
-    '                If _clipboardIsCut Then
-    '                    ' Move file with collision handling
-    '                    Try
-    '                        Await Task.Run(Sub()
-    '                                           ct.ThrowIfCancellationRequested()
-    '                                           File.Move(sourcePath, destPath)
-    '                                       End Sub, ct)
-    '                        result = New CopyResult() With {.FilesCopied = 1}
-    '                    Catch ex As IOException When ex.HResult = &H80070050
-    '                        ShowStatus(StatusPad & IconWarning &
-    '                               " Move skipped: File already exists → " & Path.GetFileName(destPath))
-    '                        Debug.WriteLine("Move skipped (exists): " & destPath)
-    '                        result = New CopyResult() With {.FilesSkipped = 1}
-    '                    Catch ex As IOException When ex.HResult = &H80070070
-    '                        ShowStatus(StatusPad & IconError & " Move failed: Not enough disk space.")
-    '                        MessageBox.Show("There is not enough space on the destination drive.",
-    '                                    "Disk Full",
-    '                                    MessageBoxButtons.OK,
-    '                                    MessageBoxIcon.Error)
-    '                        result = New CopyResult()
-    '                    End Try
-    '                Else
-    '                    result = Await CopyFile(sourcePath, destPath, ct)
-    '                End If
-
-    '                If result.Success Then
-    '                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtPath.Text)
-    '                End If
-
-    '            ElseIf isDir Then
-    '                Dim result As CopyResult
-
-    '                If _clipboardIsCut Then
-    '                    Try
-    '                        Await Task.Run(Sub()
-    '                                           ct.ThrowIfCancellationRequested()
-    '                                           Directory.Move(sourcePath, destPath)
-    '                                       End Sub, ct)
-    '                        result = New CopyResult() With {.DirectoriesCreated = 1}
-    '                    Catch ex As IOException When ex.HResult = &H80070050
-    '                        ShowStatus(StatusPad & IconWarning &
-    '                               " Move skipped: Folder already exists → " & Path.GetFileName(destPath))
-    '                        Debug.WriteLine("Move skipped (exists): " & destPath)
-    '                        result = New CopyResult() With {.FilesSkipped = 0}
-    '                    Catch ex As IOException When ex.HResult = &H80070070
-    '                        ShowStatus(StatusPad & IconError & " Move failed: Not enough disk space.")
-    '                        MessageBox.Show("There is not enough space on the destination drive.",
-    '                                    "Disk Full",
-    '                                    MessageBoxButtons.OK,
-    '                                    MessageBoxIcon.Error)
-    '                        result = New CopyResult()
-    '                    End Try
-    '                Else
-    '                    result = Await CopyDirectory(sourcePath, destPath, ct)
-    '                End If
-
-    '                ShowStatus(StatusPad & IconPaste &
-    '                       $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
-    '            End If
-
-    '            _clipboardPath = Nothing
-    '            _clipboardIsCut = False
-
-    '            Await PopulateFiles(destDir)
-    '            ResetCutVisuals()
-    '            UpdateEditButtonsAndMenus()
-
-    '        Catch ex As OperationCanceledException
-    '            ShowStatus(StatusPad & IconWarning & " Paste canceled.")
-    '            Debug.WriteLine("PasteSelected_Click Canceled: " & ex.Message)
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
-    '            Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
-    '        End Try
-
-    '    End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub RenameFile_Click(sender As Object, e As EventArgs)
         ' Rename selected file or folder - Mouse right-click context menu for lvFiles
 
@@ -2226,8 +1939,6 @@ Public Class Form1
         End Try
 
     End Function
-
-
 
 
     Private Async Sub ExecuteCommand(command As String)
@@ -2602,11 +2313,6 @@ Public Class Form1
     End Sub
 
 
-
-
-
-
-
     '    Private Async Function CopyFileOrDirectory(
     '    source As String,
     '    destination As String,
@@ -2966,19 +2672,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Function IsFileLocked(file As FileInfo) As Boolean
         Try
             Using stream As FileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)
@@ -2993,16 +2686,6 @@ Public Class Form1
             Return True
         End Try
     End Function
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4736,21 +4419,21 @@ End Class
 
 
 
-' ------------------------------------------------------------
-' Result object for directory copy operations
-' ------------------------------------------------------------
-Public Class CopyDirectoryResult
-    Public Property FilesCopied As Integer
-    Public Property FilesSkipped As Integer
-    Public Property DirectoriesCreated As Integer
-    Public Property Errors As New List(Of String)
+'' ------------------------------------------------------------
+'' Result object for directory copy operations
+'' ------------------------------------------------------------
+'Public Class CopyDirectoryResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
 
-    Public ReadOnly Property Success As Boolean
-        Get
-            Return Errors.Count = 0
-        End Get
-    End Property
-End Class
+'    Public ReadOnly Property Success As Boolean
+'        Get
+'            Return Errors.Count = 0
+'        End Get
+'    End Property
+'End Class
 
 
 
