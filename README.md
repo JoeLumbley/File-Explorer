@@ -1580,7 +1580,8 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 
 | Shortcut | Action |
 |---------|--------|
-| **F3** (or **Ctrl + F**) | Start a search in the current folder |
+| **Ctrl + F** | Start a search in the current folder |
+| **F3**  | Select the next search result. |
 | **F5** | Refresh the current folder view |
 
 ---
