@@ -4060,6 +4060,14 @@ Public Class Form1
         }
         cmsFiles.Items.Add(copyPathItem)
 
+
+        Dim fullScreenItem As New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
+            .Name = "FullScreen",
+            .ShortcutKeys = Keys.F11
+        }
+        cmsFiles.Items.Add(fullScreenItem)
+
+
         ' Assign the context menu to the ListView
         lvFiles.ContextMenuStrip = cmsFiles
     End Sub
@@ -4407,40 +4415,6 @@ Public Class ListViewItemComparer
     End Function
 
 End Class
-
-
-
-
-
-
-
-
-
-
-
-
-'' ------------------------------------------------------------
-'' Result object for directory copy operations
-'' ------------------------------------------------------------
-'Public Class CopyDirectoryResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-
-'    Public ReadOnly Property Success As Boolean
-'        Get
-'            Return Errors.Count = 0
-'        End Get
-'    End Property
-'End Class
-
-
-
-
-
-
-
 
 
 
