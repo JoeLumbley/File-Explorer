@@ -5,8 +5,8 @@
 
 
 
-<img width="1266" height="713" alt="001" src="https://github.com/user-attachments/assets/fe00ec6b-5bb7-45a7-b02a-6d71e5d1065f" />
 
+<img width="1266" height="713" alt="092" src="https://github.com/user-attachments/assets/72d0aaa1-765f-4bc8-b176-4f77a756360d" />
 
 
 
@@ -148,6 +148,14 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 # Command Line Interface
 
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
+
+
+
+
+<img width="1266" height="713" alt="093" src="https://github.com/user-attachments/assets/38c3f90a-1029-419a-9c04-6dc4f810f617" />
+
+
+
 
 The CLI is designed to be:
 
@@ -1572,7 +1580,8 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 
 | Shortcut | Action |
 |---------|--------|
-| **F3** (or **Ctrl + F**) | Start a search in the current folder |
+| **Ctrl + F** | Start a search in the current folder |
+| **F3**  | Select the next search result. |
 | **F5** | Refresh the current folder view |
 
 ---
