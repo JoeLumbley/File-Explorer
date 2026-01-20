@@ -4060,13 +4060,11 @@ Public Class Form1
         }
         cmsFiles.Items.Add(copyPathItem)
 
-
         Dim fullScreenItem As New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
             .Name = "FullScreen",
             .ShortcutKeys = Keys.F11
         }
         cmsFiles.Items.Add(fullScreenItem)
-
 
         ' Assign the context menu to the ListView
         lvFiles.ContextMenuStrip = cmsFiles
