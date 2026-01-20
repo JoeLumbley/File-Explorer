@@ -149,6 +149,14 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
+
+
+<img width="1266" height="713" alt="091" src="https://github.com/user-attachments/assets/b4edcb7e-6c4a-495e-8780-0a83cd2f5abc" />
+
+
+
+
+
 The CLI is designed to be:
 
 - **Fast** — no menus, no dialogs  
