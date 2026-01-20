@@ -735,28 +735,24 @@ Public Class Form1
     End Sub
 
     Private Sub ToggleExpandCollapse()
+
         Dim node As TreeNode = tvFolders.SelectedNode
         If node Is Nothing Then Exit Sub
 
         If node.IsExpanded Then
             ' Collapse one level
-            'ShowStatus(StatusPad & IconDialog & "  Collapsing folder...")
-
             tvFolders.BeginUpdate()
             node.Collapse()
             tvFolders.EndUpdate()
 
-            'ShowStatus(StatusPad & IconSuccess & "  Collapsed: " & node.FullPath)
         Else
             ' Expand one level
-            'ShowStatus(StatusPad & IconDialog & "  Expanding folder...")
-
             tvFolders.BeginUpdate()
             node.Expand()
             tvFolders.EndUpdate()
 
-            'ShowStatus(StatusPad & IconSuccess & "  Expanded: " & node.FullPath)
         End If
+
     End Sub
 
     Private Sub ToggleFullScreen()
