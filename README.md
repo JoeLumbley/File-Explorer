@@ -151,8 +151,8 @@ The **Command Line Interface (CLI)** is an integrated text‑based command syste
 
 
 
-<img width="1266" height="713" alt="091" src="https://github.com/user-attachments/assets/b4edcb7e-6c4a-495e-8780-0a83cd2f5abc" />
 
+<img width="1266" height="713" alt="093" src="https://github.com/user-attachments/assets/38c3f90a-1029-419a-9c04-6dc4f810f617" />
 
 
 
