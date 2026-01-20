@@ -36,7 +36,7 @@ Partial Class Form1
         btnNewFolder = New Button()
         btnRename = New Button()
         btnDelete = New Button()
-        txtPath = New TextBox()
+        txtAddressBar = New TextBox()
         btnForward = New Button()
         btnBack = New Button()
         btnGo = New Button()
@@ -113,7 +113,7 @@ Partial Class Form1
         Panel1.Controls.Add(btnNewFolder)
         Panel1.Controls.Add(btnRename)
         Panel1.Controls.Add(btnDelete)
-        Panel1.Controls.Add(txtPath)
+        Panel1.Controls.Add(txtAddressBar)
         Panel1.Controls.Add(btnForward)
         Panel1.Controls.Add(btnBack)
         Panel1.Controls.Add(btnGo)
@@ -226,12 +226,12 @@ Partial Class Form1
         ' 
         ' txtPath
         ' 
-        txtPath.Anchor = AnchorStyles.Left Or AnchorStyles.Right
-        txtPath.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        txtPath.Location = New Point(129, 1)
-        txtPath.Name = "txtPath"
-        txtPath.Size = New Size(633, 27)
-        txtPath.TabIndex = 3
+        txtAddressBar.Anchor = AnchorStyles.Left Or AnchorStyles.Right
+        txtAddressBar.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        txtAddressBar.Location = New Point(129, 1)
+        txtAddressBar.Name = "txtPath"
+        txtAddressBar.Size = New Size(633, 27)
+        txtAddressBar.TabIndex = 3
         ' 
         ' btnForward
         ' 
@@ -289,7 +289,7 @@ Partial Class Form1
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents lvFiles As ListView
     Friend WithEvents Panel1 As Panel
-    Friend WithEvents txtPath As TextBox
+    Friend WithEvents txtAddressBar As TextBox
     Friend WithEvents btnForward As Button
     Friend WithEvents btnBack As Button
     Friend WithEvents btnGo As Button

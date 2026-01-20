@@ -165,12 +165,12 @@ Public Class Form1
 
     End Sub
 
-    Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) _
-        Handles txtPath.KeyDown
+    'Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) _
+    '    Handles txtPath.KeyDown
 
-        Path_KeyDown(e)
+    '    Path_KeyDown(e)
 
-    End Sub
+    'End Sub
 
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
         Handles tvFolders.NodeMouseClick
@@ -230,6 +230,9 @@ Public Class Form1
         Handles lvFiles.ItemActivate
         ' The ItemActivate event is raised when the user double-clicks an item or
         ' presses the Enter key when an item is selected.
+
+        If lvFiles.SelectedItems().Count = 0 Then Exit Sub
+
 
         ' Validate selection
         If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
@@ -343,7 +346,7 @@ Public Class Form1
     Private Sub btnGo_Click(sender As Object, e As EventArgs) _
         Handles btnGo.Click
 
-        ExecuteCommand(txtPath.Text.Trim())
+        ExecuteCommand(txtAddressBar.Text.Trim())
 
     End Sub
 
@@ -397,10 +400,57 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+
+
+
+
+
+        ' Check for Enter key
+        If e.KeyCode = Keys.Enter Then
+
+            If txtAddressBar.Focused Then
+
+                Dim command As String = txtAddressBar.Text.Trim()
+
+                ExecuteCommand(command)
+
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+
+                ConsumeKey(e)
+
+            Else
+
+                If lvFiles.Focused Then
+
+                    If lvFiles.SelectedItems().Count = 0 Then
+
+                        txtAddressBar.Focus()
+                        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+
+                        ConsumeKey(e)
+
+                    End If
+
+                End If
+
+                If tvFolders.Focused Then
+
+                    ExpandOneLevel()
+
+                    ConsumeKey(e)
+
+                End If
+
+            End If
+
+        End If
+
         If HandleAddressBarShortcuts(e) Then Return
         If HandleNavigationShortcuts(e) Then Return
         If HandleSearchShortcuts(e) Then Return
         If HandleFileFolderOperations(sender, e) Then Return
+
+
     End Sub
 
     Private Function HandleAddressBarShortcuts(e As KeyEventArgs) As Boolean
@@ -408,8 +458,8 @@ Public Class Form1
        (e.Alt AndAlso e.KeyCode = Keys.D) OrElse
        (e.KeyCode = Keys.F4) Then
 
-            txtPath.Focus()
-            txtPath.SelectAll()
+            txtAddressBar.Focus()
+            txtAddressBar.SelectAll()
             ConsumeKey(e)
             Return True
         End If
@@ -419,10 +469,14 @@ Public Class Form1
     Private Function HandleNavigationShortcuts(e As KeyEventArgs) As Boolean
         If e.Alt AndAlso e.KeyCode = Keys.Left Then
             NavigateBackward_Click()
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+
             ConsumeKey(e)
             Return True
         ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
             NavigateForward_Click()
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+
             ConsumeKey(e)
             Return True
         ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
@@ -461,9 +515,9 @@ Public Class Form1
     End Function
 
     Private Sub InitiateSearch()
-        txtPath.Focus()
-        txtPath.Text = "find "
-        txtPath.SelectionStart = txtPath.Text.Length
+        txtAddressBar.Focus()
+        txtAddressBar.Text = "find "
+        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
     End Sub
 
     Private Sub HandleFindNextCommand()
@@ -525,15 +579,15 @@ Public Class Form1
                 RenameFile_Click(sender, e)
                 ConsumeKey(e)
                 Return True
-            ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtPath.Focused Then
+            ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtAddressBar.Focused Then
                 CopySelected_Click(sender, e)
                 ConsumeKey(e)
                 Return True
-            ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtPath.Focused Then
+            ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtAddressBar.Focused Then
                 PasteSelected_Click(sender, e)
                 ConsumeKey(e)
                 Return True
-            ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtPath.Focused Then
+            ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtAddressBar.Focused Then
                 CutSelected_Click(sender, e)
                 ConsumeKey(e)
                 Return True
@@ -600,7 +654,7 @@ Public Class Form1
         tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
         tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
 
-        tips.SetToolTip(txtPath, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
+        tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
 
     End Sub
 
@@ -689,22 +743,22 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Path_KeyDown(ByRef e As KeyEventArgs)
-        ' Path command input box key handling
+    'Private Sub Path_KeyDown(ByRef e As KeyEventArgs)
+    ' Path command input box key handling
 
-        ' Check for Enter key
-        If e.KeyCode = Keys.Enter Then
+    ' Check for Enter key
+    'If e.KeyCode = Keys.Enter Then
 
-            Dim command As String = txtPath.Text.Trim()
+    '    Dim command As String = txtPath.Text.Trim()
 
-            ExecuteCommand(command)
+    '    ExecuteCommand(command)
 
-            e.Handled = True
-            e.SuppressKeyPress = True
+    '    e.Handled = True
+    '    e.SuppressKeyPress = True
 
-        End If
+    'End If
 
-    End Sub
+    'End Sub
 
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
 
@@ -1718,7 +1772,7 @@ Public Class Form1
                 Dim result As CopyResult = Await CopyFile(sourcePath, destPath, ct)
 
                 If result.Success Then
-                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtPath.Text)
+                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtAddressBar.Text)
                 End If
 
                 ' ------------------------------------------------------------
@@ -2153,7 +2207,7 @@ Public Class Form1
                             })
                             ShowStatus(StatusPad & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
 
-                            txtPath.Text = currentFolder
+                            txtAddressBar.Text = currentFolder
 
                         Catch ex As Exception
                             ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
@@ -2161,9 +2215,9 @@ Public Class Form1
                         End Try
 
                     ElseIf Directory.Exists(targetPath) Then
-                        ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
+                        'ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
                         NavigateTo(targetPath)
-                        ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & targetPath)
+                        'ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & targetPath)
 
                     Else
                         ShowStatus(StatusPad & IconError & "  Path not found: " & targetPath)
@@ -2190,7 +2244,7 @@ Public Class Form1
                         })
                         ShowStatus(StatusPad & IconSuccess & "  Opened file: " & selected.Text)
 
-                        txtPath.Text = currentFolder
+                        txtAddressBar.Text = currentFolder
 
                     Catch ex As Exception
                         ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
@@ -2233,7 +2287,7 @@ Public Class Form1
                         Dim nextPath As String = SearchResults(SearchIndex)
                         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
-                        txtPath.Focus()
+                        txtAddressBar.Focus()
 
                         ShowStatus(
                             StatusPad & IconSearch &
@@ -2867,15 +2921,15 @@ Public Class Form1
             Exit Sub
         End If
 
-        If txtPath.InvokeRequired Then
-            txtPath.Invoke(Sub() NavigateTo(path, recordHistory))
+        If txtAddressBar.InvokeRequired Then
+            txtAddressBar.Invoke(Sub() NavigateTo(path, recordHistory))
             Return
         End If
 
         ShowStatus(StatusPad & IconNavigate & " Navigated To: " & path)
 
         currentFolder = path
-        txtPath.Text = path
+        txtAddressBar.Text = path
         Await PopulateFiles(path) ' Await the async method
 
         If recordHistory Then
@@ -2941,9 +2995,9 @@ Public Class Form1
         End If
 
         ' Nothing selected → start an open command
-        txtPath.Focus()
-        txtPath.Text = "open "
-        txtPath.SelectionStart = txtPath.Text.Length
+        txtAddressBar.Focus()
+        txtAddressBar.Text = "open "
+        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
 
     End Sub
 
