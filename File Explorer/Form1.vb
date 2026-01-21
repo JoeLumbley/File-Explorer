@@ -645,9 +645,8 @@ Public Class Form1
     Private Function HandleAddressBarShortcuts(key As Keys) As Boolean
 
         ' ===========================
-        '   FOCUS ADDRESS BAR 
+        '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
-        '   Ctrl+L, Alt+D, F4
         If key = (Keys.Control Or Keys.L) _
        OrElse key = (Keys.Alt Or Keys.D) _
        OrElse key = Keys.F4 Then
@@ -655,7 +654,6 @@ Public Class Form1
             txtAddressBar.SelectAll()
             Return True
         End If
-
 
         ' ===========================
         '   ENTER (Address Bar execute)
