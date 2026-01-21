@@ -2445,6 +2445,10 @@ Public Class Form1
 
                 If result.Success Then
                     NavigateTo(destination)
+
+                    txtAddressBar.Focus()
+                    PlaceCaretAtEndOfAddressBar()
+
                 End If
 
                 Return
@@ -2486,6 +2490,10 @@ Public Class Form1
                     Dim parent = Directory.GetParent(targetDir)
                     If parent IsNot Nothing Then
                         NavigateTo(parent.FullName)
+
+                        txtAddressBar.Focus()
+                        PlaceCaretAtEndOfAddressBar()
+
                     End If
                 End If
 
