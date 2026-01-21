@@ -167,17 +167,21 @@ Public Class Form1
 
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
-
-
-        'Return HandleTabNavigation(keyData)
-
+        ' Handle custom key commands
         If HandleTabNavigation(keyData) Then Return True
-
-        'Return HandleShiftTabNavigation(keyData)
-
         If HandleShiftTabNavigation(keyData) Then Return True
+        If HandleTreeViewToggleOnEnter(keyData) Then Return True
+        If HandleAddressBarShortcuts(keyData) Then Return True
+        If HandleNavigationShortcuts(keyData) Then Return True
+        If HandleSearchShortcuts(keyData) Then Return True
+        If HandleFileFolderOperations(Nothing, keyData) Then Return True
 
+        ' Default behavior
+        Return MyBase.ProcessCmdKey(msg, keyData)
 
+    End Function
+
+    Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
         ' ===========================
         '   ENTER (TreeView toggle)
         ' ===========================
@@ -187,32 +191,7 @@ Public Class Form1
                 Return True
             End If
         End If
-
-
-        '' ===========================
-        ''   ESCAPE (Address Bar reset)
-        '' ===========================
-        'If keyData = Keys.Escape Then
-        '    If txtAddressBar.Focused Then
-        '        txtAddressBar.Text = currentFolder
-        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '        Return True
-        '    End If
-        'End If
-
-
-        ' ===========================
-        '   DELEGATE TO YOUR MODULES
-        ' ===========================
-        If HandleAddressBarShortcuts(keyData) Then Return True
-        If HandleNavigationShortcuts(keyData) Then Return True
-        If HandleSearchShortcuts(keyData) Then Return True
-        If HandleFileFolderOperations(Nothing, keyData) Then Return True
-
-
-        ' Default behavior
-        Return MyBase.ProcessCmdKey(msg, keyData)
-
+        Return False
     End Function
 
     'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
