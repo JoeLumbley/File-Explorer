@@ -189,16 +189,6 @@ Public Class Form1
         If HandleSearchShortcuts(keyData) Then Return True
         If HandleFileFolderOperations(Nothing, keyData) Then Return True
 
-        If txtAddressBar.Focused Then
-            If keyData = Keys.Enter Then
-
-                ExecuteCommand(txtAddressBar.Text.Trim())
-
-                Return True
-
-            End If
-        End If
-
         ' Default behavior
         Return MyBase.ProcessCmdKey(msg, keyData)
 
@@ -661,10 +651,20 @@ Public Class Form1
         If key = (Keys.Control Or Keys.L) _
        OrElse key = (Keys.Alt Or Keys.D) _
        OrElse key = Keys.F4 Then
-
             txtAddressBar.Focus()
             txtAddressBar.SelectAll()
             Return True
+        End If
+
+
+        ' ===========================
+        '   ENTER (Address Bar execute)
+        ' ===========================
+        If key = Keys.Enter Then
+            If txtAddressBar.Focused Then
+                ExecuteCommand(txtAddressBar.Text.Trim())
+                Return True
+            End If
         End If
 
         ' ===========================
@@ -677,8 +677,6 @@ Public Class Form1
                 Return True
             End If
         End If
-
-
 
         Return False
     End Function
