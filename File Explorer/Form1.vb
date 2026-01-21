@@ -170,12 +170,16 @@ Public Class Form1
         Me.BeginInvoke(New Action(Sub()
                                       If txtAddressBar IsNot Nothing AndAlso txtAddressBar.CanFocus Then
                                           txtAddressBar.Focus()
-                                          ' Place caret at end of text
-                                          txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                                          PlaceCaretAtEndOfAddressBar()
                                       End If
                                   End Sub)
         )
 
+    End Sub
+
+    Private Sub PlaceCaretAtEndOfAddressBar()
+        ' Place caret at end of text
+        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
     End Sub
 
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
@@ -492,7 +496,7 @@ Public Class Form1
             ' File List → Address Bar
             If lvFiles.Focused Then
                 txtAddressBar.Focus()
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                PlaceCaretAtEndOfAddressBar()
                 Return True
             End If
 
@@ -510,7 +514,7 @@ Public Class Form1
 
             ' Fallback
             txtAddressBar.Focus()
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
@@ -629,13 +633,13 @@ Public Class Form1
             ' TreeView → Address Bar
             If tvFolders.Focused Then
                 txtAddressBar.Focus()
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                PlaceCaretAtEndOfAddressBar()
                 Return True
             End If
 
             ' Fallback
             txtAddressBar.Focus()
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
@@ -671,7 +675,7 @@ Public Class Form1
         If key = Keys.Escape Then
             If txtAddressBar.Focused Then
                 txtAddressBar.Text = currentFolder
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                PlaceCaretAtEndOfAddressBar()
                 Return True
             End If
         End If
@@ -683,12 +687,12 @@ Public Class Form1
 
         If key = (Keys.Alt Or Keys.Left) Then
             NavigateBackward_Click()
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            PlaceCaretAtEndOfAddressBar()
             Return True
 
         ElseIf key = (Keys.Alt Or Keys.Right) Then
             NavigateForward_Click()
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            PlaceCaretAtEndOfAddressBar()
             Return True
 
         ElseIf key = (Keys.Alt Or Keys.Up) Then
@@ -816,7 +820,7 @@ Public Class Form1
     Private Sub InitiateSearch()
         txtAddressBar.Focus()
         txtAddressBar.Text = "find "
-        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        PlaceCaretAtEndOfAddressBar()
     End Sub
 
     Private Sub ConsumeKey(e As KeyEventArgs)
@@ -2607,8 +2611,7 @@ Public Class Form1
         ' Nothing selected → start an open command
         txtAddressBar.Focus()
         txtAddressBar.Text = "open "
-        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
+        PlaceCaretAtEndOfAddressBar()
     End Sub
 
     Private Sub CreateDirectory(directoryPath As String)
