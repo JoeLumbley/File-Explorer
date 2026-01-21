@@ -399,60 +399,412 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+
+    '    ' Check for Enter key
+    '    If e.KeyCode = Keys.Enter Then
+
+    '        If txtAddressBar.Focused Then
+
+    '            Dim command As String = txtAddressBar.Text.Trim()
+
+    '            ExecuteCommand(command)
+
+    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+
+    '            ConsumeKey(e)
+
+    '        Else
+
+    '            If lvFiles.Focused Then
+
+    '                If lvFiles.SelectedItems().Count = 0 Then
+
+    '                    txtAddressBar.Focus()
+    '                    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+
+    '                    ConsumeKey(e)
+
+    '                End If
+
+    '            End If
+
+    '            If tvFolders.Focused Then
+
+    '                'ExpandOneLevel()
+    '                ToggleExpandCollapse()
+
+    '                ConsumeKey(e)
+
+    '            End If
+
+    '        End If
+
+    '    End If
+
+    '    If e.KeyCode = Keys.Escape Then
+    '        If txtAddressBar.Focused Then
+    '            txtAddressBar.Text = currentFolder
+    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    '            ConsumeKey(e)
+    '        End If
+    '    End If
+
+    '    If e.KeyCode = Keys.Tab Then
+    '        If txtAddressBar.Focused Then
+
+    '            ' Move focus into the file list
+    '            lvFiles.Focus()
+
+    '            ' Ensure a selection exists so keyboard navigation works immediately
+    '            If lvFiles.Items.Count > 0 Then
+    '                lvFiles.Items(0).Selected = True
+    '                'lvFiles.Items(0).Focused = True
+    '            End If
+    '            'lvFiles.Focus()
+
+    '            ConsumeKey(e)
+    '            Return
+    '        End If
+    '    End If
+
+    '    If HandleAddressBarShortcuts(e) Then Return
+    '    If HandleNavigationShortcuts(e) Then Return
+    '    If HandleSearchShortcuts(e) Then Return
+    '    If HandleFileFolderOperations(sender, e) Then Return
+
+
+    'End Sub
+
+
+
     Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
 
-
-
-
-
-        ' Check for Enter key
+        ' ENTER
         If e.KeyCode = Keys.Enter Then
 
             If txtAddressBar.Focused Then
-
                 Dim command As String = txtAddressBar.Text.Trim()
-
                 ExecuteCommand(command)
-
                 txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
                 ConsumeKey(e)
+                Return
+            End If
 
-            Else
-
-                If lvFiles.Focused Then
-
-                    If lvFiles.SelectedItems().Count = 0 Then
-
-                        txtAddressBar.Focus()
-                        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
-                        ConsumeKey(e)
-
-                    End If
-
-                End If
-
-                If tvFolders.Focused Then
-
-                    'ExpandOneLevel()
-                    ToggleExpandCollapse()
-
+            If lvFiles.Focused Then
+                If lvFiles.SelectedItems.Count = 0 Then
+                    txtAddressBar.Focus()
+                    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
                     ConsumeKey(e)
-
+                    Return
                 End If
+            End If
 
+            If tvFolders.Focused Then
+                ToggleExpandCollapse()
+                ConsumeKey(e)
+                Return
             End If
 
         End If
 
+        ' ESCAPE
+        If e.KeyCode = Keys.Escape AndAlso txtAddressBar.Focused Then
+            txtAddressBar.Text = currentFolder
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            ConsumeKey(e)
+            Return
+        End If
+
+        '' TAB
+        'If e.KeyCode = Keys.Tab AndAlso txtAddressBar.Focused Then
+
+        '    lvFiles.Focus()
+
+        '    If lvFiles.Items.Count > 0 Then
+        '        lvFiles.Items(0).Selected = True
+        '        lvFiles.Items(0).Focused = True
+        '    End If
+
+        '    ConsumeKey(e)
+        '    Return
+        'End If
+
+        '' ===========================
+        ''   TAB NAVIGATION (Explorer)
+        '' ===========================
+        'If e.KeyCode = Keys.Tab Then
+
+        '    ' -----------------------------------------
+        '    ' SHIFT + TAB → File List → Address Bar
+        '    ' -----------------------------------------
+        '    If e.Shift Then
+        '        If lvFiles.Focused Then
+        '            txtAddressBar.Focus()
+        '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '            ConsumeKey(e)
+        '            Return
+        '        End If
+
+        '        ' Fallback: if anything else has focus, go to address bar
+        '        txtAddressBar.Focus()
+        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '        ConsumeKey(e)
+        '        Return
+        '    End If
+
+
+        '    ' -----------------------------------------
+        '    ' TAB → Address Bar → File List
+        '    ' -----------------------------------------
+        '    If txtAddressBar.Focused Then
+
+        '        lvFiles.Focus()
+
+        '        ' Ensure a selection exists so arrow keys work immediately
+        '        If lvFiles.Items.Count > 0 Then
+        '            lvFiles.Items(0).Selected = True
+        '            lvFiles.Items(0).Focused = True
+        '        End If
+
+        '        ConsumeKey(e)
+        '        Return
+        '    End If
+
+
+        '    ' -----------------------------------------
+        '    ' TAB → File List → Address Bar (Explorer cycle)
+        '    ' -----------------------------------------
+        '    If lvFiles.Focused Then
+
+        '        ' If nothing is selected, Explorer jumps back to the address bar
+        '        If lvFiles.SelectedItems.Count = 0 Then
+        '            txtAddressBar.Focus()
+        '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '            ConsumeKey(e)
+        '            Return
+        '        End If
+
+        '        ' If something IS selected, Explorer still cycles back to the address bar
+        '        txtAddressBar.Focus()
+        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '        ConsumeKey(e)
+        '        Return
+        '    End If
+
+
+        '    ' -----------------------------------------
+        '    ' Fallback: if Tab is pressed anywhere else,
+        '    ' go to the address bar (Explorer behavior)
+        '    ' -----------------------------------------
+        '    txtAddressBar.Focus()
+        '    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '    ConsumeKey(e)
+        '    Return
+
+        'End If
+
+        ' Shortcut handlers
         If HandleAddressBarShortcuts(e) Then Return
         If HandleNavigationShortcuts(e) Then Return
         If HandleSearchShortcuts(e) Then Return
         If HandleFileFolderOperations(sender, e) Then Return
 
-
     End Sub
+
+
+
+
+
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+
+        '' ===========================
+        ''   TAB NAVIGATION (Explorer)
+        '' ===========================
+        'If keyData = Keys.Tab Then
+
+        '    ' Address Bar → File List
+        '    If txtAddressBar.Focused Then
+        '        lvFiles.Focus()
+
+        '        If lvFiles.Items.Count > 0 Then
+        '            lvFiles.Items(0).Selected = True
+        '            lvFiles.Items(0).Focused = True
+        '        End If
+
+        '        Return True
+        '    End If
+
+        '    ' File List → Address Bar
+        '    If lvFiles.Focused Then
+        '        txtAddressBar.Focus()
+        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '        Return True
+        '    End If
+
+        '    ' Fallback: anything else → Address Bar
+        '    txtAddressBar.Focus()
+        '    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '    Return True
+        'End If
+
+
+        ' ===========================
+        '   TAB NAVIGATION (Explorer)
+        ' ===========================
+        If keyData = Keys.Tab Then
+
+            ' -----------------------------------------
+            ' Address Bar → File List
+            ' -----------------------------------------
+            'If txtAddressBar.Focused Then
+            '    lvFiles.Focus()
+
+            '    If lvFiles.Items.Count > 0 Then
+
+            '        If lvFiles.SelectedItems.Count > 0 Then
+
+            '            lvFiles.SelectedItems.Item
+
+
+            '        Else
+
+            '            lvFiles.Items(0).Selected = True
+            '            lvFiles.Items(0).Focused = True
+
+            '        End If
+
+            '    End If
+
+            '    Return True
+            'End If
+            If txtAddressBar.Focused Then
+
+                lvFiles.Focus()
+
+                If lvFiles.Items.Count > 0 Then
+
+                    ' If something is already selected, keep it
+                    If lvFiles.SelectedItems.Count > 0 Then
+                        Dim sel As ListViewItem = lvFiles.SelectedItems(0)
+                        sel.Focused = True
+                        sel.EnsureVisible()
+                    Else
+                        ' Otherwise select the first item
+                        lvFiles.Items(0).Selected = True
+                        lvFiles.Items(0).Focused = True
+                        lvFiles.Items(0).EnsureVisible()
+                    End If
+
+                End If
+
+                Return True
+            End If
+
+
+
+            ' -----------------------------------------
+            ' File List → TreeView
+            ' -----------------------------------------
+            If lvFiles.Focused Then
+                tvFolders.Focus()
+
+                ' Ensure a node is selected
+                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                    tvFolders.SelectedNode = tvFolders.Nodes(0)
+                End If
+
+                tvFolders.SelectedNode?.EnsureVisible()
+                Return True
+            End If
+
+
+            ' -----------------------------------------
+            ' TreeView → Address Bar
+            ' -----------------------------------------
+            If tvFolders.Focused Then
+                txtAddressBar.Focus()
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                Return True
+            End If
+
+
+            ' -----------------------------------------
+            ' Fallback: anything else → Address Bar
+            ' -----------------------------------------
+            txtAddressBar.Focus()
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            Return True
+
+        End If
+
+
+        ' ===========================
+        '   SHIFT + TAB (reverse)
+        ' ===========================
+        If keyData = (Keys.Shift Or Keys.Tab) Then
+
+            ' File List → Address Bar
+            If lvFiles.Focused Then
+                txtAddressBar.Focus()
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                Return True
+            End If
+
+            ' Address Bar → stays in Address Bar (Explorer behavior)
+            If txtAddressBar.Focused Then
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                Return True
+            End If
+
+            ' Fallback
+            txtAddressBar.Focus()
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            Return True
+        End If
+
+
+        ' ===========================
+        '   ENTER (TreeView toggle)
+        ' ===========================
+        If keyData = Keys.Enter Then
+            If tvFolders.Focused Then
+                ToggleExpandCollapse()
+                Return True
+            End If
+        End If
+
+
+        ' ===========================
+        '   ESCAPE (Address Bar reset)
+        ' ===========================
+        If keyData = Keys.Escape Then
+            If txtAddressBar.Focused Then
+                txtAddressBar.Text = currentFolder
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                Return True
+            End If
+        End If
+
+
+        ' ===========================
+        '   DELEGATE TO YOUR MODULES
+        ' ===========================
+        'If HandleAddressBarShortcuts(keyData) Then Return True
+        'If HandleNavigationShortcuts(keyData) Then Return True
+        'If HandleSearchShortcuts(keyData) Then Return True
+        'If HandleFileFolderOperations(Nothing, keyData) Then Return True
+
+
+        ' Default behavior
+        Return MyBase.ProcessCmdKey(msg, keyData)
+
+    End Function
+
+
+
+
+
 
     Private Function HandleAddressBarShortcuts(e As KeyEventArgs) As Boolean
         If (e.Control AndAlso e.KeyCode = Keys.L) OrElse
@@ -3863,6 +4215,47 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
+    'Private Sub InitApp()
+
+    '    Me.Text = "File Explorer - Code with Joe"
+
+    '    Me.KeyPreview = True
+
+    '    Me.CenterToScreen()
+
+    '    ConfigureTooltips()
+
+    '    InitStatusBar()
+
+    '    ShowStatus(StatusPad & IconDialog & " Loading...")
+
+    '    InitContextMenu()
+
+    '    InitImageList()
+
+    '    InitArrows()
+
+    '    InitListView()
+
+    '    InitTreeView()
+
+    '    '  Start in User Profile folder
+    '    NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+    '    UpdateTreeRoots()
+
+
+    '    RunTests()
+
+    '    txtAddressBar.Focus()
+
+
+    '    ShowStatus(StatusPad & IconSuccess & "  Ready")
+
+    'End Sub
+
+
+    'File Explorer\Form1.vb
     Private Sub InitApp()
 
         Me.Text = "File Explorer - Code with Joe"
@@ -3892,9 +4285,26 @@ Public Class Form1
 
         UpdateTreeRoots()
 
+
         RunTests()
 
         ShowStatus(StatusPad & IconSuccess & "  Ready")
+
+    End Sub
+
+    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        ' Ensure the address bar receives focus after the form is shown and after any
+        ' sync/async initialization finishes. Using BeginInvoke guarantees this runs
+        ' once the message loop is ready (avoids focus being stolen by other init).
+
+        Me.BeginInvoke(New Action(Sub()
+                                      If txtAddressBar IsNot Nothing AndAlso txtAddressBar.CanFocus Then
+                                          txtAddressBar.Focus()
+                                          ' Place caret at end of text
+                                          txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                                      End If
+                                  End Sub)
+        )
 
     End Sub
 

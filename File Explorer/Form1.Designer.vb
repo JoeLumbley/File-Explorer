@@ -63,7 +63,8 @@ Partial Class Form1
         SplitContainer1.Panel2.Controls.Add(TableLayoutPanel1)
         SplitContainer1.Size = New Size(1264, 681)
         SplitContainer1.SplitterDistance = 238
-        SplitContainer1.TabIndex = 0
+        SplitContainer1.TabIndex = 16
+        SplitContainer1.TabStop = False
         ' 
         ' tvFolders
         ' 
@@ -73,23 +74,24 @@ Partial Class Form1
         tvFolders.Name = "tvFolders"
         tvFolders.ShowLines = False
         tvFolders.Size = New Size(238, 681)
-        tvFolders.TabIndex = 0
+        tvFolders.TabIndex = 2
+        tvFolders.TabStop = False
         ' 
         ' TableLayoutPanel1
         ' 
         TableLayoutPanel1.BackgroundImageLayout = ImageLayout.None
         TableLayoutPanel1.ColumnCount = 1
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
         TableLayoutPanel1.Controls.Add(lvFiles, 0, 1)
         TableLayoutPanel1.Controls.Add(Panel1, 0, 0)
         TableLayoutPanel1.Dock = DockStyle.Fill
         TableLayoutPanel1.Location = New Point(0, 0)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 2
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34.0F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
         TableLayoutPanel1.Size = New Size(1022, 681)
-        TableLayoutPanel1.TabIndex = 0
+        TableLayoutPanel1.TabIndex = 20
         ' 
         ' lvFiles
         ' 
@@ -99,7 +101,7 @@ Partial Class Form1
         lvFiles.Location = New Point(3, 37)
         lvFiles.Name = "lvFiles"
         lvFiles.Size = New Size(1016, 641)
-        lvFiles.TabIndex = 0
+        lvFiles.TabIndex = 2
         lvFiles.UseCompatibleStateImageBehavior = False
         ' 
         ' Panel1
@@ -121,7 +123,7 @@ Partial Class Form1
         Panel1.Location = New Point(3, 3)
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(1016, 28)
-        Panel1.TabIndex = 1
+        Panel1.TabIndex = 19
         ' 
         ' btnNewTextFile
         ' 
@@ -130,7 +132,8 @@ Partial Class Form1
         btnNewTextFile.Location = New Point(829, 0)
         btnNewTextFile.Name = "btnNewTextFile"
         btnNewTextFile.Size = New Size(30, 28)
-        btnNewTextFile.TabIndex = 12
+        btnNewTextFile.TabIndex = 10
+        btnNewTextFile.TabStop = False
         btnNewTextFile.Text = "txt"
         btnNewTextFile.UseVisualStyleBackColor = True
         ' 
@@ -141,7 +144,8 @@ Partial Class Form1
         btnPaste.Location = New Point(924, 0)
         btnPaste.Name = "btnPaste"
         btnPaste.Size = New Size(30, 28)
-        btnPaste.TabIndex = 11
+        btnPaste.TabIndex = 13
+        btnPaste.TabStop = False
         btnPaste.Text = ""
         btnPaste.UseVisualStyleBackColor = True
         ' 
@@ -152,7 +156,8 @@ Partial Class Form1
         btnCut.Location = New Point(862, 0)
         btnCut.Name = "btnCut"
         btnCut.Size = New Size(30, 28)
-        btnCut.TabIndex = 10
+        btnCut.TabIndex = 11
+        btnCut.TabStop = False
         btnCut.Text = ""
         btnCut.UseVisualStyleBackColor = True
         ' 
@@ -163,7 +168,8 @@ Partial Class Form1
         btnCopy.Location = New Point(893, 0)
         btnCopy.Name = "btnCopy"
         btnCopy.Size = New Size(30, 28)
-        btnCopy.TabIndex = 9
+        btnCopy.TabIndex = 12
+        btnCopy.TabStop = False
         btnCopy.Text = ""
         btnCopy.UseVisualStyleBackColor = True
         ' 
@@ -173,7 +179,8 @@ Partial Class Form1
         btnRefresh.Location = New Point(62, 0)
         btnRefresh.Name = "btnRefresh"
         btnRefresh.Size = New Size(30, 28)
-        btnRefresh.TabIndex = 8
+        btnRefresh.TabIndex = 7
+        btnRefresh.TabStop = False
         btnRefresh.Text = ""
         btnRefresh.UseVisualStyleBackColor = True
         ' 
@@ -184,7 +191,8 @@ Partial Class Form1
         bntHome.Location = New Point(93, 0)
         bntHome.Name = "bntHome"
         bntHome.Size = New Size(30, 28)
-        bntHome.TabIndex = 7
+        bntHome.TabIndex = 8
+        bntHome.TabStop = False
         bntHome.Text = ""
         bntHome.UseVisualStyleBackColor = True
         ' 
@@ -196,7 +204,8 @@ Partial Class Form1
         btnNewFolder.Location = New Point(798, 0)
         btnNewFolder.Name = "btnNewFolder"
         btnNewFolder.Size = New Size(30, 28)
-        btnNewFolder.TabIndex = 6
+        btnNewFolder.TabIndex = 9
+        btnNewFolder.TabStop = False
         btnNewFolder.Text = ""
         btnNewFolder.UseVisualStyleBackColor = True
         ' 
@@ -208,30 +217,32 @@ Partial Class Form1
         btnRename.Location = New Point(955, 0)
         btnRename.Name = "btnRename"
         btnRename.Size = New Size(30, 28)
-        btnRename.TabIndex = 5
+        btnRename.TabIndex = 14
+        btnRename.TabStop = False
         btnRename.Text = ""
         btnRename.UseVisualStyleBackColor = True
         ' 
         ' btnDelete
         ' 
         btnDelete.Anchor = AnchorStyles.Right
-        btnDelete.Font = New Font("Segoe UI Symbol", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnDelete.Font = New Font("Segoe UI Symbol", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnDelete.ForeColor = Color.Black
         btnDelete.Location = New Point(986, 0)
         btnDelete.Name = "btnDelete"
         btnDelete.Size = New Size(30, 28)
-        btnDelete.TabIndex = 4
+        btnDelete.TabIndex = 15
+        btnDelete.TabStop = False
         btnDelete.Text = ""
         btnDelete.UseVisualStyleBackColor = True
         ' 
-        ' txtPath
+        ' txtAddressBar
         ' 
         txtAddressBar.Anchor = AnchorStyles.Left Or AnchorStyles.Right
         txtAddressBar.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         txtAddressBar.Location = New Point(129, 1)
-        txtAddressBar.Name = "txtPath"
+        txtAddressBar.Name = "txtAddressBar"
         txtAddressBar.Size = New Size(633, 27)
-        txtAddressBar.TabIndex = 3
+        txtAddressBar.TabIndex = 1
         ' 
         ' btnForward
         ' 
@@ -240,7 +251,8 @@ Partial Class Form1
         btnForward.Location = New Point(31, 0)
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 28)
-        btnForward.TabIndex = 2
+        btnForward.TabIndex = 6
+        btnForward.TabStop = False
         btnForward.Text = ""
         btnForward.UseVisualStyleBackColor = True
         ' 
@@ -251,7 +263,8 @@ Partial Class Form1
         btnBack.Location = New Point(0, 0)
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(30, 28)
-        btnBack.TabIndex = 1
+        btnBack.TabIndex = 5
+        btnBack.TabStop = False
         btnBack.Text = ""
         btnBack.UseVisualStyleBackColor = True
         ' 
@@ -262,7 +275,8 @@ Partial Class Form1
         btnGo.Location = New Point(764, 0)
         btnGo.Name = "btnGo"
         btnGo.Size = New Size(30, 28)
-        btnGo.TabIndex = 0
+        btnGo.TabIndex = 3
+        btnGo.TabStop = False
         btnGo.Text = "Go"
         btnGo.UseVisualStyleBackColor = True
         ' 
