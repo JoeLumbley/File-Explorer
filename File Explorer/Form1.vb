@@ -151,17 +151,30 @@ Public Class Form1
         {".lnk", "Shortcut"}
     }
 
-
-
     Dim StatusPad As String = New String(" "c, 2)
 
     Private copyCts As CancellationTokenSource
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
         InitApp()
+
+    End Sub
+
+    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        ' Ensure the address bar receives focus after the form is shown and after any
+        ' sync/async initialization finishes. Using BeginInvoke guarantees this runs
+        ' once the message loop is ready (avoids focus being stolen by other init).
+
+        Me.BeginInvoke(New Action(Sub()
+                                      If txtAddressBar IsNot Nothing AndAlso txtAddressBar.CanFocus Then
+                                          txtAddressBar.Focus()
+                                          ' Place caret at end of text
+                                          txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                                      End If
+                                  End Sub)
+        )
 
     End Sub
 
@@ -180,6 +193,234 @@ Public Class Form1
         Return MyBase.ProcessCmdKey(msg, keyData)
 
     End Function
+
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+        Handles tvFolders.NodeMouseClick
+
+        Dim info = tvFolders.HitTest(e.Location)
+
+        ' Only toggle node when the arrow is clicked
+        If info.Location = TreeViewHitTestLocations.StateImage Then
+
+            tvFolders.BeginUpdate()
+
+            If e.Node.IsExpanded Then
+                e.Node.Collapse()
+            Else
+                e.Node.Expand()
+            End If
+
+            tvFolders.EndUpdate()
+
+        End If
+
+    End Sub
+
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
+        Handles tvFolders.BeforeExpand
+
+        ExpandNode_LazyLoad(e.Node)
+
+    End Sub
+
+    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) _
+        Handles tvFolders.AfterSelect
+
+        NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
+
+    End Sub
+
+    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
+        Handles tvFolders.BeforeCollapse
+
+        ' Set collapsed icon
+        e.Node.StateImageIndex = 0   ' ▶ collapsed
+
+    End Sub
+
+    Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
+        Handles lvFiles.ItemSelectionChanged
+
+        UpdateEditButtonsAndMenus()
+
+        UpdateFileButtonsAndMenus()
+
+    End Sub
+
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
+        Handles lvFiles.ItemActivate
+        ' The ItemActivate event is raised when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
+
+        If lvFiles.SelectedItems().Count = 0 Then Exit Sub
+
+
+        ' Validate selection
+        If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
+            ShowStatus(StatusPad & IconError & " The selected item isn't a file or folder and can't be opened.")
+            Exit Sub
+        End If
+
+        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+
+    End Sub
+
+    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
+        Handles lvFiles.BeforeLabelEdit
+
+        Dim item As ListViewItem = lvFiles.Items(e.Item)
+        Dim fullPath As String = CStr(item.Tag)
+
+        ' Rule 1: Path must exist
+        If Not PathExists(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " The selected item doesn't exist and cannot be renamed.")
+            Exit Sub
+        End If
+
+        ' Rule 2: Protected items cannot be renamed
+        If IsProtectedPathOrFolder(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconProtect & " This item is protected and cannot be renamed.")
+            Exit Sub
+        End If
+
+        ' Rule 3: User must have rename permission
+        Dim parentDir As String
+        If Directory.Exists(fullPath) Then
+            ' Item is a folder → check write access ON the folder
+            parentDir = fullPath
+        Else
+            ' Item is a file → check write access on its parent directory
+            parentDir = Path.GetDirectoryName(fullPath)
+        End If
+
+        If Not HasWriteAccess(parentDir) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " This location does not allow renaming.")
+            Exit Sub
+        End If
+
+    End Sub
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+        Handles lvFiles.AfterLabelEdit
+
+        RenameFileOrFolder_AfterLabelEdit(e)
+
+    End Sub
+
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) _
+        Handles lvFiles.ColumnClick
+
+        If e.Column = _lastColumn Then
+            _lastOrder = If(_lastOrder = SortOrder.Ascending,
+                        SortOrder.Descending,
+                        SortOrder.Ascending)
+        Else
+            _lastColumn = e.Column
+            _lastOrder = SortOrder.Ascending
+        End If
+
+        UpdateColumnHeaders(e.Column, _lastOrder)
+
+        lvFiles.ListViewItemSorter =
+        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
+
+        lvFiles.Sort()
+
+    End Sub
+
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) _
+        Handles btnBack.Click
+
+        NavigateBackward_Click()
+
+    End Sub
+
+    Private Sub btnForward_Click(sender As Object, e As EventArgs) _
+        Handles btnForward.Click
+
+        NavigateForward_Click()
+
+    End Sub
+
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) _
+        Handles btnRefresh.Click
+
+        NavigateTo(currentFolder, recordHistory:=False)
+
+        UpdateTreeRoots()
+
+    End Sub
+
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) _
+        Handles bntHome.Click
+
+        ' Go to user's home directory
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+
+        UpdateNavButtons()
+
+    End Sub
+
+    Private Sub btnGo_Click(sender As Object, e As EventArgs) _
+        Handles btnGo.Click
+
+        ExecuteCommand(txtAddressBar.Text.Trim())
+
+    End Sub
+
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
+        Handles btnNewFolder.Click
+
+        NewFolder_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) _
+        Handles btnNewTextFile.Click
+
+        NewTextFile_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnCut_Click(sender As Object, e As EventArgs) _
+        Handles btnCut.Click
+
+        CutSelected_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnCopy_Click(sender As Object, e As EventArgs) _
+        Handles btnCopy.Click
+
+        CopySelected_Click(sender, e)
+
+    End Sub
+
+
+
+    Private Sub btnPaste_Click(sender As Object, e As EventArgs) _
+        Handles btnPaste.Click
+
+        PasteSelected_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) _
+        Handles btnRename.Click
+
+        RenameFile_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) _
+        Handles btnDelete.Click
+
+        Delete_Click(sender, e)
+
+    End Sub
 
     Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
         ' ===========================
@@ -400,244 +641,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
-
-
-
-
-
-
-
-
-
-    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-        Handles tvFolders.NodeMouseClick
-
-        Dim info = tvFolders.HitTest(e.Location)
-
-        ' Only toggle node when the arrow is clicked
-        If info.Location = TreeViewHitTestLocations.StateImage Then
-
-            tvFolders.BeginUpdate()
-
-            If e.Node.IsExpanded Then
-                e.Node.Collapse()
-            Else
-                e.Node.Expand()
-            End If
-
-            tvFolders.EndUpdate()
-
-        End If
-
-    End Sub
-
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
-        Handles tvFolders.BeforeExpand
-
-        ExpandNode_LazyLoad(e.Node)
-
-    End Sub
-
-    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) _
-        Handles tvFolders.AfterSelect
-
-        NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
-
-    End Sub
-
-    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
-        Handles tvFolders.BeforeCollapse
-
-        ' Set collapsed icon
-        e.Node.StateImageIndex = 0   ' ▶ collapsed
-
-    End Sub
-
-
-    Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
-        Handles lvFiles.ItemSelectionChanged
-
-        UpdateEditButtonsAndMenus()
-
-        UpdateFileButtonsAndMenus()
-
-    End Sub
-
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
-        Handles lvFiles.ItemActivate
-        ' The ItemActivate event is raised when the user double-clicks an item or
-        ' presses the Enter key when an item is selected.
-
-        If lvFiles.SelectedItems().Count = 0 Then Exit Sub
-
-
-        ' Validate selection
-        If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
-            ShowStatus(StatusPad & IconError & " The selected item isn't a file or folder and can't be opened.")
-            Exit Sub
-        End If
-
-        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
-
-    End Sub
-
-    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
-        Handles lvFiles.BeforeLabelEdit
-
-        Dim item As ListViewItem = lvFiles.Items(e.Item)
-        Dim fullPath As String = CStr(item.Tag)
-
-        ' Rule 1: Path must exist
-        If Not PathExists(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconError & " The selected item doesn't exist and cannot be renamed.")
-            Exit Sub
-        End If
-
-        ' Rule 2: Protected items cannot be renamed
-        If IsProtectedPathOrFolder(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconProtect & " This item is protected and cannot be renamed.")
-            Exit Sub
-        End If
-
-        ' Rule 3: User must have rename permission
-        Dim parentDir As String
-        If Directory.Exists(fullPath) Then
-            ' Item is a folder → check write access ON the folder
-            parentDir = fullPath
-        Else
-            ' Item is a file → check write access on its parent directory
-            parentDir = Path.GetDirectoryName(fullPath)
-        End If
-
-        If Not HasWriteAccess(parentDir) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconError & " This location does not allow renaming.")
-            Exit Sub
-        End If
-
-    End Sub
-
-    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
-        Handles lvFiles.AfterLabelEdit
-
-        RenameFileOrFolder_AfterLabelEdit(e)
-
-    End Sub
-
-    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) _
-        Handles lvFiles.ColumnClick
-
-        If e.Column = _lastColumn Then
-            _lastOrder = If(_lastOrder = SortOrder.Ascending,
-                        SortOrder.Descending,
-                        SortOrder.Ascending)
-        Else
-            _lastColumn = e.Column
-            _lastOrder = SortOrder.Ascending
-        End If
-
-        UpdateColumnHeaders(e.Column, _lastOrder)
-
-        lvFiles.ListViewItemSorter =
-        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
-
-        lvFiles.Sort()
-
-    End Sub
-
-    Private Sub btnBack_Click(sender As Object, e As EventArgs) _
-        Handles btnBack.Click
-
-        NavigateBackward_Click()
-
-    End Sub
-
-    Private Sub btnForward_Click(sender As Object, e As EventArgs) _
-        Handles btnForward.Click
-
-        NavigateForward_Click()
-
-    End Sub
-
-    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) _
-        Handles btnRefresh.Click
-
-        NavigateTo(currentFolder, recordHistory:=False)
-
-        UpdateTreeRoots()
-
-    End Sub
-
-    Private Sub bntHome_Click(sender As Object, e As EventArgs) _
-        Handles bntHome.Click
-
-        ' Go to user's home directory
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
-
-        UpdateNavButtons()
-
-    End Sub
-
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) _
-        Handles btnGo.Click
-
-        ExecuteCommand(txtAddressBar.Text.Trim())
-
-    End Sub
-
-    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
-        Handles btnNewFolder.Click
-
-        NewFolder_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) _
-        Handles btnNewTextFile.Click
-
-        NewTextFile_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnCut_Click(sender As Object, e As EventArgs) _
-        Handles btnCut.Click
-
-        CutSelected_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnCopy_Click(sender As Object, e As EventArgs) _
-        Handles btnCopy.Click
-
-        CopySelected_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnPaste_Click(sender As Object, e As EventArgs) _
-        Handles btnPaste.Click
-
-        PasteSelected_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnRename_Click(sender As Object, e As EventArgs) _
-        Handles btnRename.Click
-
-        RenameFile_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnDelete_Click(sender As Object, e As EventArgs) _
-        Handles btnDelete.Click
-
-        Delete_Click(sender, e)
-
-    End Sub
-
 
     Private Function HandleAddressBarShortcuts(key As Keys) As Boolean
 
@@ -3361,21 +3364,6 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        ' Ensure the address bar receives focus after the form is shown and after any
-        ' sync/async initialization finishes. Using BeginInvoke guarantees this runs
-        ' once the message loop is ready (avoids focus being stolen by other init).
-
-        Me.BeginInvoke(New Action(Sub()
-                                      If txtAddressBar IsNot Nothing AndAlso txtAddressBar.CanFocus Then
-                                          txtAddressBar.Focus()
-                                          ' Place caret at end of text
-                                          txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-                                      End If
-                                  End Sub)
-        )
-
-    End Sub
 
     Private Sub InitListView()
         lvFiles.View = View.Details
