@@ -1485,6 +1485,165 @@ Public Class Form1
 
     ' ------------------------------------------------------------
     ' Copy a single file with structured result + free-space check
+    '    ' ------------------------------------------------------------
+    '    Private Async Function CopyFile(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+    '        Dim src As New FileInfo(source)
+
+    '        ' Proactive free-space check
+    '        If Not HasEnoughSpace(src, destination) Then
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Not enough space for: " & source)
+    '            ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & src.Name)
+    '            Return result
+    '        End If
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            Await Task.Run(Sub()
+    '                               ct.ThrowIfCancellationRequested()
+    '                               File.Copy(source, destination, overwrite:=False)
+    '                           End Sub, ct)
+
+    '            result.FilesCopied = 1
+    '            ShowStatus(StatusPad & IconCopy & " Copied file: " & destination)
+    '            Debug.WriteLine("Copied file: " & destination)
+
+    '        Catch ex As IOException When ex.HResult = &H80070050
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("File already exists: " & destination)
+    '            ShowStatus(StatusPad & IconWarning &
+    '                   " Copy skipped: File already exists → " & Path.GetFileName(destination))
+    '            Debug.WriteLine("File exists, skipping: " & destination)
+
+    '        Catch ex As IOException When ex.HResult = &H80070070
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Disk full while copying: " & source)
+    '            ShowStatus(StatusPad & IconError & " Copy failed: Not enough disk space.")
+    '            MessageBox.Show("There is not enough space on the destination drive.",
+    '                        "Disk Full",
+    '                        MessageBoxButtons.OK,
+    '                        MessageBoxIcon.Error)
+    '            Debug.WriteLine("Disk full: " & ex.Message)
+
+    '        Catch ex As IOException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("I/O error: " & source & " - " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
+    '            Debug.WriteLine("I/O error: " & ex.Message)
+
+    '        Catch ex As UnauthorizedAccessException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Unauthorized: " & source)
+    '            ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
+    '            Debug.WriteLine("Unauthorized: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Copy failed: " & source & " - " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
+    '            Debug.WriteLine("Copy failed: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Copy a single file with auto‑rename + free-space check
+    '    ' ------------------------------------------------------------
+    '    Private Async Function CopyFile(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+    '        Dim src As New FileInfo(source)
+
+    '        ' Proactive free-space check
+    '        If Not HasEnoughSpace(src, destination) Then
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Not enough space for: " & source)
+    '            ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & src.Name)
+    '            Return result
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' NEW: Auto‑rename destination if needed
+    '        ' ------------------------------------------------------------
+    '        Dim finalDest As String = destination
+
+    '        If File.Exists(finalDest) Then
+    '            finalDest = ResolveDestinationPathWithAutoRename(finalDest, isDirectory:=False)
+    '            result.FilesRenamed = 1
+    '            ShowStatus(StatusPad & IconDialog &
+    '                   " Auto‑renamed → " & Path.GetFileName(finalDest))
+    '            Debug.WriteLine("Auto‑renamed to: " & finalDest)
+    '        End If
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            Await Task.Run(Sub()
+    '                               ct.ThrowIfCancellationRequested()
+    '                               File.Copy(source, finalDest, overwrite:=False)
+    '                           End Sub, ct)
+
+    '            result.FilesCopied = 1
+    '            ShowStatus(StatusPad & IconCopy & " Copied file: " & finalDest)
+    '            Debug.WriteLine("Copied file: " & finalDest)
+
+    '        Catch ex As IOException When ex.HResult = &H80070070
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Disk full while copying: " & source)
+    '            ShowStatus(StatusPad & IconError & " Copy failed: Not enough disk space.")
+    '            MessageBox.Show("There is not enough space on the destination drive.",
+    '                        "Disk Full",
+    '                        MessageBoxButtons.OK,
+    '                        MessageBoxIcon.Error)
+    '            Debug.WriteLine("Disk full: " & ex.Message)
+
+    '        Catch ex As IOException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("I/O error: " & source & " - " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
+    '            Debug.WriteLine("I/O error: " & ex.Message)
+
+    '        Catch ex As UnauthorizedAccessException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Unauthorized: " & source)
+    '            ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
+    '            Debug.WriteLine("Unauthorized: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Copy failed: " & source & " - " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
+    '            Debug.WriteLine("Copy failed: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Copy a single file with auto‑rename + free-space check
     ' ------------------------------------------------------------
     Private Async Function CopyFile(
     source As String,
@@ -1503,24 +1662,27 @@ Public Class Form1
             Return result
         End If
 
+        ' Auto‑rename if needed
+        Dim finalDest As String = destination
+        If File.Exists(finalDest) Then
+            finalDest = ResolveDestinationPathWithAutoRename(finalDest, isDirectory:=False)
+            result.FilesRenamed = 1
+            ShowStatus(StatusPad & IconDialog &
+                   " Auto‑renamed → " & Path.GetFileName(finalDest))
+            Debug.WriteLine("Auto‑renamed to: " & finalDest)
+        End If
+
         Try
             ct.ThrowIfCancellationRequested()
 
             Await Task.Run(Sub()
                                ct.ThrowIfCancellationRequested()
-                               File.Copy(source, destination, overwrite:=False)
+                               File.Copy(source, finalDest, overwrite:=False)
                            End Sub, ct)
 
             result.FilesCopied = 1
-            ShowStatus(StatusPad & IconCopy & " Copied file: " & destination)
-            Debug.WriteLine("Copied file: " & destination)
-
-        Catch ex As IOException When ex.HResult = &H80070050
-            result.FilesSkipped = 1
-            result.Errors.Add("File already exists: " & destination)
-            ShowStatus(StatusPad & IconWarning &
-                   " Copy skipped: File already exists → " & Path.GetFileName(destination))
-            Debug.WriteLine("File exists, skipping: " & destination)
+            ShowStatus(StatusPad & IconCopy & " Copied file: " & finalDest)
+            Debug.WriteLine("Copied file: " & finalDest)
 
         Catch ex As IOException When ex.HResult = &H80070070
             result.FilesSkipped = 1
@@ -1530,29 +1692,47 @@ Public Class Form1
                         "Disk Full",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error)
-            Debug.WriteLine("Disk full: " & ex.Message)
 
         Catch ex As IOException
             result.FilesSkipped = 1
             result.Errors.Add("I/O error: " & source & " - " & ex.Message)
             ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
-            Debug.WriteLine("I/O error: " & ex.Message)
 
         Catch ex As UnauthorizedAccessException
             result.FilesSkipped = 1
             result.Errors.Add("Unauthorized: " & source)
             ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
-            Debug.WriteLine("Unauthorized: " & ex.Message)
 
         Catch ex As Exception
             result.FilesSkipped = 1
             result.Errors.Add("Copy failed: " & source & " - " & ex.Message)
             ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
-            Debug.WriteLine("Copy failed: " & ex.Message)
         End Try
 
         Return result
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1589,73 +1769,191 @@ Public Class Form1
 
             ' ------------------------------------------------------------
             ' Copy files
+            '' ------------------------------------------------------------
+            'For Each srcFile In dirInfo.GetFiles()
+            '    ct.ThrowIfCancellationRequested()
+
+            '    'Dim targetFile = Path.Combine(destDir, file.Name)
+
+            '    'Dim targetFile = Path.Combine(destDir, file.Name)
+
+            '    ' ------------------------------------------------------------
+            '    ' NEW: Auto‑rename if destination file already exists
+            '    ' ------------------------------------------------------------
+            '    ' If file.Exists(targetFile) Then
+
+            '    '     Dim newName = ResolveDestinationPathWithAutoRename(targetFile, isDirectory:=False)
+            '    '     result.FilesRenamed += 1
+            '    '     ShowStatus(StatusPad & IconDialog &
+            '    '" Auto‑renamed → " & Path.GetFileName(newName))
+            '    '     Debug.WriteLine("Auto‑renamed to: " & newName)
+            '    '     targetFile = newName
+            '    ' End If
+
+
+            '    Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+            '    ' ------------------------------------------------------------
+            '    ' NEW: Auto‑rename if destination file already exists
+            '    ' ------------------------------------------------------------
+
+            '    If File.Exists(targetFile) Then
+            '        Dim newName = ResolveDestinationPathWithAutoRename(targetFile, isDirectory:=False)
+            '        result.FilesRenamed += 1
+            '        ShowStatus(StatusPad & IconDialog &
+            '                   " Auto‑renamed → " & Path.GetFileName(newName))
+            '        Debug.WriteLine("Auto‑renamed to: " & newName)
+            '        targetFile = newName
+            '    End If
+
+            '    '     If file.Exists(targetFile) Then
+
+            '    '     Dim newName = ResolveDestinationPathWithAutoRename(targetFile, isDirectory:=False)
+            '    '     result.FilesRenamed += 1
+            '    '     ShowStatus(StatusPad & IconDialog &
+            '    '" Auto‑renamed → " & Path.GetFileName(newName))
+            '    '     Debug.WriteLine("Auto‑renamed to: " & newName)
+            '    '     targetFile = newName
+            '    ' End If
+
+
+            '    ' Locked file skip
+            '    If IsFileLocked(srcFile) Then
+            '        result.FilesSkipped += 1
+            '        ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & srcFile.FullName)
+            '        Debug.WriteLine("Locked file skipped: " & srcFile.FullName)
+            '        Continue For
+            '    End If
+
+            '    ' Proactive free-space check
+            '    If Not HasEnoughSpace(srcFile, targetFile) Then
+            '        result.FilesSkipped += 1
+            '        result.Errors.Add("Not enough space for: " & srcFile.FullName)
+            '        ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & srcFile.Name)
+            '        Continue For
+            '    End If
+
+            '    Try
+            '        Await Task.Run(Sub()
+            '                           ct.ThrowIfCancellationRequested()
+            '                           srcFile.CopyTo(targetFile, overwrite:=False)
+            '                       End Sub, ct)
+
+            '        result.FilesCopied += 1
+            '        ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+            '        Debug.WriteLine("Copied file: " & targetFile)
+
+            '    Catch ex As IOException When ex.HResult = &H80070070
+            '        result.FilesSkipped += 1
+            '        result.Errors.Add("Disk full while copying: " & srcFile.FullName)
+            '        ShowStatus(StatusPad & IconError & " Disk full, skipping: " & srcFile.Name)
+            '        MessageBox.Show("There is not enough space on the destination drive.",
+            '                    "Disk Full",
+            '                    MessageBoxButtons.OK,
+            '                    MessageBoxIcon.Error)
+            '        Debug.WriteLine("Disk full: " & ex.Message)
+
+            '    Catch ex As IOException When ex.HResult = &H80070050
+            '        result.FilesSkipped += 1
+            '        result.Errors.Add("File already exists: " & srcFile.FullName)
+            '        ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & srcFile.Name)
+            '        Debug.WriteLine("File exists, skipping: " & srcFile.FullName)
+
+            '    Catch ex As IOException
+            '        result.FilesSkipped += 1
+            '        result.Errors.Add("I/O error: " & srcFile.FullName & " - " & ex.Message)
+            '        ShowStatus(StatusPad & IconError & " I/O error copying: " & srcFile.Name)
+            '        Debug.WriteLine("I/O error: " & ex.Message)
+
+            '    Catch ex As UnauthorizedAccessException
+            '        result.FilesSkipped += 1
+            '        result.Errors.Add("Unauthorized: " & srcFile.FullName)
+            '        ShowStatus(StatusPad & IconError & " Unauthorized: " & srcFile.Name)
+            '        Debug.WriteLine("Unauthorized: " & ex.Message)
+
+            '    Catch ex As Exception
+            '        result.FilesSkipped += 1
+            '        result.Errors.Add("Copy failed: " & srcFile.FullName & " - " & ex.Message)
+            '        ShowStatus(StatusPad & IconError & " Copy failed: " & srcFile.Name)
+            '        Debug.WriteLine("Copy failed: " & ex.Message)
+            '    End Try
+            'Next
+
+
+
+
             ' ------------------------------------------------------------
-            For Each file In dirInfo.GetFiles()
+            ' Copy files
+            ' ------------------------------------------------------------
+            For Each srcFile In dirInfo.GetFiles()
                 ct.ThrowIfCancellationRequested()
 
-                Dim targetFile = Path.Combine(destDir, file.Name)
+                Dim targetFile = Path.Combine(destDir, srcFile.Name)
 
                 ' Locked file skip
-                If IsFileLocked(file) Then
+                If IsFileLocked(srcFile) Then
                     result.FilesSkipped += 1
-                    ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & file.FullName)
-                    Debug.WriteLine("Locked file skipped: " & file.FullName)
+                    ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & srcFile.FullName)
                     Continue For
                 End If
 
-                ' Proactive free-space check
-                If Not HasEnoughSpace(file, targetFile) Then
+                ' Free-space check
+                If Not HasEnoughSpace(srcFile, targetFile) Then
                     result.FilesSkipped += 1
-                    result.Errors.Add("Not enough space for: " & file.FullName)
-                    ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & file.Name)
+                    result.Errors.Add("Not enough space for: " & srcFile.FullName)
+                    ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & srcFile.Name)
                     Continue For
                 End If
 
                 Try
                     Await Task.Run(Sub()
                                        ct.ThrowIfCancellationRequested()
-                                       file.CopyTo(targetFile, overwrite:=False)
+                                       srcFile.CopyTo(targetFile, overwrite:=False)
                                    End Sub, ct)
 
                     result.FilesCopied += 1
                     ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
-                    Debug.WriteLine("Copied file: " & targetFile)
 
                 Catch ex As IOException When ex.HResult = &H80070070
                     result.FilesSkipped += 1
-                    result.Errors.Add("Disk full while copying: " & file.FullName)
-                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & file.Name)
-                    MessageBox.Show("There is not enough space on the destination drive.",
-                                "Disk Full",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error)
-                    Debug.WriteLine("Disk full: " & ex.Message)
+                    result.Errors.Add("Disk full while copying: " & srcFile.FullName)
+                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & srcFile.Name)
 
                 Catch ex As IOException When ex.HResult = &H80070050
                     result.FilesSkipped += 1
-                    result.Errors.Add("File already exists: " & file.FullName)
-                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & file.Name)
-                    Debug.WriteLine("File exists, skipping: " & file.FullName)
+                    result.Errors.Add("File already exists: " & srcFile.FullName)
+                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & srcFile.Name)
 
                 Catch ex As IOException
                     result.FilesSkipped += 1
-                    result.Errors.Add("I/O error: " & file.FullName & " - " & ex.Message)
-                    ShowStatus(StatusPad & IconError & " I/O error copying: " & file.Name)
-                    Debug.WriteLine("I/O error: " & ex.Message)
+                    result.Errors.Add("I/O error: " & srcFile.FullName & " - " & ex.Message)
+                    ShowStatus(StatusPad & IconError & " I/O error copying: " & srcFile.Name)
 
                 Catch ex As UnauthorizedAccessException
                     result.FilesSkipped += 1
-                    result.Errors.Add("Unauthorized: " & file.FullName)
-                    ShowStatus(StatusPad & IconError & " Unauthorized: " & file.Name)
-                    Debug.WriteLine("Unauthorized: " & ex.Message)
+                    result.Errors.Add("Unauthorized: " & srcFile.FullName)
+                    ShowStatus(StatusPad & IconError & " Unauthorized: " & srcFile.Name)
 
                 Catch ex As Exception
                     result.FilesSkipped += 1
-                    result.Errors.Add("Copy failed: " & file.FullName & " - " & ex.Message)
-                    ShowStatus(StatusPad & IconError & " Copy failed: " & file.Name)
-                    Debug.WriteLine("Copy failed: " & ex.Message)
+                    result.Errors.Add("Copy failed: " & srcFile.FullName & " - " & ex.Message)
+                    ShowStatus(StatusPad & IconError & " Copy failed: " & srcFile.Name)
                 End Try
             Next
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             ' ------------------------------------------------------------
             ' Copy subdirectories in parallel
@@ -1890,6 +2188,234 @@ Public Class Form1
 
     ' ------------------------------------------------------------
     ' Wrapper for CLI: copy file or directory using unified engine
+    '    ' ------------------------------------------------------------
+    '    Private Async Function CopyFileOrDirectory(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' -------------------------
+    '            ' FILE COPY
+    '            ' -------------------------
+    '            If File.Exists(source) Then
+
+    '                Dim destFile As String = Path.Combine(destination, Path.GetFileName(source))
+
+    '                ' Proactive free-space check
+    '                Dim srcInfo As New FileInfo(source)
+    '                If Not HasEnoughSpace(srcInfo, destFile) Then
+    '                    ShowStatus(StatusPad & IconError &
+    '                           " Not enough space to copy file: " & srcInfo.Name)
+    '                    Return
+    '                End If
+
+    '                Dim result As CopyResult = Await CopyFile(source, destFile, ct)
+
+    '                If result.Success Then
+
+    '                    ' Navigate to the destination folder
+    '                    NavigateTo(destination)
+
+    '                End If
+
+
+    '                'ShowStatus(StatusPad & IconDialog &
+    '                '       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '                Return
+    '            End If
+
+
+    '            ' -------------------------
+    '            ' DIRECTORY COPY
+    '            ' -------------------------
+    '            If Directory.Exists(source) Then
+
+    '                Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
+
+    '                ' Proactive free-space check (sum of all files)
+    '                Dim totalSize As Long =
+    '                Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).
+    '                Sum(Function(f) New FileInfo(f).Length)
+
+    '                Dim root = Path.GetPathRoot(targetDir)
+    '                Dim drive As New DriveInfo(root)
+
+    '                If totalSize > drive.AvailableFreeSpace Then
+    '                    ShowStatus(StatusPad & IconError &
+    '                           " Not enough space to copy folder.")
+    '                    Return
+    '                End If
+
+    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
+
+    '                If result.Success Then
+
+    '                    Dim parent = Directory.GetParent(targetDir)
+    '                    If parent IsNot Nothing Then
+    '                        ' Navigate to the parent folder
+    '                        NavigateTo(parent.FullName)
+    '                    End If
+
+    '                End If
+
+
+    '                'ShowStatus(StatusPad & IconDialog &
+    '                '       $" Copied {result.FilesCopied} files, " &
+    '                '       $"{result.FilesSkipped} skipped, " &
+    '                '       $"{result.DirectoriesCreated} folders created.")
+    '                Return
+    '            End If
+
+
+    '            ' -------------------------
+    '            ' SOURCE NOT FOUND
+    '            ' -------------------------
+    '            ShowStatus(StatusPad & IconError &
+    '                   " Copy failed: Source does not exist or is not a valid file or directory.")
+
+    '        Catch ex As OperationCanceledException
+    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+    '        End Try
+
+    '    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '    Private Async Function CopyFileOrDirectory(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task
+    '        ' ------------------------------------------------------------
+    '        ' Wrapper for CLI: copy file or directory using unified engine
+    '        ' ------------------------------------------------------------
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' -------------------------
+    '            ' FILE COPY
+    '            ' -------------------------
+    '            If File.Exists(source) Then
+
+    '                Dim destFile As String = Path.Combine(destination, Path.GetFileName(source))
+
+    '                ' Proactive free-space check
+    '                Dim srcInfo As New FileInfo(source)
+    '                If Not HasEnoughSpace(srcInfo, destFile) Then
+    '                    ShowStatus(StatusPad & IconError &
+    '                       " Not enough space to copy file: " & srcInfo.Name)
+    '                    Return
+    '                End If
+
+    '                Dim result As CopyResult = Await CopyFile(source, destFile, ct)
+
+    '                If result.Success Then
+    '                    ' Navigate to the destination folder
+    '                    NavigateTo(destination)
+    '                End If
+
+    '                ' Optional: show summary
+    '                ' ShowStatus(StatusPad & IconDialog &
+    '                '        $" Copied {result.FilesCopied} file(s), " &
+    '                '        $"{result.FilesSkipped} skipped, " &
+    '                '        $"{result.FilesRenamed} renamed.")
+
+    '                Return
+    '            End If
+
+
+    '            ' -------------------------
+    '            ' DIRECTORY COPY
+    '            ' -------------------------
+    '            If Directory.Exists(source) Then
+
+    '                'Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
+
+    '                Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
+
+    '                ' ------------------------------------------------------------
+    '                ' NEW: Auto‑rename destination directory if it already exists
+    '                ' ------------------------------------------------------------
+    '                If Directory.Exists(targetDir) Then
+    '                    Dim newDir = ResolveDestinationPathWithAutoRename(targetDir, isDirectory:=True)
+    '                    ShowStatus(StatusPad & IconDialog &
+    '               " Auto‑renamed folder → " & Path.GetFileName(newDir))
+    '                    Debug.WriteLine("Auto‑renamed directory to: " & newDir)
+    '                    targetDir = newDir
+    '                End If
+
+    '                ' Proactive free-space check (sum of all files)
+    '                Dim totalSize As Long =
+    '                Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).
+    '                Sum(Function(f) New FileInfo(f).Length)
+
+    '                Dim root = Path.GetPathRoot(targetDir)
+    '                Dim drive As New DriveInfo(root)
+
+    '                If totalSize > drive.AvailableFreeSpace Then
+    '                    ShowStatus(StatusPad & IconError &
+    '                       " Not enough space to copy folder.")
+    '                    Return
+    '                End If
+
+    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
+
+    '                'If result.Success Then
+    '                '    Dim parent = Directory.GetParent(targetDir)
+    '                '    If parent IsNot Nothing Then
+    '                '        NavigateTo(parent.FullName)
+    '                '    End If
+    '                'End If
+
+    '                ' Optional summary
+    '                ' ShowStatus(StatusPad & IconDialog &
+    '                '        $" Copied {result.FilesCopied} files, " &
+    '                '        $"{result.FilesSkipped} skipped, " &
+    '                '        $"{result.DirectoriesCreated} folders created, " &
+    '                '        $"{result.FilesRenamed} renamed.")
+
+    '                Return
+    '            End If
+
+
+    '            ' -------------------------
+    '            ' SOURCE NOT FOUND
+    '            ' -------------------------
+    '            ShowStatus(StatusPad & IconError &
+    '               " Copy failed: Source does not exist or is not a valid file or directory.")
+
+    '        Catch ex As OperationCanceledException
+    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+    '        End Try
+
+    '    End Function
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Wrapper for CLI: copy file or directory using unified engine
     ' ------------------------------------------------------------
     Private Async Function CopyFileOrDirectory(
     source As String,
@@ -1907,7 +2433,7 @@ Public Class Form1
 
                 Dim destFile As String = Path.Combine(destination, Path.GetFileName(source))
 
-                ' Proactive free-space check
+                ' Free-space check
                 Dim srcInfo As New FileInfo(source)
                 If Not HasEnoughSpace(srcInfo, destFile) Then
                     ShowStatus(StatusPad & IconError &
@@ -1917,11 +2443,12 @@ Public Class Form1
 
                 Dim result As CopyResult = Await CopyFile(source, destFile, ct)
 
-                ShowStatus(StatusPad & IconDialog &
-                       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+                If result.Success Then
+                    NavigateTo(destination)
+                End If
+
                 Return
             End If
-
 
             ' -------------------------
             ' DIRECTORY COPY
@@ -1930,7 +2457,16 @@ Public Class Form1
 
                 Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
 
-                ' Proactive free-space check (sum of all files)
+                ' NEW: Auto‑rename directory if needed
+                If Directory.Exists(targetDir) Then
+                    Dim newDir = ResolveDestinationPathWithAutoRename(targetDir, isDirectory:=True)
+                    ShowStatus(StatusPad & IconDialog &
+                           " Auto‑renamed folder → " & Path.GetFileName(newDir))
+                    Debug.WriteLine("Auto‑renamed directory to: " & newDir)
+                    targetDir = newDir
+                End If
+
+                ' Free-space check (sum of all files)
                 Dim totalSize As Long =
                 Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).
                 Sum(Function(f) New FileInfo(f).Length)
@@ -1946,13 +2482,16 @@ Public Class Form1
 
                 Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
 
-                ShowStatus(StatusPad & IconDialog &
-                       $" Copied {result.FilesCopied} files, " &
-                       $"{result.FilesSkipped} skipped, " &
-                       $"{result.DirectoriesCreated} folders created.")
+                If result.Success Then
+                    Dim parent = Directory.GetParent(targetDir)
+                    If parent IsNot Nothing Then
+                        NavigateTo(parent.FullName)
+                    End If
+                End If
+
+
                 Return
             End If
-
 
             ' -------------------------
             ' SOURCE NOT FOUND
@@ -1968,6 +2507,19 @@ Public Class Form1
         End Try
 
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Async Sub ExecuteCommand(command As String)
@@ -2713,7 +3265,7 @@ Public Class Form1
                     File.Move(source, destination)
 
                     ' Navigate to the destination folder (corrected)
-                    NavigateTo(Path.GetDirectoryName(destination))
+                    NavigateTo(destination)
 
                     ShowStatus(StatusPad & IconMoving & "  Moved file to: " & destination)
 
@@ -3972,8 +4524,11 @@ End Class
 ' Unified result object for file and directory copy operations
 ' ------------------------------------------------------------
 Public Class CopyResult
-    Public Property FilesCopied As Integer
-    Public Property FilesSkipped As Integer
+    Public Property FilesCopied As Integer = 0
+    Public Property FilesSkipped As Integer = 0
+
+    Public Property FilesRenamed As Integer = 0   ' ← Add this
+
     Public Property DirectoriesCreated As Integer
     Public Property Errors As New List(Of String)
 
@@ -3983,3 +4538,13 @@ Public Class CopyResult
         End Get
     End Property
 End Class
+
+
+
+
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer = 0
+'    Public Property FilesSkipped As Integer = 0
+'    Public Property FilesRenamed As Integer = 0   ' ← Add this
+'    Public Property Errors As New List(Of String)
+'End Class
