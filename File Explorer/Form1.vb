@@ -1992,7 +1992,113 @@ Public Class Form1
 
     ' ------------------------------------------------------------
     ' Paste handler with free-space checks for file + directory
-    ' ------------------------------------------------------------
+    '' ------------------------------------------------------------
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+    '    If String.IsNullOrWhiteSpace(_clipboardPath) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim sourcePath As String = _clipboardPath
+    '    Dim destDir As String = currentFolder
+
+    '    If String.IsNullOrWhiteSpace(destDir) OrElse Not Path.IsPathRooted(destDir) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination folder.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim name As String = Path.GetFileName(sourcePath)
+    '    Dim destPath As String = Path.Combine(destDir, name)
+
+    '    Dim isFile As Boolean = File.Exists(sourcePath)
+    '    Dim isDir As Boolean = Directory.Exists(sourcePath)
+
+    '    If Not isFile AndAlso Not isDir Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Copy operations use rename-on-copy
+    '    If Not _clipboardIsCut Then
+    '        destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Try
+    '        ct.ThrowIfCancellationRequested()
+
+    '        ' ------------------------------------------------------------
+    '        ' FILE PASTE
+    '        ' ------------------------------------------------------------
+    '        If isFile Then
+    '            Dim src As New FileInfo(sourcePath)
+
+    '            ' Proactive free-space check
+    '            If Not _clipboardIsCut AndAlso Not HasEnoughSpace(src, destPath) Then
+    '                ShowStatus(StatusPad & IconError & " Not enough space to paste file: " & src.Name)
+    '                Exit Sub
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyFile(sourcePath, destPath, ct)
+
+    '            If result.Success Then
+    '                ShowStatus(StatusPad & IconPaste & " File pasted into " & txtAddressBar.Text)
+    '            End If
+
+    '            ' ------------------------------------------------------------
+    '            ' DIRECTORY PASTE
+    '            ' ------------------------------------------------------------
+    '        ElseIf isDir Then
+
+    '            ' Proactive free-space check (sum of all files)
+    '            If Not _clipboardIsCut Then
+    '                Dim totalSize As Long =
+    '                Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).
+    '                Sum(Function(f) New FileInfo(f).Length)
+
+    '                Dim root = Path.GetPathRoot(destPath)
+    '                Dim drive As New DriveInfo(root)
+
+    '                If totalSize > drive.AvailableFreeSpace Then
+    '                    ShowStatus(StatusPad & IconError & "  Not enough space to paste folder.")
+    '                    Exit Sub
+    '                End If
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyDirectory(sourcePath, destPath, ct)
+
+    '            ShowStatus(StatusPad & IconPaste &
+    '                   $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
+    '        End If
+
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        Await PopulateFiles(destDir)
+
+    '        lvFiles.Focus()
+
+    '        ' Select the newly pasted item.
+
+
+    '        ResetCutVisuals()
+
+    '        UpdateEditButtonsAndMenus()
+
+    '    Catch ex As OperationCanceledException
+    '        ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+    '        Debug.WriteLine("PasteSelected_Click Canceled: " & ex.Message)
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
+    '        Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
         If String.IsNullOrWhiteSpace(_clipboardPath) Then
@@ -2019,7 +2125,7 @@ Public Class Form1
             Exit Sub
         End If
 
-        ' Copy operations use rename-on-copy
+        ' Auto‑rename only when copying (not cutting)
         If Not _clipboardIsCut Then
             destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
         End If
@@ -2036,7 +2142,7 @@ Public Class Form1
             If isFile Then
                 Dim src As New FileInfo(sourcePath)
 
-                ' Proactive free-space check
+                ' Free-space check
                 If Not _clipboardIsCut AndAlso Not HasEnoughSpace(src, destPath) Then
                     ShowStatus(StatusPad & IconError & " Not enough space to paste file: " & src.Name)
                     Exit Sub
@@ -2053,7 +2159,7 @@ Public Class Form1
                 ' ------------------------------------------------------------
             ElseIf isDir Then
 
-                ' Proactive free-space check (sum of all files)
+                ' Free-space check (sum of all files)
                 If Not _clipboardIsCut Then
                     Dim totalSize As Long =
                     Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).
@@ -2063,7 +2169,7 @@ Public Class Form1
                     Dim drive As New DriveInfo(root)
 
                     If totalSize > drive.AvailableFreeSpace Then
-                        ShowStatus(StatusPad & IconError & "  Not enough space to paste folder.")
+                        ShowStatus(StatusPad & IconError & " Not enough space to paste folder.")
                         Exit Sub
                     End If
                 End If
@@ -2074,26 +2180,39 @@ Public Class Form1
                        $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
             End If
 
+            ' Reset clipboard state
             _clipboardPath = Nothing
             _clipboardIsCut = False
 
             Await PopulateFiles(destDir)
-            ResetCutVisuals()
 
+            ' ------------------------------------------------------------
+            ' Select the newly pasted item
+            ' ------------------------------------------------------------
+            Dim pastedName As String = Path.GetFileName(destPath)
+
+            For Each item As ListViewItem In lvFiles.Items
+                If String.Equals(item.Text, pastedName, StringComparison.OrdinalIgnoreCase) Then
+                    item.Selected = True
+                    item.Focused = True
+                    item.EnsureVisible()
+                    Exit For
+                End If
+            Next
+
+            lvFiles.Focus()
+
+            ResetCutVisuals()
             UpdateEditButtonsAndMenus()
 
         Catch ex As OperationCanceledException
             ShowStatus(StatusPad & IconWarning & " Paste canceled.")
-            Debug.WriteLine("PasteSelected_Click Canceled: " & ex.Message)
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
-            Debug.WriteLine("PasteSelected_Click Error: " & ex.Message)
         End Try
 
     End Sub
-
-
 
     Private Sub RenameFile_Click(sender As Object, e As EventArgs)
         ' Rename selected file or folder - Mouse right-click context menu for lvFiles
@@ -2104,59 +2223,141 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Delete_Click(sender As Object, e As EventArgs)
-        ' Delete selected file or folder - Mouse right-click context menu for lvFiles
+    'Private Sub Delete_Click(sender As Object, e As EventArgs)
+    '    ' Delete selected file or folder - Mouse right-click context menu for lvFiles
 
-        ' Is a file or folder selected?
+    '    ' Is a file or folder selected?
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim item = lvFiles.SelectedItems(0)
+    '    Dim fullPath = CStr(item.Tag)
+
+    '    ' Reject relative paths outright
+    '    If Not Path.IsPathRooted(fullPath) Then
+
+    '        ShowStatus(StatusPad & IconWarning & " Delete failed: Path must be absolute. Example: C:\folder")
+
+    '        Exit Sub
+
+    '    End If
+
+    '    ' Check if the path is in the protected list
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        ' The path is protected; prevent deletion
+    '        ShowStatus(StatusPad & IconProtect & " Deletion prevented for protected path: " & fullPath)
+    '        Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
+    '        MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
+    '        Exit Sub
+    '    End If
+
+    '    ' Confirm deletion
+    '    Dim result = MessageBox.Show("Are you sure you want to delete '" & item.Text & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+    '    If result <> DialogResult.Yes Then Exit Sub
+
+    '    Try
+    '        ' Check if it's a directory
+    '        If Directory.Exists(fullPath) Then
+    '            Directory.Delete(fullPath, recursive:=True)
+    '            lvFiles.Items.Remove(item)
+    '            ShowStatus(StatusPad & IconDelete & " Deleted folder: " & item.Text)
+    '            ' Check if it's a file
+    '        ElseIf File.Exists(fullPath) Then
+    '            File.Delete(fullPath)
+    '            lvFiles.Items.Remove(item)
+    '            ShowStatus(StatusPad & IconDelete & " Deleted file: " & item.Text)
+    '        Else
+    '            ShowStatus(StatusPad & IconWarning & " Path not found.")
+    '        End If
+    '    Catch ex As Exception
+
+    '        'MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ShowStatus(StatusPad & IconError & " Delete failed: " & ex.Message)
+
+    '        Debug.WriteLine("Delete_Click Error: " & ex.Message)
+
+    '    End Try
+
+    'End Sub
+
+
+
+    Private Async Sub Delete_Click(sender As Object, e As EventArgs)
+
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
-        Dim item = lvFiles.SelectedItems(0)
-        Dim fullPath = CStr(item.Tag)
-
-        ' Reject relative paths outright
-        If Not Path.IsPathRooted(fullPath) Then
-
-            ShowStatus(StatusPad & IconWarning & " Delete failed: Path must be absolute. Example: C:\folder")
-
-            Exit Sub
-
-        End If
-
-        ' Check if the path is in the protected list
-        If IsProtectedPathOrFolder(fullPath) Then
-            ' The path is protected; prevent deletion
-            ShowStatus(StatusPad & IconProtect & " Deletion prevented for protected path: " & fullPath)
-            Dim msg As String = "Deletion prevented for protected path: " & Environment.NewLine & fullPath
-            MsgBox(msg, MsgBoxStyle.Critical, "Deletion Prevented")
-            Exit Sub
-        End If
+        Dim selected = lvFiles.SelectedItems.Cast(Of ListViewItem)().ToList()
+        Dim count As Integer = selected.Count
 
         ' Confirm deletion
-        Dim result = MessageBox.Show("Are you sure you want to delete '" & item.Text & "'?", "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-        If result <> DialogResult.Yes Then Exit Sub
+        Dim msg As String =
+        If(count = 1,
+           $"Are you sure you want to delete '{selected(0).Text}'?",
+           $"Are you sure you want to delete these {count} items?")
 
-        Try
-            ' Check if it's a directory
-            If Directory.Exists(fullPath) Then
-                Directory.Delete(fullPath, recursive:=True)
-                lvFiles.Items.Remove(item)
-                ShowStatus(StatusPad & IconDelete & " Deleted folder: " & item.Text)
-                ' Check if it's a file
-            ElseIf File.Exists(fullPath) Then
-                File.Delete(fullPath)
-                lvFiles.Items.Remove(item)
-                ShowStatus(StatusPad & IconDelete & " Deleted file: " & item.Text)
-            Else
-                ShowStatus(StatusPad & IconWarning & " Path not found.")
+        Dim confirm = MessageBox.Show(msg, "Delete",
+                                  MessageBoxButtons.YesNo,
+                                  MessageBoxIcon.Warning)
+
+        If confirm <> DialogResult.Yes Then Exit Sub
+
+        ' Remember index of first selected item for post-refresh selection
+        Dim firstIndex As Integer = selected(0).Index
+
+        For Each item In selected
+            Dim fullPath As String = CStr(item.Tag)
+
+            ' Reject relative paths
+            If Not Path.IsPathRooted(fullPath) Then
+                ShowStatus(StatusPad & IconWarning &
+                       " Delete failed: Path must be absolute. Example: C:\folder")
+                Continue For
             End If
-        Catch ex As Exception
 
-            'MessageBox.Show("Delete failed: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ShowStatus(StatusPad & IconError & " Delete failed: " & ex.Message)
+            ' Protected path check
+            If IsProtectedPathOrFolder(fullPath) Then
+                ShowStatus(StatusPad & IconProtect &
+                       " Deletion prevented for protected path: " & fullPath)
+                Continue For
+            End If
 
-            Debug.WriteLine("Delete_Click Error: " & ex.Message)
+            Try
+                If Directory.Exists(fullPath) Then
+                    Directory.Delete(fullPath, recursive:=True)
+                    ShowStatus(StatusPad & IconDelete &
+                           " Deleted folder: " & item.Text)
 
-        End Try
+                ElseIf File.Exists(fullPath) Then
+                    File.Delete(fullPath)
+                    ShowStatus(StatusPad & IconDelete &
+                           " Deleted file: " & item.Text)
+
+                Else
+                    ShowStatus(StatusPad & IconWarning &
+                           " Path not found: " & fullPath)
+                End If
+
+            Catch ex As Exception
+                ShowStatus(StatusPad & IconError &
+                       " Delete failed: " & ex.Message)
+                Debug.WriteLine("Delete_Click Error: " & ex.Message)
+            End Try
+        Next
+
+        ' Refresh the folder
+        Await PopulateFiles(currentFolder)
+
+        ' ------------------------------------------------------------
+        ' Select the next logical item (Explorer-style)
+        ' ------------------------------------------------------------
+        If lvFiles.Items.Count > 0 Then
+            Dim newIndex As Integer = Math.Min(firstIndex, lvFiles.Items.Count - 1)
+            lvFiles.Items(newIndex).Selected = True
+            lvFiles.Items(newIndex).Focused = True
+            lvFiles.Items(newIndex).EnsureVisible()
+        End If
+
+        lvFiles.Focus()
+        UpdateEditButtonsAndMenus()
 
     End Sub
 
