@@ -165,12 +165,272 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub txtPath_KeyDown(sender As Object, e As KeyEventArgs) _
-    '    Handles txtPath.KeyDown
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
-    '    Path_KeyDown(e)
 
-    'End Sub
+
+        'Return HandleTabNavigation(keyData)
+
+        If HandleTabNavigation(keyData) Then Return True
+
+        'Return HandleShiftTabNavigation(keyData)
+
+        If HandleShiftTabNavigation(keyData) Then Return True
+
+
+        ' ===========================
+        '   ENTER (TreeView toggle)
+        ' ===========================
+        If keyData = Keys.Enter Then
+            If tvFolders.Focused Then
+                ToggleExpandCollapse()
+                Return True
+            End If
+        End If
+
+
+        '' ===========================
+        ''   ESCAPE (Address Bar reset)
+        '' ===========================
+        'If keyData = Keys.Escape Then
+        '    If txtAddressBar.Focused Then
+        '        txtAddressBar.Text = currentFolder
+        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+        '        Return True
+        '    End If
+        'End If
+
+
+        ' ===========================
+        '   DELEGATE TO YOUR MODULES
+        ' ===========================
+        If HandleAddressBarShortcuts(keyData) Then Return True
+        If HandleNavigationShortcuts(keyData) Then Return True
+        If HandleSearchShortcuts(keyData) Then Return True
+        If HandleFileFolderOperations(Nothing, keyData) Then Return True
+
+
+        ' Default behavior
+        Return MyBase.ProcessCmdKey(msg, keyData)
+
+    End Function
+
+    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+    '    ' ===========================
+    '    '   SHIFT + TAB (reverse)
+    '    ' ===========================
+    '    If keyData = (Keys.Shift Or Keys.Tab) Then
+
+    '        ' File List → Address Bar
+    '        If lvFiles.Focused Then
+    '            txtAddressBar.Focus()
+    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    '            Return True
+    '        End If
+
+    '        ' Address Bar → stays in Address Bar (Explorer behavior)
+    '        If txtAddressBar.Focused Then
+    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    '            Return True
+    '        End If
+
+    '        ' Fallback
+    '        txtAddressBar.Focus()
+    '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    '        Return True
+    '    End If
+
+    '    Return False
+
+    'End Function
+
+
+
+    Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+        If keyData = (Keys.Shift Or Keys.Tab) Then
+
+            ' TreeView → File List
+            If tvFolders.Focused Then
+                lvFiles.Focus()
+
+                ' Restore selection if possible
+                If lvFiles.Items.Count > 0 Then
+                    If lvFiles.SelectedItems.Count > 0 Then
+                        Dim sel = lvFiles.SelectedItems(0)
+                        sel.Focused = True
+                        sel.EnsureVisible()
+                    Else
+                        lvFiles.Items(0).Selected = True
+                        lvFiles.Items(0).Focused = True
+                        lvFiles.Items(0).EnsureVisible()
+                    End If
+                End If
+
+                Return True
+            End If
+
+            ' File List → Address Bar
+            If lvFiles.Focused Then
+                txtAddressBar.Focus()
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                Return True
+            End If
+
+            ' Address Bar → TreeView (reverse of forward cycle)
+            If txtAddressBar.Focused Then
+                tvFolders.Focus()
+
+                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                    tvFolders.SelectedNode = tvFolders.Nodes(0)
+                End If
+
+                tvFolders.SelectedNode?.EnsureVisible()
+                Return True
+            End If
+
+            ' Fallback
+            txtAddressBar.Focus()
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            Return True
+        End If
+
+        Return False
+    End Function
+
+
+
+    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
+    '    ' ===========================
+    '    '   TAB NAVIGATION
+    '    ' ===========================
+    '    If keyData = Keys.Tab Then
+
+    '        ' -----------------------------------------
+    '        ' Address Bar → File List
+    '        ' -----------------------------------------
+    '        If txtAddressBar.Focused Then
+
+    '            lvFiles.Focus()
+
+    '            If lvFiles.Items.Count > 0 Then
+
+    '                ' If something is already selected, keep it
+    '                If lvFiles.SelectedItems.Count > 0 Then
+    '                    Dim sel As ListViewItem = lvFiles.SelectedItems(0)
+    '                    sel.Focused = True
+    '                    sel.EnsureVisible()
+    '                Else
+    '                    ' Otherwise select the first item
+    '                    lvFiles.Items(0).Selected = True
+    '                    lvFiles.Items(0).Focused = True
+    '                    lvFiles.Items(0).EnsureVisible()
+    '                End If
+
+    '            End If
+
+    '            Return True
+    '        End If
+
+    '        ' -----------------------------------------
+    '        ' File List → TreeView
+    '        ' -----------------------------------------
+    '        If lvFiles.Focused Then
+    '            tvFolders.Focus()
+
+    '            ' Ensure a node is selected
+    '            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '                tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '            End If
+
+    '            tvFolders.SelectedNode?.EnsureVisible()
+    '            Return True
+    '        End If
+
+
+    '        ' -----------------------------------------
+    '        ' TreeView → Address Bar
+    '        ' -----------------------------------------
+    '        If tvFolders.Focused Then
+    '            txtAddressBar.Focus()
+    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    '            Return True
+    '        End If
+
+
+    '        ' -----------------------------------------
+    '        ' Fallback: anything else → Address Bar
+    '        ' -----------------------------------------
+    '        txtAddressBar.Focus()
+    '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    '        Return True
+
+    '    End If
+
+    '    Return False
+
+    'End Function
+
+
+
+    Private Function HandleTabNavigation(keyData As Keys) As Boolean
+        If keyData = Keys.Tab Then
+
+            ' Address Bar → File List
+            If txtAddressBar.Focused Then
+                lvFiles.Focus()
+
+                If lvFiles.Items.Count > 0 Then
+                    If lvFiles.SelectedItems.Count > 0 Then
+                        Dim sel = lvFiles.SelectedItems(0)
+                        sel.Focused = True
+                        sel.EnsureVisible()
+                    Else
+                        lvFiles.Items(0).Selected = True
+                        lvFiles.Items(0).Focused = True
+                        lvFiles.Items(0).EnsureVisible()
+                    End If
+                End If
+
+                Return True
+            End If
+
+            ' File List → TreeView
+            If lvFiles.Focused Then
+                tvFolders.Focus()
+
+                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                    tvFolders.SelectedNode = tvFolders.Nodes(0)
+                End If
+
+                tvFolders.SelectedNode?.EnsureVisible()
+                Return True
+            End If
+
+            ' TreeView → Address Bar
+            If tvFolders.Focused Then
+                txtAddressBar.Focus()
+                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+                Return True
+            End If
+
+            ' Fallback
+            txtAddressBar.Focus()
+            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            Return True
+        End If
+
+        Return False
+    End Function
+
+
+
+
+
+
+
+
+
+
 
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
         Handles tvFolders.NodeMouseClick
@@ -399,386 +659,26 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
 
-    '    ' Check for Enter key
-    '    If e.KeyCode = Keys.Enter Then
-
-    '        If txtAddressBar.Focused Then
-
-    '            Dim command As String = txtAddressBar.Text.Trim()
-
-    '            ExecuteCommand(command)
-
-    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
-    '            ConsumeKey(e)
-
-    '        Else
-
-    '            If lvFiles.Focused Then
-
-    '                If lvFiles.SelectedItems().Count = 0 Then
-
-    '                    txtAddressBar.Focus()
-    '                    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
-    '                    ConsumeKey(e)
-
-    '                End If
-
-    '            End If
-
-    '            If tvFolders.Focused Then
-
-    '                'ExpandOneLevel()
-    '                ToggleExpandCollapse()
-
-    '                ConsumeKey(e)
-
-    '            End If
-
-    '        End If
-
-    '    End If
-
-    '    If e.KeyCode = Keys.Escape Then
-    '        If txtAddressBar.Focused Then
-    '            txtAddressBar.Text = currentFolder
-    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    '            ConsumeKey(e)
-    '        End If
-    '    End If
-
-    '    If e.KeyCode = Keys.Tab Then
-    '        If txtAddressBar.Focused Then
-
-    '            ' Move focus into the file list
-    '            lvFiles.Focus()
-
-    '            ' Ensure a selection exists so keyboard navigation works immediately
-    '            If lvFiles.Items.Count > 0 Then
-    '                lvFiles.Items(0).Selected = True
-    '                'lvFiles.Items(0).Focused = True
-    '            End If
-    '            'lvFiles.Focus()
-
-    '            ConsumeKey(e)
-    '            Return
-    '        End If
-    '    End If
-
-    '    If HandleAddressBarShortcuts(e) Then Return
-    '    If HandleNavigationShortcuts(e) Then Return
-    '    If HandleSearchShortcuts(e) Then Return
-    '    If HandleFileFolderOperations(sender, e) Then Return
-
-
-    'End Sub
-
-
-
-    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
-
-        ' ENTER
-        If e.KeyCode = Keys.Enter Then
-
-            If txtAddressBar.Focused Then
-                Dim command As String = txtAddressBar.Text.Trim()
-                ExecuteCommand(command)
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-                ConsumeKey(e)
-                Return
-            End If
-
-            If lvFiles.Focused Then
-                If lvFiles.SelectedItems.Count = 0 Then
-                    txtAddressBar.Focus()
-                    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-                    ConsumeKey(e)
-                    Return
-                End If
-            End If
-
-            If tvFolders.Focused Then
-                ToggleExpandCollapse()
-                ConsumeKey(e)
-                Return
-            End If
-
-        End If
-
-        ' ESCAPE
-        If e.KeyCode = Keys.Escape AndAlso txtAddressBar.Focused Then
-            txtAddressBar.Text = currentFolder
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-            ConsumeKey(e)
-            Return
-        End If
-
-        '' TAB
-        'If e.KeyCode = Keys.Tab AndAlso txtAddressBar.Focused Then
-
-        '    lvFiles.Focus()
-
-        '    If lvFiles.Items.Count > 0 Then
-        '        lvFiles.Items(0).Selected = True
-        '        lvFiles.Items(0).Focused = True
-        '    End If
-
-        '    ConsumeKey(e)
-        '    Return
-        'End If
-
-        '' ===========================
-        ''   TAB NAVIGATION (Explorer)
-        '' ===========================
-        'If e.KeyCode = Keys.Tab Then
-
-        '    ' -----------------------------------------
-        '    ' SHIFT + TAB → File List → Address Bar
-        '    ' -----------------------------------------
-        '    If e.Shift Then
-        '        If lvFiles.Focused Then
-        '            txtAddressBar.Focus()
-        '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '            ConsumeKey(e)
-        '            Return
-        '        End If
-
-        '        ' Fallback: if anything else has focus, go to address bar
-        '        txtAddressBar.Focus()
-        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '        ConsumeKey(e)
-        '        Return
-        '    End If
-
-
-        '    ' -----------------------------------------
-        '    ' TAB → Address Bar → File List
-        '    ' -----------------------------------------
-        '    If txtAddressBar.Focused Then
-
-        '        lvFiles.Focus()
-
-        '        ' Ensure a selection exists so arrow keys work immediately
-        '        If lvFiles.Items.Count > 0 Then
-        '            lvFiles.Items(0).Selected = True
-        '            lvFiles.Items(0).Focused = True
-        '        End If
-
-        '        ConsumeKey(e)
-        '        Return
-        '    End If
-
-
-        '    ' -----------------------------------------
-        '    ' TAB → File List → Address Bar (Explorer cycle)
-        '    ' -----------------------------------------
-        '    If lvFiles.Focused Then
-
-        '        ' If nothing is selected, Explorer jumps back to the address bar
-        '        If lvFiles.SelectedItems.Count = 0 Then
-        '            txtAddressBar.Focus()
-        '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '            ConsumeKey(e)
-        '            Return
-        '        End If
-
-        '        ' If something IS selected, Explorer still cycles back to the address bar
-        '        txtAddressBar.Focus()
-        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '        ConsumeKey(e)
-        '        Return
-        '    End If
-
-
-        '    ' -----------------------------------------
-        '    ' Fallback: if Tab is pressed anywhere else,
-        '    ' go to the address bar (Explorer behavior)
-        '    ' -----------------------------------------
-        '    txtAddressBar.Focus()
-        '    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '    ConsumeKey(e)
-        '    Return
-
-        'End If
-
-        ' Shortcut handlers
-        If HandleAddressBarShortcuts(e) Then Return
-        If HandleNavigationShortcuts(e) Then Return
-        If HandleSearchShortcuts(e) Then Return
-        If HandleFileFolderOperations(sender, e) Then Return
-
-    End Sub
-
-
-
-
-
-    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
-
-        '' ===========================
-        ''   TAB NAVIGATION (Explorer)
-        '' ===========================
-        'If keyData = Keys.Tab Then
-
-        '    ' Address Bar → File List
-        '    If txtAddressBar.Focused Then
-        '        lvFiles.Focus()
-
-        '        If lvFiles.Items.Count > 0 Then
-        '            lvFiles.Items(0).Selected = True
-        '            lvFiles.Items(0).Focused = True
-        '        End If
-
-        '        Return True
-        '    End If
-
-        '    ' File List → Address Bar
-        '    If lvFiles.Focused Then
-        '        txtAddressBar.Focus()
-        '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '        Return True
-        '    End If
-
-        '    ' Fallback: anything else → Address Bar
-        '    txtAddressBar.Focus()
-        '    txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-        '    Return True
-        'End If
-
+    Private Function HandleAddressBarShortcuts(key As Keys) As Boolean
 
         ' ===========================
-        '   TAB NAVIGATION (Explorer)
+        '   FOCUS ADDRESS BAR 
         ' ===========================
-        If keyData = Keys.Tab Then
+        '   Ctrl+L, Alt+D, F4
+        If key = (Keys.Control Or Keys.L) _
+       OrElse key = (Keys.Alt Or Keys.D) _
+       OrElse key = Keys.F4 Then
 
-            ' -----------------------------------------
-            ' Address Bar → File List
-            ' -----------------------------------------
-            'If txtAddressBar.Focused Then
-            '    lvFiles.Focus()
-
-            '    If lvFiles.Items.Count > 0 Then
-
-            '        If lvFiles.SelectedItems.Count > 0 Then
-
-            '            lvFiles.SelectedItems.Item
-
-
-            '        Else
-
-            '            lvFiles.Items(0).Selected = True
-            '            lvFiles.Items(0).Focused = True
-
-            '        End If
-
-            '    End If
-
-            '    Return True
-            'End If
-            If txtAddressBar.Focused Then
-
-                lvFiles.Focus()
-
-                If lvFiles.Items.Count > 0 Then
-
-                    ' If something is already selected, keep it
-                    If lvFiles.SelectedItems.Count > 0 Then
-                        Dim sel As ListViewItem = lvFiles.SelectedItems(0)
-                        sel.Focused = True
-                        sel.EnsureVisible()
-                    Else
-                        ' Otherwise select the first item
-                        lvFiles.Items(0).Selected = True
-                        lvFiles.Items(0).Focused = True
-                        lvFiles.Items(0).EnsureVisible()
-                    End If
-
-                End If
-
-                Return True
-            End If
-
-
-
-            ' -----------------------------------------
-            ' File List → TreeView
-            ' -----------------------------------------
-            If lvFiles.Focused Then
-                tvFolders.Focus()
-
-                ' Ensure a node is selected
-                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                    tvFolders.SelectedNode = tvFolders.Nodes(0)
-                End If
-
-                tvFolders.SelectedNode?.EnsureVisible()
-                Return True
-            End If
-
-
-            ' -----------------------------------------
-            ' TreeView → Address Bar
-            ' -----------------------------------------
-            If tvFolders.Focused Then
-                txtAddressBar.Focus()
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-                Return True
-            End If
-
-
-            ' -----------------------------------------
-            ' Fallback: anything else → Address Bar
-            ' -----------------------------------------
             txtAddressBar.Focus()
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-            Return True
-
-        End If
-
-
-        ' ===========================
-        '   SHIFT + TAB (reverse)
-        ' ===========================
-        If keyData = (Keys.Shift Or Keys.Tab) Then
-
-            ' File List → Address Bar
-            If lvFiles.Focused Then
-                txtAddressBar.Focus()
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-                Return True
-            End If
-
-            ' Address Bar → stays in Address Bar (Explorer behavior)
-            If txtAddressBar.Focused Then
-                txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-                Return True
-            End If
-
-            ' Fallback
-            txtAddressBar.Focus()
-            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+            txtAddressBar.SelectAll()
             Return True
         End If
-
-
-        ' ===========================
-        '   ENTER (TreeView toggle)
-        ' ===========================
-        If keyData = Keys.Enter Then
-            If tvFolders.Focused Then
-                ToggleExpandCollapse()
-                Return True
-            End If
-        End If
-
 
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
-        If keyData = Keys.Escape Then
+        If key = Keys.Escape Then
             If txtAddressBar.Focused Then
                 txtAddressBar.Text = currentFolder
                 txtAddressBar.SelectionStart = txtAddressBar.Text.Length
@@ -787,91 +687,110 @@ Public Class Form1
         End If
 
 
-        ' ===========================
-        '   DELEGATE TO YOUR MODULES
-        ' ===========================
-        'If HandleAddressBarShortcuts(keyData) Then Return True
-        'If HandleNavigationShortcuts(keyData) Then Return True
-        'If HandleSearchShortcuts(keyData) Then Return True
-        'If HandleFileFolderOperations(Nothing, keyData) Then Return True
 
-
-        ' Default behavior
-        Return MyBase.ProcessCmdKey(msg, keyData)
-
-    End Function
-
-
-
-
-
-
-    Private Function HandleAddressBarShortcuts(e As KeyEventArgs) As Boolean
-        If (e.Control AndAlso e.KeyCode = Keys.L) OrElse
-       (e.Alt AndAlso e.KeyCode = Keys.D) OrElse
-       (e.KeyCode = Keys.F4) Then
-
-            txtAddressBar.Focus()
-            txtAddressBar.SelectAll()
-            ConsumeKey(e)
-            Return True
-        End If
         Return False
     End Function
 
-    Private Function HandleNavigationShortcuts(e As KeyEventArgs) As Boolean
-        If e.Alt AndAlso e.KeyCode = Keys.Left Then
+    Private Function HandleNavigationShortcuts(key As Keys) As Boolean
+
+        If key = (Keys.Alt Or Keys.Left) Then
             NavigateBackward_Click()
             txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
-            ConsumeKey(e)
             Return True
-        ElseIf e.Alt AndAlso e.KeyCode = Keys.Right Then
+
+        ElseIf key = (Keys.Alt Or Keys.Right) Then
             NavigateForward_Click()
             txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-
-            ConsumeKey(e)
             Return True
-        ElseIf e.Alt AndAlso e.KeyCode = Keys.Up Then
+
+        ElseIf key = (Keys.Alt Or Keys.Up) Then
             NavigateToParent()
-            ConsumeKey(e)
             Return True
-        ElseIf e.KeyCode = Keys.F5 Then
+
+        ElseIf key = Keys.F5 Then
             RefreshCurrentFolder()
-            ConsumeKey(e)
             Return True
-        ElseIf e.KeyCode = Keys.F11 Then
+
+        ElseIf key = Keys.F11 Then
             ToggleFullScreen()
-            ConsumeKey(e)
             Return True
         End If
+
         Return False
     End Function
 
-    Private Function HandleSearchShortcuts(e As KeyEventArgs) As Boolean
+    Private Function HandleSearchShortcuts(key As Keys) As Boolean
 
-        ' Find (Ctrl + F)
-        If e.Control AndAlso e.KeyCode = Keys.F Then
+        ' Ctrl+F
+        If key = (Keys.Control Or Keys.F) Then
             InitiateSearch()
-            ConsumeKey(e)
             Return True
         End If
 
-        ' Find Next (F3)
-        If e.KeyCode = Keys.F3 Then
+        ' F3
+        If key = Keys.F3 Then
             HandleFindNextCommand()
-            ConsumeKey(e)
             Return True
         End If
 
         Return False
     End Function
 
-    Private Sub InitiateSearch()
-        txtAddressBar.Focus()
-        txtAddressBar.Text = "find "
-        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    End Sub
+    Private Function HandleFileFolderOperations(sender As Object, key As Keys) As Boolean
+        Try
+            If key = (Keys.Control Or Keys.O) Then
+                OpenSelectedOrStartCommand()
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.E) Then
+                ExpandOneLevel()
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.C) Then
+                CollapseOneLevel()
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.N) Then
+                NewFolder_Click(sender, EventArgs.Empty)
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.T) Then
+                NewTextFile_Click(sender, EventArgs.Empty)
+                Return True
+
+            ElseIf key = Keys.F2 Then
+                RenameFile_Click(sender, EventArgs.Empty)
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
+                CopySelected_Click(sender, EventArgs.Empty)
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
+                PasteSelected_Click(sender, EventArgs.Empty)
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
+                CutSelected_Click(sender, EventArgs.Empty)
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.A) Then
+                SelectAllItems()
+                lvFiles.Focus()
+                Return True
+
+            ElseIf key = (Keys.Control Or Keys.D) OrElse key = Keys.Delete Then
+                Delete_Click(sender, EventArgs.Empty)
+                Return True
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("An error occurred: " & ex.Message, "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+
+        Return False
+    End Function
 
     Private Sub HandleFindNextCommand()
 
@@ -906,59 +825,11 @@ Public Class Form1
 
     End Sub
 
-    Private Function HandleFileFolderOperations(sender As Object, e As KeyEventArgs) As Boolean
-        Try
-            If e.Control AndAlso e.KeyCode = Keys.O Then
-                OpenSelectedOrStartCommand()
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.E Then
-                ExpandOneLevel()
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.C Then
-                CollapseOneLevel()
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.N Then
-                NewFolder_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.Shift AndAlso e.KeyCode = Keys.T Then
-                NewTextFile_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            ElseIf e.KeyCode = Keys.F2 Then
-                RenameFile_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso Not e.Shift AndAlso e.KeyCode = Keys.C AndAlso Not txtAddressBar.Focused Then
-                CopySelected_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.KeyCode = Keys.V AndAlso Not txtAddressBar.Focused Then
-                PasteSelected_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.KeyCode = Keys.X AndAlso Not txtAddressBar.Focused Then
-                CutSelected_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            ElseIf e.Control AndAlso e.KeyCode = Keys.A Then
-                SelectAllItems()
-                lvFiles.Focus()
-                ConsumeKey(e)
-                Return True
-            ElseIf (e.Control AndAlso e.KeyCode = Keys.D) OrElse e.KeyCode = Keys.Delete Then
-                Delete_Click(sender, e)
-                ConsumeKey(e)
-                Return True
-            End If
-        Catch ex As Exception
-            MessageBox.Show("An error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-        Return False
-    End Function
+    Private Sub InitiateSearch()
+        txtAddressBar.Focus()
+        txtAddressBar.Text = "find "
+        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    End Sub
 
     Private Sub ConsumeKey(e As KeyEventArgs)
         e.Handled = True
@@ -1117,22 +988,6 @@ Public Class Form1
         End If
     End Sub
 
-    'Private Sub Path_KeyDown(ByRef e As KeyEventArgs)
-    ' Path command input box key handling
-
-    ' Check for Enter key
-    'If e.KeyCode = Keys.Enter Then
-
-    '    Dim command As String = txtPath.Text.Trim()
-
-    '    ExecuteCommand(command)
-
-    '    e.Handled = True
-    '    e.SuppressKeyPress = True
-
-    'End If
-
-    'End Sub
 
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
 
@@ -1623,252 +1478,6 @@ Public Class Form1
     End Function
 
 
-    '    ' ------------------------------------------------------------
-    '    ' Copy a single file with structured result and error taxonomy
-    '    ' ------------------------------------------------------------
-    '    Private Async Function CopyFile(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task(Of CopyResult)
-
-    '        Dim result As New CopyResult()
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-
-
-    '            Dim src As New FileInfo(source)
-
-    '            If Not HasEnoughSpace(src, destination) Then
-    '                result.FilesSkipped = 1
-    '                result.Errors.Add("Not enough space for: " & source)
-    '                ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & src.Name)
-    '                Return result
-    '            End If
-
-
-
-    '            Await Task.Run(Sub()
-    '                               ct.ThrowIfCancellationRequested()
-    '                               File.Copy(source, destination, overwrite:=False)
-    '                           End Sub, ct)
-
-    '            result.FilesCopied = 1
-    '            ShowStatus(StatusPad & IconCopy & " Copied file: " & destination)
-    '            Debug.WriteLine("Copied file: " & destination)
-
-    '        Catch ex As IOException When ex.HResult = &H80070050
-    '            ' File already exists
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("File already exists: " & destination)
-    '            ShowStatus(StatusPad & IconWarning &
-    '                   " Copy skipped: File already exists → " & Path.GetFileName(destination))
-    '            Debug.WriteLine("File exists, skipping: " & destination)
-
-    '        Catch ex As IOException When ex.HResult = &H80070070
-    '            ' Disk full
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("Disk full while copying: " & source)
-    '            ShowStatus(StatusPad & IconError & " Copy failed: Not enough disk space.")
-    '            MessageBox.Show("There is not enough space on the destination drive.",
-    '                        "Disk Full",
-    '                        MessageBoxButtons.OK,
-    '                        MessageBoxIcon.Error)
-    '            Debug.WriteLine("Disk full: " & ex.Message)
-
-    '        Catch ex As IOException
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("I/O error: " & source & " - " & ex.Message)
-    '            ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
-    '            Debug.WriteLine("I/O error: " & ex.Message)
-
-    '        Catch ex As UnauthorizedAccessException
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("Unauthorized: " & source)
-    '            ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
-    '            Debug.WriteLine("Unauthorized: " & ex.Message)
-
-    '        Catch ex As Exception
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("Copy failed: " & source & " - " & ex.Message)
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
-    '            Debug.WriteLine("Copy failed: " & ex.Message)
-    '        End Try
-
-    '        Return result
-    '    End Function
-
-
-
-
-    '    ' ------------------------------------------------------------
-    '    ' Recursive directory copy with full error taxonomy and results
-    '    ' ------------------------------------------------------------
-    '    Public Async Function CopyDirectory(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    ct As CancellationToken
-    ') As Task(Of CopyResult)
-
-    '        Dim result As New CopyResult()
-    '        Dim dirInfo As New DirectoryInfo(sourceDir)
-
-    '        If Not dirInfo.Exists Then
-    '            result.Errors.Add("Source directory not found: " & sourceDir)
-    '            ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
-    '            Return result
-    '        End If
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            ' Create destination directory
-    '            Try
-    '                Directory.CreateDirectory(destDir)
-    '                result.DirectoriesCreated += 1
-    '            Catch ex As Exception
-    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
-    '                ShowStatus(StatusPad & IconError & " Failed to create directory: " & destDir)
-    '                Return result
-    '            End Try
-
-    '            ' ------------------------------------------------------------
-    '            ' Copy files
-    '            ' ------------------------------------------------------------
-    '            For Each file In dirInfo.GetFiles()
-    '                ct.ThrowIfCancellationRequested()
-
-    '                Dim targetFile = Path.Combine(destDir, file.Name)
-
-    '                ' Locked file skip
-    '                If IsFileLocked(file) Then
-    '                    result.FilesSkipped += 1
-    '                    ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & file.FullName)
-    '                    Debug.WriteLine("Locked file skipped: " & file.FullName)
-    '                    Continue For
-    '                End If
-
-    '                If Not HasEnoughSpace(file, targetFile) Then
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Not enough space for: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & file.Name)
-    '                    Continue For
-    '                End If
-
-
-
-    '                Try
-    '                    Await Task.Run(Sub()
-    '                                       ct.ThrowIfCancellationRequested()
-    '                                       file.CopyTo(targetFile, overwrite:=False)
-    '                                   End Sub, ct)
-
-    '                    result.FilesCopied += 1
-    '                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
-    '                    Debug.WriteLine("Copied file: " & targetFile)
-
-    '                    ' Disk full
-    '                Catch ex As IOException When ex.HResult = &H80070070
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Disk full while copying: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & file.Name)
-    '                    MessageBox.Show("There is not enough space on the destination drive.",
-    '                                "Disk Full",
-    '                                MessageBoxButtons.OK,
-    '                                MessageBoxIcon.Error)
-    '                    Debug.WriteLine("Disk full: " & ex.Message)
-
-    '                    ' File already exists
-    '                Catch ex As IOException When ex.HResult = &H80070050
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("File already exists: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & file.Name)
-    '                    Debug.WriteLine("File exists, skipping: " & file.FullName)
-
-    '                    ' Generic I/O
-    '                Catch ex As IOException
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("I/O error: " & file.FullName & " - " & ex.Message)
-    '                    ShowStatus(StatusPad & IconError & " I/O error copying: " & file.Name)
-    '                    Debug.WriteLine("I/O error: " & ex.Message)
-
-    '                    ' Unauthorized
-    '                Catch ex As UnauthorizedAccessException
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Unauthorized: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconError & " Unauthorized: " & file.Name)
-    '                    Debug.WriteLine("Unauthorized: " & ex.Message)
-
-    '                    ' Generic catch-all
-    '                Catch ex As Exception
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Copy failed: " & file.FullName & " - " & ex.Message)
-    '                    ShowStatus(StatusPad & IconError & " Copy failed: " & file.Name)
-    '                    Debug.WriteLine("Copy failed: " & ex.Message)
-    '                End Try
-    '            Next
-
-    '            ' ------------------------------------------------------------
-    '            ' Copy subdirectories in parallel
-    '            ' ------------------------------------------------------------
-    '            Dim subTasks As New List(Of Task(Of CopyResult))()
-
-    '            For Each subDir In dirInfo.GetDirectories()
-    '                Dim newDest = Path.Combine(destDir, subDir.Name)
-    '                subTasks.Add(CopyDirectory(subDir.FullName, newDest, ct))
-    '            Next
-
-    '            Dim subResults = Await Task.WhenAll(subTasks)
-
-    '            For Each r In subResults
-    '                result.FilesCopied += r.FilesCopied
-    '                result.FilesSkipped += r.FilesSkipped
-    '                result.DirectoriesCreated += r.DirectoriesCreated
-    '                result.Errors.AddRange(r.Errors)
-    '            Next
-
-    '        Catch ex As OperationCanceledException
-    '            result.Errors.Add("Canceled: " & ex.Message)
-    '            ShowStatus(StatusPad & IconWarning & " Directory copy canceled.")
-    '            Debug.WriteLine("CopyDirectory canceled: " & ex.Message)
-
-    '        Catch ex As Exception
-    '            result.Errors.Add("Error: " & ex.Message)
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '            Debug.WriteLine("CopyDirectory error: " & ex.Message)
-    '        End Try
-
-    '        Return result
-    '    End Function
-
-
-
-
-
-
-
-    'Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
-    '    Try
-    '        Dim root = Path.GetPathRoot(destinationPath)
-    '        Dim drive As New DriveInfo(root)
-
-    '        Return sourceFile.Length <= drive.AvailableFreeSpace
-
-    '    Catch
-    '        ' If we can't determine free space, fall back to "let the copy try"
-    '        Return True
-    '    End Try
-    'End Function
-
-
-
-
-
-    ' ------------------------------------------------------------
-    ' Helper: proactive free-space check
-    ' ------------------------------------------------------------
     Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
         Try
             Dim root = Path.GetPathRoot(destinationPath)
@@ -2719,6 +2328,8 @@ Public Class Form1
                 ' Is the input a folder?
                 If Directory.Exists(command) Then
 
+                    ShowStatus("Nav")
+
                     ' Go to that folder.
                     NavigateTo(command)
 
@@ -2740,366 +2351,6 @@ Public Class Form1
 
     End Sub
 
-
-    '    Private Async Function CopyFileOrDirectory(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            ' -------------------------
-    '            ' FILE COPY
-    '            ' -------------------------
-    '            If File.Exists(source) Then
-
-    '                Dim result As CopyResult = Await CopyFile(source, destination, ct)
-
-    '                If result.Success Then
-    '                    NavigateTo(destination)
-    '                End If
-
-    '                ' Optional summary
-    '                ShowStatus(StatusPad & IconDialog &
-    '                       $" Copied {result.FilesCopied} file(s), " &
-    '                       $"{result.FilesSkipped} skipped.")
-
-    '                Return
-    '            End If
-
-
-    '            ' -------------------------
-    '            ' DIRECTORY COPY
-    '            ' -------------------------
-    '            If Directory.Exists(source) Then
-
-    '                Dim targetDir = Path.Combine(destination, Path.GetFileName(source))
-    '                Dim parentDir = Directory.GetParent(targetDir).FullName
-
-    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
-
-    '                If result.Success Then
-    '                    NavigateTo(parentDir)
-    '                End If
-
-    '                ShowStatus(StatusPad & IconDialog &
-    '                       $" Copied {result.FilesCopied} files, " &
-    '                       $"{result.FilesSkipped} skipped, " &
-    '                       $"{result.DirectoriesCreated} folders created.")
-
-    '                Return
-    '            End If
-
-
-    '            ' -------------------------
-    '            ' SOURCE NOT FOUND
-    '            ' -------------------------
-    '            ShowStatus(StatusPad & IconError &
-    '                   " Copy failed: Source does not exist or is not a valid file or directory.")
-    '            Debug.WriteLine("CopyFileOrDirectory Error: Source does not exist - " & source)
-
-
-    '        Catch ex As OperationCanceledException
-    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-    '            Debug.WriteLine("CopyFileOrDirectory Canceled: " & ex.Message)
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '            Debug.WriteLine("CopyFileOrDirectory Error: " & ex.Message)
-    '        End Try
-
-    '    End Function
-
-
-
-    '    Private Async Function CopyFile(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task(Of CopyResult)
-
-    '        Dim result As New CopyResult()
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Await Task.Run(Sub()
-    '                               ct.ThrowIfCancellationRequested()
-    '                               File.Copy(source, destination, overwrite:=False)
-    '                           End Sub, ct)
-
-    '            result.FilesCopied = 1
-    '            ShowStatus(StatusPad & IconCopy & " Copied file: " & destination)
-    '            Debug.WriteLine("Copied file: " & destination)
-
-    '        Catch ex As IOException When ex.HResult = &H80070070
-    '            ' Disk full
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("Disk full while copying: " & source)
-    '            ShowStatus(StatusPad & IconError & " Disk full, skipping: " & Path.GetFileName(source))
-    '            MessageBox.Show("There is not enough space on the destination drive.",
-    '                        "Disk Full",
-    '                        MessageBoxButtons.OK,
-    '                        MessageBoxIcon.Error)
-
-    '        Catch ex As IOException
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("I/O error: " & ex.Message)
-    '            ShowStatus(StatusPad & IconError & " I/O error copying: " & Path.GetFileName(source))
-
-    '        Catch ex As UnauthorizedAccessException
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("Unauthorized: " & source)
-    '            ShowStatus(StatusPad & IconError & " Unauthorized: " & Path.GetFileName(source))
-
-    '        Catch ex As Exception
-    '            result.FilesSkipped = 1
-    '            result.Errors.Add("Copy failed: " & ex.Message)
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & Path.GetFileName(source))
-    '        End Try
-
-    '        Return result
-    '    End Function
-
-
-
-
-
-    '    Public Async Function CopyDirectory(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    ct As CancellationToken
-    ') As Task(Of CopyResult)
-
-    '        Dim result As New CopyResult()
-    '        Dim dirInfo As New DirectoryInfo(sourceDir)
-
-    '        ' Validate source
-    '        If Not dirInfo.Exists Then
-    '            result.Errors.Add("Source directory not found: " & sourceDir)
-    '            ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
-    '            Return result
-    '        End If
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            ' ------------------------------------------------------------
-    '            ' Create destination directory
-    '            ' ------------------------------------------------------------
-    '            Try
-    '                Directory.CreateDirectory(destDir)
-    '                result.DirectoriesCreated += 1
-    '            Catch ex As Exception
-    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
-    '                ShowStatus(StatusPad & IconError & " Failed to create directory: " & destDir)
-    '                Return result
-    '            End Try
-
-
-    '            ' ------------------------------------------------------------
-    '            ' Copy files
-    '            ' ------------------------------------------------------------
-    '            For Each file In dirInfo.GetFiles()
-    '                ct.ThrowIfCancellationRequested()
-
-    '                Dim targetFile = Path.Combine(destDir, file.Name)
-
-    '                ' Locked file skip
-    '                If IsFileLocked(file) Then
-    '                    result.FilesSkipped += 1
-    '                    ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & file.FullName)
-    '                    Debug.WriteLine("Locked file skipped: " & file.FullName)
-    '                    Continue For
-    '                End If
-
-    '                Try
-    '                    Await Task.Run(Sub()
-    '                                       ct.ThrowIfCancellationRequested()
-    '                                       file.CopyTo(targetFile, overwrite:=False)
-    '                                   End Sub, ct)
-
-    '                    result.FilesCopied += 1
-    '                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
-    '                    Debug.WriteLine("Copied file: " & targetFile)
-
-
-    '                    ' ------------------------------------------------------------
-    '                    ' Disk full
-    '                    ' ------------------------------------------------------------
-    '                Catch ex As IOException When ex.HResult = &H80070070
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Disk full while copying: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & file.Name)
-    '                    MessageBox.Show("There is not enough space on the destination drive.",
-    '                                "Disk Full",
-    '                                MessageBoxButtons.OK,
-    '                                MessageBoxIcon.Error)
-    '                    Debug.WriteLine("Disk full: " & ex.Message)
-
-
-    '                    ' ------------------------------------------------------------
-    '                    ' File already exists
-    '                    ' ------------------------------------------------------------
-    '                Catch ex As IOException When ex.HResult = &H80070050
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("File already exists: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & file.Name)
-    '                    Debug.WriteLine("File exists, skipping: " & file.FullName)
-
-
-    '                    ' ------------------------------------------------------------
-    '                    ' Generic I/O
-    '                    ' ------------------------------------------------------------
-    '                Catch ex As IOException
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("I/O error: " & file.FullName & " - " & ex.Message)
-    '                    ShowStatus(StatusPad & IconError & " I/O error copying: " & file.Name)
-    '                    Debug.WriteLine("I/O error: " & ex.Message)
-
-
-    '                    ' ------------------------------------------------------------
-    '                    ' Unauthorized
-    '                    ' ------------------------------------------------------------
-    '                Catch ex As UnauthorizedAccessException
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Unauthorized: " & file.FullName)
-    '                    ShowStatus(StatusPad & IconError & " Unauthorized: " & file.Name)
-    '                    Debug.WriteLine("Unauthorized: " & ex.Message)
-
-
-    '                    ' ------------------------------------------------------------
-    '                    ' Generic catch-all
-    '                    ' ------------------------------------------------------------
-    '                Catch ex As Exception
-    '                    result.FilesSkipped += 1
-    '                    result.Errors.Add("Copy failed: " & file.FullName & " - " & ex.Message)
-    '                    ShowStatus(StatusPad & IconError & " Copy failed: " & file.Name)
-    '                    Debug.WriteLine("Copy failed: " & ex.Message)
-    '                End Try
-    '            Next
-
-
-    '            ' ------------------------------------------------------------
-    '            ' Copy subdirectories in parallel
-    '            ' ------------------------------------------------------------
-    '            Dim subTasks As New List(Of Task(Of CopyResult))()
-
-    '            For Each subDir In dirInfo.GetDirectories()
-    '                Dim newDest = Path.Combine(destDir, subDir.Name)
-    '                subTasks.Add(CopyDirectory(subDir.FullName, newDest, ct))
-    '            Next
-
-    '            Dim subResults = Await Task.WhenAll(subTasks)
-
-    '            ' Merge results
-    '            For Each r In subResults
-    '                result.FilesCopied += r.FilesCopied
-    '                result.FilesSkipped += r.FilesSkipped
-    '                result.DirectoriesCreated += r.DirectoriesCreated
-    '                result.Errors.AddRange(r.Errors)
-    '            Next
-
-
-    '            ' ------------------------------------------------------------
-    '            ' Cancellation
-    '            ' ------------------------------------------------------------
-    '        Catch ex As OperationCanceledException
-    '            result.Errors.Add("Canceled: " & ex.Message)
-    '            ShowStatus(StatusPad & IconWarning & " Directory copy canceled.")
-    '            Debug.WriteLine("CopyDirectory canceled: " & ex.Message)
-
-
-    '            ' ------------------------------------------------------------
-    '            ' Unexpected error
-    '            ' ------------------------------------------------------------
-    '        Catch ex As Exception
-    '            result.Errors.Add("Error: " & ex.Message)
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '            Debug.WriteLine("CopyDirectory error: " & ex.Message)
-    '        End Try
-
-    '        Return result
-    '    End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '    Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-
-    '        If String.IsNullOrWhiteSpace(_clipboardPath) Then
-    '            ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
-    '            Exit Sub
-    '        End If
-
-    '        Dim sourcePath = _clipboardPath
-    '        Dim destDir = currentFolder
-
-    '        If IsProtectedPathOrFolder(destDir) Then
-    '            ShowStatus(StatusPad & IconProtect & " Paste prevented: Destination is protected.")
-    '            Exit Sub
-    '        End If
-
-    '        Dim name = Path.GetFileName(sourcePath)
-    '        Dim destPath = Path.Combine(destDir, name)
-
-    '        copyCts = New CancellationTokenSource()
-    '        Dim ct = copyCts.Token
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            If File.Exists(sourcePath) Then
-
-    '                Dim result = Await CopyFile(sourcePath, destPath, ct)
-
-    '                If result.Success Then
-    '                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtPath.Text)
-    '                End If
-
-    '            ElseIf Directory.Exists(sourcePath) Then
-
-    '                Dim result = Await CopyDirectory(sourcePath, destPath, ct)
-
-    '                ShowStatus(StatusPad & IconPaste &
-    '                       $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
-
-    '            Else
-    '                ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
-    '            End If
-
-    '            _clipboardPath = Nothing
-    '            _clipboardIsCut = False
-    '            Await PopulateFiles(destDir)
-    '            ResetCutVisuals()
-
-    '        Catch ex As OperationCanceledException
-    '            ShowStatus(StatusPad & IconWarning & " Paste canceled.")
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
-    '        End Try
-
-    '    End Sub
-
-
-
     Private Function IsFileLocked(file As FileInfo) As Boolean
         Try
             Using stream As FileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)
@@ -3114,8 +2365,6 @@ Public Class Form1
             Return True
         End Try
     End Function
-
-
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
@@ -3321,7 +2570,6 @@ Public Class Form1
         UpdateEditButtonsAndMenus()
     End Sub
 
-
     Private Sub GoToFolderOrOpenFile(FileOrFolder As String)
         ' Navigate to folder or open file.
 
@@ -3422,48 +2670,6 @@ Public Class Form1
         End Try
 
     End Sub
-
-    'Private Async Function CopyFile(source As String, destination As String) As Task(Of Boolean)
-    '    Try
-    '        ' Validate parameters
-    '        If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-    '            ShowStatus(StatusPad & IconError & " Source or destination path is invalid.")
-    '            Return False
-    '        End If
-
-    '        Dim fileName As String = Path.GetFileName(source)
-    '        Dim destDirFileName As String = Path.Combine(destination, fileName)
-
-    '        ' Check if the destination file already exists
-    '        If File.Exists(destDirFileName) Then
-    '            Dim msg As String =
-    '            "The file '" & fileName & "' already exists in the destination folder." & Environment.NewLine &
-    '            "Do you want to overwrite it?"
-
-    '            Dim result = MessageBox.Show(msg, "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-
-    '            If result = DialogResult.No Then
-    '                ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-    '                Return False
-    '            End If
-    '        End If
-
-    '        ShowStatus(StatusPad & IconCopy & "  Copying files...")
-
-    '        ' Perform the copy asynchronously
-    '        Await Task.Run(Sub()
-    '                           File.Copy(source, destDirFileName, overwrite:=True)
-    '                       End Sub)
-
-    '        ' Success
-    '        Return True
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & " Copy Failed: " & ex.Message)
-    '        Debug.WriteLine("CopyFile Error: " & ex.Message)
-    '        Return False
-    '    End Try
-    'End Function
 
     Private Sub MoveFileOrDirectory(source As String, destination As String)
         Try
@@ -3641,81 +2847,6 @@ Public Class Form1
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
     End Sub
-
-    'Private Async Function CopyDirectory(sourceDir As String, destDir As String) As Task(Of Boolean)
-    '    Dim dirInfo As New DirectoryInfo(sourceDir)
-
-    '    If Not dirInfo.Exists Then
-    '        ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
-    '        Return False
-    '    End If
-
-    '    Try
-
-    '        ' Create destination directory
-    '        Try
-    '            Directory.CreateDirectory(destDir)
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Failed to create destination directory: " & ex.Message)
-    '            Debug.WriteLine("Failed to create destination directory: " & ex.Message)
-    '            Return False
-    '        End Try
-
-    '        ShowStatus(StatusPad & IconCopy & "  Copying files...")
-
-    '        ' Track overall success
-    '        Dim allFilesCopied As Boolean = True
-
-    '        ' Copy files asynchronously
-    '        For Each file In dirInfo.GetFiles()
-    '            Try
-    '                Dim targetFilePath = Path.Combine(destDir, file.Name)
-    '                Await Task.Run(Sub() file.CopyTo(targetFilePath, overwrite:=True))
-    '                Debug.WriteLine("Copied file: " & targetFilePath)
-    '            Catch ex As UnauthorizedAccessException
-    '                Debug.WriteLine("CopyDirectory Error (Unauthorized): " & ex.Message)
-    '                ShowStatus(StatusPad & IconError & " Unauthorized access: " & file.FullName)
-    '                allFilesCopied = False
-    '            Catch ex As Exception
-    '                Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '                ShowStatus(StatusPad & IconError & " Copy failed for file: " & file.FullName & " - " & ex.Message)
-    '                allFilesCopied = False
-    '            End Try
-    '        Next
-
-    '        ShowStatus(StatusPad & IconCopy & "  Copying subdirectories...")
-
-    '        ' Collect recursive copy tasks
-    '        Dim subDirTasks As New List(Of Task(Of Boolean))
-
-    '        For Each subDir In dirInfo.GetDirectories()
-    '            Dim newDest = Path.Combine(destDir, subDir.Name)
-
-    '            subDirTasks.Add(Task.Run(Async Function()
-    '                                         Try
-    '                                             Return Await CopyDirectory(subDir.FullName, newDest)
-    '                                         Catch ex As Exception
-    '                                             Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '                                             Return False
-    '                                         End Try
-    '                                     End Function))
-    '        Next
-
-    '        ' Await all subdirectory copies in parallel
-    '        Dim subDirResults = Await Task.WhenAll(subDirTasks)
-
-    '        ' Final result: all files AND all subdirectories must succeed
-    '        Return allFilesCopied AndAlso subDirResults.All(Function(r) r = True)
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '        Debug.WriteLine("CopyDirectory Error: " & ex.Message)
-    '        Return False
-    '    End Try
-    'End Function
-
-
-
 
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
 
@@ -4215,47 +3346,6 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
-    'Private Sub InitApp()
-
-    '    Me.Text = "File Explorer - Code with Joe"
-
-    '    Me.KeyPreview = True
-
-    '    Me.CenterToScreen()
-
-    '    ConfigureTooltips()
-
-    '    InitStatusBar()
-
-    '    ShowStatus(StatusPad & IconDialog & " Loading...")
-
-    '    InitContextMenu()
-
-    '    InitImageList()
-
-    '    InitArrows()
-
-    '    InitListView()
-
-    '    InitTreeView()
-
-    '    '  Start in User Profile folder
-    '    NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-    '    UpdateTreeRoots()
-
-
-    '    RunTests()
-
-    '    txtAddressBar.Focus()
-
-
-    '    ShowStatus(StatusPad & IconSuccess & "  Ready")
-
-    'End Sub
-
-
-    'File Explorer\Form1.vb
     Private Sub InitApp()
 
         Me.Text = "File Explorer - Code with Joe"

@@ -81,15 +81,15 @@ Partial Class Form1
         ' 
         TableLayoutPanel1.BackgroundImageLayout = ImageLayout.None
         TableLayoutPanel1.ColumnCount = 1
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.Controls.Add(lvFiles, 0, 1)
         TableLayoutPanel1.Controls.Add(Panel1, 0, 0)
         TableLayoutPanel1.Dock = DockStyle.Fill
         TableLayoutPanel1.Location = New Point(0, 0)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 2
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34.0F))
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.Size = New Size(1022, 681)
         TableLayoutPanel1.TabIndex = 20
         ' 
@@ -102,6 +102,7 @@ Partial Class Form1
         lvFiles.Name = "lvFiles"
         lvFiles.Size = New Size(1016, 641)
         lvFiles.TabIndex = 2
+        lvFiles.TabStop = False
         lvFiles.UseCompatibleStateImageBehavior = False
         ' 
         ' Panel1
@@ -225,7 +226,7 @@ Partial Class Form1
         ' btnDelete
         ' 
         btnDelete.Anchor = AnchorStyles.Right
-        btnDelete.Font = New Font("Segoe UI Symbol", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnDelete.Font = New Font("Segoe UI Symbol", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnDelete.ForeColor = Color.Black
         btnDelete.Location = New Point(986, 0)
         btnDelete.Name = "btnDelete"
@@ -243,6 +244,7 @@ Partial Class Form1
         txtAddressBar.Name = "txtAddressBar"
         txtAddressBar.Size = New Size(633, 27)
         txtAddressBar.TabIndex = 1
+        txtAddressBar.TabStop = False
         ' 
         ' btnForward
         ' 
