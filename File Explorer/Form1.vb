@@ -96,6 +96,7 @@ Public Class Form1
     Private IconCut As String = "✂"
     Private IconSearch As String = ""
     Private IconMoving As String = ""
+    Private IconQuestion As String = ""
 
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
@@ -1121,11 +1122,6 @@ Public Class Form1
                     SearchResults.Count &
                     " To show the next result, enter: findnext")
 
-                'Case "exit", "quit"
-
-                '    ' Exit the application
-                '    Me.Close()
-
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
                 ' Confirm exit
@@ -1144,43 +1140,21 @@ Public Class Form1
 
                 ' Is the input a folder?
                 If Directory.Exists(command) Then
-
-                    ShowStatus("Nav")
-
                     ' Go to that folder.
                     NavigateTo(command)
-
+                    Return
                     ' Is the input a file?
                 ElseIf File.Exists(command) Then
-
-                    ' Open the file
-                    'GoToFolderOrOpenFile(command)
-
                     OpenFileWithDefaultApp(command)
-
-
-                    'Try
-
-                    '    ' Open file with default application.
-                    '    Dim processStartInfo As New ProcessStartInfo(command) With {.UseShellExecute = True}
-                    '    Dim process As Process = Process.Start(processStartInfo)
-
-                    '    Dim fileName As String = Path.GetFileNameWithoutExtension(command)
-
-                    '    ShowStatus(StatusPad & IconOpen & $"  Opened:  ""{fileName}""")
-
-                    'Catch ex As Exception
-                    '    ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
-
-                    '    Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
-                    'End Try
-
-
+                    RestoreAddressBar()
+                    Return
                 Else
 
                     ' The input isn't a folder or a file,
                     ' at this point, the interpreter treats it as an unknown command.
-                    ShowStatus(StatusPad & IconDialog & " Unknown command: " & cmd)
+
+                    ShowStatus(StatusPad & IconQuestion &
+                               $"  Unknown command:    ""{cmd}""       Esc to reset.       Type ""help"" for a list of commands.")
 
                 End If
 
@@ -1193,11 +1167,7 @@ Public Class Form1
 
         If File.Exists(path) Then
             OpenFileWithDefaultApp(path)
-
-            ' Restore address bar after opening a file
-            txtAddressBar.Text = currentFolder
-            txtAddressBar.Focus()
-            PlaceCaretAtEndOfAddressBar()
+            RestoreAddressBar()
             Return
         End If
 
@@ -1207,6 +1177,13 @@ Public Class Form1
         End If
 
         ShowStatus(StatusPad & IconError & "  Path not found: " & path)
+
+    End Sub
+
+    Private Sub RestoreAddressBar()
+        txtAddressBar.Text = currentFolder
+        txtAddressBar.Focus()
+        PlaceCaretAtEndOfAddressBar()
     End Sub
 
     Private Sub OpenFileWithDefaultApp(filePath As String)
