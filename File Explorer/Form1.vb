@@ -1265,7 +1265,9 @@ Public Class Form1
         tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
         tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
 
-        tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
+        'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
+        tips.SetToolTip(txtAddressBar,
+                        "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
 
     End Sub
 
