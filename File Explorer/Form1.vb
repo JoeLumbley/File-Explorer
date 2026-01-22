@@ -973,90 +973,78 @@ Public Class Form1
                 '    Debug.WriteLine("Failed to open help file: " & ex.Message)
                 'End Try
 
+            'Case "open"
+
+            '    ' If the user typed: open "C:\path\to\something"
+            '    If parts.Length > 1 Then
+
+            '        Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+
+            '        If File.Exists(targetPath) Then
+
+            '            OpenFileWithDefaultApp(targetPath)
+
+            '            txtAddressBar.Text = currentFolder
+            '            txtAddressBar.Focus()
+            '            PlaceCaretAtEndOfAddressBar()
+
+            '        ElseIf Directory.Exists(targetPath) Then
+            '            NavigateTo(targetPath)
+            '        Else
+            '            ShowStatus(StatusPad & IconError & "  Path not found: " & targetPath)
+            '        End If
+
+            '        Return
+
+            '    End If
+
+            '    ' If no path was typed, use the selected item in the ListView
+            '    If lvFiles.SelectedItems.Count = 0 Then
+            '        ShowStatus(StatusPad & IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
+            '        Return
+            '    End If
+
+            '    Dim selected As ListViewItem = lvFiles.SelectedItems(0)
+            '    Dim fullPath As String = selected.Tag.ToString()
+
+            '    If File.Exists(fullPath) Then
+            '        OpenFileWithDefaultApp(fullPath)
+            '    ElseIf Directory.Exists(fullPath) Then
+            '        NavigateTo(fullPath)
+            '    Else
+            '        ShowStatus(StatusPad & IconError & "  Selected item no longer exists.")
+            '    End If
+
+            '    Return
+
+
             Case "open"
 
-                ' If the user typed: open "C:\path\to\something"
+                ' --- 1. If the user typed: open "C:\path\to\something"
                 If parts.Length > 1 Then
 
-                    Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+                    Dim targetPath As String =
+                        String.Join(" ", parts.Skip(1)).
+                        Trim().
+                        Trim(""""c)
 
-                    If File.Exists(targetPath) Then
-
-
-                        OpenFileWithDefaultApp(targetPath)
-
-
-                        'Try
-                        '    ShowStatus(StatusPad & IconDialog & "  Opening file...")
-                        '    Process.Start(New ProcessStartInfo() With {
-                        '        .FileName = targetPath,
-                        '        .UseShellExecute = True
-                        '    })
-                        '    ShowStatus(StatusPad & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
-
-                        '    txtAddressBar.Text = currentFolder
-
-                        'Catch ex As Exception
-                        '    ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
-                        '    Debug.WriteLine("Failed to open file: " & ex.Message)
-                        'End Try
-
-
-
-                    ElseIf Directory.Exists(targetPath) Then
-                        'ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
-                        NavigateTo(targetPath)
-                        'ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & targetPath)
-
-                    Else
-                        ShowStatus(StatusPad & IconError & "  Path not found: " & targetPath)
-                    End If
-
+                    HandleOpenPath(targetPath)
                     Return
+
                 End If
 
-                ' If no path was typed, use the selected item in the ListView
+                ' --- 2. If no path was typed, use the selected item in the ListView
                 If lvFiles.SelectedItems.Count = 0 Then
-                    ShowStatus(StatusPad & IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
+                    ShowStatus(StatusPad & IconDialog &
+                               "  Usage: open [file_or_folder]  — or select an item first.")
                     Return
                 End If
 
                 Dim selected As ListViewItem = lvFiles.SelectedItems(0)
                 Dim fullPath As String = selected.Tag.ToString()
 
-                If File.Exists(fullPath) Then
-
-
-                    OpenFileWithDefaultApp(fullPath)
-
-
-
-                    'Try
-                    '    ShowStatus(StatusPad & IconDialog & "  Opening file...")
-                    '    Process.Start(New ProcessStartInfo() With {
-                    '        .FileName = fullPath,
-                    '        .UseShellExecute = True
-                    '    })
-                    '    ShowStatus(StatusPad & IconSuccess & "  Opened file: " & selected.Text)
-
-                    '    txtAddressBar.Text = currentFolder
-
-                    'Catch ex As Exception
-                    '    ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
-                    '    Debug.WriteLine("Failed to open file: " & ex.Message)
-                    'End Try
-
-
-
-
-                ElseIf Directory.Exists(fullPath) Then
-                    ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
-                    NavigateTo(fullPath)
-                    ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & fullPath)
-
-                Else
-                    ShowStatus(StatusPad & IconError & "  Selected item no longer exists.")
-                End If
+                HandleOpenPath(fullPath)
+                Return
 
             Case "find", "search"
 
@@ -1200,6 +1188,26 @@ Public Class Form1
 
     End Sub
 
+
+    Private Sub HandleOpenPath(path As String)
+
+        If File.Exists(path) Then
+            OpenFileWithDefaultApp(path)
+
+            ' Restore address bar after opening a file
+            txtAddressBar.Text = currentFolder
+            txtAddressBar.Focus()
+            PlaceCaretAtEndOfAddressBar()
+            Return
+        End If
+
+        If Directory.Exists(path) Then
+            NavigateTo(path)
+            Return
+        End If
+
+        ShowStatus(StatusPad & IconError & "  Path not found: " & path)
+    End Sub
 
     Private Sub OpenFileWithDefaultApp(filePath As String)
         ' Open file with default application.
