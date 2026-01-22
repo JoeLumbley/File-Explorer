@@ -946,78 +946,40 @@ Public Class Form1
                     Debug.WriteLine("Text Command Error: " & ex.Message)
                 End Try
 
-            Case "help", "man"
+            'Case "help", "man"
 
-                Dim helpFilePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
+            '    Dim helpFilePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
 
-                ' Ensure the help file exists (creates it if missing)
-                EnsureHelpFileExists(helpFilePath)
-
-
-                OpenFileWithDefaultApp(helpFilePath)
+            '    ' Ensure the help file exists (creates it if missing)
+            '    EnsureHelpFileExists(helpFilePath)
 
 
-                'Try
-                '    'ShowStatus(helpText)
-                '    ShowStatus(StatusPad & IconDialog & "  Opening help file.")
-
-                '    ' Open the help file in the default text editor
-                '    Process.Start(New ProcessStartInfo() With {
-                '        .FileName = helpFilePath,
-                '        .UseShellExecute = True
-                '    })
-
-                '    ShowStatus(StatusPad & IconSuccess & "  Opened help file.")
-
-                'Catch ex As Exception
-                '    ShowStatus(StatusPad & IconError & "  Failed to open help file: " & ex.Message)
-                '    Debug.WriteLine("Failed to open help file: " & ex.Message)
-                'End Try
-
-            'Case "open"
-
-            '    ' If the user typed: open "C:\path\to\something"
-            '    If parts.Length > 1 Then
-
-            '        Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
-
-            '        If File.Exists(targetPath) Then
-
-            '            OpenFileWithDefaultApp(targetPath)
-
-            '            txtAddressBar.Text = currentFolder
-            '            txtAddressBar.Focus()
-            '            PlaceCaretAtEndOfAddressBar()
-
-            '        ElseIf Directory.Exists(targetPath) Then
-            '            NavigateTo(targetPath)
-            '        Else
-            '            ShowStatus(StatusPad & IconError & "  Path not found: " & targetPath)
-            '        End If
-
-            '        Return
-
-            '    End If
-
-            '    ' If no path was typed, use the selected item in the ListView
-            '    If lvFiles.SelectedItems.Count = 0 Then
-            '        ShowStatus(StatusPad & IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
-            '        Return
-            '    End If
-
-            '    Dim selected As ListViewItem = lvFiles.SelectedItems(0)
-            '    Dim fullPath As String = selected.Tag.ToString()
-
-            '    If File.Exists(fullPath) Then
-            '        OpenFileWithDefaultApp(fullPath)
-            '    ElseIf Directory.Exists(fullPath) Then
-            '        NavigateTo(fullPath)
-            '    Else
-            '        ShowStatus(StatusPad & IconError & "  Selected item no longer exists.")
-            '    End If
+            '    OpenFileWithDefaultApp(helpFilePath)
+            '    RestoreAddressBar()
 
             '    Return
 
+
+            'Case "help", "man"
+
+            Case "help", "man"
+                ShowHelpFile()
+                Return
+
+                'Dim helpFilePath As String =
+                '    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
+
+                'EnsureHelpFileExists(helpFilePath)
+
+                'Try
+                '    OpenFileWithDefaultApp(helpFilePath)
+                'Catch ex As Exception
+                '    ShowStatus(StatusPad & IconError &
+                '               "  Unable to open help file. Type commands like: open, copy, move, delete, rename.")
+                'End Try
+
+                'RestoreAddressBar()
+                'Return
 
             Case "open"
 
@@ -1094,6 +1056,8 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & "  Usage: find [search_term] - e.g., find document")
                 End If
 
+                Return
+
             Case "findnext", "searchnext"
 
                 If SearchResults.Count = 0 Then
@@ -1122,6 +1086,8 @@ Public Class Form1
                     SearchResults.Count &
                     " To show the next result, enter: findnext")
 
+                Return
+
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
                 ' Confirm exit
@@ -1149,17 +1115,33 @@ Public Class Form1
                     RestoreAddressBar()
                     Return
                 Else
-
                     ' The input isn't a folder or a file,
                     ' at this point, the interpreter treats it as an unknown command.
                     ShowStatus(StatusPad & IconQuestion &
                                $"  Unknown command:     ""{cmd}""       Esc to reset.       Type ""help"" for a list of commands.")
-
+                    Return
                 End If
 
         End Select
 
     End Sub
+
+
+
+
+    Private Sub ShowHelpFile()
+        Dim helpFilePath As String =
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
+
+        EnsureHelpFileExists(helpFilePath)
+        OpenFileWithDefaultApp(helpFilePath)
+        RestoreAddressBar()
+    End Sub
+
+
+
+
+
 
 
     Private Sub HandleOpenPath(path As String)
@@ -1197,7 +1179,7 @@ Public Class Form1
             Process.Start(psi)
 
             Dim fileName As String = Path.GetFileNameWithoutExtension(filePath)
-            ShowStatus(StatusPad & IconOpen & $"  Opened: ""{fileName}""")
+            ShowStatus(StatusPad & IconOpen & $"  Opened:   ""{fileName}""")
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
