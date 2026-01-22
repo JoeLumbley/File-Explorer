@@ -1152,9 +1152,8 @@ Public Class Form1
 
                     ' The input isn't a folder or a file,
                     ' at this point, the interpreter treats it as an unknown command.
-
                     ShowStatus(StatusPad & IconQuestion &
-                               $"  Unknown command:    ""{cmd}""       Esc to reset.       Type ""help"" for a list of commands.")
+                               $"  Unknown command:     ""{cmd}""       Esc to reset.       Type ""help"" for a list of commands.")
 
                 End If
 
