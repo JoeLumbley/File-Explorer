@@ -177,67 +177,21 @@ Public Class Form1
 
     End Sub
 
-    Private Sub PlaceCaretAtEndOfAddressBar()
-        ' Place caret at end of text
-        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    End Sub
-
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
         ' Handle custom key commands
+        If HandleAddressBarShortcuts(keyData) Then Return True
+        If HandleTreeViewToggleOnEnter(keyData) Then Return True
+
         If HandleTabNavigation(keyData) Then Return True
         If HandleShiftTabNavigation(keyData) Then Return True
-        If HandleTreeViewToggleOnEnter(keyData) Then Return True
-        If HandleAddressBarShortcuts(keyData) Then Return True
+
         If HandleNavigationShortcuts(keyData) Then Return True
+
         If HandleSearchShortcuts(keyData) Then Return True
         If HandleFileFolderOperations(Nothing, keyData) Then Return True
 
         Return MyBase.ProcessCmdKey(msg, keyData)
-    End Function
-
-
-    Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
-
-        ' ALT + LEFT (Back)
-        If keyData = (Keys.Alt Or Keys.Left) Then
-            NavigateBackward_Click()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
-
-        ' ALT + RIGHT (Forward)
-        If keyData = (Keys.Alt Or Keys.Right) Then
-            NavigateForward_Click()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
-
-        ' ALT + UP (Parent folder)
-        If keyData = (Keys.Alt Or Keys.Up) Then
-            NavigateToParent()
-            PlaceCaretAtEndOfAddressBar()
-
-            Return True
-        End If
-
-        ' F5 (Refresh)
-        If keyData = Keys.F5 Then
-            RefreshCurrentFolder()
-            txtAddressBar.Focus()
-
-            PlaceCaretAtEndOfAddressBar()
-
-            Return True
-        End If
-
-        ' F11 (Full screen)
-        If keyData = Keys.F11 Then
-            ToggleFullScreen()
-            Return True
-        End If
-
-        Return False
     End Function
 
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
@@ -468,6 +422,41 @@ Public Class Form1
 
     End Sub
 
+
+    Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
+
+        ' ===========================
+        '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
+        ' ===========================
+        If keyData = (Keys.Control Or Keys.L) _
+       OrElse keyData = (Keys.Alt Or Keys.D) _
+       OrElse keyData = Keys.F4 Then
+
+            txtAddressBar.Focus()
+            txtAddressBar.SelectAll()
+            Return True
+        End If
+
+        ' ===========================
+        '   ENTER (Address Bar execute)
+        ' ===========================
+        If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
+            ExecuteCommand(txtAddressBar.Text.Trim())
+            Return True
+        End If
+
+        ' ===========================
+        '   ESCAPE (Address Bar reset)
+        ' ===========================
+        If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
+            txtAddressBar.Text = currentFolder
+            PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
+        Return False
+    End Function
+
     Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
         ' ===========================
         '   ENTER (TreeView toggle)
@@ -478,6 +467,57 @@ Public Class Form1
                 Return True
             End If
         End If
+        Return False
+    End Function
+
+
+    Private Function HandleTabNavigation(keyData As Keys) As Boolean
+        If keyData = Keys.Tab Then
+
+            ' Address Bar → File List
+            If txtAddressBar.Focused Then
+                lvFiles.Focus()
+
+                If lvFiles.Items.Count > 0 Then
+                    If lvFiles.SelectedItems.Count > 0 Then
+                        Dim sel = lvFiles.SelectedItems(0)
+                        sel.Focused = True
+                        sel.EnsureVisible()
+                    Else
+                        lvFiles.Items(0).Selected = True
+                        lvFiles.Items(0).Focused = True
+                        lvFiles.Items(0).EnsureVisible()
+                    End If
+                End If
+
+                Return True
+            End If
+
+            ' File List → TreeView
+            If lvFiles.Focused Then
+                tvFolders.Focus()
+
+                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                    tvFolders.SelectedNode = tvFolders.Nodes(0)
+                End If
+
+                tvFolders.SelectedNode?.EnsureVisible()
+                Return True
+            End If
+
+            ' TreeView → Address Bar
+            If tvFolders.Focused Then
+                txtAddressBar.Focus()
+                PlaceCaretAtEndOfAddressBar()
+                Return True
+            End If
+
+            ' Fallback
+            txtAddressBar.Focus()
+            PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
         Return False
     End Function
 
@@ -541,89 +581,50 @@ Public Class Form1
         Return False
     End Function
 
-    Private Function HandleTabNavigation(keyData As Keys) As Boolean
-        If keyData = Keys.Tab Then
 
-            ' Address Bar → File List
-            If txtAddressBar.Focused Then
-                lvFiles.Focus()
+    Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
-                If lvFiles.Items.Count > 0 Then
-                    If lvFiles.SelectedItems.Count > 0 Then
-                        Dim sel = lvFiles.SelectedItems(0)
-                        sel.Focused = True
-                        sel.EnsureVisible()
-                    Else
-                        lvFiles.Items(0).Selected = True
-                        lvFiles.Items(0).Focused = True
-                        lvFiles.Items(0).EnsureVisible()
-                    End If
-                End If
-
-                Return True
-            End If
-
-            ' File List → TreeView
-            If lvFiles.Focused Then
-                tvFolders.Focus()
-
-                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                    tvFolders.SelectedNode = tvFolders.Nodes(0)
-                End If
-
-                tvFolders.SelectedNode?.EnsureVisible()
-                Return True
-            End If
-
-            ' TreeView → Address Bar
-            If tvFolders.Focused Then
-                txtAddressBar.Focus()
-                PlaceCaretAtEndOfAddressBar()
-                Return True
-            End If
-
-            ' Fallback
-            txtAddressBar.Focus()
+        ' ALT + LEFT (Back)
+        If keyData = (Keys.Alt Or Keys.Left) Then
+            NavigateBackward_Click()
             PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
+        ' ALT + RIGHT (Forward)
+        If keyData = (Keys.Alt Or Keys.Right) Then
+            NavigateForward_Click()
+            PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
+        ' ALT + UP (Parent folder)
+        If keyData = (Keys.Alt Or Keys.Up) Then
+            NavigateToParent()
+            PlaceCaretAtEndOfAddressBar()
+
+            Return True
+        End If
+
+        ' F5 (Refresh)
+        If keyData = Keys.F5 Then
+            RefreshCurrentFolder()
+            txtAddressBar.Focus()
+
+            PlaceCaretAtEndOfAddressBar()
+
+            Return True
+        End If
+
+        ' F11 (Full screen)
+        If keyData = Keys.F11 Then
+            ToggleFullScreen()
             Return True
         End If
 
         Return False
     End Function
 
-    Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
-
-        ' ===========================
-        '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
-        ' ===========================
-        If keyData = (Keys.Control Or Keys.L) _
-       OrElse keyData = (Keys.Alt Or Keys.D) _
-       OrElse keyData = Keys.F4 Then
-
-            txtAddressBar.Focus()
-            txtAddressBar.SelectAll()
-            Return True
-        End If
-
-        ' ===========================
-        '   ENTER (Address Bar execute)
-        ' ===========================
-        If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
-            ExecuteCommand(txtAddressBar.Text.Trim())
-            Return True
-        End If
-
-        ' ===========================
-        '   ESCAPE (Address Bar reset)
-        ' ===========================
-        If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
-            txtAddressBar.Text = currentFolder
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
-
-        Return False
-    End Function
 
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
@@ -750,6 +751,56 @@ Public Class Form1
     End Function
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Private Sub PlaceCaretAtEndOfAddressBar()
+        ' Place caret at end of text
+        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Private Sub HandleFindNextCommand()
 
         If SearchResults.Count = 0 Then
@@ -843,7 +894,7 @@ Public Class Form1
     Private Sub NavigateToParent()
         Dim parent = Directory.GetParent(currentFolder)
         If parent IsNot Nothing Then
-            NavigateTo(parent.FullName)
+            NavigateTo(parent.FullName, recordHistory:=True)
         End If
     End Sub
 
