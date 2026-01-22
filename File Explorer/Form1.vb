@@ -368,13 +368,13 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub btnGo_Click(sender As Object, e As EventArgs) _
         Handles btnGo.Click
 
         ExecuteCommand(txtAddressBar.Text.Trim())
 
     End Sub
+
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
         Handles btnNewFolder.Click
@@ -389,6 +389,7 @@ Public Class Form1
         NewTextFile_Click(sender, e)
 
     End Sub
+
 
     Private Sub btnCut_Click(sender As Object, e As EventArgs) _
         Handles btnCut.Click
@@ -477,7 +478,9 @@ Public Class Form1
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         If keyData = Keys.Tab Then
 
+            ' ==========================
             ' Address Bar → File List
+            ' ==========================
             If txtAddressBar.Focused Then
                 lvFiles.Focus()
 
@@ -496,7 +499,9 @@ Public Class Form1
                 Return True
             End If
 
+            ' ==========================
             ' File List → TreeView
+            ' ==========================
             If lvFiles.Focused Then
                 tvFolders.Focus()
 
@@ -508,14 +513,18 @@ Public Class Form1
                 Return True
             End If
 
+            ' ==========================
             ' TreeView → Address Bar
+            ' ==========================
             If tvFolders.Focused Then
                 txtAddressBar.Focus()
                 PlaceCaretAtEndOfAddressBar()
                 Return True
             End If
 
+            ' ==========================
             ' Fallback
+            ' ==========================
             txtAddressBar.Focus()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -587,29 +596,36 @@ Public Class Form1
 
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
+        ' ===========================
         ' ALT + LEFT (Back)
+        ' ===========================
         If keyData = (Keys.Alt Or Keys.Left) Then
             NavigateBackward_Click()
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
+        ' ===========================
         ' ALT + RIGHT (Forward)
+        ' ===========================
         If keyData = (Keys.Alt Or Keys.Right) Then
             NavigateForward_Click()
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
+        ' ===========================
         ' ALT + UP (Parent folder)
+        ' ===========================
         If keyData = (Keys.Alt Or Keys.Up) Then
             NavigateToParent()
             PlaceCaretAtEndOfAddressBar()
-
             Return True
         End If
 
+        ' ===========================
         ' F5 (Refresh)
+        ' ===========================
         If keyData = Keys.F5 Then
             RefreshCurrentFolder()
             txtAddressBar.Focus()
@@ -619,7 +635,9 @@ Public Class Form1
             Return True
         End If
 
+        ' ===========================
         ' F11 (Full screen)
+        ' ===========================
         If keyData = Keys.F11 Then
             ToggleFullScreen()
             Return True
@@ -752,6 +770,392 @@ Public Class Form1
 
         Return False
     End Function
+
+
+
+    Private Async Sub ExecuteCommand(command As String)
+
+        ' Use regex to split by spaces but keep quoted substrings together
+        Dim parts As String() = Regex.Matches(command, "[\""].+?[\""]|[^ ]+").
+        Cast(Of Match)().
+        Select(Function(m) m.Value.Trim(""""c)).
+        ToArray()
+
+        If parts.Length = 0 Then
+            ShowStatus(StatusPad & IconDialog & "  No command entered.")
+            Return
+        End If
+
+        Dim cmd As String = parts(0).ToLower()
+
+        Select Case cmd
+
+            Case "cd"
+
+                If parts.Length > 1 Then
+                    Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
+                    NavigateTo(newPath)
+                Else
+                    ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
+                End If
+
+            Case "copy", "cp"
+                If parts.Length > 2 Then
+                    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+                    Dim destination As String = parts(parts.Length - 1).Trim()
+
+                    ' Check if source file or directory exists
+                    If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
+
+                        ShowStatus(StatusPad & IconError &
+                                   " Copy failed:  Source """ &
+                                   source &
+                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
+                        Return
+                    End If
+
+                    ' Check if destination directory exists
+                    If Not Directory.Exists(destination) Then
+
+                        ShowStatus(StatusPad & IconError &
+                                   " Copy failed.  Destination: """ &
+                                   destination &
+                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
+
+                        Return
+                    End If
+
+                    copyCts = New CancellationTokenSource()
+
+                    Await CopyFileOrDirectory(source, destination, copyCts.Token)
+
+                Else
+                    ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
+                End If
+
+
+            Case "move", "mv"
+
+                If parts.Length > 2 Then
+
+                    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+                    Dim destination As String = parts(parts.Length - 1).Trim()
+
+                    MoveFileOrDirectory(source, destination)
+
+                Else
+                    ShowStatus(StatusPad & IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
+                End If
+
+            Case "delete", "rm"
+
+                If parts.Length > 1 Then
+
+                    Dim pathToDelete As String = String.Join(" ", parts.Skip(1)).Trim()
+
+                    DeleteFileOrDirectory(pathToDelete)
+
+                Else
+                    ShowStatus(StatusPad & IconDialog & " Usage: delete [file_or_directory]")
+                End If
+
+            Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
+                If parts.Length > 1 Then
+                    Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
+
+                    ' Validate the directory path
+                    If String.IsNullOrWhiteSpace(directoryPath) Then
+                        ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                        Return
+                    End If
+
+                    CreateDirectory(directoryPath)
+
+                Else
+                    ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                End If
+
+            Case "rename"
+                ' Rename file or directory
+
+                If parts.Length > 2 Then
+
+                    Dim sourcePath As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+                    Dim newName As String = parts(parts.Length - 1).Trim()
+
+                    RenameFileOrDirectory(sourcePath, newName)
+
+                Else
+                    ShowStatus(StatusPad & IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
+                End If
+
+            Case "text", "txt"
+
+                If parts.Length > 1 Then
+
+                    Dim rawPath = String.Join(" ", parts.Skip(1))
+
+                    Dim filePath = NormalizeTextFilePath(rawPath)
+
+                    If filePath Is Nothing Then
+
+                        ShowStatus(StatusPad & IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
+
+                        Return
+
+                    End If
+
+                    CreateTextFile(filePath)
+
+                    Return
+
+                End If
+
+                ' No file path provided
+                Dim destDir = currentFolder
+
+                ' Validate destination folder
+                If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
+
+                    ShowStatus(StatusPad & IconWarning & " Invalid folder. Cannot create file.")
+
+                    Return
+
+                End If
+
+                ' Ensure unique file name
+                Dim newFilePath = GetUniqueFilePath(destDir, "New Text File", ".txt")
+
+                Try
+
+                    ' Create the file with initial content
+                    File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+
+                    ShowStatus(StatusPad & IconSuccess & " Text file created: " & newFilePath)
+
+                    ' Refresh the folder view so the user sees the new file
+                    NavigateTo(destDir)
+
+                    ' Open the newly created file
+                    GoToFolderOrOpenFile(newFilePath)
+
+                Catch ex As Exception
+                    ShowStatus(StatusPad & IconError & " Failed to create text file: " & ex.Message)
+                    Debug.WriteLine("Text Command Error: " & ex.Message)
+                End Try
+
+            Case "help", "man"
+
+                Dim helpFilePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
+
+                ' Ensure the help file exists (creates it if missing)
+                EnsureHelpFileExists(helpFilePath)
+
+                Try
+                    'ShowStatus(helpText)
+                    ShowStatus(StatusPad & IconDialog & "  Opening help file.")
+
+                    ' Open the help file in the default text editor
+                    Process.Start(New ProcessStartInfo() With {
+                        .FileName = helpFilePath,
+                        .UseShellExecute = True
+                    })
+
+                    ShowStatus(StatusPad & IconSuccess & "  Opened help file.")
+
+                Catch ex As Exception
+                    ShowStatus(StatusPad & IconError & "  Failed to open help file: " & ex.Message)
+                    Debug.WriteLine("Failed to open help file: " & ex.Message)
+                End Try
+
+            Case "open"
+
+                ' If the user typed: open "C:\path\to\something"
+                If parts.Length > 1 Then
+
+                    Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+
+                    If File.Exists(targetPath) Then
+                        Try
+                            ShowStatus(StatusPad & IconDialog & "  Opening file...")
+                            Process.Start(New ProcessStartInfo() With {
+                                .FileName = targetPath,
+                                .UseShellExecute = True
+                            })
+                            ShowStatus(StatusPad & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
+
+                            txtAddressBar.Text = currentFolder
+
+                        Catch ex As Exception
+                            ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
+                            Debug.WriteLine("Failed to open file: " & ex.Message)
+                        End Try
+
+                    ElseIf Directory.Exists(targetPath) Then
+                        'ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
+                        NavigateTo(targetPath)
+                        'ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & targetPath)
+
+                    Else
+                        ShowStatus(StatusPad & IconError & "  Path not found: " & targetPath)
+                    End If
+
+                    Return
+                End If
+
+                ' If no path was typed, use the selected item in the ListView
+                If lvFiles.SelectedItems.Count = 0 Then
+                    ShowStatus(StatusPad & IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
+                    Return
+                End If
+
+                Dim selected As ListViewItem = lvFiles.SelectedItems(0)
+                Dim fullPath As String = selected.Tag.ToString()
+
+                If File.Exists(fullPath) Then
+                    Try
+                        ShowStatus(StatusPad & IconDialog & "  Opening file...")
+                        Process.Start(New ProcessStartInfo() With {
+                            .FileName = fullPath,
+                            .UseShellExecute = True
+                        })
+                        ShowStatus(StatusPad & IconSuccess & "  Opened file: " & selected.Text)
+
+                        txtAddressBar.Text = currentFolder
+
+                    Catch ex As Exception
+                        ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
+                        Debug.WriteLine("Failed to open file: " & ex.Message)
+                    End Try
+
+                ElseIf Directory.Exists(fullPath) Then
+                    ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
+                    NavigateTo(fullPath)
+                    ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & fullPath)
+
+                Else
+                    ShowStatus(StatusPad & IconError & "  Selected item no longer exists.")
+                End If
+
+            Case "find", "search"
+
+                If parts.Length > 1 Then
+
+                    Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+                    If String.IsNullOrWhiteSpace(searchTerm) Then
+                        ShowStatus(StatusPad & IconDialog & " Usage: find [search_term] - e.g., find document")
+                        Return
+                    End If
+
+                    ShowStatus(StatusPad & IconSearch & " Searching for: " & searchTerm)
+
+                    'SearchInCurrentFolder(searchTerm)
+                    OnlySearchForFilesInCurrentFolder(searchTerm)
+
+                    ' Reset index for new search
+                    SearchIndex = 0
+
+                    ' Auto-select first result if available
+                    If SearchResults.Count > 0 Then
+                        lvFiles.SelectedItems.Clear()
+                        SelectListViewItemByPath(SearchResults(0))
+
+                        Dim nextPath As String = SearchResults(SearchIndex)
+                        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+                        txtAddressBar.Focus()
+
+                        ShowStatus(
+                            StatusPad & IconSearch &
+                            "    Result " &
+                            (SearchIndex + 1) &
+                            " of " &
+                            SearchResults.Count &
+                            $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
+                        )
+
+
+                    Else
+                        ShowStatus(StatusPad & IconDialog & "  No results found for: " & searchTerm)
+                    End If
+
+                Else
+                    ShowStatus(StatusPad & IconDialog & "  Usage: find [search_term] - e.g., find document")
+                End If
+
+            Case "findnext", "searchnext"
+
+                If SearchResults.Count = 0 Then
+                    ShowStatus(StatusPad & IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
+                    Return
+                End If
+
+                ' Advance index
+                SearchIndex += 1
+
+                ' Wrap around
+                If SearchIndex >= SearchResults.Count Then
+                    SearchIndex = 0
+                End If
+
+                ' Select the next result
+                lvFiles.SelectedItems.Clear()
+                Dim nextPath As String = SearchResults(SearchIndex)
+                SelectListViewItemByPath(nextPath)
+
+                ShowStatus(
+                    StatusPad & IconSearch &
+                    " Showing result " &
+                    (SearchIndex + 1) &
+                    " of " &
+                    SearchResults.Count &
+                    " To show the next result, enter: findnext")
+
+                'Case "exit", "quit"
+
+                '    ' Exit the application
+                '    Me.Close()
+
+            Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
+                If MessageBox.Show("Are you sure you want to exit?",
+                                   "Confirm Exit",
+                                   MessageBoxButtons.YesNo,
+                                   MessageBoxIcon.Question) = DialogResult.Yes Then
+                    Application.Exit()
+                Else
+                    ShowStatus("Exit cancelled.")
+                End If
+                Return
+
+            Case Else
+
+                ' Is the input a folder?
+                If Directory.Exists(command) Then
+
+                    ShowStatus("Nav")
+
+                    ' Go to that folder.
+                    NavigateTo(command)
+
+                    ' Is the input a file?
+                ElseIf File.Exists(command) Then
+
+                    ' Open the file or go to its folder
+                    GoToFolderOrOpenFile(command)
+
+                Else
+
+                    ' The input isn't a folder or a file,
+                    ' at this point, the interpreter treats it as an unknown command.
+                    ShowStatus(StatusPad & IconDialog & " Unknown command: " & cmd)
+
+                End If
+
+        End Select
+
+    End Sub
 
 
     Private Sub NavigateBackward_Click()
@@ -932,7 +1336,6 @@ Public Class Form1
 
 
     End Sub
-
 
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
         ' ------------------------------------------------------------
@@ -1172,103 +1575,10 @@ Public Class Form1
     End Sub
 
 
-
-    Private Sub PlaceCaretAtEndOfAddressBar()
-        ' Place caret at end of text
-        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    End Sub
-
-
-    Private Sub HandleFindNextCommand()
-
-        If SearchResults.Count = 0 Then
-            ShowStatus(StatusPad & IconDialog & "  No previous search results. Press: Ctrl + F or enter: 'find [search_term]' to start a search.")
-            Return
-        End If
-
-        ' Advance index
-        SearchIndex += 1
-
-        ' Wrap around
-        If SearchIndex >= SearchResults.Count Then
-            SearchIndex = 0
-        End If
-
-        ' Select the next result
-        lvFiles.SelectedItems.Clear()
-        Dim nextPath As String = SearchResults(SearchIndex)
-
-        SelectListViewItemByPath(nextPath)
-        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
-
-        ShowStatus(
-            StatusPad & IconSearch &
-            "    Result " &
-            (SearchIndex + 1) &
-            " of " &
-            SearchResults.Count &
-            $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
-        )
-
-    End Sub
-
-    Private Sub InitiateSearch()
-        txtAddressBar.Focus()
-        txtAddressBar.Text = "find "
-        PlaceCaretAtEndOfAddressBar()
-    End Sub
-
-    Private Sub ConsumeKey(e As KeyEventArgs)
-        e.Handled = True
-        e.SuppressKeyPress = True
-    End Sub
-
     Private Sub RefreshCurrentFolder()
         ' Refresh the current folder view
         NavigateTo(currentFolder, recordHistory:=False)
         UpdateTreeRoots()
-    End Sub
-
-    Private Sub ConfigureTooltips()
-
-        ' General tooltip settings
-        tips.AutoPopDelay = 6000
-        tips.InitialDelay = 300
-        tips.ReshowDelay = 100
-        tips.ShowAlways = True
-
-        ' ============================
-        ' Navigation Buttons
-        ' ============================
-        tips.SetToolTip(btnBack, "Go back to the previous folder  (Alt + ← or Backspace)")
-        tips.SetToolTip(btnForward, "Go forward to the next folder  (Alt + →)")
-        tips.SetToolTip(btnRefresh, "Refresh the current folder  (F5)")
-        tips.SetToolTip(bntHome, "Go to your Home directory")
-        tips.SetToolTip(btnGo, "Navigate to the path entered in the address bar")
-
-        ' ============================
-        ' File / Folder Creation
-        ' ============================
-        tips.SetToolTip(btnNewFolder, "Create a new folder  (Ctrl + Shift + N)")
-        tips.SetToolTip(btnNewTextFile, "Create a new text file (Ctrl + Shift + T)")
-
-        ' ============================
-        ' Clipboard Operations
-        ' ============================
-        tips.SetToolTip(btnCut, "Cut selected items  (Ctrl + X)")
-        tips.SetToolTip(btnCopy, "Copy selected items  (Ctrl + C)")
-        tips.SetToolTip(btnPaste, "Paste items  (Ctrl + V)")
-
-        ' ============================
-        ' File Operations
-        ' ============================
-        tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
-        tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
-
-        'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
-        tips.SetToolTip(txtAddressBar,
-                        "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
-
     End Sub
 
     Private Sub NavigateToParent()
@@ -1645,60 +1955,6 @@ Public Class Form1
 
     End Sub
 
-
-    Private Function ResolveDestinationPathWithAutoRename(
-        initialDestPath As String,
-        isDirectory As Boolean
-    ) As String
-        ' Generates a non‑conflicting destination path using Windows‑style
-        ' rename‑on‑copy semantics:
-        '   File.txt → File - Copy.txt → File - Copy (2).txt → ...
-        ' For directories, the extension is omitted.
-
-        If String.IsNullOrWhiteSpace(initialDestPath) Then
-            Return initialDestPath
-        End If
-
-        Dim dir As String = Path.GetDirectoryName(initialDestPath)
-        Dim baseName As String = Path.GetFileNameWithoutExtension(initialDestPath)
-        Dim ext As String = If(isDirectory, String.Empty, Path.GetExtension(initialDestPath))
-
-        ' If the directory doesn't exist, we can't check collisions
-        If String.IsNullOrWhiteSpace(dir) OrElse Not Directory.Exists(dir) Then
-            Return initialDestPath
-        End If
-
-        Dim candidate As String = initialDestPath
-        Dim index As Integer = 1
-
-        While (Not isDirectory AndAlso File.Exists(candidate)) OrElse
-          (isDirectory AndAlso Directory.Exists(candidate))
-
-            If index = 1 Then
-                candidate = Path.Combine(dir, $"{baseName} - Copy{ext}")
-            Else
-                candidate = Path.Combine(dir, $"{baseName} - Copy ({index}){ext}")
-            End If
-
-            index += 1
-        End While
-
-        Return candidate
-    End Function
-
-
-    Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
-        Try
-            Dim root = Path.GetPathRoot(destinationPath)
-            Dim drive As New DriveInfo(root)
-            Return sourceFile.Length <= drive.AvailableFreeSpace
-        Catch
-            ' If free space cannot be determined, allow the copy attempt
-            Return True
-        End Try
-    End Function
-
-
     Private Async Function CopyFile(
         source As String,
         destination As String,
@@ -1769,7 +2025,6 @@ Public Class Form1
         Return result
     End Function
 
-
     Public Async Function CopyDirectory(
         sourceDir As String,
         destDir As String,
@@ -1801,121 +2056,6 @@ Public Class Form1
                 ShowStatus(StatusPad & IconError & " Failed to create directory: " & destDir)
                 Return result
             End Try
-
-            ' ------------------------------------------------------------
-            ' Copy files
-            '' ------------------------------------------------------------
-            'For Each srcFile In dirInfo.GetFiles()
-            '    ct.ThrowIfCancellationRequested()
-
-            '    'Dim targetFile = Path.Combine(destDir, file.Name)
-
-            '    'Dim targetFile = Path.Combine(destDir, file.Name)
-
-            '    ' ------------------------------------------------------------
-            '    ' NEW: Auto‑rename if destination file already exists
-            '    ' ------------------------------------------------------------
-            '    ' If file.Exists(targetFile) Then
-
-            '    '     Dim newName = ResolveDestinationPathWithAutoRename(targetFile, isDirectory:=False)
-            '    '     result.FilesRenamed += 1
-            '    '     ShowStatus(StatusPad & IconDialog &
-            '    '" Auto‑renamed → " & Path.GetFileName(newName))
-            '    '     Debug.WriteLine("Auto‑renamed to: " & newName)
-            '    '     targetFile = newName
-            '    ' End If
-
-
-            '    Dim targetFile = Path.Combine(destDir, srcFile.Name)
-
-            '    ' ------------------------------------------------------------
-            '    ' NEW: Auto‑rename if destination file already exists
-            '    ' ------------------------------------------------------------
-
-            '    If File.Exists(targetFile) Then
-            '        Dim newName = ResolveDestinationPathWithAutoRename(targetFile, isDirectory:=False)
-            '        result.FilesRenamed += 1
-            '        ShowStatus(StatusPad & IconDialog &
-            '                   " Auto‑renamed → " & Path.GetFileName(newName))
-            '        Debug.WriteLine("Auto‑renamed to: " & newName)
-            '        targetFile = newName
-            '    End If
-
-            '    '     If file.Exists(targetFile) Then
-
-            '    '     Dim newName = ResolveDestinationPathWithAutoRename(targetFile, isDirectory:=False)
-            '    '     result.FilesRenamed += 1
-            '    '     ShowStatus(StatusPad & IconDialog &
-            '    '" Auto‑renamed → " & Path.GetFileName(newName))
-            '    '     Debug.WriteLine("Auto‑renamed to: " & newName)
-            '    '     targetFile = newName
-            '    ' End If
-
-
-            '    ' Locked file skip
-            '    If IsFileLocked(srcFile) Then
-            '        result.FilesSkipped += 1
-            '        ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & srcFile.FullName)
-            '        Debug.WriteLine("Locked file skipped: " & srcFile.FullName)
-            '        Continue For
-            '    End If
-
-            '    ' Proactive free-space check
-            '    If Not HasEnoughSpace(srcFile, targetFile) Then
-            '        result.FilesSkipped += 1
-            '        result.Errors.Add("Not enough space for: " & srcFile.FullName)
-            '        ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & srcFile.Name)
-            '        Continue For
-            '    End If
-
-            '    Try
-            '        Await Task.Run(Sub()
-            '                           ct.ThrowIfCancellationRequested()
-            '                           srcFile.CopyTo(targetFile, overwrite:=False)
-            '                       End Sub, ct)
-
-            '        result.FilesCopied += 1
-            '        ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
-            '        Debug.WriteLine("Copied file: " & targetFile)
-
-            '    Catch ex As IOException When ex.HResult = &H80070070
-            '        result.FilesSkipped += 1
-            '        result.Errors.Add("Disk full while copying: " & srcFile.FullName)
-            '        ShowStatus(StatusPad & IconError & " Disk full, skipping: " & srcFile.Name)
-            '        MessageBox.Show("There is not enough space on the destination drive.",
-            '                    "Disk Full",
-            '                    MessageBoxButtons.OK,
-            '                    MessageBoxIcon.Error)
-            '        Debug.WriteLine("Disk full: " & ex.Message)
-
-            '    Catch ex As IOException When ex.HResult = &H80070050
-            '        result.FilesSkipped += 1
-            '        result.Errors.Add("File already exists: " & srcFile.FullName)
-            '        ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & srcFile.Name)
-            '        Debug.WriteLine("File exists, skipping: " & srcFile.FullName)
-
-            '    Catch ex As IOException
-            '        result.FilesSkipped += 1
-            '        result.Errors.Add("I/O error: " & srcFile.FullName & " - " & ex.Message)
-            '        ShowStatus(StatusPad & IconError & " I/O error copying: " & srcFile.Name)
-            '        Debug.WriteLine("I/O error: " & ex.Message)
-
-            '    Catch ex As UnauthorizedAccessException
-            '        result.FilesSkipped += 1
-            '        result.Errors.Add("Unauthorized: " & srcFile.FullName)
-            '        ShowStatus(StatusPad & IconError & " Unauthorized: " & srcFile.Name)
-            '        Debug.WriteLine("Unauthorized: " & ex.Message)
-
-            '    Catch ex As Exception
-            '        result.FilesSkipped += 1
-            '        result.Errors.Add("Copy failed: " & srcFile.FullName & " - " & ex.Message)
-            '        ShowStatus(StatusPad & IconError & " Copy failed: " & srcFile.Name)
-            '        Debug.WriteLine("Copy failed: " & ex.Message)
-            '    End Try
-            'Next
-
-
-
 
             ' ------------------------------------------------------------
             ' Copy files
@@ -2023,7 +2163,6 @@ Public Class Form1
         Return result
     End Function
 
-
     Private Async Function CopyFileOrDirectory(
         source As String,
         destination As String,
@@ -2129,557 +2268,25 @@ Public Class Form1
 
 
 
-    Private Async Sub ExecuteCommand(command As String)
 
-        ' Use regex to split by spaces but keep quoted substrings together
-        Dim parts As String() = Regex.Matches(command, "[\""].+?[\""]|[^ ]+").
-        Cast(Of Match)().
-        Select(Function(m) m.Value.Trim(""""c)).
-        ToArray()
 
-        If parts.Length = 0 Then
-            ShowStatus(StatusPad & IconDialog & "  No command entered.")
-            Return
-        End If
 
-        Dim cmd As String = parts(0).ToLower()
 
-        Select Case cmd
 
-            Case "cd"
 
-                If parts.Length > 1 Then
-                    Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
-                    NavigateTo(newPath)
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
-                End If
 
-            Case "copy", "cp"
-                If parts.Length > 2 Then
-                    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-                    Dim destination As String = parts(parts.Length - 1).Trim()
 
-                    ' Check if source file or directory exists
-                    If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
 
-                        ShowStatus(StatusPad & IconError &
-                                   " Copy failed:  Source """ &
-                                   source &
-                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
-                        Return
-                    End If
 
-                    ' Check if destination directory exists
-                    If Not Directory.Exists(destination) Then
 
-                        ShowStatus(StatusPad & IconError &
-                                   " Copy failed.  Destination: """ &
-                                   destination &
-                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
 
-                        Return
-                    End If
 
-                    copyCts = New CancellationTokenSource()
 
-                    Await CopyFileOrDirectory(source, destination, copyCts.Token)
 
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
-                End If
 
 
-            Case "move", "mv"
 
-                If parts.Length > 2 Then
 
-                    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-                    Dim destination As String = parts(parts.Length - 1).Trim()
-
-                    MoveFileOrDirectory(source, destination)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
-                End If
-
-            Case "delete", "rm"
-
-                If parts.Length > 1 Then
-
-                    Dim pathToDelete As String = String.Join(" ", parts.Skip(1)).Trim()
-
-                    DeleteFileOrDirectory(pathToDelete)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: delete [file_or_directory]")
-                End If
-
-            Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
-                If parts.Length > 1 Then
-                    Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
-
-                    ' Validate the directory path
-                    If String.IsNullOrWhiteSpace(directoryPath) Then
-                        ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
-                        Return
-                    End If
-
-                    CreateDirectory(directoryPath)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
-                End If
-
-            Case "rename"
-                ' Rename file or directory
-
-                If parts.Length > 2 Then
-
-                    Dim sourcePath As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-
-                    Dim newName As String = parts(parts.Length - 1).Trim()
-
-                    RenameFileOrDirectory(sourcePath, newName)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
-                End If
-
-            Case "text", "txt"
-
-                If parts.Length > 1 Then
-
-                    Dim rawPath = String.Join(" ", parts.Skip(1))
-
-                    Dim filePath = NormalizeTextFilePath(rawPath)
-
-                    If filePath Is Nothing Then
-
-                        ShowStatus(StatusPad & IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
-
-                        Return
-
-                    End If
-
-                    CreateTextFile(filePath)
-
-                    Return
-
-                End If
-
-                ' No file path provided
-                Dim destDir = currentFolder
-
-                ' Validate destination folder
-                If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
-
-                    ShowStatus(StatusPad & IconWarning & " Invalid folder. Cannot create file.")
-
-                    Return
-
-                End If
-
-                ' Ensure unique file name
-                Dim newFilePath = GetUniqueFilePath(destDir, "New Text File", ".txt")
-
-                Try
-
-                    ' Create the file with initial content
-                    File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
-
-                    ShowStatus(StatusPad & IconSuccess & " Text file created: " & newFilePath)
-
-                    ' Refresh the folder view so the user sees the new file
-                    NavigateTo(destDir)
-
-                    ' Open the newly created file
-                    GoToFolderOrOpenFile(newFilePath)
-
-                Catch ex As Exception
-                    ShowStatus(StatusPad & IconError & " Failed to create text file: " & ex.Message)
-                    Debug.WriteLine("Text Command Error: " & ex.Message)
-                End Try
-
-            Case "help", "man"
-
-                Dim helpFilePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
-
-                ' Ensure the help file exists (creates it if missing)
-                EnsureHelpFileExists(helpFilePath)
-
-                Try
-                    'ShowStatus(helpText)
-                    ShowStatus(StatusPad & IconDialog & "  Opening help file.")
-
-                    ' Open the help file in the default text editor
-                    Process.Start(New ProcessStartInfo() With {
-                        .FileName = helpFilePath,
-                        .UseShellExecute = True
-                    })
-
-                    ShowStatus(StatusPad & IconSuccess & "  Opened help file.")
-
-                Catch ex As Exception
-                    ShowStatus(StatusPad & IconError & "  Failed to open help file: " & ex.Message)
-                    Debug.WriteLine("Failed to open help file: " & ex.Message)
-                End Try
-
-            Case "open"
-
-                ' If the user typed: open "C:\path\to\something"
-                If parts.Length > 1 Then
-
-                    Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
-
-                    If File.Exists(targetPath) Then
-                        Try
-                            ShowStatus(StatusPad & IconDialog & "  Opening file...")
-                            Process.Start(New ProcessStartInfo() With {
-                                .FileName = targetPath,
-                                .UseShellExecute = True
-                            })
-                            ShowStatus(StatusPad & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
-
-                            txtAddressBar.Text = currentFolder
-
-                        Catch ex As Exception
-                            ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
-                            Debug.WriteLine("Failed to open file: " & ex.Message)
-                        End Try
-
-                    ElseIf Directory.Exists(targetPath) Then
-                        'ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
-                        NavigateTo(targetPath)
-                        'ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & targetPath)
-
-                    Else
-                        ShowStatus(StatusPad & IconError & "  Path not found: " & targetPath)
-                    End If
-
-                    Return
-                End If
-
-                ' If no path was typed, use the selected item in the ListView
-                If lvFiles.SelectedItems.Count = 0 Then
-                    ShowStatus(StatusPad & IconDialog & "  Usage: open [file_or_folder]  — or select an item first.")
-                    Return
-                End If
-
-                Dim selected As ListViewItem = lvFiles.SelectedItems(0)
-                Dim fullPath As String = selected.Tag.ToString()
-
-                If File.Exists(fullPath) Then
-                    Try
-                        ShowStatus(StatusPad & IconDialog & "  Opening file...")
-                        Process.Start(New ProcessStartInfo() With {
-                            .FileName = fullPath,
-                            .UseShellExecute = True
-                        })
-                        ShowStatus(StatusPad & IconSuccess & "  Opened file: " & selected.Text)
-
-                        txtAddressBar.Text = currentFolder
-
-                    Catch ex As Exception
-                        ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
-                        Debug.WriteLine("Failed to open file: " & ex.Message)
-                    End Try
-
-                ElseIf Directory.Exists(fullPath) Then
-                    ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
-                    NavigateTo(fullPath)
-                    ShowStatus(StatusPad & IconSuccess & "  Navigated to: " & fullPath)
-
-                Else
-                    ShowStatus(StatusPad & IconError & "  Selected item no longer exists.")
-                End If
-
-            Case "find", "search"
-
-                If parts.Length > 1 Then
-
-                    Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-                    If String.IsNullOrWhiteSpace(searchTerm) Then
-                        ShowStatus(StatusPad & IconDialog & " Usage: find [search_term] - e.g., find document")
-                        Return
-                    End If
-
-                    ShowStatus(StatusPad & IconSearch & " Searching for: " & searchTerm)
-
-                    'SearchInCurrentFolder(searchTerm)
-                    OnlySearchForFilesInCurrentFolder(searchTerm)
-
-                    ' Reset index for new search
-                    SearchIndex = 0
-
-                    ' Auto-select first result if available
-                    If SearchResults.Count > 0 Then
-                        lvFiles.SelectedItems.Clear()
-                        SelectListViewItemByPath(SearchResults(0))
-
-                        Dim nextPath As String = SearchResults(SearchIndex)
-                        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
-
-                        txtAddressBar.Focus()
-
-                        ShowStatus(
-                            StatusPad & IconSearch &
-                            "    Result " &
-                            (SearchIndex + 1) &
-                            " of " &
-                            SearchResults.Count &
-                            $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
-                        )
-
-
-                    Else
-                        ShowStatus(StatusPad & IconDialog & "  No results found for: " & searchTerm)
-                    End If
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & "  Usage: find [search_term] - e.g., find document")
-                End If
-
-            Case "findnext", "searchnext"
-
-                If SearchResults.Count = 0 Then
-                    ShowStatus(StatusPad & IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
-                    Return
-                End If
-
-                ' Advance index
-                SearchIndex += 1
-
-                ' Wrap around
-                If SearchIndex >= SearchResults.Count Then
-                    SearchIndex = 0
-                End If
-
-                ' Select the next result
-                lvFiles.SelectedItems.Clear()
-                Dim nextPath As String = SearchResults(SearchIndex)
-                SelectListViewItemByPath(nextPath)
-
-                ShowStatus(
-                    StatusPad & IconSearch &
-                    " Showing result " &
-                    (SearchIndex + 1) &
-                    " of " &
-                    SearchResults.Count &
-                    " To show the next result, enter: findnext")
-
-            Case "exit", "quit"
-
-                ' Exit the application
-                Me.Close()
-
-            Case Else
-
-                ' Is the input a folder?
-                If Directory.Exists(command) Then
-
-                    ShowStatus("Nav")
-
-                    ' Go to that folder.
-                    NavigateTo(command)
-
-                    ' Is the input a file?
-                ElseIf File.Exists(command) Then
-
-                    ' Open the file or go to its folder
-                    GoToFolderOrOpenFile(command)
-
-                Else
-
-                    ' The input isn't a folder or a file,
-                    ' at this point, the interpreter treats it as an unknown command.
-                    ShowStatus(StatusPad & IconDialog & " Unknown command: " & cmd)
-
-                End If
-
-        End Select
-
-    End Sub
-
-    Private Function IsFileLocked(file As FileInfo) As Boolean
-        Try
-            Using stream As FileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)
-                ' If we can open it with no sharing, it's not locked
-            End Using
-            Return False
-        Catch ex As IOException
-            ' Sharing violation or lock
-            Return True
-        Catch ex As UnauthorizedAccessException
-            ' File may be a directory or protected
-            Return True
-        End Try
-    End Function
-
-    Private Sub EnsureHelpFileExists(helpFilePath As String)
-
-        Try
-            If File.Exists(helpFilePath) Then
-                Exit Sub
-            End If
-
-            ShowStatus(StatusPad & IconDialog & "  Creating help file.")
-
-            Dim helpText As String = BuildHelpText()
-
-            Dim dir As String = Path.GetDirectoryName(helpFilePath)
-            If Not Directory.Exists(dir) Then
-                Directory.CreateDirectory(dir)
-            End If
-
-            File.WriteAllText(helpFilePath, helpText)
-
-            ShowStatus(StatusPad & IconSuccess & "  Help file created.")
-
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & "  Unable to create help file: " & ex.Message)
-            Debug.WriteLine("Unable to create help file: " & ex.Message)
-        End Try
-
-    End Sub
-
-    Private Function BuildHelpText() As String
-        Dim sb As New StringBuilder()
-
-        ' ---------------------------------------------------------
-        ' HEADER
-        ' ---------------------------------------------------------
-        sb.AppendLine("========================================")
-        sb.AppendLine("            File Explorer CLI")
-        sb.AppendLine("========================================")
-        sb.AppendLine()
-        sb.AppendLine("Available Commands:")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' NAVIGATION
-        ' ---------------------------------------------------------
-        sb.AppendLine("cd")
-        sb.AppendLine("cd [directory]")
-        sb.AppendLine("  Change directory to the specified path.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    cd C:\")
-        sb.AppendLine("    cd ""C:\My Folder""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' DIRECTORY CREATION
-        ' ---------------------------------------------------------
-        sb.AppendLine("mkdir, make")
-        sb.AppendLine("mkdir [directory_path]")
-        sb.AppendLine("  Create a new folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    mkdir C:\newfolder")
-        sb.AppendLine("    make ""C:\My New Folder""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' COPY
-        ' ---------------------------------------------------------
-        sb.AppendLine("copy")
-        sb.AppendLine("copy [source] [destination]")
-        sb.AppendLine("  Copy a file or folder to a destination folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
-        sb.AppendLine("    copy ""C:\folder A"" ""C:\folder B""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' MOVE
-        ' ---------------------------------------------------------
-        sb.AppendLine("move")
-        sb.AppendLine("move [source] [destination]")
-        sb.AppendLine("  Move a file or folder to a new location.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
-        sb.AppendLine("    move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc""")
-        sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
-        sb.AppendLine("    move ""C:\folder A"" ""C:\folder B\New Name""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' DELETE
-        ' ---------------------------------------------------------
-        sb.AppendLine("delete")
-        sb.AppendLine("delete [file_or_directory]")
-        sb.AppendLine("  Delete a file or folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    delete C:\file.txt")
-        sb.AppendLine("    delete ""C:\My Folder""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' RENAME
-        ' ---------------------------------------------------------
-        sb.AppendLine("rename")
-        sb.AppendLine("rename [source_path] [new_name]")
-        sb.AppendLine("  Rename a file or directory.")
-        sb.AppendLine("  Paths with spaces must be enclosed in quotes.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    rename ""C:\folder\oldname.txt"" ""newname.txt""")
-        sb.AppendLine("    rename ""C:\folder\old name.txt"" ""new name.txt""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' OPEN
-        ' ---------------------------------------------------------
-        sb.AppendLine("open")
-        sb.AppendLine("open [file_or_directory]")
-        sb.AppendLine("  Open a file with the default application, or navigate into a folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    open C:\folder\file.txt")
-        sb.AppendLine("    open ""C:\My Folder""")
-        sb.AppendLine("    open")
-        sb.AppendLine("      (opens the selected file or folder)")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' TEXT FILE CREATION
-        ' ---------------------------------------------------------
-        sb.AppendLine("text, txt")
-        sb.AppendLine("text [file_path]")
-        sb.AppendLine("  Create a new text file at the specified path.")
-        sb.AppendLine("  Example:")
-        sb.AppendLine("    text ""C:\folder\example.txt""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' SEARCH
-        ' ---------------------------------------------------------
-        sb.AppendLine("find, search")
-        sb.AppendLine("find [search_term]")
-        sb.AppendLine("  Search for files and folders in the current directory.")
-        sb.AppendLine("  Example:")
-        sb.AppendLine("    find document")
-        sb.AppendLine()
-
-        sb.AppendLine("findnext, searchnext")
-        sb.AppendLine("findnext")
-        sb.AppendLine("  Show the next search result from the previous search.")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' EXIT
-        ' ---------------------------------------------------------
-        sb.AppendLine("exit, quit")
-        sb.AppendLine("  Exit the application.")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' HELP
-        ' ---------------------------------------------------------
-        sb.AppendLine("help")
-        sb.AppendLine("  Opens this help file.")
-        sb.AppendLine()
-
-        Return sb.ToString()
-    End Function
 
     Private Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
@@ -3267,12 +2874,290 @@ Public Class Form1
         End If
     End Sub
 
-
     Private Sub ClearStatus(sender As Object, e As EventArgs)
         lblStatus.Text = ""
         statusTimer.Stop()
     End Sub
 
+
+    Private Sub PlaceCaretAtEndOfAddressBar()
+        ' Place caret at end of text
+        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
+    End Sub
+
+    Private Sub HandleFindNextCommand()
+
+        If SearchResults.Count = 0 Then
+            ShowStatus(StatusPad & IconDialog & "  No previous search results. Press: Ctrl + F or enter: 'find [search_term]' to start a search.")
+            Return
+        End If
+
+        ' Advance index
+        SearchIndex += 1
+
+        ' Wrap around
+        If SearchIndex >= SearchResults.Count Then
+            SearchIndex = 0
+        End If
+
+        ' Select the next result
+        lvFiles.SelectedItems.Clear()
+        Dim nextPath As String = SearchResults(SearchIndex)
+
+        SelectListViewItemByPath(nextPath)
+        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+        ShowStatus(
+            StatusPad & IconSearch &
+            "    Result " &
+            (SearchIndex + 1) &
+            " of " &
+            SearchResults.Count &
+            $"     {fileName}     Next  -  F3    Open  -  Ctrl + O"
+        )
+
+    End Sub
+
+    Private Sub InitiateSearch()
+        txtAddressBar.Focus()
+        txtAddressBar.Text = "find "
+        PlaceCaretAtEndOfAddressBar()
+    End Sub
+
+    Private Sub ConsumeKey(e As KeyEventArgs)
+        e.Handled = True
+        e.SuppressKeyPress = True
+    End Sub
+
+    Private Function ResolveDestinationPathWithAutoRename(
+        initialDestPath As String,
+        isDirectory As Boolean
+    ) As String
+        ' Generates a non‑conflicting destination path using Windows‑style
+        ' rename‑on‑copy semantics:
+        '   File.txt → File - Copy.txt → File - Copy (2).txt → ...
+        ' For directories, the extension is omitted.
+
+        If String.IsNullOrWhiteSpace(initialDestPath) Then
+            Return initialDestPath
+        End If
+
+        Dim dir As String = Path.GetDirectoryName(initialDestPath)
+        Dim baseName As String = Path.GetFileNameWithoutExtension(initialDestPath)
+        Dim ext As String = If(isDirectory, String.Empty, Path.GetExtension(initialDestPath))
+
+        ' If the directory doesn't exist, we can't check collisions
+        If String.IsNullOrWhiteSpace(dir) OrElse Not Directory.Exists(dir) Then
+            Return initialDestPath
+        End If
+
+        Dim candidate As String = initialDestPath
+        Dim index As Integer = 1
+
+        While (Not isDirectory AndAlso File.Exists(candidate)) OrElse
+          (isDirectory AndAlso Directory.Exists(candidate))
+
+            If index = 1 Then
+                candidate = Path.Combine(dir, $"{baseName} - Copy{ext}")
+            Else
+                candidate = Path.Combine(dir, $"{baseName} - Copy ({index}){ext}")
+            End If
+
+            index += 1
+        End While
+
+        Return candidate
+    End Function
+
+    Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
+        Try
+            Dim root = Path.GetPathRoot(destinationPath)
+            Dim drive As New DriveInfo(root)
+            Return sourceFile.Length <= drive.AvailableFreeSpace
+        Catch
+            ' If free space cannot be determined, allow the copy attempt
+            Return True
+        End Try
+    End Function
+
+    Private Function IsFileLocked(file As FileInfo) As Boolean
+        Try
+            Using stream As FileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)
+                ' If we can open it with no sharing, it's not locked
+            End Using
+            Return False
+        Catch ex As IOException
+            ' Sharing violation or lock
+            Return True
+        Catch ex As UnauthorizedAccessException
+            ' File may be a directory or protected
+            Return True
+        End Try
+    End Function
+
+    Private Sub EnsureHelpFileExists(helpFilePath As String)
+
+        Try
+            If File.Exists(helpFilePath) Then
+                Exit Sub
+            End If
+
+            ShowStatus(StatusPad & IconDialog & "  Creating help file.")
+
+            Dim helpText As String = BuildHelpText()
+
+            Dim dir As String = Path.GetDirectoryName(helpFilePath)
+            If Not Directory.Exists(dir) Then
+                Directory.CreateDirectory(dir)
+            End If
+
+            File.WriteAllText(helpFilePath, helpText)
+
+            ShowStatus(StatusPad & IconSuccess & "  Help file created.")
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & "  Unable to create help file: " & ex.Message)
+            Debug.WriteLine("Unable to create help file: " & ex.Message)
+        End Try
+
+    End Sub
+
+    Private Function BuildHelpText() As String
+        Dim sb As New StringBuilder()
+
+        ' ---------------------------------------------------------
+        ' HEADER
+        ' ---------------------------------------------------------
+        sb.AppendLine("========================================")
+        sb.AppendLine("            File Explorer CLI")
+        sb.AppendLine("========================================")
+        sb.AppendLine()
+        sb.AppendLine("Available Commands:")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' NAVIGATION
+        ' ---------------------------------------------------------
+        sb.AppendLine("cd")
+        sb.AppendLine("cd [directory]")
+        sb.AppendLine("  Change directory to the specified path.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    cd C:\")
+        sb.AppendLine("    cd ""C:\My Folder""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' DIRECTORY CREATION
+        ' ---------------------------------------------------------
+        sb.AppendLine("mkdir, make")
+        sb.AppendLine("mkdir [directory_path]")
+        sb.AppendLine("  Create a new folder.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    mkdir C:\newfolder")
+        sb.AppendLine("    make ""C:\My New Folder""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' COPY
+        ' ---------------------------------------------------------
+        sb.AppendLine("copy")
+        sb.AppendLine("copy [source] [destination]")
+        sb.AppendLine("  Copy a file or folder to a destination folder.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
+        sb.AppendLine("    copy ""C:\folder A"" ""C:\folder B""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' MOVE
+        ' ---------------------------------------------------------
+        sb.AppendLine("move")
+        sb.AppendLine("move [source] [destination]")
+        sb.AppendLine("  Move a file or folder to a new location.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
+        sb.AppendLine("    move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc""")
+        sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
+        sb.AppendLine("    move ""C:\folder A"" ""C:\folder B\New Name""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' DELETE
+        ' ---------------------------------------------------------
+        sb.AppendLine("delete")
+        sb.AppendLine("delete [file_or_directory]")
+        sb.AppendLine("  Delete a file or folder.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    delete C:\file.txt")
+        sb.AppendLine("    delete ""C:\My Folder""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' RENAME
+        ' ---------------------------------------------------------
+        sb.AppendLine("rename")
+        sb.AppendLine("rename [source_path] [new_name]")
+        sb.AppendLine("  Rename a file or directory.")
+        sb.AppendLine("  Paths with spaces must be enclosed in quotes.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    rename ""C:\folder\oldname.txt"" ""newname.txt""")
+        sb.AppendLine("    rename ""C:\folder\old name.txt"" ""new name.txt""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' OPEN
+        ' ---------------------------------------------------------
+        sb.AppendLine("open")
+        sb.AppendLine("open [file_or_directory]")
+        sb.AppendLine("  Open a file with the default application, or navigate into a folder.")
+        sb.AppendLine("  Examples:")
+        sb.AppendLine("    open C:\folder\file.txt")
+        sb.AppendLine("    open ""C:\My Folder""")
+        sb.AppendLine("    open")
+        sb.AppendLine("      (opens the selected file or folder)")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' TEXT FILE CREATION
+        ' ---------------------------------------------------------
+        sb.AppendLine("text, txt")
+        sb.AppendLine("text [file_path]")
+        sb.AppendLine("  Create a new text file at the specified path.")
+        sb.AppendLine("  Example:")
+        sb.AppendLine("    text ""C:\folder\example.txt""")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' SEARCH
+        ' ---------------------------------------------------------
+        sb.AppendLine("find, search")
+        sb.AppendLine("find [search_term]")
+        sb.AppendLine("  Search for files and folders in the current directory.")
+        sb.AppendLine("  Example:")
+        sb.AppendLine("    find document")
+        sb.AppendLine()
+
+        sb.AppendLine("findnext, searchnext")
+        sb.AppendLine("findnext")
+        sb.AppendLine("  Show the next search result from the previous search.")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' EXIT
+        ' ---------------------------------------------------------
+        sb.AppendLine("exit, quit")
+        sb.AppendLine("  Exit the application.")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' HELP
+        ' ---------------------------------------------------------
+        sb.AppendLine("help")
+        sb.AppendLine("  Opens this help file.")
+        sb.AppendLine()
+
+        Return sb.ToString()
+    End Function
 
     Private Function PathExists(path As String) As Boolean
         Return File.Exists(path) OrElse Directory.Exists(path)
@@ -3401,7 +3286,6 @@ Public Class Form1
         Next
     End Sub
 
-
     Private Function HasSubdirectories(path As String) As Boolean
         Try
             Return Directory.EnumerateDirectories(path).Any()
@@ -3496,6 +3380,8 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
+
+
     Private Sub InitApp()
 
         Me.Text = "File Explorer - Code with Joe"
@@ -3532,6 +3418,47 @@ Public Class Form1
 
     End Sub
 
+    Private Sub ConfigureTooltips()
+
+        ' General tooltip settings
+        tips.AutoPopDelay = 6000
+        tips.InitialDelay = 300
+        tips.ReshowDelay = 100
+        tips.ShowAlways = True
+
+        ' ============================
+        ' Navigation Buttons
+        ' ============================
+        tips.SetToolTip(btnBack, "Go back to the previous folder  (Alt + ← or Backspace)")
+        tips.SetToolTip(btnForward, "Go forward to the next folder  (Alt + →)")
+        tips.SetToolTip(btnRefresh, "Refresh the current folder  (F5)")
+        tips.SetToolTip(bntHome, "Go to your Home directory")
+        tips.SetToolTip(btnGo, "Navigate to the path entered in the address bar")
+
+        ' ============================
+        ' File / Folder Creation
+        ' ============================
+        tips.SetToolTip(btnNewFolder, "Create a new folder  (Ctrl + Shift + N)")
+        tips.SetToolTip(btnNewTextFile, "Create a new text file (Ctrl + Shift + T)")
+
+        ' ============================
+        ' Clipboard Operations
+        ' ============================
+        tips.SetToolTip(btnCut, "Cut selected items  (Ctrl + X)")
+        tips.SetToolTip(btnCopy, "Copy selected items  (Ctrl + C)")
+        tips.SetToolTip(btnPaste, "Paste items  (Ctrl + V)")
+
+        ' ============================
+        ' File Operations
+        ' ============================
+        tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
+        tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
+
+        'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
+        tips.SetToolTip(txtAddressBar,
+                        "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
+
+    End Sub
 
     Private Sub InitListView()
         lvFiles.View = View.Details
@@ -3924,7 +3851,6 @@ Public Class Form1
         Debug.WriteLine("✓ ParseSize tests passed")
 
     End Sub
-
 
     Private Sub Test_NormalizeTextFilePath()
 
