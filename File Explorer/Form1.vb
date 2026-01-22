@@ -193,9 +193,51 @@ Public Class Form1
         If HandleSearchShortcuts(keyData) Then Return True
         If HandleFileFolderOperations(Nothing, keyData) Then Return True
 
-        ' Default behavior
         Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
 
+
+    Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
+
+        ' ALT + LEFT (Back)
+        If keyData = (Keys.Alt Or Keys.Left) Then
+            NavigateBackward_Click()
+            PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
+        ' ALT + RIGHT (Forward)
+        If keyData = (Keys.Alt Or Keys.Right) Then
+            NavigateForward_Click()
+            PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
+        ' ALT + UP (Parent folder)
+        If keyData = (Keys.Alt Or Keys.Up) Then
+            NavigateToParent()
+            PlaceCaretAtEndOfAddressBar()
+
+            Return True
+        End If
+
+        ' F5 (Refresh)
+        If keyData = Keys.F5 Then
+            RefreshCurrentFolder()
+            txtAddressBar.Focus()
+
+            PlaceCaretAtEndOfAddressBar()
+
+            Return True
+        End If
+
+        ' F11 (Full screen)
+        If keyData = Keys.F11 Then
+            ToggleFullScreen()
+            Return True
+        End If
+
+        Return False
     End Function
 
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
@@ -439,45 +481,17 @@ Public Class Form1
         Return False
     End Function
 
-    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
-    '    ' ===========================
-    '    '   SHIFT + TAB (reverse)
-    '    ' ===========================
-    '    If keyData = (Keys.Shift Or Keys.Tab) Then
-
-    '        ' File List → Address Bar
-    '        If lvFiles.Focused Then
-    '            txtAddressBar.Focus()
-    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    '            Return True
-    '        End If
-
-    '        ' Address Bar → stays in Address Bar (Explorer behavior)
-    '        If txtAddressBar.Focused Then
-    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    '            Return True
-    '        End If
-
-    '        ' Fallback
-    '        txtAddressBar.Focus()
-    '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    '        Return True
-    '    End If
-
-    '    Return False
-
-    'End Function
-
-
-
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+
+        ' Detect SHIFT + TAB correctly inside ProcessCmdKey
         If keyData = (Keys.Shift Or Keys.Tab) Then
 
-            ' TreeView → File List
+            ' ===========================
+            '   TreeView → File List
+            ' ===========================
             If tvFolders.Focused Then
                 lvFiles.Focus()
 
-                ' Restore selection if possible
                 If lvFiles.Items.Count > 0 Then
                     If lvFiles.SelectedItems.Count > 0 Then
                         Dim sel = lvFiles.SelectedItems(0)
@@ -493,14 +507,18 @@ Public Class Form1
                 Return True
             End If
 
-            ' File List → Address Bar
+            ' ===========================
+            '   File List → Address Bar
+            ' ===========================
             If lvFiles.Focused Then
                 txtAddressBar.Focus()
                 PlaceCaretAtEndOfAddressBar()
                 Return True
             End If
 
-            ' Address Bar → TreeView (reverse of forward cycle)
+            ' ===========================
+            '   Address Bar → TreeView
+            ' ===========================
             If txtAddressBar.Focused Then
                 tvFolders.Focus()
 
@@ -512,7 +530,9 @@ Public Class Form1
                 Return True
             End If
 
-            ' Fallback
+            ' ===========================
+            '   Fallback
+            ' ===========================
             txtAddressBar.Focus()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -520,81 +540,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
-
-    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
-    '    ' ===========================
-    '    '   TAB NAVIGATION
-    '    ' ===========================
-    '    If keyData = Keys.Tab Then
-
-    '        ' -----------------------------------------
-    '        ' Address Bar → File List
-    '        ' -----------------------------------------
-    '        If txtAddressBar.Focused Then
-
-    '            lvFiles.Focus()
-
-    '            If lvFiles.Items.Count > 0 Then
-
-    '                ' If something is already selected, keep it
-    '                If lvFiles.SelectedItems.Count > 0 Then
-    '                    Dim sel As ListViewItem = lvFiles.SelectedItems(0)
-    '                    sel.Focused = True
-    '                    sel.EnsureVisible()
-    '                Else
-    '                    ' Otherwise select the first item
-    '                    lvFiles.Items(0).Selected = True
-    '                    lvFiles.Items(0).Focused = True
-    '                    lvFiles.Items(0).EnsureVisible()
-    '                End If
-
-    '            End If
-
-    '            Return True
-    '        End If
-
-    '        ' -----------------------------------------
-    '        ' File List → TreeView
-    '        ' -----------------------------------------
-    '        If lvFiles.Focused Then
-    '            tvFolders.Focus()
-
-    '            ' Ensure a node is selected
-    '            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-    '                tvFolders.SelectedNode = tvFolders.Nodes(0)
-    '            End If
-
-    '            tvFolders.SelectedNode?.EnsureVisible()
-    '            Return True
-    '        End If
-
-
-    '        ' -----------------------------------------
-    '        ' TreeView → Address Bar
-    '        ' -----------------------------------------
-    '        If tvFolders.Focused Then
-    '            txtAddressBar.Focus()
-    '            txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    '            Return True
-    '        End If
-
-
-    '        ' -----------------------------------------
-    '        ' Fallback: anything else → Address Bar
-    '        ' -----------------------------------------
-    '        txtAddressBar.Focus()
-    '        txtAddressBar.SelectionStart = txtAddressBar.Text.Length
-    '        Return True
-
-    '    End If
-
-    '    Return False
-
-    'End Function
-
-
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         If keyData = Keys.Tab Then
@@ -646,14 +591,15 @@ Public Class Form1
         Return False
     End Function
 
-    Private Function HandleAddressBarShortcuts(key As Keys) As Boolean
+    Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
         '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
-        If key = (Keys.Control Or Keys.L) _
-       OrElse key = (Keys.Alt Or Keys.D) _
-       OrElse key = Keys.F4 Then
+        If keyData = (Keys.Control Or Keys.L) _
+       OrElse keyData = (Keys.Alt Or Keys.D) _
+       OrElse keyData = Keys.F4 Then
+
             txtAddressBar.Focus()
             txtAddressBar.SelectAll()
             Return True
@@ -662,65 +608,37 @@ Public Class Form1
         ' ===========================
         '   ENTER (Address Bar execute)
         ' ===========================
-        If key = Keys.Enter Then
-            If txtAddressBar.Focused Then
-                ExecuteCommand(txtAddressBar.Text.Trim())
-                Return True
-            End If
+        If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
+            ExecuteCommand(txtAddressBar.Text.Trim())
+            Return True
         End If
 
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
-        If key = Keys.Escape Then
-            If txtAddressBar.Focused Then
-                txtAddressBar.Text = currentFolder
-                PlaceCaretAtEndOfAddressBar()
-                Return True
-            End If
-        End If
-
-        Return False
-    End Function
-
-    Private Function HandleNavigationShortcuts(key As Keys) As Boolean
-
-        If key = (Keys.Alt Or Keys.Left) Then
-            NavigateBackward_Click()
+        If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
+            txtAddressBar.Text = currentFolder
             PlaceCaretAtEndOfAddressBar()
-            Return True
-
-        ElseIf key = (Keys.Alt Or Keys.Right) Then
-            NavigateForward_Click()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-
-        ElseIf key = (Keys.Alt Or Keys.Up) Then
-            NavigateToParent()
-            Return True
-
-        ElseIf key = Keys.F5 Then
-            RefreshCurrentFolder()
-            Return True
-
-        ElseIf key = Keys.F11 Then
-            ToggleFullScreen()
             Return True
         End If
 
         Return False
     End Function
 
-    Private Function HandleSearchShortcuts(key As Keys) As Boolean
+    Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
-        ' Ctrl+F
-        If key = (Keys.Control Or Keys.F) Then
+        ' ===========================
+        '   CTRL + F (Find)
+        ' ===========================
+        If keyData = (Keys.Control Or Keys.F) Then
             InitiateSearch()
             Return True
         End If
 
-        ' F3
-        If key = Keys.F3 Then
+        ' ===========================
+        '   F3 (Find Next)
+        ' ===========================
+        If keyData = Keys.F3 Then
             HandleFindNextCommand()
             Return True
         End If
@@ -728,61 +646,109 @@ Public Class Form1
         Return False
     End Function
 
-    Private Function HandleFileFolderOperations(sender As Object, key As Keys) As Boolean
+    Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
         Try
-            If key = (Keys.Control Or Keys.O) Then
+            ' ===========================
+            '   CTRL + O  (Open)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.O) Then
                 OpenSelectedOrStartCommand()
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.E) Then
+            ' ===========================
+            '   CTRL + SHIFT + E  (Expand one level)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.E) Then
                 ExpandOneLevel()
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.C) Then
+            ' ===========================
+            '   CTRL + SHIFT + C  (Collapse one level)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.C) Then
                 CollapseOneLevel()
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.N) Then
+            ' ===========================
+            '   CTRL + SHIFT + N  (New folder)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.N) Then
                 NewFolder_Click(sender, EventArgs.Empty)
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.Shift Or Keys.T) Then
+            ' ===========================
+            '   CTRL + SHIFT + T  (New text file)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.T) Then
                 NewTextFile_Click(sender, EventArgs.Empty)
                 Return True
+            End If
 
-            ElseIf key = Keys.F2 Then
+            ' ===========================
+            '   F2 (Rename)
+            ' ===========================
+            If keyData = Keys.F2 Then
                 RenameFile_Click(sender, EventArgs.Empty)
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
+            ' ===========================
+            '   CTRL + C (Copy)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
                 CopySelected_Click(sender, EventArgs.Empty)
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
+            ' ===========================
+            '   CTRL + V (Paste)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
                 PasteSelected_Click(sender, EventArgs.Empty)
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
+            ' ===========================
+            '   CTRL + X (Cut)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
                 CutSelected_Click(sender, EventArgs.Empty)
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.A) Then
+            ' ===========================
+            '   CTRL + A (Select all)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.A) Then
                 SelectAllItems()
                 lvFiles.Focus()
                 Return True
+            End If
 
-            ElseIf key = (Keys.Control Or Keys.D) OrElse key = Keys.Delete Then
+            ' ===========================
+            '   CTRL + D  OR  DELETE  (Delete)
+            ' ===========================
+            If keyData = (Keys.Control Or Keys.D) _
+           OrElse keyData = Keys.Delete Then
+
                 Delete_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
         Catch ex As Exception
-            MessageBox.Show("An error occurred: " & ex.Message, "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("An error occurred: " & ex.Message,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
         End Try
 
         Return False
     End Function
+
 
     Private Sub HandleFindNextCommand()
 
@@ -2300,6 +2266,8 @@ Public Class Form1
 
         If confirm <> DialogResult.Yes Then Exit Sub
 
+        ShowStatus(StatusPad & IconDelete & $"  Deleting {count} items.")
+
         ' Remember index of first selected item for post-refresh selection
         Dim firstIndex As Integer = selected(0).Index
 
@@ -2321,6 +2289,7 @@ Public Class Form1
             End If
 
             Try
+
                 If Directory.Exists(fullPath) Then
                     Directory.Delete(fullPath, recursive:=True)
                     ShowStatus(StatusPad & IconDelete &
@@ -2387,242 +2356,16 @@ Public Class Form1
 
     End Sub
 
-    ' ------------------------------------------------------------
-    ' Wrapper for CLI: copy file or directory using unified engine
-    '    ' ------------------------------------------------------------
-    '    Private Async Function CopyFileOrDirectory(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task
 
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            ' -------------------------
-    '            ' FILE COPY
-    '            ' -------------------------
-    '            If File.Exists(source) Then
-
-    '                Dim destFile As String = Path.Combine(destination, Path.GetFileName(source))
-
-    '                ' Proactive free-space check
-    '                Dim srcInfo As New FileInfo(source)
-    '                If Not HasEnoughSpace(srcInfo, destFile) Then
-    '                    ShowStatus(StatusPad & IconError &
-    '                           " Not enough space to copy file: " & srcInfo.Name)
-    '                    Return
-    '                End If
-
-    '                Dim result As CopyResult = Await CopyFile(source, destFile, ct)
-
-    '                If result.Success Then
-
-    '                    ' Navigate to the destination folder
-    '                    NavigateTo(destination)
-
-    '                End If
-
-
-    '                'ShowStatus(StatusPad & IconDialog &
-    '                '       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
-    '                Return
-    '            End If
-
-
-    '            ' -------------------------
-    '            ' DIRECTORY COPY
-    '            ' -------------------------
-    '            If Directory.Exists(source) Then
-
-    '                Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
-
-    '                ' Proactive free-space check (sum of all files)
-    '                Dim totalSize As Long =
-    '                Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).
-    '                Sum(Function(f) New FileInfo(f).Length)
-
-    '                Dim root = Path.GetPathRoot(targetDir)
-    '                Dim drive As New DriveInfo(root)
-
-    '                If totalSize > drive.AvailableFreeSpace Then
-    '                    ShowStatus(StatusPad & IconError &
-    '                           " Not enough space to copy folder.")
-    '                    Return
-    '                End If
-
-    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
-
-    '                If result.Success Then
-
-    '                    Dim parent = Directory.GetParent(targetDir)
-    '                    If parent IsNot Nothing Then
-    '                        ' Navigate to the parent folder
-    '                        NavigateTo(parent.FullName)
-    '                    End If
-
-    '                End If
-
-
-    '                'ShowStatus(StatusPad & IconDialog &
-    '                '       $" Copied {result.FilesCopied} files, " &
-    '                '       $"{result.FilesSkipped} skipped, " &
-    '                '       $"{result.DirectoriesCreated} folders created.")
-    '                Return
-    '            End If
-
-
-    '            ' -------------------------
-    '            ' SOURCE NOT FOUND
-    '            ' -------------------------
-    '            ShowStatus(StatusPad & IconError &
-    '                   " Copy failed: Source does not exist or is not a valid file or directory.")
-
-    '        Catch ex As OperationCanceledException
-    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '        End Try
-
-    '    End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '    Private Async Function CopyFileOrDirectory(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task
-    '        ' ------------------------------------------------------------
-    '        ' Wrapper for CLI: copy file or directory using unified engine
-    '        ' ------------------------------------------------------------
-
-    '        Try
-    '            ct.ThrowIfCancellationRequested()
-
-    '            ' -------------------------
-    '            ' FILE COPY
-    '            ' -------------------------
-    '            If File.Exists(source) Then
-
-    '                Dim destFile As String = Path.Combine(destination, Path.GetFileName(source))
-
-    '                ' Proactive free-space check
-    '                Dim srcInfo As New FileInfo(source)
-    '                If Not HasEnoughSpace(srcInfo, destFile) Then
-    '                    ShowStatus(StatusPad & IconError &
-    '                       " Not enough space to copy file: " & srcInfo.Name)
-    '                    Return
-    '                End If
-
-    '                Dim result As CopyResult = Await CopyFile(source, destFile, ct)
-
-    '                If result.Success Then
-    '                    ' Navigate to the destination folder
-    '                    NavigateTo(destination)
-    '                End If
-
-    '                ' Optional: show summary
-    '                ' ShowStatus(StatusPad & IconDialog &
-    '                '        $" Copied {result.FilesCopied} file(s), " &
-    '                '        $"{result.FilesSkipped} skipped, " &
-    '                '        $"{result.FilesRenamed} renamed.")
-
-    '                Return
-    '            End If
-
-
-    '            ' -------------------------
-    '            ' DIRECTORY COPY
-    '            ' -------------------------
-    '            If Directory.Exists(source) Then
-
-    '                'Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
-
-    '                Dim targetDir As String = Path.Combine(destination, Path.GetFileName(source))
-
-    '                ' ------------------------------------------------------------
-    '                ' NEW: Auto‑rename destination directory if it already exists
-    '                ' ------------------------------------------------------------
-    '                If Directory.Exists(targetDir) Then
-    '                    Dim newDir = ResolveDestinationPathWithAutoRename(targetDir, isDirectory:=True)
-    '                    ShowStatus(StatusPad & IconDialog &
-    '               " Auto‑renamed folder → " & Path.GetFileName(newDir))
-    '                    Debug.WriteLine("Auto‑renamed directory to: " & newDir)
-    '                    targetDir = newDir
-    '                End If
-
-    '                ' Proactive free-space check (sum of all files)
-    '                Dim totalSize As Long =
-    '                Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).
-    '                Sum(Function(f) New FileInfo(f).Length)
-
-    '                Dim root = Path.GetPathRoot(targetDir)
-    '                Dim drive As New DriveInfo(root)
-
-    '                If totalSize > drive.AvailableFreeSpace Then
-    '                    ShowStatus(StatusPad & IconError &
-    '                       " Not enough space to copy folder.")
-    '                    Return
-    '                End If
-
-    '                Dim result As CopyResult = Await CopyDirectory(source, targetDir, ct)
-
-    '                'If result.Success Then
-    '                '    Dim parent = Directory.GetParent(targetDir)
-    '                '    If parent IsNot Nothing Then
-    '                '        NavigateTo(parent.FullName)
-    '                '    End If
-    '                'End If
-
-    '                ' Optional summary
-    '                ' ShowStatus(StatusPad & IconDialog &
-    '                '        $" Copied {result.FilesCopied} files, " &
-    '                '        $"{result.FilesSkipped} skipped, " &
-    '                '        $"{result.DirectoriesCreated} folders created, " &
-    '                '        $"{result.FilesRenamed} renamed.")
-
-    '                Return
-    '            End If
-
-
-    '            ' -------------------------
-    '            ' SOURCE NOT FOUND
-    '            ' -------------------------
-    '            ShowStatus(StatusPad & IconError &
-    '               " Copy failed: Source does not exist or is not a valid file or directory.")
-
-    '        Catch ex As OperationCanceledException
-    '            ShowStatus(StatusPad & IconWarning & " Copy operation canceled.")
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
-    '        End Try
-
-    '    End Function
-
-
-
-
-    ' ------------------------------------------------------------
-    ' Wrapper for CLI: copy file or directory using unified engine
-    ' ------------------------------------------------------------
     Private Async Function CopyFileOrDirectory(
-    source As String,
-    destination As String,
-    ct As CancellationToken
-) As Task
+        source As String,
+        destination As String,
+        ct As CancellationToken
+    ) As Task
+
+        ' ------------------------------------------------------------
+        ' Wrapper for CLI: copy file or directory using unified engine
+        ' ------------------------------------------------------------
 
         Try
             ct.ThrowIfCancellationRequested()
