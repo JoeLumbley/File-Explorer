@@ -952,22 +952,26 @@ Public Class Form1
                 ' Ensure the help file exists (creates it if missing)
                 EnsureHelpFileExists(helpFilePath)
 
-                Try
-                    'ShowStatus(helpText)
-                    ShowStatus(StatusPad & IconDialog & "  Opening help file.")
 
-                    ' Open the help file in the default text editor
-                    Process.Start(New ProcessStartInfo() With {
-                        .FileName = helpFilePath,
-                        .UseShellExecute = True
-                    })
+                OpenFileWithDefaultApp(helpFilePath)
 
-                    ShowStatus(StatusPad & IconSuccess & "  Opened help file.")
 
-                Catch ex As Exception
-                    ShowStatus(StatusPad & IconError & "  Failed to open help file: " & ex.Message)
-                    Debug.WriteLine("Failed to open help file: " & ex.Message)
-                End Try
+                'Try
+                '    'ShowStatus(helpText)
+                '    ShowStatus(StatusPad & IconDialog & "  Opening help file.")
+
+                '    ' Open the help file in the default text editor
+                '    Process.Start(New ProcessStartInfo() With {
+                '        .FileName = helpFilePath,
+                '        .UseShellExecute = True
+                '    })
+
+                '    ShowStatus(StatusPad & IconSuccess & "  Opened help file.")
+
+                'Catch ex As Exception
+                '    ShowStatus(StatusPad & IconError & "  Failed to open help file: " & ex.Message)
+                '    Debug.WriteLine("Failed to open help file: " & ex.Message)
+                'End Try
 
             Case "open"
 
@@ -977,20 +981,27 @@ Public Class Form1
                     Dim targetPath As String = String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
 
                     If File.Exists(targetPath) Then
-                        Try
-                            ShowStatus(StatusPad & IconDialog & "  Opening file...")
-                            Process.Start(New ProcessStartInfo() With {
-                                .FileName = targetPath,
-                                .UseShellExecute = True
-                            })
-                            ShowStatus(StatusPad & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
 
-                            txtAddressBar.Text = currentFolder
 
-                        Catch ex As Exception
-                            ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
-                            Debug.WriteLine("Failed to open file: " & ex.Message)
-                        End Try
+                        OpenFileWithDefaultApp(targetPath)
+
+
+                        'Try
+                        '    ShowStatus(StatusPad & IconDialog & "  Opening file...")
+                        '    Process.Start(New ProcessStartInfo() With {
+                        '        .FileName = targetPath,
+                        '        .UseShellExecute = True
+                        '    })
+                        '    ShowStatus(StatusPad & IconSuccess & "  Opened file: " & Path.GetFileName(targetPath))
+
+                        '    txtAddressBar.Text = currentFolder
+
+                        'Catch ex As Exception
+                        '    ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
+                        '    Debug.WriteLine("Failed to open file: " & ex.Message)
+                        'End Try
+
+
 
                     ElseIf Directory.Exists(targetPath) Then
                         'ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
@@ -1014,20 +1025,29 @@ Public Class Form1
                 Dim fullPath As String = selected.Tag.ToString()
 
                 If File.Exists(fullPath) Then
-                    Try
-                        ShowStatus(StatusPad & IconDialog & "  Opening file...")
-                        Process.Start(New ProcessStartInfo() With {
-                            .FileName = fullPath,
-                            .UseShellExecute = True
-                        })
-                        ShowStatus(StatusPad & IconSuccess & "  Opened file: " & selected.Text)
 
-                        txtAddressBar.Text = currentFolder
 
-                    Catch ex As Exception
-                        ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
-                        Debug.WriteLine("Failed to open file: " & ex.Message)
-                    End Try
+                    OpenFileWithDefaultApp(fullPath)
+
+
+
+                    'Try
+                    '    ShowStatus(StatusPad & IconDialog & "  Opening file...")
+                    '    Process.Start(New ProcessStartInfo() With {
+                    '        .FileName = fullPath,
+                    '        .UseShellExecute = True
+                    '    })
+                    '    ShowStatus(StatusPad & IconSuccess & "  Opened file: " & selected.Text)
+
+                    '    txtAddressBar.Text = currentFolder
+
+                    'Catch ex As Exception
+                    '    ShowStatus(StatusPad & IconError & "  Failed to open file: " & ex.Message)
+                    '    Debug.WriteLine("Failed to open file: " & ex.Message)
+                    'End Try
+
+
+
 
                 ElseIf Directory.Exists(fullPath) Then
                     ShowStatus(StatusPad & IconDialog & "  Navigating to folder...")
@@ -1119,6 +1139,8 @@ Public Class Form1
                 '    Me.Close()
 
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
+
+                ' Confirm exit
                 If MessageBox.Show("Are you sure you want to exit?",
                                    "Confirm Exit",
                                    MessageBoxButtons.YesNo,
@@ -1127,6 +1149,7 @@ Public Class Form1
                 Else
                     ShowStatus("Exit cancelled.")
                 End If
+
                 Return
 
             Case Else
@@ -1142,8 +1165,28 @@ Public Class Form1
                     ' Is the input a file?
                 ElseIf File.Exists(command) Then
 
-                    ' Open the file or go to its folder
-                    GoToFolderOrOpenFile(command)
+                    ' Open the file
+                    'GoToFolderOrOpenFile(command)
+
+                    OpenFileWithDefaultApp(command)
+
+
+                    'Try
+
+                    '    ' Open file with default application.
+                    '    Dim processStartInfo As New ProcessStartInfo(command) With {.UseShellExecute = True}
+                    '    Dim process As Process = Process.Start(processStartInfo)
+
+                    '    Dim fileName As String = Path.GetFileNameWithoutExtension(command)
+
+                    '    ShowStatus(StatusPad & IconOpen & $"  Opened:  ""{fileName}""")
+
+                    'Catch ex As Exception
+                    '    ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+
+                    '    Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
+                    'End Try
+
 
                 Else
 
@@ -1157,6 +1200,27 @@ Public Class Form1
 
     End Sub
 
+
+    Private Sub OpenFileWithDefaultApp(filePath As String)
+        ' Open file with default application.
+
+        Try
+
+            Dim psi As New ProcessStartInfo(filePath) With {
+                .UseShellExecute = True
+            }
+
+            Process.Start(psi)
+
+            Dim fileName As String = Path.GetFileNameWithoutExtension(filePath)
+            ShowStatus(StatusPad & IconOpen & $"  Opened: ""{fileName}""")
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+            Debug.WriteLine("OpenFileWithDefaultApp: Error opening file: " & ex.Message)
+        End Try
+
+    End Sub
 
     Private Sub NavigateBackward_Click()
         ' Navigate backward in the history list
@@ -2339,21 +2403,23 @@ Public Class Form1
             ' If file exists, open it
         ElseIf File.Exists(FileOrFolder) Then
 
-            Try
+            OpenFileWithDefaultApp(FileOrFolder)
 
-                ' Open file with default application.
-                Dim processStartInfo As New ProcessStartInfo(FileOrFolder) With {.UseShellExecute = True}
-                Dim process As Process = Process.Start(processStartInfo)
+            'Try
 
-                Dim fileName As String = Path.GetFileNameWithoutExtension(FileOrFolder)
+            '    ' Open file with default application.
+            '    Dim processStartInfo As New ProcessStartInfo(FileOrFolder) With {.UseShellExecute = True}
+            '    Dim process As Process = Process.Start(processStartInfo)
 
-                ShowStatus(StatusPad & IconOpen & $"  Opened:  ""{fileName}""")
+            '    Dim fileName As String = Path.GetFileNameWithoutExtension(FileOrFolder)
 
-            Catch ex As Exception
-                ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+            '    ShowStatus(StatusPad & IconOpen & $"  Opened:  ""{fileName}""")
 
-                Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
-            End Try
+            'Catch ex As Exception
+            '    ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+
+            '    Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
+            'End Try
 
         Else
             ShowStatus(StatusPad & IconWarning & " Path does not exist: " & FileOrFolder)
