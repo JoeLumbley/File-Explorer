@@ -946,40 +946,9 @@ Public Class Form1
                     Debug.WriteLine("Text Command Error: " & ex.Message)
                 End Try
 
-            'Case "help", "man"
-
-            '    Dim helpFilePath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
-
-            '    ' Ensure the help file exists (creates it if missing)
-            '    EnsureHelpFileExists(helpFilePath)
-
-
-            '    OpenFileWithDefaultApp(helpFilePath)
-            '    RestoreAddressBar()
-
-            '    Return
-
-
-            'Case "help", "man"
-
             Case "help", "man"
                 ShowHelpFile()
                 Return
-
-                'Dim helpFilePath As String =
-                '    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
-
-                'EnsureHelpFileExists(helpFilePath)
-
-                'Try
-                '    OpenFileWithDefaultApp(helpFilePath)
-                'Catch ex As Exception
-                '    ShowStatus(StatusPad & IconError &
-                '               "  Unable to open help file. Type commands like: open, copy, move, delete, rename.")
-                'End Try
-
-                'RestoreAddressBar()
-                'Return
 
             Case "open"
 
@@ -1126,9 +1095,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
     Private Sub ShowHelpFile()
         Dim helpFilePath As String =
         Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
@@ -1137,12 +1103,6 @@ Public Class Form1
         OpenFileWithDefaultApp(helpFilePath)
         RestoreAddressBar()
     End Sub
-
-
-
-
-
-
 
     Private Sub HandleOpenPath(path As String)
 
