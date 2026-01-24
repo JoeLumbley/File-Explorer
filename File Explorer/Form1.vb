@@ -156,6 +156,19 @@ Public Class Form1
 
     Private copyCts As CancellationTokenSource
 
+
+    Private _isRenaming As Boolean = False
+
+    'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.BeforeLabelEdit
+    '    _isRenaming = True
+    'End Sub
+
+    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.AfterLabelEdit
+    '    _isRenaming = False
+    'End Sub
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -182,8 +195,9 @@ Public Class Form1
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
         ' Handle custom key commands
+        If HandleEnterKey(keyData) Then Return True
         If HandleAddressBarShortcuts(keyData) Then Return True
-        If HandleTreeViewToggleOnEnter(keyData) Then Return True
+        'If HandleTreeViewToggleOnEnter(keyData) Then Return True
 
         If HandleTabNavigation(keyData) Then Return True
         If HandleShiftTabNavigation(keyData) Then Return True
@@ -271,6 +285,9 @@ Public Class Form1
 
     Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
         Handles lvFiles.BeforeLabelEdit
+
+        _isRenaming = True
+
 
         Dim item As ListViewItem = lvFiles.Items(e.Item)
         Dim fullPath As String = CStr(item.Tag)
@@ -442,39 +459,93 @@ Public Class Form1
             Return True
         End If
 
-        ' ===========================
-        '   ENTER (Address Bar execute)
-        ' ===========================
-        If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
-            ExecuteCommand(txtAddressBar.Text.Trim())
-            Return True
-        End If
+        '' ===========================
+        ''   ENTER (Address Bar execute)
+        '' ===========================
+        'If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
+        '    ExecuteCommand(txtAddressBar.Text.Trim())
+        '    Return True
+        'End If
+
+        '' ===========================
+        ''   ESCAPE (Address Bar reset)
+        '' ===========================
+        'If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
+        '    txtAddressBar.Text = currentFolder
+        '    PlaceCaretAtEndOfAddressBar()
+        '    Return True
+        'End If
 
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
-        If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
+        If keyData = Keys.Escape AndAlso
+        txtAddressBar.Focused AndAlso
+        Not _isRenaming Then
             txtAddressBar.Text = currentFolder
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
+
+
+
         Return False
     End Function
 
-    Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
+    'Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
+    '    ' ===========================
+    '    '   ENTER (TreeView toggle)
+    '    ' ===========================
+    '    If keyData = Keys.Enter Then
+    '        If tvFolders.Focused Then
+    '            ToggleExpandCollapse()
+    '            Return True
+    '        End If
+    '    End If
+    '    Return False
+    'End Function
+
+
+    Private Function HandleEnterKey(keyData As Keys) As Boolean
+
+        If keyData <> Keys.Enter Then
+            Return False
+        End If
+
+        ' ===========================
+        '   ENTER (Address Bar execute)
+        ' ===========================
+        If txtAddressBar.Focused Then
+            ExecuteCommand(txtAddressBar.Text.Trim())
+            Return True
+        End If
+
         ' ===========================
         '   ENTER (TreeView toggle)
         ' ===========================
-        If keyData = Keys.Enter Then
-            If tvFolders.Focused Then
-                ToggleExpandCollapse()
-                Return True
-            End If
+        If tvFolders.Focused Then
+            ToggleExpandCollapse()
+            Return True
         End If
+
+        ' ===========================
+        '   ENTER (File List open)
+        ' ===========================
+        If lvFiles.Focused Then
+            OpenSelectedItem()
+            Return True
+        End If
+
         Return False
     End Function
 
+    Private Sub OpenSelectedItem()
+        ' Is a file or folder selected?
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+        GoToFolderOrOpenFile(fullPath)
+    End Sub
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         If keyData = Keys.Tab Then
@@ -594,13 +665,95 @@ Public Class Form1
         Return False
     End Function
 
+    Private Function GlobalShortcutsAllowed() As Boolean
+        Return Not txtAddressBar.Focused AndAlso Not _isRenaming
+    End Function
+
+    'Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
+
+    '    '' ===========================
+    '    '' ALT + HOME (Goto User Folder)
+    '    '' ===========================
+    '    'If keyData = (Keys.Alt Or Keys.Home) AndAlso
+    '    '    Not txtAddressBar.Focused AndAlso
+    '    '    Not _isRenaming Then
+    '    '    GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+    '    '    Return True
+    '    'End If
+
+    '    ' ===========================
+    '    ' ALT + HOME (Goto User Folder)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Home) AndAlso GlobalShortcutsAllowed() Then
+    '        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + LEFT (Back)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Left) Then
+    '        NavigateBackward_Click()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + RIGHT (Forward)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Right) Then
+    '        NavigateForward_Click()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + UP (Parent folder)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Up) Then
+    '        NavigateToParent()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' F5 (Refresh)
+    '    ' ===========================
+    '    If keyData = Keys.F5 Then
+    '        RefreshCurrentFolder()
+    '        txtAddressBar.Focus()
+
+    '        PlaceCaretAtEndOfAddressBar()
+
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' F11 (Full screen)
+    '    ' ===========================
+    '    If keyData = Keys.F11 Then
+    '        ToggleFullScreen()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
 
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
+        ' ALT + HOME (Goto User Folder)
+        ' ===========================
+        If keyData = (Keys.Alt Or Keys.Home) AndAlso GlobalShortcutsAllowed() Then
+            GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+            Return True
+        End If
+
+        ' ===========================
         ' ALT + LEFT (Back)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Left) Then
+        If keyData = (Keys.Alt Or Keys.Left) AndAlso GlobalShortcutsAllowed() Then
             NavigateBackward_Click()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -609,7 +762,7 @@ Public Class Form1
         ' ===========================
         ' ALT + RIGHT (Forward)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Right) Then
+        If keyData = (Keys.Alt Or Keys.Right) AndAlso GlobalShortcutsAllowed() Then
             NavigateForward_Click()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -618,7 +771,7 @@ Public Class Form1
         ' ===========================
         ' ALT + UP (Parent folder)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Up) Then
+        If keyData = (Keys.Alt Or Keys.Up) AndAlso GlobalShortcutsAllowed() Then
             NavigateToParent()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -627,25 +780,29 @@ Public Class Form1
         ' ===========================
         ' F5 (Refresh)
         ' ===========================
-        If keyData = Keys.F5 Then
+        If keyData = Keys.F5 AndAlso GlobalShortcutsAllowed() Then
             RefreshCurrentFolder()
             txtAddressBar.Focus()
-
             PlaceCaretAtEndOfAddressBar()
-
             Return True
         End If
 
         ' ===========================
         ' F11 (Full screen)
         ' ===========================
-        If keyData = Keys.F11 Then
+        If keyData = Keys.F11 AndAlso GlobalShortcutsAllowed() Then
             ToggleFullScreen()
             Return True
         End If
 
         Return False
     End Function
+
+
+
+
+
+
 
 
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
@@ -711,56 +868,171 @@ Public Class Form1
                 Return True
             End If
 
+
+
+
+
+
+
+
+
+
+
+
+            '' ===========================
+            ''   F2 (Rename)
+            '' ===========================
+            'If keyData = Keys.F2 Then
+            '    RenameFile_Click(sender, EventArgs.Empty)
+            '    Return True
+            'End If
+
+
             ' ===========================
             '   F2 (Rename)
             ' ===========================
-            If keyData = Keys.F2 Then
+            If keyData = Keys.F2 AndAlso
+            Not txtAddressBar.Focused AndAlso
+            Not _isRenaming Then
                 RenameFile_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
+
+
+
+
+
+
+
+            '' ===========================
+            ''   CTRL + C (Copy)
+            '' ===========================
+            'If keyData = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
+            '    CopySelected_Click(sender, EventArgs.Empty)
+            '    Return True
+            'End If
+
             ' ===========================
             '   CTRL + C (Copy)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
+            If keyData = (Keys.Control Or Keys.C) AndAlso
+            Not txtAddressBar.Focused AndAlso
+            Not _isRenaming Then
                 CopySelected_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
+
             ' ===========================
             '   CTRL + V (Paste)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
+            'If keyData = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
+            '    PasteSelected_Click(sender, EventArgs.Empty)
+            '    Return True
+            'End If
+
+            If keyData = (Keys.Control Or Keys.V) AndAlso
+            Not txtAddressBar.Focused AndAlso
+            Not _isRenaming Then
                 PasteSelected_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
+
+
+
+
+
+            '' ===========================
+            ''   CTRL + X (Cut)
+            '' ===========================
+            'If keyData = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
+            '    CutSelected_Click(sender, EventArgs.Empty)
+            '    Return True
+            'End If
+
+
+
+
+
+
+
+
             ' ===========================
             '   CTRL + X (Cut)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
+            If keyData = (Keys.Control Or Keys.X) AndAlso
+            Not txtAddressBar.Focused AndAlso
+            Not _isRenaming Then
                 CutSelected_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
+
+
+
+
+
+
+
+
+
+
+            '' ===========================
+            ''   CTRL + A (Select all)
+            '' ===========================
+            'If keyData = (Keys.Control Or Keys.A) Then
+            '    SelectAllItems()
+            '    lvFiles.Focus()
+            '    Return True
+            'End If
+
+
             ' ===========================
             '   CTRL + A (Select all)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.A) Then
+            If keyData = (Keys.Control Or Keys.A) AndAlso
+            Not txtAddressBar.Focused AndAlso
+            Not _isRenaming Then
                 SelectAllItems()
                 lvFiles.Focus()
                 Return True
             End If
 
+
+
+
+
+
+
+            ' ' ===========================
+            ' '   CTRL + D  OR  DELETE  (Delete)
+            ' ' ===========================
+            ' If keyData = (Keys.Control Or Keys.D) _
+            'OrElse keyData = Keys.Delete Then
+
+            '     Delete_Click(sender, EventArgs.Empty)
+            '     Return True
+            ' End If
+
             ' ===========================
             '   CTRL + D  OR  DELETE  (Delete)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.D) _
-           OrElse keyData = Keys.Delete Then
-
+            If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso
+               Not txtAddressBar.Focused AndAlso
+               Not _isRenaming Then
                 Delete_Click(sender, EventArgs.Empty)
                 Return True
             End If
+
+
+
+
+
+
+
+
 
         Catch ex As Exception
             MessageBox.Show("An error occurred: " & ex.Message,
@@ -1252,10 +1524,12 @@ Public Class Form1
     Private Sub Open_Click(sender As Object, e As EventArgs)
         ' Open selected file or folder - Mouse right-click context menu for lvFiles
 
-        ' Is a file or folder selected?
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
-        GoToFolderOrOpenFile(fullPath)
+        '' Is a file or folder selected?
+        'If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        'Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+        'GoToFolderOrOpenFile(fullPath)
+
+        OpenSelectedItem()
 
     End Sub
 
@@ -1971,6 +2245,9 @@ Public Class Form1
 
     Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
         ' -------- Rename file or folder after label edit in lvFiles --------
+
+        _isRenaming = False
+
 
         If e.Label Is Nothing Then Return ' user cancelled
 
@@ -3614,8 +3891,8 @@ Public Class Form1
         tips.SetToolTip(btnBack, "Go back to the previous folder  (Alt + ← or Backspace)")
         tips.SetToolTip(btnForward, "Go forward to the next folder  (Alt + →)")
         tips.SetToolTip(btnRefresh, "Refresh the current folder  (F5)")
-        tips.SetToolTip(bntHome, "Go to your Home directory")
-        tips.SetToolTip(btnGo, "Navigate to the path entered in the address bar")
+        tips.SetToolTip(bntHome, "Go to your Home directory (Alt + Home)")
+        tips.SetToolTip(btnGo, "Go to path or run command (Enter)")
 
         ' ============================
         ' File / Folder Creation
@@ -3883,71 +4160,202 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub InitContextMenu()
+    '    ' Add menu items with labels, shortcuts, and event handlers
+    '    Dim openItem As New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
+    '        .Name = "Open",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.O
+    '    }
+    '    cmsFiles.Items.Add(openItem)
+
+    '    Dim newFolderItem As New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
+    '        .Name = "NewFolder",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.Shift Or Keys.N
+    '    }
+    '    cmsFiles.Items.Add(newFolderItem)
+
+    '    Dim newTextFileItem As New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
+    '        .Name = "NewTextFile",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.Shift Or Keys.T
+    '    }
+    '    cmsFiles.Items.Add(newTextFileItem)
+
+    '    Dim cutItem As New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
+    '        .Name = "Cut",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.X
+    '    }
+    '    cmsFiles.Items.Add(cutItem)
+
+    '    Dim copyItem As New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
+    '        .Name = "Copy",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.C
+    '    }
+    '    cmsFiles.Items.Add(copyItem)
+
+    '    Dim pasteItem As New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
+    '        .Name = "Paste",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.V
+    '    }
+    '    cmsFiles.Items.Add(pasteItem)
+
+    '    Dim renameItem As New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
+    '        .Name = "Rename",
+    '        .ShortcutKeyDisplayString = Keys.F2
+    '    }
+    '    cmsFiles.Items.Add(renameItem)
+
+    '    Dim deleteItem As New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
+    '        .Name = "Delete",
+    '        .ShortcutKeyDisplayString = Keys.Delete
+    '    }
+    '    cmsFiles.Items.Add(deleteItem)
+
+    '    Dim copyPathItem As New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
+    '        .Name = "CopyPath",
+    '        .ShortcutKeyDisplayString = Keys.Control Or Keys.P
+    '    }
+    '    cmsFiles.Items.Add(copyPathItem)
+
+    '    Dim fullScreenItem As New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
+    '        .Name = "FullScreen",
+    '        .ShortcutKeyDisplayString = Keys.F11
+    '    }
+    '    cmsFiles.Items.Add(fullScreenItem)
+
+    '    ' Assign the context menu to the ListView
+    '    lvFiles.ContextMenuStrip = cmsFiles
+    'End Sub
+
+
+
+    'Private Sub InitContextMenu()
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
+    '    .Name = "Open",
+    '    .ShortcutKeyDisplayString = "Ctrl+O"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
+    '    .Name = "NewFolder",
+    '    .ShortcutKeyDisplayString = "Ctrl+Shift+N"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
+    '    .Name = "NewTextFile",
+    '    .ShortcutKeyDisplayString = "Ctrl+Shift+T"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
+    '    .Name = "Cut",
+    '    .ShortcutKeyDisplayString = "Ctrl+X"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
+    '    .Name = "Copy",
+    '    .ShortcutKeyDisplayString = "Ctrl+C"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
+    '    .Name = "Paste",
+    '    .ShortcutKeyDisplayString = "Ctrl+V"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
+    '    .Name = "Rename",
+    '    .ShortcutKeyDisplayString = "F2"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
+    '    .Name = "Delete",
+    '    .ShortcutKeyDisplayString = "Delete"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
+    '    .Name = "CopyPath",
+    '    .ShortcutKeyDisplayString = "Ctrl+P"
+    '})
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
+    '    .Name = "FullScreen",
+    '    .ShortcutKeyDisplayString = "F11"
+    '})
+
+    '    lvFiles.ContextMenuStrip = cmsFiles
+    'End Sub
+
+
+
+
     Private Sub InitContextMenu()
-        ' Add menu items with labels, shortcuts, and event handlers
-        Dim openItem As New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
+
+        cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
             .Name = "Open",
-            .ShortcutKeys = Keys.Control Or Keys.O
-        }
-        cmsFiles.Items.Add(openItem)
+            .ShortcutKeyDisplayString = "Ctrl+O"
+        })
 
-        Dim newFolderItem As New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Home Folder", Nothing,
+            Sub() GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+        ) With {
+            .Name = "HomeFolder",
+            .ShortcutKeyDisplayString = "Alt+Home"
+        })
+
+        cmsFiles.Items.Add(New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
             .Name = "NewFolder",
-            .ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.N
-        }
-        cmsFiles.Items.Add(newFolderItem)
+            .ShortcutKeyDisplayString = "Ctrl+Shift+N"
+        })
 
-        Dim newTextFileItem As New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
             .Name = "NewTextFile",
-            .ShortcutKeys = Keys.Control Or Keys.Shift Or Keys.T
-        }
-        cmsFiles.Items.Add(newTextFileItem)
+            .ShortcutKeyDisplayString = "Ctrl+Shift+T"
+        })
 
-        Dim cutItem As New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
             .Name = "Cut",
-            .ShortcutKeys = Keys.Control Or Keys.X
-        }
-        cmsFiles.Items.Add(cutItem)
+            .ShortcutKeyDisplayString = "Ctrl+X"
+        })
 
-        Dim copyItem As New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
             .Name = "Copy",
-            .ShortcutKeys = Keys.Control Or Keys.C
-        }
-        cmsFiles.Items.Add(copyItem)
+            .ShortcutKeyDisplayString = "Ctrl+C"
+        })
 
-        Dim pasteItem As New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
             .Name = "Paste",
-            .ShortcutKeys = Keys.Control Or Keys.V
-        }
-        cmsFiles.Items.Add(pasteItem)
+            .ShortcutKeyDisplayString = "Ctrl+V"
+        })
 
-        Dim renameItem As New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
             .Name = "Rename",
-            .ShortcutKeys = Keys.F2
-        }
-        cmsFiles.Items.Add(renameItem)
+            .ShortcutKeyDisplayString = "F2"
+        })
 
-        Dim deleteItem As New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
             .Name = "Delete",
-            .ShortcutKeys = Keys.Delete
-        }
-        cmsFiles.Items.Add(deleteItem)
+            .ShortcutKeyDisplayString = "Delete"
+        })
 
-        Dim copyPathItem As New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
             .Name = "CopyPath",
-            .ShortcutKeys = Keys.Control Or Keys.P
-        }
-        cmsFiles.Items.Add(copyPathItem)
+            .ShortcutKeyDisplayString = "Ctrl+P"
+        })
 
-        Dim fullScreenItem As New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
             .Name = "FullScreen",
-            .ShortcutKeys = Keys.F11
-        }
-        cmsFiles.Items.Add(fullScreenItem)
+            .ShortcutKeyDisplayString = "F11"
+        })
 
-        ' Assign the context menu to the ListView
         lvFiles.ContextMenuStrip = cmsFiles
+
     End Sub
+
+
+
+
+
+
+
+
 
 
 
