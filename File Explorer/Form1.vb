@@ -3724,13 +3724,59 @@ Public Class Form1
         easyAccessNode.Expand()
         easyAccessNode.StateImageIndex = 1   ' ▼ expanded
 
+        '' --- Drives ---
+        'For Each di In DriveInfo.GetDrives()
+        '    If di.IsReady Then
+        '        Try
+        '            Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
+        '                .Tag = di.RootDirectory.FullName
+        '            }
+
+        '            If di.DriveType = DriveType.CDRom Then
+        '                rootNode.ImageKey = "Optical"
+        '                rootNode.SelectedImageKey = "Optical"
+        '            Else
+        '                rootNode.ImageKey = "Drive"
+        '                rootNode.SelectedImageKey = "Drive"
+        '            End If
+
+        '            If HasSubdirectories(di.RootDirectory.FullName) Then
+        '                rootNode.Nodes.Add("Loading...")
+        '                rootNode.StateImageIndex = 0   ' ▶ collapsed
+        '            Else
+        '                rootNode.StateImageIndex = 2  ' no arrow
+        '            End If
+
+        '            tvFolders.Nodes.Add(rootNode)
+
+        '        Catch ex As IOException
+        '            Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+        '        Catch ex As UnauthorizedAccessException
+        '            Debug.WriteLine($"Access denied to drive {di.Name}: {ex.Message}")
+
+        '        Catch ex As Exception
+        '            Debug.WriteLine($"Unexpected error with drive {di.Name}: {ex.Message}")
+
+        '        End Try
+        '    Else
+        '        Debug.WriteLine($"Drive {di.Name} is not ready.")
+        '    End If
+        'Next
+
+
         ' --- Drives ---
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-                    Dim rootNode As New TreeNode(di.Name & " - " & di.VolumeLabel) With {
-                        .Tag = di.RootDirectory.FullName
-                    }
+                    Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
+                    Dim totalSpace As String = FormatBytes(di.TotalSize)
+
+                    Dim displayText As String =
+                $"{di.Name} - {di.VolumeLabel} ({freeSpace} free of {totalSpace})"
+
+                    Dim rootNode As New TreeNode(displayText) With {
+                .Tag = di.RootDirectory.FullName
+            }
 
                     If di.DriveType = DriveType.CDRom Then
                         rootNode.ImageKey = "Optical"
@@ -3753,10 +3799,8 @@ Public Class Form1
                     Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
                 Catch ex As UnauthorizedAccessException
                     Debug.WriteLine($"Access denied to drive {di.Name}: {ex.Message}")
-
                 Catch ex As Exception
                     Debug.WriteLine($"Unexpected error with drive {di.Name}: {ex.Message}")
-
                 End Try
             Else
                 Debug.WriteLine($"Drive {di.Name} is not ready.")
@@ -3766,6 +3810,21 @@ Public Class Form1
         tvFolders.EndUpdate()
 
     End Sub
+
+
+
+    Private Function FormatBytes(bytes As Long) As String
+        Dim sizes() As String = {"B", "KB", "MB", "GB", "TB"}
+        Dim order As Integer = 0
+        Dim value As Double = bytes
+
+        While value >= 1024 AndAlso order < sizes.Length - 1
+            order += 1
+            value /= 1024
+        End While
+
+        Return $"{value:0.##} {sizes(order)}"
+    End Function
 
     Private Sub InitStatusBar()
 
