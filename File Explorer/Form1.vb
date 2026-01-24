@@ -445,53 +445,86 @@ Public Class Form1
     End Sub
 
 
+    'Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
+    '    ' ===========================
+    '    If keyData = (Keys.Control Or Keys.L) _
+    '   OrElse keyData = (Keys.Alt Or Keys.D) _
+    '   OrElse keyData = Keys.F4 Then
+
+    '        txtAddressBar.Focus()
+    '        txtAddressBar.SelectAll()
+    '        Return True
+    '    End If
+
+    '    '' ===========================
+    '    ''   ENTER (Address Bar execute)
+    '    '' ===========================
+    '    'If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
+    '    '    ExecuteCommand(txtAddressBar.Text.Trim())
+    '    '    Return True
+    '    'End If
+
+    '    '' ===========================
+    '    ''   ESCAPE (Address Bar reset)
+    '    '' ===========================
+    '    'If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
+    '    '    txtAddressBar.Text = currentFolder
+    '    '    PlaceCaretAtEndOfAddressBar()
+    '    '    Return True
+    '    'End If
+
+    '    ' ===========================
+    '    '   ESCAPE (Address Bar reset)
+    '    ' ===========================
+    '    If keyData = Keys.Escape AndAlso
+    '    txtAddressBar.Focused AndAlso
+    '    Not _isRenaming Then
+    '        txtAddressBar.Text = currentFolder
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+
+
+
+    '    Return False
+    'End Function
+
+
+
+
     Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
         '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
         If keyData = (Keys.Control Or Keys.L) _
-       OrElse keyData = (Keys.Alt Or Keys.D) _
-       OrElse keyData = Keys.F4 Then
-
+        OrElse keyData = (Keys.Alt Or Keys.D) _
+        OrElse keyData = Keys.F4 Then
             txtAddressBar.Focus()
             txtAddressBar.SelectAll()
             Return True
         End If
 
-        '' ===========================
-        ''   ENTER (Address Bar execute)
-        '' ===========================
-        'If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
-        '    ExecuteCommand(txtAddressBar.Text.Trim())
-        '    Return True
-        'End If
-
-        '' ===========================
-        ''   ESCAPE (Address Bar reset)
-        '' ===========================
-        'If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
-        '    txtAddressBar.Text = currentFolder
-        '    PlaceCaretAtEndOfAddressBar()
-        '    Return True
-        'End If
-
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
-        If keyData = Keys.Escape AndAlso
-        txtAddressBar.Focused AndAlso
-        Not _isRenaming Then
+        If keyData = Keys.Escape AndAlso txtAddressBar.Focused AndAlso Not _isRenaming Then
             txtAddressBar.Text = currentFolder
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
-
-
-
         Return False
     End Function
+
+
+
+
+
 
     'Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
     '    ' ===========================
@@ -507,9 +540,48 @@ Public Class Form1
     'End Function
 
 
+    'Private Function HandleEnterKey(keyData As Keys) As Boolean
+
+    '    If keyData <> Keys.Enter Then
+    '        Return False
+    '    End If
+
+    '    ' ===========================
+    '    '   ENTER (Address Bar execute)
+    '    ' ===========================
+    '    If txtAddressBar.Focused Then
+    '        ExecuteCommand(txtAddressBar.Text.Trim())
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   ENTER (TreeView toggle)
+    '    ' ===========================
+    '    If tvFolders.Focused Then
+    '        ToggleExpandCollapse()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   ENTER (File List open)
+    '    ' ===========================
+    '    If lvFiles.Focused Then
+    '        OpenSelectedItem()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
         If keyData <> Keys.Enter Then
+            Return False
+        End If
+
+        ' Block global Enter behavior during rename mode
+        If _isRenaming Then
             Return False
         End If
 
@@ -540,6 +612,16 @@ Public Class Form1
         Return False
     End Function
 
+
+
+
+
+
+
+
+
+
+
     Private Sub OpenSelectedItem()
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
@@ -547,122 +629,266 @@ Public Class Form1
         GoToFolderOrOpenFile(fullPath)
     End Sub
 
+    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
+    '    If keyData = Keys.Tab Then
+
+    '        ' ==========================
+    '        ' Address Bar → File List
+    '        ' ==========================
+    '        If txtAddressBar.Focused Then
+    '            lvFiles.Focus()
+
+    '            If lvFiles.Items.Count > 0 Then
+    '                If lvFiles.SelectedItems.Count > 0 Then
+    '                    Dim sel = lvFiles.SelectedItems(0)
+    '                    sel.Focused = True
+    '                    sel.EnsureVisible()
+    '                Else
+    '                    lvFiles.Items(0).Selected = True
+    '                    lvFiles.Items(0).Focused = True
+    '                    lvFiles.Items(0).EnsureVisible()
+    '                End If
+    '            End If
+
+    '            Return True
+    '        End If
+
+    '        ' ==========================
+    '        ' File List → TreeView
+    '        ' ==========================
+    '        If lvFiles.Focused Then
+    '            tvFolders.Focus()
+
+    '            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '                tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '            End If
+
+    '            tvFolders.SelectedNode?.EnsureVisible()
+    '            Return True
+    '        End If
+
+    '        ' ==========================
+    '        ' TreeView → Address Bar
+    '        ' ==========================
+    '        If tvFolders.Focused Then
+    '            txtAddressBar.Focus()
+    '            PlaceCaretAtEndOfAddressBar()
+    '            Return True
+    '        End If
+
+    '        ' ==========================
+    '        ' Fallback
+    '        ' ==========================
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
+
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
-        If keyData = Keys.Tab Then
 
-            ' ==========================
-            ' Address Bar → File List
-            ' ==========================
-            If txtAddressBar.Focused Then
-                lvFiles.Focus()
+        If keyData <> Keys.Tab Then
+            Return False
+        End If
 
-                If lvFiles.Items.Count > 0 Then
-                    If lvFiles.SelectedItems.Count > 0 Then
-                        Dim sel = lvFiles.SelectedItems(0)
-                        sel.Focused = True
-                        sel.EnsureVisible()
-                    Else
-                        lvFiles.Items(0).Selected = True
-                        lvFiles.Items(0).Focused = True
-                        lvFiles.Items(0).EnsureVisible()
-                    End If
+        ' Prevent Tab navigation while renaming
+        If _isRenaming Then
+            Return False
+        End If
+
+        ' ==========================
+        ' Address Bar → File List
+        ' ==========================
+        If txtAddressBar.Focused Then
+            lvFiles.Focus()
+
+            If lvFiles.Items.Count > 0 Then
+                If lvFiles.SelectedItems.Count > 0 Then
+                    Dim sel = lvFiles.SelectedItems(0)
+                    sel.Focused = True
+                    sel.EnsureVisible()
+                Else
+                    lvFiles.Items(0).Selected = True
+                    lvFiles.Items(0).Focused = True
+                    lvFiles.Items(0).EnsureVisible()
                 End If
-
-                Return True
             End If
 
-            ' ==========================
-            ' File List → TreeView
-            ' ==========================
-            If lvFiles.Focused Then
-                tvFolders.Focus()
+            Return True
+        End If
 
-                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                    tvFolders.SelectedNode = tvFolders.Nodes(0)
-                End If
+        ' ==========================
+        ' File List → TreeView
+        ' ==========================
+        If lvFiles.Focused Then
+            tvFolders.Focus()
 
-                tvFolders.SelectedNode?.EnsureVisible()
-                Return True
+            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                tvFolders.SelectedNode = tvFolders.Nodes(0)
             End If
 
-            ' ==========================
-            ' TreeView → Address Bar
-            ' ==========================
-            If tvFolders.Focused Then
-                txtAddressBar.Focus()
-                PlaceCaretAtEndOfAddressBar()
-                Return True
-            End If
+            tvFolders.SelectedNode?.EnsureVisible()
+            Return True
+        End If
 
-            ' ==========================
-            ' Fallback
-            ' ==========================
+        ' ==========================
+        ' TreeView → Address Bar
+        ' ==========================
+        If tvFolders.Focused Then
             txtAddressBar.Focus()
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
-        Return False
+        ' ==========================
+        ' Fallback
+        ' ==========================
+        txtAddressBar.Focus()
+        PlaceCaretAtEndOfAddressBar()
+        Return True
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+
+    '    ' Detect SHIFT + TAB correctly inside ProcessCmdKey
+    '    If keyData = (Keys.Shift Or Keys.Tab) Then
+
+    '        ' ===========================
+    '        '   TreeView → File List
+    '        ' ===========================
+    '        If tvFolders.Focused Then
+    '            lvFiles.Focus()
+
+    '            If lvFiles.Items.Count > 0 Then
+    '                If lvFiles.SelectedItems.Count > 0 Then
+    '                    Dim sel = lvFiles.SelectedItems(0)
+    '                    sel.Focused = True
+    '                    sel.EnsureVisible()
+    '                Else
+    '                    lvFiles.Items(0).Selected = True
+    '                    lvFiles.Items(0).Focused = True
+    '                    lvFiles.Items(0).EnsureVisible()
+    '                End If
+    '            End If
+
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   File List → Address Bar
+    '        ' ===========================
+    '        If lvFiles.Focused Then
+    '            txtAddressBar.Focus()
+    '            PlaceCaretAtEndOfAddressBar()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   Address Bar → TreeView
+    '        ' ===========================
+    '        If txtAddressBar.Focused Then
+    '            tvFolders.Focus()
+
+    '            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '                tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '            End If
+
+    '            tvFolders.SelectedNode?.EnsureVisible()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   Fallback
+    '        ' ===========================
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
         ' Detect SHIFT + TAB correctly inside ProcessCmdKey
-        If keyData = (Keys.Shift Or Keys.Tab) Then
+        If keyData <> (Keys.Shift Or Keys.Tab) Then
+            Return False
+        End If
 
-            ' ===========================
-            '   TreeView → File List
-            ' ===========================
-            If tvFolders.Focused Then
-                lvFiles.Focus()
+        ' Prevent Shift+Tab navigation while renaming
+        If _isRenaming Then
+            Return False
+        End If
 
-                If lvFiles.Items.Count > 0 Then
-                    If lvFiles.SelectedItems.Count > 0 Then
-                        Dim sel = lvFiles.SelectedItems(0)
-                        sel.Focused = True
-                        sel.EnsureVisible()
-                    Else
-                        lvFiles.Items(0).Selected = True
-                        lvFiles.Items(0).Focused = True
-                        lvFiles.Items(0).EnsureVisible()
-                    End If
+        ' ===========================
+        '   TreeView → File List
+        ' ===========================
+        If tvFolders.Focused Then
+            lvFiles.Focus()
+
+            If lvFiles.Items.Count > 0 Then
+                If lvFiles.SelectedItems.Count > 0 Then
+                    Dim sel = lvFiles.SelectedItems(0)
+                    sel.Focused = True
+                    sel.EnsureVisible()
+                Else
+                    lvFiles.Items(0).Selected = True
+                    lvFiles.Items(0).Focused = True
+                    lvFiles.Items(0).EnsureVisible()
                 End If
-
-                Return True
             End If
 
-            ' ===========================
-            '   File List → Address Bar
-            ' ===========================
-            If lvFiles.Focused Then
-                txtAddressBar.Focus()
-                PlaceCaretAtEndOfAddressBar()
-                Return True
-            End If
+            Return True
+        End If
 
-            ' ===========================
-            '   Address Bar → TreeView
-            ' ===========================
-            If txtAddressBar.Focused Then
-                tvFolders.Focus()
-
-                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                    tvFolders.SelectedNode = tvFolders.Nodes(0)
-                End If
-
-                tvFolders.SelectedNode?.EnsureVisible()
-                Return True
-            End If
-
-            ' ===========================
-            '   Fallback
-            ' ===========================
+        ' ===========================
+        '   File List → Address Bar
+        ' ===========================
+        If lvFiles.Focused Then
             txtAddressBar.Focus()
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
-        Return False
+        ' ===========================
+        '   Address Bar → TreeView
+        ' ===========================
+        If txtAddressBar.Focused Then
+            tvFolders.Focus()
+
+            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                tvFolders.SelectedNode = tvFolders.Nodes(0)
+            End If
+
+            tvFolders.SelectedNode?.EnsureVisible()
+            Return True
+        End If
+
+        ' ===========================
+        '   Fallback
+        ' ===========================
+        txtAddressBar.Focus()
+        PlaceCaretAtEndOfAddressBar()
+        Return True
     End Function
 
     Private Function GlobalShortcutsAllowed() As Boolean
@@ -745,15 +971,21 @@ Public Class Form1
         ' ===========================
         ' ALT + HOME (Goto User Folder)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Home) AndAlso GlobalShortcutsAllowed() Then
+        'If keyData = (Keys.Alt Or Keys.Home) AndAlso GlobalShortcutsAllowed() Then
+        '    GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+        '    Return True
+        'End If
+        If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
             GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+            PlaceCaretAtEndOfAddressBar()
             Return True
         End If
+
 
         ' ===========================
         ' ALT + LEFT (Back)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Left) AndAlso GlobalShortcutsAllowed() Then
+        If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
             NavigateBackward_Click()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -762,7 +994,7 @@ Public Class Form1
         ' ===========================
         ' ALT + RIGHT (Forward)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Right) AndAlso GlobalShortcutsAllowed() Then
+        If keyData = (Keys.Alt Or Keys.Right) AndAlso Not _isRenaming Then
             NavigateForward_Click()
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -771,16 +1003,23 @@ Public Class Form1
         ' ===========================
         ' ALT + UP (Parent folder)
         ' ===========================
-        If keyData = (Keys.Alt Or Keys.Up) AndAlso GlobalShortcutsAllowed() Then
+        'If keyData = (Keys.Alt Or Keys.Up) AndAlso GlobalShortcutsAllowed() Then
+        '    NavigateToParent()
+        '    PlaceCaretAtEndOfAddressBar()
+        '    Return True
+        'End If
+
+        If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
             NavigateToParent()
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
+
         ' ===========================
         ' F5 (Refresh)
         ' ===========================
-        If keyData = Keys.F5 AndAlso GlobalShortcutsAllowed() Then
+        If keyData = Keys.F5 AndAlso Not _isRenaming Then
             RefreshCurrentFolder()
             txtAddressBar.Focus()
             PlaceCaretAtEndOfAddressBar()
@@ -790,7 +1029,7 @@ Public Class Form1
         ' ===========================
         ' F11 (Full screen)
         ' ===========================
-        If keyData = Keys.F11 AndAlso GlobalShortcutsAllowed() Then
+        If keyData = Keys.F11 AndAlso Not _isRenaming Then
             ToggleFullScreen()
             Return True
         End If
@@ -805,12 +1044,34 @@ Public Class Form1
 
 
 
+    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    '   CTRL + F (Find)
+    '    ' ===========================
+    '    If keyData = (Keys.Control Or Keys.F) Then
+    '        InitiateSearch()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   F3 (Find Next)
+    '    ' ===========================
+    '    If keyData = Keys.F3 Then
+    '        HandleFindNextCommand()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
         '   CTRL + F (Find)
         ' ===========================
-        If keyData = (Keys.Control Or Keys.F) Then
+        If keyData = (Keys.Control Or Keys.F) AndAlso GlobalShortcutsAllowed() Then
             InitiateSearch()
             Return True
         End If
@@ -818,7 +1079,7 @@ Public Class Form1
         ' ===========================
         '   F3 (Find Next)
         ' ===========================
-        If keyData = Keys.F3 Then
+        If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
             HandleFindNextCommand()
             Return True
         End If
@@ -826,12 +1087,230 @@ Public Class Form1
         Return False
     End Function
 
+    'Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
+    '    Try
+    '        ' ===========================
+    '        '   CTRL + O  (Open)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.O) Then
+    '            OpenSelectedOrStartCommand()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + E  (Expand one level)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.E) Then
+    '            ExpandOneLevel()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + C  (Collapse one level)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.C) Then
+    '            CollapseOneLevel()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + N  (New folder)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.N) Then
+    '            NewFolder_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + T  (New text file)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.T) Then
+    '            NewTextFile_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+
+
+
+
+
+
+
+
+
+
+
+    '        '' ===========================
+    '        ''   F2 (Rename)
+    '        '' ===========================
+    '        'If keyData = Keys.F2 Then
+    '        '    RenameFile_Click(sender, EventArgs.Empty)
+    '        '    Return True
+    '        'End If
+
+
+    '        ' ===========================
+    '        '   F2 (Rename)
+    '        ' ===========================
+    '        If keyData = Keys.F2 AndAlso
+    '        Not txtAddressBar.Focused AndAlso
+    '        Not _isRenaming Then
+    '            RenameFile_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+
+
+
+
+
+
+
+    '        '' ===========================
+    '        ''   CTRL + C (Copy)
+    '        '' ===========================
+    '        'If keyData = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
+    '        '    CopySelected_Click(sender, EventArgs.Empty)
+    '        '    Return True
+    '        'End If
+
+    '        ' ===========================
+    '        '   CTRL + C (Copy)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.C) AndAlso
+    '        Not txtAddressBar.Focused AndAlso
+    '        Not _isRenaming Then
+    '            CopySelected_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+
+    '        ' ===========================
+    '        '   CTRL + V (Paste)
+    '        ' ===========================
+    '        'If keyData = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
+    '        '    PasteSelected_Click(sender, EventArgs.Empty)
+    '        '    Return True
+    '        'End If
+
+    '        If keyData = (Keys.Control Or Keys.V) AndAlso
+    '        Not txtAddressBar.Focused AndAlso
+    '        Not _isRenaming Then
+    '            PasteSelected_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+
+
+
+
+
+    '        '' ===========================
+    '        ''   CTRL + X (Cut)
+    '        '' ===========================
+    '        'If keyData = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
+    '        '    CutSelected_Click(sender, EventArgs.Empty)
+    '        '    Return True
+    '        'End If
+
+
+
+
+
+
+
+
+    '        ' ===========================
+    '        '   CTRL + X (Cut)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.X) AndAlso
+    '        Not txtAddressBar.Focused AndAlso
+    '        Not _isRenaming Then
+    '            CutSelected_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+
+
+
+
+
+
+
+
+
+
+    '        '' ===========================
+    '        ''   CTRL + A (Select all)
+    '        '' ===========================
+    '        'If keyData = (Keys.Control Or Keys.A) Then
+    '        '    SelectAllItems()
+    '        '    lvFiles.Focus()
+    '        '    Return True
+    '        'End If
+
+
+    '        ' ===========================
+    '        '   CTRL + A (Select all)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.A) AndAlso
+    '        Not txtAddressBar.Focused AndAlso
+    '        Not _isRenaming Then
+    '            SelectAllItems()
+    '            lvFiles.Focus()
+    '            Return True
+    '        End If
+
+
+
+
+
+
+
+    '        ' ' ===========================
+    '        ' '   CTRL + D  OR  DELETE  (Delete)
+    '        ' ' ===========================
+    '        ' If keyData = (Keys.Control Or Keys.D) _
+    '        'OrElse keyData = Keys.Delete Then
+
+    '        '     Delete_Click(sender, EventArgs.Empty)
+    '        '     Return True
+    '        ' End If
+
+    '        ' ===========================
+    '        '   CTRL + D  OR  DELETE  (Delete)
+    '        ' ===========================
+    '        If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso
+    '           Not txtAddressBar.Focused AndAlso
+    '           Not _isRenaming Then
+    '            Delete_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+
+
+
+
+
+
+
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("An error occurred: " & ex.Message,
+    '                    "Error",
+    '                    MessageBoxButtons.OK,
+    '                    MessageBoxIcon.Error)
+    '    End Try
+
+    '    Return False
+    'End Function
+
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
         Try
             ' ===========================
             '   CTRL + O  (Open)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.O) Then
+            If keyData = (Keys.Control Or Keys.O) AndAlso GlobalShortcutsAllowed() Then
                 OpenSelectedOrStartCommand()
                 Return True
             End If
@@ -839,7 +1318,7 @@ Public Class Form1
             ' ===========================
             '   CTRL + SHIFT + E  (Expand one level)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.E) Then
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.E) AndAlso GlobalShortcutsAllowed() Then
                 ExpandOneLevel()
                 Return True
             End If
@@ -847,7 +1326,7 @@ Public Class Form1
             ' ===========================
             '   CTRL + SHIFT + C  (Collapse one level)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.C) Then
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
                 CollapseOneLevel()
                 Return True
             End If
@@ -855,7 +1334,7 @@ Public Class Form1
             ' ===========================
             '   CTRL + SHIFT + N  (New folder)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.N) Then
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.N) AndAlso GlobalShortcutsAllowed() Then
                 NewFolder_Click(sender, EventArgs.Empty)
                 Return True
             End If
@@ -863,176 +1342,59 @@ Public Class Form1
             ' ===========================
             '   CTRL + SHIFT + T  (New text file)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.T) Then
+            If keyData = (Keys.Control Or Keys.Shift Or Keys.T) AndAlso GlobalShortcutsAllowed() Then
                 NewTextFile_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
-
-
-
-
-
-
-
-
-
-
-
-            '' ===========================
-            ''   F2 (Rename)
-            '' ===========================
-            'If keyData = Keys.F2 Then
-            '    RenameFile_Click(sender, EventArgs.Empty)
-            '    Return True
-            'End If
-
-
             ' ===========================
             '   F2 (Rename)
             ' ===========================
-            If keyData = Keys.F2 AndAlso
-            Not txtAddressBar.Focused AndAlso
-            Not _isRenaming Then
+            If keyData = Keys.F2 AndAlso GlobalShortcutsAllowed() Then
                 RenameFile_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
-
-
-
-
-
-
-
-            '' ===========================
-            ''   CTRL + C (Copy)
-            '' ===========================
-            'If keyData = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
-            '    CopySelected_Click(sender, EventArgs.Empty)
-            '    Return True
-            'End If
-
             ' ===========================
             '   CTRL + C (Copy)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.C) AndAlso
-            Not txtAddressBar.Focused AndAlso
-            Not _isRenaming Then
+            If keyData = (Keys.Control Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
                 CopySelected_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
-
             ' ===========================
             '   CTRL + V (Paste)
             ' ===========================
-            'If keyData = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
-            '    PasteSelected_Click(sender, EventArgs.Empty)
-            '    Return True
-            'End If
-
-            If keyData = (Keys.Control Or Keys.V) AndAlso
-            Not txtAddressBar.Focused AndAlso
-            Not _isRenaming Then
+            If keyData = (Keys.Control Or Keys.V) AndAlso GlobalShortcutsAllowed() Then
                 PasteSelected_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
-
-
-
-
-
-            '' ===========================
-            ''   CTRL + X (Cut)
-            '' ===========================
-            'If keyData = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
-            '    CutSelected_Click(sender, EventArgs.Empty)
-            '    Return True
-            'End If
-
-
-
-
-
-
-
-
             ' ===========================
             '   CTRL + X (Cut)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.X) AndAlso
-            Not txtAddressBar.Focused AndAlso
-            Not _isRenaming Then
+            If keyData = (Keys.Control Or Keys.X) AndAlso GlobalShortcutsAllowed() Then
                 CutSelected_Click(sender, EventArgs.Empty)
                 Return True
             End If
 
-
-
-
-
-
-
-
-
-
-
-            '' ===========================
-            ''   CTRL + A (Select all)
-            '' ===========================
-            'If keyData = (Keys.Control Or Keys.A) Then
-            '    SelectAllItems()
-            '    lvFiles.Focus()
-            '    Return True
-            'End If
-
-
             ' ===========================
             '   CTRL + A (Select all)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.A) AndAlso
-            Not txtAddressBar.Focused AndAlso
-            Not _isRenaming Then
+            If keyData = (Keys.Control Or Keys.A) AndAlso GlobalShortcutsAllowed() Then
                 SelectAllItems()
                 lvFiles.Focus()
                 Return True
             End If
 
-
-
-
-
-
-
-            ' ' ===========================
-            ' '   CTRL + D  OR  DELETE  (Delete)
-            ' ' ===========================
-            ' If keyData = (Keys.Control Or Keys.D) _
-            'OrElse keyData = Keys.Delete Then
-
-            '     Delete_Click(sender, EventArgs.Empty)
-            '     Return True
-            ' End If
-
             ' ===========================
             '   CTRL + D  OR  DELETE  (Delete)
             ' ===========================
-            If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso
-               Not txtAddressBar.Focused AndAlso
-               Not _isRenaming Then
+            If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso GlobalShortcutsAllowed() Then
                 Delete_Click(sender, EventArgs.Empty)
                 Return True
             End If
-
-
-
-
-
-
-
-
 
         Catch ex As Exception
             MessageBox.Show("An error occurred: " & ex.Message,
@@ -1043,7 +1405,6 @@ Public Class Form1
 
         Return False
     End Function
-
 
 
     Private Async Sub ExecuteCommand(command As String)
