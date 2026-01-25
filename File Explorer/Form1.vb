@@ -24,9 +24,7 @@
 ' Github repo: https://github.com/JoeLumbley/File-Explorer
 ' Documentation: You can find the documentation at the GitHub repository.
 
-' Maximum Effort
 
-Imports System.ComponentModel.Design.ObjectSelectorEditor
 Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
@@ -4642,10 +4640,9 @@ Public Class Form1
 
         AssertTrue(cmp.Test_ParseSize("1 EB") = 1152921504606846976L, "1 EB should parse to 1,152,921,504,606,846,976 bytes")
 
-        AssertTrue(cmp.Test_ParseSize("2 EB") = 1152921504606846976L * 2, "2 EB should parse to 2,305,843,009,213,693,952 bytes")
-
         AssertTrue(cmp.Test_ParseSize("1.5 EB") = CLng(1.5 * 1152921504606846976L), "1.5 EB should parse to 1,729,382,256,910,270,464 bytes")
 
+        AssertTrue(cmp.Test_ParseSize("2 EB") = 1152921504606846976L * 2, "2 EB should parse to 2,305,843,009,213,693,952 bytes")
 
         Debug.WriteLine("✓ ParseSize tests passed")
 
@@ -4859,7 +4856,7 @@ Public Class CopyResult
     Public Property FilesCopied As Integer = 0
     Public Property FilesSkipped As Integer = 0
 
-    Public Property FilesRenamed As Integer = 0   ' ← Add this
+    Public Property FilesRenamed As Integer = 0
 
     Public Property DirectoriesCreated As Integer
     Public Property Errors As New List(Of String)
@@ -4871,5 +4868,9 @@ Public Class CopyResult
     End Property
 End Class
 
+' This app was developed with the help of Copilot through many human + AI pairing sessions.
+' The goal: Explorer‑grade behavior with learner‑friendly clarity.
+
+' Maximum Effort
 
 
