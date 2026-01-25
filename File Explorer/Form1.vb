@@ -192,18 +192,39 @@ Public Class Form1
     End Sub
 
 
+    'Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+
+    '    ' Handle custom key commands
+    '    If HandleEnterKey(keyData) Then Return True
+    '    If HandleAddressBarShortcuts(keyData) Then Return True
+
+    '    If HandleTabNavigation(keyData) Then Return True
+    '    If HandleShiftTabNavigation(keyData) Then Return True
+
+    '    If HandleNavigationShortcuts(keyData) Then Return True
+
+    '    If HandleSearchShortcuts(keyData) Then Return True
+    '    If HandleFileFolderOperations(Nothing, keyData) Then Return True
+
+    '    Return MyBase.ProcessCmdKey(msg, keyData)
+    'End Function
+
+
+
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
-        ' Handle custom key commands
+        ' Highest‑priority, context‑sensitive actions
         If HandleEnterKey(keyData) Then Return True
         If HandleAddressBarShortcuts(keyData) Then Return True
-        'If HandleTreeViewToggleOnEnter(keyData) Then Return True
 
-        If HandleTabNavigation(keyData) Then Return True
+        ' Focus navigation (Shift+Tab should be checked before Tab)
         If HandleShiftTabNavigation(keyData) Then Return True
+        If HandleTabNavigation(keyData) Then Return True
 
+        ' Explorer‑style navigation shortcuts
         If HandleNavigationShortcuts(keyData) Then Return True
 
+        ' Search and file operations (lowest priority)
         If HandleSearchShortcuts(keyData) Then Return True
         If HandleFileFolderOperations(Nothing, keyData) Then Return True
 
@@ -721,19 +742,6 @@ Public Class Form1
         Return True
     End Function
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
     '    ' Detect SHIFT + TAB correctly inside ProcessCmdKey
@@ -793,8 +801,6 @@ Public Class Form1
 
     '    Return False
     'End Function
-
-
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
@@ -940,16 +946,11 @@ Public Class Form1
         ' ===========================
         ' ALT + HOME (Goto User Folder)
         ' ===========================
-        'If keyData = (Keys.Alt Or Keys.Home) AndAlso GlobalShortcutsAllowed() Then
-        '    GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-        '    Return True
-        'End If
         If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
             GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
-
 
         ' ===========================
         ' ALT + LEFT (Back)
@@ -972,12 +973,6 @@ Public Class Form1
         ' ===========================
         ' ALT + UP (Parent folder)
         ' ===========================
-        'If keyData = (Keys.Alt Or Keys.Up) AndAlso GlobalShortcutsAllowed() Then
-        '    NavigateToParent()
-        '    PlaceCaretAtEndOfAddressBar()
-        '    Return True
-        'End If
-
         If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
             NavigateToParent()
             PlaceCaretAtEndOfAddressBar()
@@ -1006,13 +1001,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
-
-
-
-
-
     'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
     '    ' ===========================
@@ -1033,7 +1021,6 @@ Public Class Form1
 
     '    Return False
     'End Function
-
 
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
@@ -1850,19 +1837,12 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub Open_Click(sender As Object, e As EventArgs)
         ' Open selected file or folder - Mouse right-click context menu for lvFiles
-
-        '' Is a file or folder selected?
-        'If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        'Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
-        'GoToFolderOrOpenFile(fullPath)
 
         OpenSelectedItem()
 
     End Sub
-
 
     Private Sub NewFolder_Click(sender As Object, e As EventArgs)
         ' Create new folder in current directory - Mouse right-click context menu for lvFiles or button click 
@@ -2000,7 +1980,7 @@ Public Class Form1
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
         ' ------------------------------------------------------------
         ' Paste handler with free-space checks for file + directory
-        '' ------------------------------------------------------------
+        ' ------------------------------------------------------------
 
         If String.IsNullOrWhiteSpace(_clipboardPath) Then
             ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
@@ -2779,20 +2759,6 @@ Public Class Form1
                 End Try
             Next
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             ' ------------------------------------------------------------
             ' Copy subdirectories in parallel
             ' ------------------------------------------------------------
@@ -2930,27 +2896,6 @@ Public Class Form1
     End Function
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
@@ -3003,22 +2948,6 @@ Public Class Form1
         ElseIf File.Exists(FileOrFolder) Then
 
             OpenFileWithDefaultApp(FileOrFolder)
-
-            'Try
-
-            '    ' Open file with default application.
-            '    Dim processStartInfo As New ProcessStartInfo(FileOrFolder) With {.UseShellExecute = True}
-            '    Dim process As Process = Process.Start(processStartInfo)
-
-            '    Dim fileName As String = Path.GetFileNameWithoutExtension(FileOrFolder)
-
-            '    ShowStatus(StatusPad & IconOpen & $"  Opened:  ""{fileName}""")
-
-            'Catch ex As Exception
-            '    ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
-
-            '    Debug.WriteLine("GoToFolderOrOpenFile: Error opening file: " & ex.Message)
-            'End Try
 
         Else
             ShowStatus(StatusPad & IconWarning & " Path does not exist: " & FileOrFolder)
@@ -3667,35 +3596,6 @@ Public Class Form1
 
         lvFiles.EndUpdate()
     End Sub
-
-    'Private Sub HighlightCurrentResult()
-    '    If SearchResults.Count = 0 Then Return
-
-    '    Dim currentPath As String = SearchResults(SearchIndex)
-    '    Dim item As ListViewItem = FindListViewItemByPath(currentPath)
-
-    '    If item IsNot Nothing Then
-    '        item.BackColor = Color.FromArgb(210, 230, 255) ' slightly stronger blue
-    '    End If
-    'End Sub
-
-    'Private Sub HighlightCurrentResult()
-    '    If SearchResults.Count = 0 Then Return
-
-    '    lvFiles.BeginUpdate()
-
-    '    Dim currentPath As String = SearchResults(SearchIndex)
-    '    Dim item As ListViewItem = FindListViewItemByPath(currentPath)
-
-    '    If item IsNot Nothing Then
-    '        'item.BackColor = Color.FromArgb(210, 230, 255) ' slightly stronger blue
-    '        item.BackColor = Color.Orange ' slightly stronger blue
-
-    '    End If
-
-    '    lvFiles.EndUpdate()
-    'End Sub
-
 
     Private Function FindListViewItemByPath(fullPath As String) As ListViewItem
         For Each item As ListViewItem In lvFiles.Items
@@ -4546,9 +4446,6 @@ Public Class Form1
     '    lvFiles.ContextMenuStrip = cmsFiles
     'End Sub
 
-
-
-
     Private Sub InitContextMenu()
 
         cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
@@ -4611,16 +4508,6 @@ Public Class Form1
         lvFiles.ContextMenuStrip = cmsFiles
 
     End Sub
-
-
-
-
-
-
-
-
-
-
 
     Private Sub RunTests()
 
