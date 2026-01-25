@@ -154,18 +154,79 @@ Public Class Form1
 
     Private copyCts As CancellationTokenSource
 
-
     Private _isRenaming As Boolean = False
 
-    'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    'Handles lvFiles.BeforeLabelEdit
-    '    _isRenaming = True
+    Private ReadOnly EasyAccessFile As String =
+    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "easyaccess.txt")
+
+    Private Sub EnsureEasyAccessFile()
+        Dim dir = Path.GetDirectoryName(EasyAccessFile)
+        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+        If Not File.Exists(EasyAccessFile) Then File.WriteAllText(EasyAccessFile, "")
+    End Sub
+
+    Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
+        EnsureEasyAccessFile()
+
+        Dim list As New List(Of (String, String))
+
+        For Each line In File.ReadAllLines(EasyAccessFile)
+            If String.IsNullOrWhiteSpace(line) Then Continue For
+
+            Dim parts = line.Split({","c}, 2)
+            If parts.Length = 2 Then
+                Dim name = parts(0).Trim()
+                Dim path = parts(1).Trim()
+
+                If Directory.Exists(path) Then
+                    list.Add((name, path))
+                End If
+            End If
+        Next
+
+        Return list
+    End Function
+
+    'Public Sub AddToEasyAccess(name As String, path As String)
+    '    EnsureEasyAccessFile()
+
+    '    Dim entry = $"{name},{path}"
+    '    Dim existing = File.ReadAllLines(EasyAccessFile)
+
+    '    If Not existing.Contains(entry) Then
+    '        File.AppendAllLines(EasyAccessFile, {entry})
+    '    End If
+
+    '    UpdateTreeRoots()
     'End Sub
 
-    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    'Handles lvFiles.AfterLabelEdit
-    '    _isRenaming = False
-    'End Sub
+
+    Public Sub AddToEasyAccess(name As String, path As String)
+        EnsureEasyAccessFile()
+
+        Dim entry = $"{name},{path}"
+        Dim existing = File.ReadAllLines(EasyAccessFile)
+
+        If Not existing.Contains(entry) Then
+            File.AppendAllLines(EasyAccessFile, {entry})
+        End If
+
+        UpdateTreeRoots()
+    End Sub
+
+    Public Sub RemoveFromEasyAccess(path As String)
+        EnsureEasyAccessFile()
+
+        Dim lines = File.ReadAllLines(EasyAccessFile).ToList()
+        Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
+
+        File.WriteAllLines(EasyAccessFile, updated)
+
+        UpdateTreeRoots()
+    End Sub
+
+
+
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -408,7 +469,7 @@ Public Class Form1
     Private Sub btnGo_Click(sender As Object, e As EventArgs) _
         Handles btnGo.Click
 
-        ExecuteCommand(txtAddressBar.Text.Trim())
+        ExecuteCommand(txtAddressBar.Text.Trim)
 
     End Sub
 
@@ -4170,6 +4231,19 @@ Public Class Form1
 
     End Sub
 
+
+
+
+    'Private Sub EnsureEasyAccessSettings()
+    '    If My.Settings.EasyAccessPaths Is Nothing Then
+    '        My.Settings.EasyAccessPaths = New Specialized.StringCollection()
+    '        My.Settings.Save()
+    '    End If
+    'End Sub
+
+
+
+
     Private Sub UpdateTreeRoots()
         ' Update the TreeView with current drives and special folders at the top level.
 
@@ -4221,6 +4295,27 @@ Public Class Form1
                 easyAccessNode.Nodes.Add(node)
             End If
         Next
+
+        ' --- User Easy Access entries ---
+        Dim userEntries = LoadEasyAccessEntries()
+
+        For Each entry In userEntries
+            Dim node As New TreeNode(entry.Name) With {
+        .Tag = entry.Path,
+        .ImageKey = "Folder",
+        .SelectedImageKey = "Folder"
+    }
+
+            If HasSubdirectories(entry.Path) Then
+                node.Nodes.Add("Loading...")
+                node.StateImageIndex = 0
+            Else
+                node.StateImageIndex = 2
+            End If
+
+            easyAccessNode.Nodes.Add(node)
+        Next
+
 
         ' Add Easy Access to tree
         tvFolders.Nodes.Add(easyAccessNode)
@@ -4728,6 +4823,40 @@ Public Class Form1
     Private Sub AssertFalse(condition As Boolean, message As String)
         Debug.Assert(Not condition, message)
     End Sub
+
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) Handles btnPin.Click
+
+    '    AddToEasyAccess(currentFolder)
+
+
+
+
+    'End Sub
+
+
+    Private Sub btnPin_Click(sender As Object, e As EventArgs) Handles btnPin.Click
+        Dim name As String = GetFolderDisplayName(currentFolder)
+        AddToEasyAccess(name, currentFolder)
+    End Sub
+
+    Private Function GetFolderDisplayName(folderPath As String) As String
+        Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
+        If String.IsNullOrWhiteSpace(name) Then
+            name = folderPath
+        End If
+        Return name
+    End Function
+
+
+
+
+
+
+
+
+
+
+
 
 End Class
 

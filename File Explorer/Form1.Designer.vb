@@ -40,6 +40,7 @@ Partial Class Form1
         btnForward = New Button()
         btnBack = New Button()
         btnGo = New Button()
+        btnPin = New Button()
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -107,6 +108,7 @@ Partial Class Form1
         ' 
         ' Panel1
         ' 
+        Panel1.Controls.Add(btnPin)
         Panel1.Controls.Add(btnNewTextFile)
         Panel1.Controls.Add(btnPaste)
         Panel1.Controls.Add(btnCut)
@@ -242,7 +244,7 @@ Partial Class Form1
         txtAddressBar.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         txtAddressBar.Location = New Point(129, 1)
         txtAddressBar.Name = "txtAddressBar"
-        txtAddressBar.Size = New Size(633, 27)
+        txtAddressBar.Size = New Size(601, 27)
         txtAddressBar.TabIndex = 1
         txtAddressBar.TabStop = False
         ' 
@@ -274,13 +276,25 @@ Partial Class Form1
         ' 
         btnGo.Anchor = AnchorStyles.Right
         btnGo.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnGo.Location = New Point(764, 0)
+        btnGo.Location = New Point(734, 0)
         btnGo.Name = "btnGo"
         btnGo.Size = New Size(30, 28)
         btnGo.TabIndex = 3
         btnGo.TabStop = False
         btnGo.Text = "Go"
         btnGo.UseVisualStyleBackColor = True
+        ' 
+        ' btnPin
+        ' 
+        btnPin.Anchor = AnchorStyles.Right
+        btnPin.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnPin.Location = New Point(765, 0)
+        btnPin.Name = "btnPin"
+        btnPin.Size = New Size(30, 28)
+        btnPin.TabIndex = 16
+        btnPin.TabStop = False
+        btnPin.Text = ""
+        btnPin.UseVisualStyleBackColor = True
         ' 
         ' Form1
         ' 
@@ -318,5 +332,6 @@ Partial Class Form1
     Friend WithEvents btnCut As Button
     Friend WithEvents btnPaste As Button
     Friend WithEvents btnNewTextFile As Button
+    Friend WithEvents btnPin As Button
 
 End Class
