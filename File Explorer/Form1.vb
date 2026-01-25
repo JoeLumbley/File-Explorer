@@ -4839,16 +4839,27 @@ Public Class Form1
         AddToEasyAccess(name, currentFolder)
     End Sub
 
+    'Private Function GetFolderDisplayName(folderPath As String) As String
+    '    Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
+    '    If String.IsNullOrWhiteSpace(name) Then
+    '        name = folderPath
+    '    End If
+    '    Return name
+    'End Function
+
+
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
+
         If String.IsNullOrWhiteSpace(name) Then
             name = folderPath
         End If
+
+        ' Remove commas to protect the "name,path" format
+        name = name.Replace(",", "")
+
         Return name
     End Function
-
-
-
 
 
 
