@@ -444,55 +444,44 @@ Public Class Form1
 
     End Sub
 
-
     'Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
     '    ' ===========================
     '    '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
     '    ' ===========================
     '    If keyData = (Keys.Control Or Keys.L) _
-    '   OrElse keyData = (Keys.Alt Or Keys.D) _
-    '   OrElse keyData = Keys.F4 Then
-
+    '    OrElse keyData = (Keys.Alt Or Keys.D) _
+    '    OrElse keyData = Keys.F4 Then
     '        txtAddressBar.Focus()
     '        txtAddressBar.SelectAll()
     '        Return True
     '    End If
 
-    '    '' ===========================
-    '    ''   ENTER (Address Bar execute)
-    '    '' ===========================
-    '    'If keyData = Keys.Enter AndAlso txtAddressBar.Focused Then
-    '    '    ExecuteCommand(txtAddressBar.Text.Trim())
-    '    '    Return True
-    '    'End If
-
-    '    '' ===========================
-    '    ''   ESCAPE (Address Bar reset)
-    '    '' ===========================
-    '    'If keyData = Keys.Escape AndAlso txtAddressBar.Focused Then
-    '    '    txtAddressBar.Text = currentFolder
-    '    '    PlaceCaretAtEndOfAddressBar()
-    '    '    Return True
-    '    'End If
-
     '    ' ===========================
     '    '   ESCAPE (Address Bar reset)
     '    ' ===========================
-    '    If keyData = Keys.Escape AndAlso
-    '    txtAddressBar.Focused AndAlso
-    '    Not _isRenaming Then
+
+
+    '    If keyData = Keys.Escape AndAlso Not _isRenaming Then
     '        txtAddressBar.Text = currentFolder
+
+    '        'GoToFolderOrOpenFile(currentFolder)
+    '        'PopulateFiles(currentFolder)
+
+    '        ' Reset index for new search
+    '        SearchIndex = 0
+
+    '        SearchResults = New List(Of String)
+
+    '        NavigateTo(currentFolder, recordHistory:=False)
+
     '        PlaceCaretAtEndOfAddressBar()
     '        Return True
     '    End If
 
 
-
-
     '    Return False
     'End Function
-
 
 
 
@@ -502,8 +491,9 @@ Public Class Form1
         '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
         If keyData = (Keys.Control Or Keys.L) _
-        OrElse keyData = (Keys.Alt Or Keys.D) _
-        OrElse keyData = Keys.F4 Then
+            OrElse keyData = (Keys.Alt Or Keys.D) _
+            OrElse keyData = Keys.F4 Then
+
             txtAddressBar.Focus()
             txtAddressBar.SelectAll()
             Return True
@@ -512,32 +502,23 @@ Public Class Form1
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
-        If keyData = Keys.Escape AndAlso txtAddressBar.Focused AndAlso Not _isRenaming Then
+        If keyData = Keys.Escape AndAlso Not _isRenaming Then
+
             txtAddressBar.Text = currentFolder
+
+            ' Reset search state
+            SearchIndex = 0
+            SearchResults = New List(Of String)
+
+            ' Navigate without recording history
+            NavigateTo(currentFolder, recordHistory:=False)
+
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
         Return False
     End Function
-
-
-
-
-
-
-    'Private Function HandleTreeViewToggleOnEnter(keyData As Keys) As Boolean
-    '    ' ===========================
-    '    '   ENTER (TreeView toggle)
-    '    ' ===========================
-    '    If keyData = Keys.Enter Then
-    '        If tvFolders.Focused Then
-    '            ToggleExpandCollapse()
-    '            Return True
-    '        End If
-    '    End If
-    '    Return False
-    'End Function
 
 
     'Private Function HandleEnterKey(keyData As Keys) As Boolean
@@ -612,16 +593,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
-
-
-
-
-
-
-
-
     Private Sub OpenSelectedItem()
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
@@ -686,8 +657,6 @@ Public Class Form1
 
     '    Return False
     'End Function
-
-
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
 
