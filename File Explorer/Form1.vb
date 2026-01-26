@@ -43,6 +43,17 @@ Public Class Form1
     ' Context menu for files
     Private cmsFiles As New ContextMenuStrip()
 
+    Private cmsTree As New ContextMenuStrip()
+
+    'Dim mnuPin As New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
+    '        .Name = "Pin"
+    '    }
+
+    Dim mnuUnpin As New ToolStripMenuItem("Unpin", Nothing, AddressOf Unpin_Click) With {
+            .Name = "Unpin"
+        }
+
+
     Private lblStatus As New ToolStripStatusLabel()
 
     Private imgList As New ImageList()
@@ -289,27 +300,27 @@ Public Class Form1
     End Function
 
 
-    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-        Handles tvFolders.NodeMouseClick
+    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    '    Handles tvFolders.NodeMouseClick
 
-        Dim info = tvFolders.HitTest(e.Location)
+    '    Dim info = tvFolders.HitTest(e.Location)
 
-        ' Only toggle node when the arrow is clicked
-        If info.Location = TreeViewHitTestLocations.StateImage Then
+    '    ' Only toggle node when the arrow is clicked
+    '    If info.Location = TreeViewHitTestLocations.StateImage Then
 
-            tvFolders.BeginUpdate()
+    '        tvFolders.BeginUpdate()
 
-            If e.Node.IsExpanded Then
-                e.Node.Collapse()
-            Else
-                e.Node.Expand()
-            End If
+    '        If e.Node.IsExpanded Then
+    '            e.Node.Collapse()
+    '        Else
+    '            e.Node.Expand()
+    '        End If
 
-            tvFolders.EndUpdate()
+    '        tvFolders.EndUpdate()
 
-        End If
+    '    End If
 
-    End Sub
+    'End Sub
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
         Handles tvFolders.BeforeExpand
@@ -4598,7 +4609,147 @@ Public Class Form1
 
         lvFiles.ContextMenuStrip = cmsFiles
 
+
+
+        'cmsTree.Items.Add(New ToolStripMenuItem("Pin", Nothing, AddressOf Open_Click) With {
+        '    .Name = "Pin",
+        '    .ShortcutKeyDisplayString = "Ctrl+O"
+        '})
+
+        'cmsTree.Items.Add(New ToolStripMenuItem("Unpin", Nothing, AddressOf Open_Click) With {
+        '    .Name = "Unpin",
+        '    .ShortcutKeyDisplayString = "Ctrl+O"
+        '})
+
+        'tvFolders.ContextMenuStrip = cmsTree
+
+
+        'Dim mnuPin As New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
+        '    .Name = "Pin"
+        '}
+
+        'Dim mnuUnpin As New ToolStripMenuItem("Unpin", Nothing, AddressOf Unpin_Click) With {
+        '    .Name = "Unpin"
+        '}
+
+        'cmsTree.Items.Add(mnuPin)
+        cmsTree.Items.Add(mnuUnpin)
+
+        tvFolders.ContextMenuStrip = cmsTree
+
+
     End Sub
+
+    'Private Sub Pin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(path)
+    '    AddToEasyAccess(name, path)
+    'End Sub
+
+    Private Sub Unpin_Click(sender As Object, e As EventArgs)
+        Dim node = tvFolders.SelectedNode
+        If node Is Nothing Then Exit Sub
+
+        Dim path As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        RemoveFromEasyAccess(path)
+    End Sub
+
+    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    'Handles tvFolders.NodeMouseClick
+
+    '    If e.Button = MouseButtons.Left Then
+    '        Dim info = tvFolders.HitTest(e.Location)
+
+    '        ' Only toggle node when the arrow is clicked
+    '        If info.Location = TreeViewHitTestLocations.StateImage Then
+
+    '            tvFolders.BeginUpdate()
+
+    '            If e.Node.IsExpanded Then
+    '                e.Node.Collapse()
+    '            Else
+    '                e.Node.Expand()
+    '            End If
+
+    '            tvFolders.EndUpdate()
+
+    '        End If
+    '    End If
+
+    '    If e.Button = MouseButtons.Right Then
+    '        tvFolders.SelectedNode = e.Node
+    '        UpdateTreeContextMenu(e.Node)
+    '    End If
+    'End Sub
+
+
+
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    Handles tvFolders.NodeMouseClick
+
+        ' ============================
+        '   LEFT CLICK (arrow toggle)
+        ' ============================
+        If e.Button = MouseButtons.Left Then
+            Dim info = tvFolders.HitTest(e.Location)
+
+            ' Only toggle when clicking the arrow (state image)
+            If info.Location = TreeViewHitTestLocations.StateImage Then
+
+                tvFolders.BeginUpdate()
+
+                If e.Node.IsExpanded Then
+                    e.Node.Collapse()
+                Else
+                    e.Node.Expand()
+                End If
+
+                tvFolders.EndUpdate()
+            End If
+        End If
+
+
+        ' ============================
+        '   RIGHT CLICK (context menu)
+        ' ============================
+        If e.Button = MouseButtons.Right Then
+
+            ' Safety: ensure a node was actually clicked
+            If e.Node Is Nothing Then Exit Sub
+
+            ' Select the node under the cursor
+            tvFolders.SelectedNode = e.Node
+
+            ' Update Pin/Unpin visibility
+            UpdateTreeContextMenu(e.Node)
+        End If
+
+    End Sub
+
+    Private Sub UpdateTreeContextMenu(node As TreeNode)
+        Dim path As String = TryCast(node.Tag, String)
+
+        If String.IsNullOrEmpty(path) Then
+            'mnuPin.Visible = False
+            mnuUnpin.Visible = False
+            Exit Sub
+        End If
+
+        Dim isPinned As Boolean =
+        File.ReadAllLines(EasyAccessFile).
+        Any(Function(line) line.EndsWith("," & path))
+
+        'mnuPin.Visible = Not isPinned
+        mnuUnpin.Visible = isPinned
+    End Sub
+
 
     Private Sub RunTests()
 
