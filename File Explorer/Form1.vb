@@ -4548,11 +4548,34 @@ Public Class Form1
     '    lvFiles.ContextMenuStrip = cmsFiles
     'End Sub
 
+
+    Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim item = lvFiles.SelectedItems(0)
+        Dim path As String = TryCast(item.Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        Dim name As String = GetFolderDisplayName(path)
+        AddToEasyAccess(name, path)
+    End Sub
+
+
+
     Private Sub InitContextMenu()
 
         cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
             .Name = "Open",
             .ShortcutKeyDisplayString = "Ctrl+O"
+        })
+
+        'cmsFiles.Items.Add(New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
+        '    .Name = "Pin"
+        '})
+
+        cmsFiles.Items.Add(New ToolStripMenuItem("Pin To Easy Accesss", Nothing, AddressOf PinFromFiles_Click) With {
+            .Name = "Pin"
         })
 
         cmsFiles.Items.Add(New ToolStripMenuItem("Home Folder", Nothing,
@@ -4639,6 +4662,12 @@ Public Class Form1
 
 
     End Sub
+
+
+
+
+
+
 
     'Private Sub Pin_Click(sender As Object, e As EventArgs)
     '    Dim node = tvFolders.SelectedNode
