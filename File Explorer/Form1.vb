@@ -168,87 +168,6 @@ Public Class Form1
     Private ReadOnly EasyAccessFile As String =
     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "easyaccess.txt")
 
-
-
-    'Private ReadOnly SpecialFolders As String() = {
-    '    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-    '    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-    '    Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-    '    Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-    '    Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-    '    Environment.GetFolderPath(Environment.SpecialFolder.Downloads),
-    '    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-    '}
-
-    Private Sub EnsureEasyAccessFile()
-        Dim dir = Path.GetDirectoryName(EasyAccessFile)
-        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
-        If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
-    End Sub
-
-    Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
-        EnsureEasyAccessFile()
-
-        Dim list As New List(Of (String, String))
-
-        For Each line In IO.File.ReadAllLines(EasyAccessFile)
-            If String.IsNullOrWhiteSpace(line) Then Continue For
-
-            Dim parts = line.Split({","c}, 2)
-            If parts.Length = 2 Then
-                Dim name = parts(0).Trim()
-                Dim path = parts(1).Trim()
-
-                If Directory.Exists(path) Then
-                    list.Add((name, path))
-                End If
-            End If
-        Next
-
-        Return list
-    End Function
-
-    'Public Sub AddToEasyAccess(name As String, path As String)
-    '    EnsureEasyAccessFile()
-
-    '    Dim entry = $"{name},{path}"
-    '    Dim existing = File.ReadAllLines(EasyAccessFile)
-
-    '    If Not existing.Contains(entry) Then
-    '        File.AppendAllLines(EasyAccessFile, {entry})
-    '    End If
-
-    '    UpdateTreeRoots()
-    'End Sub
-
-
-    Public Sub AddToEasyAccess(name As String, path As String)
-        EnsureEasyAccessFile()
-
-        Dim entry = $"{name},{path}"
-        Dim existing = IO.File.ReadAllLines(EasyAccessFile)
-
-        If Not existing.Contains(entry) Then
-            IO.File.AppendAllLines(EasyAccessFile, {entry})
-        End If
-
-        UpdateTreeRoots()
-    End Sub
-
-    Public Sub RemoveFromEasyAccess(path As String)
-        EnsureEasyAccessFile()
-
-        Dim lines = IO.File.ReadAllLines(EasyAccessFile).ToList()
-        Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
-
-        IO.File.WriteAllLines(EasyAccessFile, updated)
-
-        UpdateTreeRoots()
-    End Sub
-
-
-
-
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -272,25 +191,6 @@ Public Class Form1
     End Sub
 
 
-    'Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
-
-    '    ' Handle custom key commands
-    '    If HandleEnterKey(keyData) Then Return True
-    '    If HandleAddressBarShortcuts(keyData) Then Return True
-
-    '    If HandleTabNavigation(keyData) Then Return True
-    '    If HandleShiftTabNavigation(keyData) Then Return True
-
-    '    If HandleNavigationShortcuts(keyData) Then Return True
-
-    '    If HandleSearchShortcuts(keyData) Then Return True
-    '    If HandleFileFolderOperations(Nothing, keyData) Then Return True
-
-    '    Return MyBase.ProcessCmdKey(msg, keyData)
-    'End Function
-
-
-
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
         ' Highest‑priority, context‑sensitive actions
@@ -311,28 +211,6 @@ Public Class Form1
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
 
-
-    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-    '    Handles tvFolders.NodeMouseClick
-
-    '    Dim info = tvFolders.HitTest(e.Location)
-
-    '    ' Only toggle node when the arrow is clicked
-    '    If info.Location = TreeViewHitTestLocations.StateImage Then
-
-    '        tvFolders.BeginUpdate()
-
-    '        If e.Node.IsExpanded Then
-    '            e.Node.Collapse()
-    '        Else
-    '            e.Node.Expand()
-    '        End If
-
-    '        tvFolders.EndUpdate()
-
-    '    End If
-
-    'End Sub
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
         Handles tvFolders.BeforeExpand
@@ -356,58 +234,208 @@ Public Class Form1
 
     End Sub
 
+    Private Sub tvFolders_MouseClick(sender As Object, e As MouseEventArgs) Handles tvFolders.MouseClick
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = tvFolders.HitTest(e.Location)
+            ' Only proceed if a node was right-clicked
+            If info.Node Is Nothing Then Exit Sub
+            If Not PathExists(info.Node.Tag) Then Exit Sub
+            ' Select the node under the cursor
+            tvFolders.SelectedNode = info.Node
+            ' Update Pin/Unpin visibility
+            UpdateTreeContextMenu(info.Node)
+        End If
+
+    End Sub
+
+    Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
+    Handles tvFolders.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = tvFolders.HitTest(e.Location)
+
+            ' If not clicking a node, cancel the context menu
+            If info.Node Is Nothing Then
+                tvFolders.ContextMenuStrip = Nothing
+            Else
+                tvFolders.ContextMenuStrip = cmsTree
+            End If
+        End If
+    End Sub
+
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    Handles tvFolders.NodeMouseClick
+
+        ' ============================
+        '   LEFT CLICK (arrow toggle)
+        ' ============================
+        If e.Button = MouseButtons.Left Then
+            Dim info = tvFolders.HitTest(e.Location)
+
+            ' Only toggle when clicking the arrow (state image)
+            If info.Location = TreeViewHitTestLocations.StateImage Then
+
+                tvFolders.BeginUpdate()
+
+                If e.Node.IsExpanded Then
+                    e.Node.Collapse()
+                Else
+                    e.Node.Expand()
+                End If
+
+                tvFolders.EndUpdate()
+            End If
+        End If
+
+
+        ' ============================
+        '   RIGHT CLICK (context menu)
+        ' ============================
+        If e.Button = MouseButtons.Right Then
+
+            ' If no node was clicked, hide Pin/Unpin entirely
+            If e.Node Is Nothing Then
+                mnuPin.Visible = False
+                mnuUnpin.Visible = False
+                Exit Sub
+            End If
+
+            tvFolders.SelectedNode = e.Node
+            UpdateTreeContextMenu(e.Node)
+        End If
+
+    End Sub
+
 
     'Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
-    '    Handles lvFiles.ItemSelectionChanged
+    'Handles lvFiles.ItemSelectionChanged
 
-    '    ' Is the input a folder?
-    '    If Directory.Exists(Command) Then
-    '        cmsFiles.Items("Pin").Enabled = Enabled
-    '        ' Is the input a file?
-    '    ElseIf IO.File.Exists(Command) Then
-    '        cmsFiles.Items("Pin").Enabled = Enabled
+    '    ' Default: Pin is disabled
+    '    cmsFiles.Items("Pin").Enabled = False
+    '    cmsFiles.Items("Unpin").Enabled = False
+
+    '    ' Nothing selected → nothing to pin
+    '    If lvFiles.SelectedItems.Count = 0 Then
+    '        UpdateEditButtonsAndMenus()
+    '        UpdateFileButtonsAndMenus()
+    '        Exit Sub
+    '    End If
+
+    '    ' Get selected item path
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then
+    '        UpdateEditButtonsAndMenus()
+    '        UpdateFileButtonsAndMenus()
+    '        Exit Sub
+    '    End If
+
+    '    ' Enable Pin ONLY for folders
+    '    If Directory.Exists(path) Then
+    '        cmsFiles.Items("Pin").Enabled = True
+    '        cmsFiles.Items("Unpin").Enabled = True
     '    End If
 
     '    UpdateEditButtonsAndMenus()
-
     '    UpdateFileButtonsAndMenus()
 
+    'End Sub
+
+
+    'Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
+    'Handles lvFiles.ItemSelectionChanged
+
+    '    Dim mnuPin = cmsFiles.Items("Pin")
+    '    Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+    '    ' Hide both by default
+    '    mnuPin.Visible = False
+    '    mnuUnpin.Visible = False
+
+    '    ' Nothing selected → nothing to show
+    '    If lvFiles.SelectedItems.Count = 0 Then
+    '        UpdateEditButtonsAndMenus()
+    '        UpdateFileButtonsAndMenus()
+    '        Exit Sub
+    '    End If
+
+    '    ' Get selected item path
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then
+    '        UpdateEditButtonsAndMenus()
+    '        UpdateFileButtonsAndMenus()
+    '        Exit Sub
+    '    End If
+
+    '    ' Only folders can be pinned/unpinned
+    '    If Not Directory.Exists(path) Then
+    '        UpdateEditButtonsAndMenus()
+    '        UpdateFileButtonsAndMenus()
+    '        Exit Sub
+    '    End If
+
+    '    ' Prevent pinning special folders
+    '    If IsSpecialFolder(path) Then
+    '        UpdateEditButtonsAndMenus()
+    '        UpdateFileButtonsAndMenus()
+    '        Exit Sub
+    '    End If
+
+    '    ' Determine pinned state
+    '    Dim isPinned As Boolean =
+    '    File.ReadAllLines(EasyAccessFile).
+    '    Any(Function(line) line.EndsWith("," & path, StringComparison.OrdinalIgnoreCase))
+
+    '    ' Show the correct option
+    '    mnuPin.Visible = Not isPinned
+    '    mnuUnpin.Visible = isPinned
+
+    '    UpdateEditButtonsAndMenus()
+    '    UpdateFileButtonsAndMenus()
 
     'End Sub
 
 
 
-
     Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
     Handles lvFiles.ItemSelectionChanged
-
-        ' Default: Pin is disabled
-        cmsFiles.Items("Pin").Enabled = False
-
-        ' Nothing selected → nothing to pin
-        If lvFiles.SelectedItems.Count = 0 Then
-            UpdateEditButtonsAndMenus()
-            UpdateFileButtonsAndMenus()
-            Exit Sub
-        End If
-
-        ' Get selected item path
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        If String.IsNullOrEmpty(path) Then
-            UpdateEditButtonsAndMenus()
-            UpdateFileButtonsAndMenus()
-            Exit Sub
-        End If
-
-        ' Enable Pin ONLY for folders
-        If Directory.Exists(path) Then
-            cmsFiles.Items("Pin").Enabled = True
-        End If
-
+        UpdateFileListPinState()
         UpdateEditButtonsAndMenus()
         UpdateFileButtonsAndMenus()
+    End Sub
+
+    Private Sub UpdateFileListPinState()
+
+        Dim mnuPin = cmsFiles.Items("Pin")
+        Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+        ' Hide both by default
+        mnuPin.Visible = False
+        mnuUnpin.Visible = False
+
+        ' Nothing selected
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        ' Only folders can be pinned
+        If Not Directory.Exists(path) Then Exit Sub
+
+        ' Prevent pinning special folders
+        If IsSpecialFolder(path) Then Exit Sub
+
+        ' Determine pinned state
+        Dim isPinned As Boolean =
+        File.ReadAllLines(EasyAccessFile).
+        Any(Function(line) line.EndsWith("," & path, StringComparison.OrdinalIgnoreCase))
+
+        mnuPin.Visible = Not isPinned
+        mnuUnpin.Visible = isPinned
 
     End Sub
+
+
 
 
 
@@ -500,6 +528,20 @@ Public Class Form1
 
     End Sub
 
+    Private Sub lvFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = lvFiles.HitTest(e.Location)
+            ' If not clicking an item, cancel the context menu
+            If info.Item Is Nothing Then
+                lvFiles.ContextMenuStrip = Nothing
+            Else
+                lvFiles.ContextMenuStrip = cmsFiles
+            End If
+        End If
+
+    End Sub
+
 
     Private Sub btnBack_Click(sender As Object, e As EventArgs) _
         Handles btnBack.Click
@@ -534,10 +576,19 @@ Public Class Form1
 
     End Sub
 
+
     Private Sub btnGo_Click(sender As Object, e As EventArgs) _
         Handles btnGo.Click
 
         ExecuteCommand(txtAddressBar.Text.Trim)
+
+    End Sub
+
+    Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+        Handles btnPin.Click
+
+        Dim name As String = GetFolderDisplayName(currentFolder)
+        AddToEasyAccess(name, currentFolder)
 
     End Sub
 
@@ -592,46 +643,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.L) _
-    '    OrElse keyData = (Keys.Alt Or Keys.D) _
-    '    OrElse keyData = Keys.F4 Then
-    '        txtAddressBar.Focus()
-    '        txtAddressBar.SelectAll()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ESCAPE (Address Bar reset)
-    '    ' ===========================
-
-
-    '    If keyData = Keys.Escape AndAlso Not _isRenaming Then
-    '        txtAddressBar.Text = currentFolder
-
-    '        'GoToFolderOrOpenFile(currentFolder)
-    '        'PopulateFiles(currentFolder)
-
-    '        ' Reset index for new search
-    '        SearchIndex = 0
-
-    '        SearchResults = New List(Of String)
-
-    '        NavigateTo(currentFolder, recordHistory:=False)
-
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    Return False
-    'End Function
-
-
 
     Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
@@ -667,41 +678,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
-    'Private Function HandleEnterKey(keyData As Keys) As Boolean
-
-    '    If keyData <> Keys.Enter Then
-    '        Return False
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (Address Bar execute)
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        ExecuteCommand(txtAddressBar.Text.Trim())
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (TreeView toggle)
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        ToggleExpandCollapse()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (File List open)
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        OpenSelectedItem()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
 
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
@@ -740,13 +716,6 @@ Public Class Form1
 
         Return False
     End Function
-
-    Private Sub OpenSelectedItem()
-        ' Is a file or folder selected?
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
-        GoToFolderOrOpenFile(fullPath)
-    End Sub
 
     'Private Function HandleTabNavigation(keyData As Keys) As Boolean
     '    If keyData = Keys.Tab Then
@@ -997,77 +966,6 @@ Public Class Form1
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
     End Function
 
-    'Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
-
-    '    '' ===========================
-    '    '' ALT + HOME (Goto User Folder)
-    '    '' ===========================
-    '    'If keyData = (Keys.Alt Or Keys.Home) AndAlso
-    '    '    Not txtAddressBar.Focused AndAlso
-    '    '    Not _isRenaming Then
-    '    '    GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-    '    '    Return True
-    '    'End If
-
-    '    ' ===========================
-    '    ' ALT + HOME (Goto User Folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Home) AndAlso GlobalShortcutsAllowed() Then
-    '        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + LEFT (Back)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Left) Then
-    '        NavigateBackward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + RIGHT (Forward)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Right) Then
-    '        NavigateForward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + UP (Parent folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Up) Then
-    '        NavigateToParent()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' F5 (Refresh)
-    '    ' ===========================
-    '    If keyData = Keys.F5 Then
-    '        RefreshCurrentFolder()
-    '        txtAddressBar.Focus()
-
-    '        PlaceCaretAtEndOfAddressBar()
-
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' F11 (Full screen)
-    '    ' ===========================
-    '    If keyData = Keys.F11 Then
-    '        ToggleFullScreen()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
@@ -1128,27 +1026,6 @@ Public Class Form1
         Return False
     End Function
 
-    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   CTRL + F (Find)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.F) Then
-    '        InitiateSearch()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   F3 (Find Next)
-    '    ' ===========================
-    '    If keyData = Keys.F3 Then
-    '        HandleFindNextCommand()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
@@ -1169,224 +1046,6 @@ Public Class Form1
 
         Return False
     End Function
-
-    'Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
-    '    Try
-    '        ' ===========================
-    '        '   CTRL + O  (Open)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.O) Then
-    '            OpenSelectedOrStartCommand()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + E  (Expand one level)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.E) Then
-    '            ExpandOneLevel()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + C  (Collapse one level)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.C) Then
-    '            CollapseOneLevel()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + N  (New folder)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.N) Then
-    '            NewFolder_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + T  (New text file)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.T) Then
-    '            NewTextFile_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-
-
-
-
-
-
-
-
-
-
-
-    '        '' ===========================
-    '        ''   F2 (Rename)
-    '        '' ===========================
-    '        'If keyData = Keys.F2 Then
-    '        '    RenameFile_Click(sender, EventArgs.Empty)
-    '        '    Return True
-    '        'End If
-
-
-    '        ' ===========================
-    '        '   F2 (Rename)
-    '        ' ===========================
-    '        If keyData = Keys.F2 AndAlso
-    '        Not txtAddressBar.Focused AndAlso
-    '        Not _isRenaming Then
-    '            RenameFile_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-
-
-
-
-
-
-
-    '        '' ===========================
-    '        ''   CTRL + C (Copy)
-    '        '' ===========================
-    '        'If keyData = (Keys.Control Or Keys.C) AndAlso Not txtAddressBar.Focused Then
-    '        '    CopySelected_Click(sender, EventArgs.Empty)
-    '        '    Return True
-    '        'End If
-
-    '        ' ===========================
-    '        '   CTRL + C (Copy)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.C) AndAlso
-    '        Not txtAddressBar.Focused AndAlso
-    '        Not _isRenaming Then
-    '            CopySelected_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-
-    '        ' ===========================
-    '        '   CTRL + V (Paste)
-    '        ' ===========================
-    '        'If keyData = (Keys.Control Or Keys.V) AndAlso Not txtAddressBar.Focused Then
-    '        '    PasteSelected_Click(sender, EventArgs.Empty)
-    '        '    Return True
-    '        'End If
-
-    '        If keyData = (Keys.Control Or Keys.V) AndAlso
-    '        Not txtAddressBar.Focused AndAlso
-    '        Not _isRenaming Then
-    '            PasteSelected_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-
-
-
-
-
-    '        '' ===========================
-    '        ''   CTRL + X (Cut)
-    '        '' ===========================
-    '        'If keyData = (Keys.Control Or Keys.X) AndAlso Not txtAddressBar.Focused Then
-    '        '    CutSelected_Click(sender, EventArgs.Empty)
-    '        '    Return True
-    '        'End If
-
-
-
-
-
-
-
-
-    '        ' ===========================
-    '        '   CTRL + X (Cut)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.X) AndAlso
-    '        Not txtAddressBar.Focused AndAlso
-    '        Not _isRenaming Then
-    '            CutSelected_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-
-
-
-
-
-
-
-
-
-
-    '        '' ===========================
-    '        ''   CTRL + A (Select all)
-    '        '' ===========================
-    '        'If keyData = (Keys.Control Or Keys.A) Then
-    '        '    SelectAllItems()
-    '        '    lvFiles.Focus()
-    '        '    Return True
-    '        'End If
-
-
-    '        ' ===========================
-    '        '   CTRL + A (Select all)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.A) AndAlso
-    '        Not txtAddressBar.Focused AndAlso
-    '        Not _isRenaming Then
-    '            SelectAllItems()
-    '            lvFiles.Focus()
-    '            Return True
-    '        End If
-
-
-
-
-
-
-
-    '        ' ' ===========================
-    '        ' '   CTRL + D  OR  DELETE  (Delete)
-    '        ' ' ===========================
-    '        ' If keyData = (Keys.Control Or Keys.D) _
-    '        'OrElse keyData = Keys.Delete Then
-
-    '        '     Delete_Click(sender, EventArgs.Empty)
-    '        '     Return True
-    '        ' End If
-
-    '        ' ===========================
-    '        '   CTRL + D  OR  DELETE  (Delete)
-    '        ' ===========================
-    '        If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso
-    '           Not txtAddressBar.Focused AndAlso
-    '           Not _isRenaming Then
-    '            Delete_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-
-
-
-
-
-
-
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("An error occurred: " & ex.Message,
-    '                    "Error",
-    '                    MessageBoxButtons.OK,
-    '                    MessageBoxIcon.Error)
-    '    End Try
-
-    '    Return False
-    'End Function
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
         Try
@@ -1875,6 +1534,14 @@ Public Class Form1
 
         End Select
 
+    End Sub
+
+
+    Private Sub OpenSelectedItem()
+        ' Is a file or folder selected?
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim fullPath = CStr(lvFiles.SelectedItems(0).Tag)
+        GoToFolderOrOpenFile(fullPath)
     End Sub
 
     Private Sub ShowHelpFile()
@@ -3393,7 +3060,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
 
         ' Clear item selection for lvFiles
@@ -3600,44 +3266,66 @@ Public Class Form1
         statusTimer.Stop()
     End Sub
 
-
     Private Sub PlaceCaretAtEndOfAddressBar()
         ' Place caret at end of text
         txtAddressBar.SelectionStart = txtAddressBar.Text.Length
     End Sub
 
-    'Private Sub HandleFindNextCommand()
 
-    '    If SearchResults.Count = 0 Then
-    '        ShowStatus(StatusPad & IconDialog & "  No previous search results. Press: Ctrl + F or enter: 'find [search_term]' to start a search.")
-    '        Return
-    '    End If
+    Private Sub EnsureEasyAccessFile()
+        Dim dir = Path.GetDirectoryName(EasyAccessFile)
+        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+        If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
+    End Sub
 
-    '    ' Advance index
-    '    SearchIndex += 1
+    Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
+        EnsureEasyAccessFile()
 
-    '    ' Wrap around
-    '    If SearchIndex >= SearchResults.Count Then
-    '        SearchIndex = 0
-    '    End If
+        Dim list As New List(Of (String, String))
 
-    '    ' Select the next result
-    '    lvFiles.SelectedItems.Clear()
-    '    Dim nextPath As String = SearchResults(SearchIndex)
+        For Each line In IO.File.ReadAllLines(EasyAccessFile)
+            If String.IsNullOrWhiteSpace(line) Then Continue For
 
-    '    SelectListViewItemByPath(nextPath)
-    '    Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+            Dim parts = line.Split({","c}, 2)
+            If parts.Length = 2 Then
+                Dim name = parts(0).Trim()
+                Dim path = parts(1).Trim()
 
-    '    ShowStatus(
-    '        StatusPad & IconSearch &
-    '        "    Result " &
-    '        (SearchIndex + 1) &
-    '        " of " &
-    '        SearchResults.Count &
-    '        $"     ""{fileName}""       Next result  -  F3      Open  -  Ctrl + O      Reset  -  Esc"
-    '    )
+                If Directory.Exists(path) Then
+                    list.Add((name, path))
+                End If
+            End If
+        Next
 
-    'End Sub
+        Return list
+    End Function
+
+    Public Sub AddToEasyAccess(name As String, path As String)
+        EnsureEasyAccessFile()
+
+        Dim entry = $"{name},{path}"
+        Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+        If Not existing.Contains(entry) Then
+            IO.File.AppendAllLines(EasyAccessFile, {entry})
+        End If
+
+        UpdateTreeRoots()
+        UpdateFileListPinState()
+
+    End Sub
+
+    Public Sub RemoveFromEasyAccess(path As String)
+        EnsureEasyAccessFile()
+
+        Dim lines = IO.File.ReadAllLines(EasyAccessFile).ToList()
+        Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
+
+        IO.File.WriteAllLines(EasyAccessFile, updated)
+
+        UpdateTreeRoots()
+        UpdateFileListPinState()
+    End Sub
 
 
     Private Sub HandleFindNextCommand()
@@ -3677,29 +3365,6 @@ Public Class Form1
 
     End Sub
 
-
-    'Private Sub HighlightSearchMatches()
-    '    ' Soft pastel highlight that feels calm and learner-friendly
-    '    Dim highlightColor As Color = Color.FromArgb(235, 245, 255)  ' very light blue
-
-    '    ' Reset all items first
-    '    For Each item As ListViewItem In lvFiles.Items
-    '        lvFiles.BeginUpdate()
-    '        item.BackColor = Color.White
-    '        lvFiles.EndUpdate()
-    '    Next
-
-    '    ' Apply highlight to matched items
-    '    For Each path As String In SearchResults
-    '        Dim item As ListViewItem = FindListViewItemByPath(path)
-    '        If item IsNot Nothing Then
-    '            lvFiles.BeginUpdate()
-    '            item.BackColor = highlightColor
-    '            lvFiles.EndUpdate()
-    '        End If
-    '    Next
-    'End Sub
-
     Private Sub HighlightSearchMatches()
         ' Soft pastel highlight that feels calm and learner-friendly
         'Dim highlightColor As Color = Color.FromArgb(235, 245, 255)  ' very light blue
@@ -3732,7 +3397,6 @@ Public Class Form1
         Next
         Return Nothing
     End Function
-
 
     Private Sub InitiateSearch()
         txtAddressBar.Focus()
@@ -4196,122 +3860,6 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
-
-
-    Private Sub InitApp()
-
-        Me.Text = "File Explorer - Code with Joe"
-
-        Me.KeyPreview = True
-
-        Me.CenterToScreen()
-
-        ConfigureTooltips()
-
-        InitStatusBar()
-
-        ShowStatus(StatusPad & IconDialog & " Loading...")
-
-        InitContextMenu()
-
-        InitImageList()
-
-        InitArrows()
-
-        InitListView()
-
-        InitTreeView()
-
-        '  Start in User Profile folder
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-
-        UpdateTreeRoots()
-
-
-        RunTests()
-
-        ShowStatus(StatusPad & IconSuccess & "  Ready")
-
-    End Sub
-
-    Private Sub ConfigureTooltips()
-
-        ' General tooltip settings
-        tips.AutoPopDelay = 6000
-        tips.InitialDelay = 300
-        tips.ReshowDelay = 100
-        tips.ShowAlways = True
-
-        ' ============================
-        ' Navigation Buttons
-        ' ============================
-        tips.SetToolTip(btnBack, "Go back to the previous folder  (Alt + ← or Backspace)")
-        tips.SetToolTip(btnForward, "Go forward to the next folder  (Alt + →)")
-        tips.SetToolTip(btnRefresh, "Refresh the current folder  (F5)")
-        tips.SetToolTip(bntHome, "Go to your Home directory (Alt + Home)")
-        tips.SetToolTip(btnGo, "Go to path or run command (Enter)")
-
-        ' ============================
-        ' File / Folder Creation
-        ' ============================
-        tips.SetToolTip(btnNewFolder, "Create a new folder  (Ctrl + Shift + N)")
-        tips.SetToolTip(btnNewTextFile, "Create a new text file (Ctrl + Shift + T)")
-
-        ' ============================
-        ' Clipboard Operations
-        ' ============================
-        tips.SetToolTip(btnCut, "Cut selected items  (Ctrl + X)")
-        tips.SetToolTip(btnCopy, "Copy selected items  (Ctrl + C)")
-        tips.SetToolTip(btnPaste, "Paste items  (Ctrl + V)")
-
-        ' ============================
-        ' File Operations
-        ' ============================
-        tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
-        tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
-
-        'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
-        tips.SetToolTip(txtAddressBar,
-                        "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
-
-    End Sub
-
-    Private Sub InitListView()
-        lvFiles.View = View.Details
-        lvFiles.FullRowSelect = True
-        lvFiles.MultiSelect = True
-        lvFiles.Columns.Clear()
-        lvFiles.Columns.Add("Name", 500)
-        lvFiles.Columns.Add("Type", 175)
-        lvFiles.Columns.Add("Size", 100)
-        lvFiles.Columns.Add("Modified", 150)
-
-    End Sub
-
-    Private Sub InitTreeView()
-
-        ' Don't show lines connecting nodes
-        tvFolders.ShowRootLines = False
-
-        ' Use arrow icons instead of plus/minus
-        tvFolders.ShowPlusMinus = False
-        tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
-
-    End Sub
-
-
-
-
-    'Private Sub EnsureEasyAccessSettings()
-    '    If My.Settings.EasyAccessPaths Is Nothing Then
-    '        My.Settings.EasyAccessPaths = New Specialized.StringCollection()
-    '        My.Settings.Save()
-    '    End If
-    'End Sub
-
-
-
-
     Private Sub UpdateTreeRoots()
         ' Update the TreeView with current drives and special folders at the top level.
 
@@ -4479,7 +4027,18 @@ Public Class Form1
 
     End Sub
 
+    Private Function GetFolderDisplayName(folderPath As String) As String
+        Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
 
+        If String.IsNullOrWhiteSpace(name) Then
+            name = folderPath
+        End If
+
+        ' Remove commas to protect the "name,path" format
+        name = name.Replace(",", "")
+
+        Return name
+    End Function
 
     Private Function FormatBytes(bytes As Long) As String
         Dim sizes() As String = {"B", "KB", "MB", "GB", "TB"}
@@ -4493,6 +4052,193 @@ Public Class Form1
 
         Return $"{value:0.##} {sizes(order)}"
     End Function
+
+    Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        RemoveFromEasyAccess(path)
+    End Sub
+
+    Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        If Not Directory.Exists(path) Then Exit Sub
+        If IsSpecialFolder(path) Then Exit Sub
+
+        Dim name As String = GetFolderDisplayName(path)
+        AddToEasyAccess(name, path)
+    End Sub
+
+    Private Function IsSpecialFolder(folderPath As String) As Boolean
+
+        Dim specialFolders As (String, String)() = {
+            ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+            ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
+            ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
+            ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
+            ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
+            ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
+        }
+
+        Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
+
+    End Function
+
+    Private Sub Pin_Click(sender As Object, e As EventArgs)
+        Dim node = tvFolders.SelectedNode
+        If node Is Nothing Then Exit Sub
+
+        Dim path As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        Dim name As String = GetFolderDisplayName(path)
+        AddToEasyAccess(name, path)
+    End Sub
+
+    Private Sub Unpin_Click(sender As Object, e As EventArgs)
+        Dim node = tvFolders.SelectedNode
+        If node Is Nothing Then Exit Sub
+
+        Dim path As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        RemoveFromEasyAccess(path)
+    End Sub
+
+    Private Sub UpdateTreeContextMenu(node As TreeNode)
+
+        ' No node → hide everything
+        If node Is Nothing Then
+            mnuPin.Visible = False
+            mnuUnpin.Visible = False
+            Exit Sub
+        End If
+
+        Dim path As String = TryCast(node.Tag, String)
+
+        ' Node has no path → hide everything
+        If String.IsNullOrEmpty(path) Then
+            mnuPin.Visible = False
+            mnuUnpin.Visible = False
+            Exit Sub
+        End If
+
+        ' Determine pinned state
+        Dim isPinned As Boolean =
+        IO.File.ReadAllLines(EasyAccessFile).
+        Any(Function(line) line.EndsWith("," & path))
+
+        mnuPin.Visible = Not isPinned
+        mnuUnpin.Visible = isPinned
+    End Sub
+
+
+    Private Sub InitApp()
+
+        Me.Text = "File Explorer - Code with Joe"
+
+        Me.KeyPreview = True
+
+        Me.CenterToScreen()
+
+        ConfigureTooltips()
+
+        InitStatusBar()
+
+        ShowStatus(StatusPad & IconDialog & " Loading...")
+
+        InitContextMenu()
+
+        InitImageList()
+
+        InitArrows()
+
+        InitListView()
+
+        InitTreeView()
+
+        '  Start in User Profile folder
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+
+        UpdateTreeRoots()
+
+
+        RunTests()
+
+        ShowStatus(StatusPad & IconSuccess & "  Ready")
+
+    End Sub
+
+    Private Sub ConfigureTooltips()
+
+        ' General tooltip settings
+        tips.AutoPopDelay = 6000
+        tips.InitialDelay = 300
+        tips.ReshowDelay = 100
+        tips.ShowAlways = True
+
+        ' ============================
+        ' Navigation Buttons
+        ' ============================
+        tips.SetToolTip(btnBack, "Go back to the previous folder  (Alt + ← or Backspace)")
+        tips.SetToolTip(btnForward, "Go forward to the next folder  (Alt + →)")
+        tips.SetToolTip(btnRefresh, "Refresh the current folder  (F5)")
+        tips.SetToolTip(bntHome, "Go to your Home directory (Alt + Home)")
+        tips.SetToolTip(btnGo, "Go to path or run command (Enter)")
+
+        ' ============================
+        ' File / Folder Creation
+        ' ============================
+        tips.SetToolTip(btnNewFolder, "Create a new folder  (Ctrl + Shift + N)")
+        tips.SetToolTip(btnNewTextFile, "Create a new text file (Ctrl + Shift + T)")
+
+        ' ============================
+        ' Clipboard Operations
+        ' ============================
+        tips.SetToolTip(btnCut, "Cut selected items  (Ctrl + X)")
+        tips.SetToolTip(btnCopy, "Copy selected items  (Ctrl + C)")
+        tips.SetToolTip(btnPaste, "Paste items  (Ctrl + V)")
+
+        ' ============================
+        ' File Operations
+        ' ============================
+        tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
+        tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
+
+        'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
+        tips.SetToolTip(txtAddressBar,
+                        "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
+
+    End Sub
+
+    Private Sub InitListView()
+        lvFiles.View = View.Details
+        lvFiles.FullRowSelect = True
+        lvFiles.MultiSelect = True
+        lvFiles.Columns.Clear()
+        lvFiles.Columns.Add("Name", 500)
+        lvFiles.Columns.Add("Type", 175)
+        lvFiles.Columns.Add("Size", 100)
+        lvFiles.Columns.Add("Modified", 150)
+
+    End Sub
+
+    Private Sub InitTreeView()
+
+        ' Don't show lines connecting nodes
+        tvFolders.ShowRootLines = False
+
+        ' Use arrow icons instead of plus/minus
+        tvFolders.ShowPlusMinus = False
+        tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
+
+    End Sub
 
     Private Sub InitStatusBar()
 
@@ -4551,77 +4297,6 @@ Public Class Form1
 
     End Sub
 
-
-    'Private Sub InitContextMenu()
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
-    '    .Name = "Open",
-    '    .ShortcutKeyDisplayString = "Ctrl+O"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
-    '    .Name = "NewFolder",
-    '    .ShortcutKeyDisplayString = "Ctrl+Shift+N"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
-    '    .Name = "NewTextFile",
-    '    .ShortcutKeyDisplayString = "Ctrl+Shift+T"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
-    '    .Name = "Cut",
-    '    .ShortcutKeyDisplayString = "Ctrl+X"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
-    '    .Name = "Copy",
-    '    .ShortcutKeyDisplayString = "Ctrl+C"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
-    '    .Name = "Paste",
-    '    .ShortcutKeyDisplayString = "Ctrl+V"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
-    '    .Name = "Rename",
-    '    .ShortcutKeyDisplayString = "F2"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
-    '    .Name = "Delete",
-    '    .ShortcutKeyDisplayString = "Delete"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
-    '    .Name = "CopyPath",
-    '    .ShortcutKeyDisplayString = "Ctrl+P"
-    '})
-
-    '    cmsFiles.Items.Add(New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
-    '    .Name = "FullScreen",
-    '    .ShortcutKeyDisplayString = "F11"
-    '})
-
-    '    lvFiles.ContextMenuStrip = cmsFiles
-    'End Sub
-
-
-    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
-
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-    '    Dim item = lvFiles.SelectedItems(0)
-    '    Dim path As String = TryCast(item.Tag, String)
-    '    If String.IsNullOrEmpty(path) Then Exit Sub
-
-    '    Dim name As String = GetFolderDisplayName(path)
-    '    AddToEasyAccess(name, path)
-    'End Sub
-
-
-
     Private Sub InitContextMenu()
 
         cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
@@ -4629,11 +4304,7 @@ Public Class Form1
             .ShortcutKeyDisplayString = "Ctrl+O"
         })
 
-        'cmsFiles.Items.Add(New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
-        '    .Name = "Pin"
-        '})
-
-        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin To Easy Accesss", Nothing, AddressOf UnpinFromFiles_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin From Easy Accesss", Nothing, AddressOf UnpinFromFiles_Click) With {
             .Name = "Unpin"
         })
 
@@ -4696,257 +4367,12 @@ Public Class Form1
 
         lvFiles.ContextMenuStrip = cmsFiles
 
-
-
-        'cmsTree.Items.Add(New ToolStripMenuItem("Pin", Nothing, AddressOf Open_Click) With {
-        '    .Name = "Pin",
-        '    .ShortcutKeyDisplayString = "Ctrl+O"
-        '})
-
-        'cmsTree.Items.Add(New ToolStripMenuItem("Unpin", Nothing, AddressOf Open_Click) With {
-        '    .Name = "Unpin",
-        '    .ShortcutKeyDisplayString = "Ctrl+O"
-        '})
-
-        'tvFolders.ContextMenuStrip = cmsTree
-
-
-        'Dim mnuPin As New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
-        '    .Name = "Pin"
-        '}
-
-        'Dim mnuUnpin As New ToolStripMenuItem("Unpin", Nothing, AddressOf Unpin_Click) With {
-        '    .Name = "Unpin"
-        '}
-
         cmsTree.Items.Add(mnuPin)
         cmsTree.Items.Add(mnuUnpin)
 
         tvFolders.ContextMenuStrip = cmsTree
 
-
     End Sub
-
-
-    Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        RemoveFromEasyAccess(path)
-    End Sub
-
-    Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        If Not Directory.Exists(path) Then Exit Sub
-        If IsSpecialFolder(path) Then Exit Sub
-
-        Dim name As String = GetFolderDisplayName(path)
-        AddToEasyAccess(name, path)
-    End Sub
-
-    'Private Function IsSpecialFolder(path As String) As Boolean
-    '    Return SpecialFolders.Any(Function(sf)
-    '                                  String.Equals(sf, path, StringComparison.OrdinalIgnoreCase)
-    '                              End Function)
-    'End Function
-    'Private Function IsSpecialFolder(folderPath As String) As Boolean
-
-    '    'Dim specialFolders As (String, String)() = {
-    '    '    ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
-    '    '    ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
-    '    '    ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
-    '    '    ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
-    '    '    ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
-    '    '    ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
-    '    '}
-
-
-    '    Return specialFolders.Any(Function(sf) String.Equals(sf, folderPath, StringComparison.OrdinalIgnoreCase))
-    'End Function
-
-    Private Function IsSpecialFolder(folderPath As String) As Boolean
-
-        Dim specialFolders As (String, String)() = {
-            ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
-            ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
-            ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
-            ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
-            ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
-            ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
-        }
-
-        Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
-
-    End Function
-
-    Private Sub Pin_Click(sender As Object, e As EventArgs)
-        Dim node = tvFolders.SelectedNode
-        If node Is Nothing Then Exit Sub
-
-        Dim path As String = TryCast(node.Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        Dim name As String = GetFolderDisplayName(path)
-        AddToEasyAccess(name, path)
-    End Sub
-
-    Private Sub Unpin_Click(sender As Object, e As EventArgs)
-        Dim node = tvFolders.SelectedNode
-        If node Is Nothing Then Exit Sub
-
-        Dim path As String = TryCast(node.Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        RemoveFromEasyAccess(path)
-    End Sub
-
-    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-    'Handles tvFolders.NodeMouseClick
-
-    '    If e.Button = MouseButtons.Left Then
-    '        Dim info = tvFolders.HitTest(e.Location)
-
-    '        ' Only toggle node when the arrow is clicked
-    '        If info.Location = TreeViewHitTestLocations.StateImage Then
-
-    '            tvFolders.BeginUpdate()
-
-    '            If e.Node.IsExpanded Then
-    '                e.Node.Collapse()
-    '            Else
-    '                e.Node.Expand()
-    '            End If
-
-    '            tvFolders.EndUpdate()
-
-    '        End If
-    '    End If
-
-    '    If e.Button = MouseButtons.Right Then
-    '        tvFolders.SelectedNode = e.Node
-    '        UpdateTreeContextMenu(e.Node)
-    '    End If
-    'End Sub
-
-
-
-    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-    Handles tvFolders.NodeMouseClick
-
-        ' ============================
-        '   LEFT CLICK (arrow toggle)
-        ' ============================
-        If e.Button = MouseButtons.Left Then
-            Dim info = tvFolders.HitTest(e.Location)
-
-            ' Only toggle when clicking the arrow (state image)
-            If info.Location = TreeViewHitTestLocations.StateImage Then
-
-                tvFolders.BeginUpdate()
-
-                If e.Node.IsExpanded Then
-                    e.Node.Collapse()
-                Else
-                    e.Node.Expand()
-                End If
-
-                tvFolders.EndUpdate()
-            End If
-        End If
-
-
-        ' ============================
-        '   RIGHT CLICK (context menu)
-        ' ============================
-        'If e.Button = MouseButtons.Right Then
-
-        '    ' Safety: ensure a node was actually clicked
-        '    If e.Node Is Nothing Then Exit Sub
-
-        '    If Not PathExists(e.Node.Tag) Then Exit Sub
-
-        '    ' Select the node under the cursor
-        '    tvFolders.SelectedNode = e.Node
-
-        '    ' Update Pin/Unpin visibility
-        '    UpdateTreeContextMenu(e.Node)
-        'End If
-
-
-        If e.Button = MouseButtons.Right Then
-
-            ' If no node was clicked, hide Pin/Unpin entirely
-            If e.Node Is Nothing Then
-                mnuPin.Visible = False
-                mnuUnpin.Visible = False
-                Exit Sub
-            End If
-
-            tvFolders.SelectedNode = e.Node
-            UpdateTreeContextMenu(e.Node)
-        End If
-
-
-
-
-
-
-    End Sub
-
-    'Private Sub UpdateTreeContextMenu(node As TreeNode)
-    '    Dim path As String = TryCast(node.Tag, String)
-
-    '    If String.IsNullOrEmpty(path) Then
-    '        'mnuPin.Visible = False
-    '        mnuUnpin.Visible = False
-    '        Exit Sub
-    '    End If
-
-    '    Dim isPinned As Boolean =
-    '    File.ReadAllLines(EasyAccessFile).
-    '    Any(Function(line) line.EndsWith("," & path))
-
-    '    'mnuPin.Visible = Not isPinned
-    '    mnuUnpin.Visible = isPinned
-    'End Sub
-
-
-
-    Private Sub UpdateTreeContextMenu(node As TreeNode)
-
-        ' No node → hide everything
-        If node Is Nothing Then
-            mnuPin.Visible = False
-            mnuUnpin.Visible = False
-            Exit Sub
-        End If
-
-        Dim path As String = TryCast(node.Tag, String)
-
-        ' Node has no path → hide everything
-        If String.IsNullOrEmpty(path) Then
-            mnuPin.Visible = False
-            mnuUnpin.Visible = False
-            Exit Sub
-        End If
-
-        ' Determine pinned state
-        Dim isPinned As Boolean =
-        IO.File.ReadAllLines(EasyAccessFile).
-        Any(Function(line) line.EndsWith("," & path))
-
-        mnuPin.Visible = Not isPinned
-        mnuUnpin.Visible = isPinned
-    End Sub
-
-
-
 
 
     Private Sub RunTests()
@@ -5171,85 +4597,7 @@ Public Class Form1
         Debug.Assert(Not condition, message)
     End Sub
 
-    'Private Sub btnPin_Click(sender As Object, e As EventArgs) Handles btnPin.Click
-
-    '    AddToEasyAccess(currentFolder)
-
-
-
-
-    'End Sub
-
-
-    Private Sub btnPin_Click(sender As Object, e As EventArgs) Handles btnPin.Click
-        Dim name As String = GetFolderDisplayName(currentFolder)
-        AddToEasyAccess(name, currentFolder)
-    End Sub
-
-    Private Function GetFolderDisplayName(folderPath As String) As String
-        Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
-
-        If String.IsNullOrWhiteSpace(name) Then
-            name = folderPath
-        End If
-
-        ' Remove commas to protect the "name,path" format
-        name = name.Replace(",", "")
-
-        Return name
-    End Function
-
-    Private Sub tvFolders_MouseClick(sender As Object, e As MouseEventArgs) Handles tvFolders.MouseClick
-
-        If e.Button = MouseButtons.Right Then
-            Dim info = tvFolders.HitTest(e.Location)
-            ' Only proceed if a node was right-clicked
-            If info.Node Is Nothing Then Exit Sub
-            If Not PathExists(info.Node.Tag) Then Exit Sub
-            ' Select the node under the cursor
-            tvFolders.SelectedNode = info.Node
-            ' Update Pin/Unpin visibility
-            UpdateTreeContextMenu(info.Node)
-        End If
-
-    End Sub
-
-    Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
-    Handles tvFolders.MouseDown
-
-        If e.Button = MouseButtons.Right Then
-            Dim info = tvFolders.HitTest(e.Location)
-
-            ' If not clicking a node, cancel the context menu
-            If info.Node Is Nothing Then
-                tvFolders.ContextMenuStrip = Nothing
-            Else
-                tvFolders.ContextMenuStrip = cmsTree
-            End If
-        End If
-    End Sub
-
-    Private Sub lvFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseDown
-
-        If e.Button = MouseButtons.Right Then
-            Dim info = lvFiles.HitTest(e.Location)
-            ' If not clicking an item, cancel the context menu
-            If info.Item Is Nothing Then
-                lvFiles.ContextMenuStrip = Nothing
-            Else
-                lvFiles.ContextMenuStrip = cmsFiles
-            End If
-        End If
-
-    End Sub
-
-
-
-
 End Class
-
-
-
 
 Public Class ListViewItemComparer
     Implements IComparer
