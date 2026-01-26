@@ -45,14 +45,13 @@ Public Class Form1
 
     Private cmsTree As New ContextMenuStrip()
 
-    'Dim mnuPin As New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
-    '        .Name = "Pin"
-    '    }
+    Dim mnuPin As New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
+        .Name = "Pin"
+    }
 
     Dim mnuUnpin As New ToolStripMenuItem("Unpin", Nothing, AddressOf Unpin_Click) With {
-            .Name = "Unpin"
-        }
-
+        .Name = "Unpin"
+    }
 
     Private lblStatus As New ToolStripStatusLabel()
 
@@ -128,7 +127,7 @@ Public Class Form1
         {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
         {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
         {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
-        {".vob", "Video"}, {".webm", "Video"},
+        {".vob", "Video"}, {".webm", "Video"}, {".wmv", "Video"},
         {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
         {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
         {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
@@ -4655,7 +4654,7 @@ Public Class Form1
         '    .Name = "Unpin"
         '}
 
-        'cmsTree.Items.Add(mnuPin)
+        cmsTree.Items.Add(mnuPin)
         cmsTree.Items.Add(mnuUnpin)
 
         tvFolders.ContextMenuStrip = cmsTree
@@ -4669,16 +4668,16 @@ Public Class Form1
 
 
 
-    'Private Sub Pin_Click(sender As Object, e As EventArgs)
-    '    Dim node = tvFolders.SelectedNode
-    '    If node Is Nothing Then Exit Sub
+    Private Sub Pin_Click(sender As Object, e As EventArgs)
+        Dim node = tvFolders.SelectedNode
+        If node Is Nothing Then Exit Sub
 
-    '    Dim path As String = TryCast(node.Tag, String)
-    '    If String.IsNullOrEmpty(path) Then Exit Sub
+        Dim path As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
 
-    '    Dim name As String = GetFolderDisplayName(path)
-    '    AddToEasyAccess(name, path)
-    'End Sub
+        Dim name As String = GetFolderDisplayName(path)
+        AddToEasyAccess(name, path)
+    End Sub
 
     Private Sub Unpin_Click(sender As Object, e As EventArgs)
         Dim node = tvFolders.SelectedNode
@@ -4748,36 +4747,89 @@ Public Class Form1
         ' ============================
         '   RIGHT CLICK (context menu)
         ' ============================
+        'If e.Button = MouseButtons.Right Then
+
+        '    ' Safety: ensure a node was actually clicked
+        '    If e.Node Is Nothing Then Exit Sub
+
+        '    If Not PathExists(e.Node.Tag) Then Exit Sub
+
+        '    ' Select the node under the cursor
+        '    tvFolders.SelectedNode = e.Node
+
+        '    ' Update Pin/Unpin visibility
+        '    UpdateTreeContextMenu(e.Node)
+        'End If
+
+
         If e.Button = MouseButtons.Right Then
 
-            ' Safety: ensure a node was actually clicked
-            If e.Node Is Nothing Then Exit Sub
+            ' If no node was clicked, hide Pin/Unpin entirely
+            If e.Node Is Nothing Then
+                mnuPin.Visible = False
+                mnuUnpin.Visible = False
+                Exit Sub
+            End If
 
-            ' Select the node under the cursor
             tvFolders.SelectedNode = e.Node
-
-            ' Update Pin/Unpin visibility
             UpdateTreeContextMenu(e.Node)
         End If
 
+
+
+
+
+
     End Sub
 
-    Private Sub UpdateTreeContextMenu(node As TreeNode)
-        Dim path As String = TryCast(node.Tag, String)
+    'Private Sub UpdateTreeContextMenu(node As TreeNode)
+    '    Dim path As String = TryCast(node.Tag, String)
 
-        If String.IsNullOrEmpty(path) Then
-            'mnuPin.Visible = False
+    '    If String.IsNullOrEmpty(path) Then
+    '        'mnuPin.Visible = False
+    '        mnuUnpin.Visible = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim isPinned As Boolean =
+    '    File.ReadAllLines(EasyAccessFile).
+    '    Any(Function(line) line.EndsWith("," & path))
+
+    '    'mnuPin.Visible = Not isPinned
+    '    mnuUnpin.Visible = isPinned
+    'End Sub
+
+
+
+    Private Sub UpdateTreeContextMenu(node As TreeNode)
+
+        ' No node → hide everything
+        If node Is Nothing Then
+            mnuPin.Visible = False
             mnuUnpin.Visible = False
             Exit Sub
         End If
 
+        Dim path As String = TryCast(node.Tag, String)
+
+        ' Node has no path → hide everything
+        If String.IsNullOrEmpty(path) Then
+            mnuPin.Visible = False
+            mnuUnpin.Visible = False
+            Exit Sub
+        End If
+
+        ' Determine pinned state
         Dim isPinned As Boolean =
         File.ReadAllLines(EasyAccessFile).
         Any(Function(line) line.EndsWith("," & path))
 
-        'mnuPin.Visible = Not isPinned
+        mnuPin.Visible = Not isPinned
         mnuUnpin.Visible = isPinned
     End Sub
+
+
+
 
 
     Private Sub RunTests()
@@ -5030,7 +5082,41 @@ Public Class Form1
         Return name
     End Function
 
+    Private Sub tvFolders_MouseClick(sender As Object, e As MouseEventArgs) Handles tvFolders.MouseClick
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = tvFolders.HitTest(e.Location)
+            ' Only proceed if a node was right-clicked
+            If info.Node Is Nothing Then Exit Sub
+            If Not PathExists(info.Node.Tag) Then Exit Sub
+            ' Select the node under the cursor
+            tvFolders.SelectedNode = info.Node
+            ' Update Pin/Unpin visibility
+            UpdateTreeContextMenu(info.Node)
+        End If
+
+    End Sub
+
+    Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
+    Handles tvFolders.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = tvFolders.HitTest(e.Location)
+
+            ' If not clicking a node, cancel the context menu
+            If info.Node Is Nothing Then
+                tvFolders.ContextMenuStrip = Nothing
+            Else
+                tvFolders.ContextMenuStrip = cmsTree
+            End If
+        End If
+    End Sub
+
+
 End Class
+
+
+
 
 Public Class ListViewItemComparer
     Implements IComparer
