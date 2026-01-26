@@ -51,8 +51,6 @@ Public Class Form1
 
     Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
 
-
-
     Private currentFolder As String = String.Empty
 
     Private ShowHiddenFiles As Boolean = False
