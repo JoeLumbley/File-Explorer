@@ -26,6 +26,7 @@
 
 
 Imports System.IO
+'Imports System.Net.WebRequestMethods
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
@@ -167,10 +168,22 @@ Public Class Form1
     Private ReadOnly EasyAccessFile As String =
     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "easyaccess.txt")
 
+
+
+    'Private ReadOnly SpecialFolders As String() = {
+    '    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+    '    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+    '    Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+    '    Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
+    '    Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
+    '    Environment.GetFolderPath(Environment.SpecialFolder.Downloads),
+    '    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+    '}
+
     Private Sub EnsureEasyAccessFile()
         Dim dir = Path.GetDirectoryName(EasyAccessFile)
         If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
-        If Not File.Exists(EasyAccessFile) Then File.WriteAllText(EasyAccessFile, "")
+        If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
     End Sub
 
     Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
@@ -178,7 +191,7 @@ Public Class Form1
 
         Dim list As New List(Of (String, String))
 
-        For Each line In File.ReadAllLines(EasyAccessFile)
+        For Each line In IO.File.ReadAllLines(EasyAccessFile)
             If String.IsNullOrWhiteSpace(line) Then Continue For
 
             Dim parts = line.Split({","c}, 2)
@@ -213,10 +226,10 @@ Public Class Form1
         EnsureEasyAccessFile()
 
         Dim entry = $"{name},{path}"
-        Dim existing = File.ReadAllLines(EasyAccessFile)
+        Dim existing = IO.File.ReadAllLines(EasyAccessFile)
 
         If Not existing.Contains(entry) Then
-            File.AppendAllLines(EasyAccessFile, {entry})
+            IO.File.AppendAllLines(EasyAccessFile, {entry})
         End If
 
         UpdateTreeRoots()
@@ -225,10 +238,10 @@ Public Class Form1
     Public Sub RemoveFromEasyAccess(path As String)
         EnsureEasyAccessFile()
 
-        Dim lines = File.ReadAllLines(EasyAccessFile).ToList()
+        Dim lines = IO.File.ReadAllLines(EasyAccessFile).ToList()
         Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
 
-        File.WriteAllLines(EasyAccessFile, updated)
+        IO.File.WriteAllLines(EasyAccessFile, updated)
 
         UpdateTreeRoots()
     End Sub
@@ -344,14 +357,61 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
+    '    Handles lvFiles.ItemSelectionChanged
+
+    '    ' Is the input a folder?
+    '    If Directory.Exists(Command) Then
+    '        cmsFiles.Items("Pin").Enabled = Enabled
+    '        ' Is the input a file?
+    '    ElseIf IO.File.Exists(Command) Then
+    '        cmsFiles.Items("Pin").Enabled = Enabled
+    '    End If
+
+    '    UpdateEditButtonsAndMenus()
+
+    '    UpdateFileButtonsAndMenus()
+
+
+    'End Sub
+
+
+
+
     Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
-        Handles lvFiles.ItemSelectionChanged
+    Handles lvFiles.ItemSelectionChanged
+
+        ' Default: Pin is disabled
+        cmsFiles.Items("Pin").Enabled = False
+
+        ' Nothing selected → nothing to pin
+        If lvFiles.SelectedItems.Count = 0 Then
+            UpdateEditButtonsAndMenus()
+            UpdateFileButtonsAndMenus()
+            Exit Sub
+        End If
+
+        ' Get selected item path
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then
+            UpdateEditButtonsAndMenus()
+            UpdateFileButtonsAndMenus()
+            Exit Sub
+        End If
+
+        ' Enable Pin ONLY for folders
+        If Directory.Exists(path) Then
+            cmsFiles.Items("Pin").Enabled = True
+        End If
 
         UpdateEditButtonsAndMenus()
-
         UpdateFileButtonsAndMenus()
 
     End Sub
+
+
+
+
 
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
         Handles lvFiles.ItemActivate
@@ -1462,7 +1522,7 @@ Public Class Form1
                     Dim destination As String = parts(parts.Length - 1).Trim()
 
                     ' Check if source file or directory exists
-                    If Not (File.Exists(source) OrElse Directory.Exists(source)) Then
+                    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
 
                         ShowStatus(StatusPad & IconError &
                                    " Copy failed:  Source """ &
@@ -1587,7 +1647,7 @@ Public Class Form1
                 Try
 
                     ' Create the file with initial content
-                    File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+                    IO.File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
 
                     ShowStatus(StatusPad & IconSuccess & " Text file created: " & newFilePath)
 
@@ -1801,7 +1861,7 @@ Public Class Form1
                     NavigateTo(command)
                     Return
                     ' Is the input a file?
-                ElseIf File.Exists(command) Then
+                ElseIf IO.File.Exists(command) Then
                     OpenFileWithDefaultApp(command)
                     RestoreAddressBar()
                     Return
@@ -1828,7 +1888,7 @@ Public Class Form1
 
     Private Sub HandleOpenPath(path As String)
 
-        If File.Exists(path) Then
+        If IO.File.Exists(path) Then
             OpenFileWithDefaultApp(path)
             RestoreAddressBar()
             Return
@@ -1972,14 +2032,14 @@ Public Class Form1
 
         ' Ensure unique name
         Dim counter As Integer = 1
-        While File.Exists(newFilePath)
+        While IO.File.Exists(newFilePath)
             newFilePath = Path.Combine(destDir, $"{baseName} ({counter}).txt")
             counter += 1
         End While
 
         Try
             ' Create the file with initial content
-            File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+            IO.File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
 
             ShowStatus(StatusPad & IconSuccess & " Text file created: " & newFilePath)
 
@@ -2065,7 +2125,7 @@ Public Class Form1
         Dim name As String = Path.GetFileName(sourcePath)
         Dim destPath As String = Path.Combine(destDir, name)
 
-        Dim isFile As Boolean = File.Exists(sourcePath)
+        Dim isFile As Boolean = IO.File.Exists(sourcePath)
         Dim isDir As Boolean = Directory.Exists(sourcePath)
 
         If Not isFile AndAlso Not isDir Then
@@ -2220,8 +2280,8 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDelete &
                            " Deleted folder: " & item.Text)
 
-                ElseIf File.Exists(fullPath) Then
-                    File.Delete(fullPath)
+                ElseIf IO.File.Exists(fullPath) Then
+                    IO.File.Delete(fullPath)
                     ShowStatus(StatusPad & IconDelete &
                            " Deleted file: " & item.Text)
 
@@ -2643,9 +2703,9 @@ Public Class Form1
 
                 ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
 
-            ElseIf File.Exists(oldPath) Then
+            ElseIf IO.File.Exists(oldPath) Then
 
-                File.Move(oldPath, newPath)
+                IO.File.Move(oldPath, newPath)
 
                 ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
 
@@ -2687,7 +2747,7 @@ Public Class Form1
 
         ' Auto‑rename if needed
         Dim finalDest As String = destination
-        If File.Exists(finalDest) Then
+        If IO.File.Exists(finalDest) Then
             finalDest = ResolveDestinationPathWithAutoRename(finalDest, isDirectory:=False)
             result.FilesRenamed = 1
             ShowStatus(StatusPad & IconDialog &
@@ -2700,7 +2760,7 @@ Public Class Form1
 
             Await Task.Run(Sub()
                                ct.ThrowIfCancellationRequested()
-                               File.Copy(source, finalDest, overwrite:=False)
+                               IO.File.Copy(source, finalDest, overwrite:=False)
                            End Sub, ct)
 
             result.FilesCopied = 1
@@ -2875,7 +2935,7 @@ Public Class Form1
             ' -------------------------
             ' FILE COPY
             ' -------------------------
-            If File.Exists(source) Then
+            If IO.File.Exists(source) Then
 
                 Dim destFile As String = Path.Combine(destination, Path.GetFileName(source))
 
@@ -3012,7 +3072,7 @@ Public Class Form1
             NavigateTo(FileOrFolder, True)
 
             ' If file exists, open it
-        ElseIf File.Exists(FileOrFolder) Then
+        ElseIf IO.File.Exists(FileOrFolder) Then
 
             OpenFileWithDefaultApp(FileOrFolder)
 
@@ -3064,10 +3124,10 @@ Public Class Form1
             Dim destDir As String = Path.GetDirectoryName(filePath)
 
             ' If the file does not exist, create it
-            If Not File.Exists(filePath) Then
+            If Not IO.File.Exists(filePath) Then
 
                 ' Create the file with initial content
-                File.WriteAllText(filePath, $"Created on {DateTime.Now:G}")
+                IO.File.WriteAllText(filePath, $"Created on {DateTime.Now:G}")
 
                 ShowStatus(StatusPad & IconSuccess & " Text file created: " & filePath)
 
@@ -3124,10 +3184,10 @@ Public Class Form1
             End If
 
             ' Check if the source is a file
-            If File.Exists(source) Then
+            If IO.File.Exists(source) Then
 
                 ' Check if the destination file already exists
-                If Not File.Exists(destination) Then
+                If Not IO.File.Exists(destination) Then
 
                     ' Navigate to the directory of the source file
                     NavigateTo(Path.GetDirectoryName(source))
@@ -3137,7 +3197,7 @@ Public Class Form1
                     ' Ensure destination directory exists
                     Directory.CreateDirectory(Path.GetDirectoryName(destination))
 
-                    File.Move(source, destination)
+                    IO.File.Move(source, destination)
 
                     ' Navigate to the destination folder (corrected)
                     NavigateTo(destination)
@@ -3205,7 +3265,7 @@ Public Class Form1
 
         Try
             ' Check if it's a file
-            If File.Exists(path2Delete) Then
+            If IO.File.Exists(path2Delete) Then
                 ' Go to the directory of the file to be deleted so the user can see what is about to be deleted.
                 Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(destDir)
@@ -3220,7 +3280,7 @@ Public Class Form1
                                          MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Exit Sub
 
-                File.Delete(path2Delete)
+                IO.File.Delete(path2Delete)
 
                 ' Refresh the view to show the file is deleted
                 Await PopulateFiles(destDir) ' Await the async method
@@ -3308,10 +3368,10 @@ Public Class Form1
 
                 ' Rule 4: If it’s a file, rename the file and show its folder.
                 ' If source is a file
-            ElseIf File.Exists(sourcePath) Then
+            ElseIf IO.File.Exists(sourcePath) Then
 
                 ' Rename file
-                File.Move(sourcePath, newPath)
+                IO.File.Move(sourcePath, newPath)
 
                 ' Navigate to the directory of the renamed file
                 NavigateTo(Path.GetDirectoryName(sourcePath))
@@ -3710,7 +3770,7 @@ Public Class Form1
         Dim candidate As String = initialDestPath
         Dim index As Integer = 1
 
-        While (Not isDirectory AndAlso File.Exists(candidate)) OrElse
+        While (Not isDirectory AndAlso IO.File.Exists(candidate)) OrElse
           (isDirectory AndAlso Directory.Exists(candidate))
 
             If index = 1 Then
@@ -3754,7 +3814,7 @@ Public Class Form1
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
         Try
-            If File.Exists(helpFilePath) Then
+            If IO.File.Exists(helpFilePath) Then
                 Exit Sub
             End If
 
@@ -3767,7 +3827,7 @@ Public Class Form1
                 Directory.CreateDirectory(dir)
             End If
 
-            File.WriteAllText(helpFilePath, helpText)
+            IO.File.WriteAllText(helpFilePath, helpText)
 
             ShowStatus(StatusPad & IconSuccess & "  Help file created.")
 
@@ -3916,7 +3976,7 @@ Public Class Form1
     End Function
 
     Private Function PathExists(path As String) As Boolean
-        Return File.Exists(path) OrElse Directory.Exists(path)
+        Return IO.File.Exists(path) OrElse Directory.Exists(path)
     End Function
 
     Private Function HasWriteAccess(dirPath As String) As Boolean
@@ -3929,14 +3989,14 @@ Public Class Form1
 
         Try
             ' Create
-            Using fs As FileStream = File.Create(testFile, 1, FileOptions.None)
+            Using fs As FileStream = IO.File.Create(testFile, 1, FileOptions.None)
             End Using
 
             ' Rename
-            File.Move(testFile, testFile2)
+            IO.File.Move(testFile, testFile2)
 
             ' Cleanup
-            File.Delete(testFile2)
+            IO.File.Delete(testFile2)
 
             Return True
 
@@ -4023,7 +4083,7 @@ Public Class Form1
         Dim candidate = Path.Combine(baseDir, baseName & ext)
         Dim counter = 1
 
-        While File.Exists(candidate)
+        While IO.File.Exists(candidate)
             candidate = Path.Combine(baseDir, $"{baseName} ({counter}){ext}")
             counter += 1
         End While
@@ -4548,17 +4608,17 @@ Public Class Form1
     'End Sub
 
 
-    Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
 
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
-        Dim item = lvFiles.SelectedItems(0)
-        Dim path As String = TryCast(item.Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
+    '    Dim item = lvFiles.SelectedItems(0)
+    '    Dim path As String = TryCast(item.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
 
-        Dim name As String = GetFolderDisplayName(path)
-        AddToEasyAccess(name, path)
-    End Sub
+    '    Dim name As String = GetFolderDisplayName(path)
+    '    AddToEasyAccess(name, path)
+    'End Sub
 
 
 
@@ -4572,6 +4632,11 @@ Public Class Form1
         'cmsFiles.Items.Add(New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
         '    .Name = "Pin"
         '})
+
+        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin To Easy Accesss", Nothing, AddressOf UnpinFromFiles_Click) With {
+            .Name = "Unpin"
+        })
+
 
         cmsFiles.Items.Add(New ToolStripMenuItem("Pin To Easy Accesss", Nothing, AddressOf PinFromFiles_Click) With {
             .Name = "Pin"
@@ -4663,10 +4728,62 @@ Public Class Form1
     End Sub
 
 
+    Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        RemoveFromEasyAccess(path)
+    End Sub
+
+    Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+
+        If Not Directory.Exists(path) Then Exit Sub
+        If IsSpecialFolder(path) Then Exit Sub
+
+        Dim name As String = GetFolderDisplayName(path)
+        AddToEasyAccess(name, path)
+    End Sub
+
+    'Private Function IsSpecialFolder(path As String) As Boolean
+    '    Return SpecialFolders.Any(Function(sf)
+    '                                  String.Equals(sf, path, StringComparison.OrdinalIgnoreCase)
+    '                              End Function)
+    'End Function
+    'Private Function IsSpecialFolder(folderPath As String) As Boolean
+
+    '    'Dim specialFolders As (String, String)() = {
+    '    '    ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+    '    '    ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
+    '    '    ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
+    '    '    ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
+    '    '    ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
+    '    '    ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
+    '    '}
 
 
+    '    Return specialFolders.Any(Function(sf) String.Equals(sf, folderPath, StringComparison.OrdinalIgnoreCase))
+    'End Function
 
+    Private Function IsSpecialFolder(folderPath As String) As Boolean
 
+        Dim specialFolders As (String, String)() = {
+            ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+            ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
+            ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
+            ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
+            ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
+            ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
+        }
+
+        Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
+
+    End Function
 
     Private Sub Pin_Click(sender As Object, e As EventArgs)
         Dim node = tvFolders.SelectedNode
@@ -4821,7 +4938,7 @@ Public Class Form1
 
         ' Determine pinned state
         Dim isPinned As Boolean =
-        File.ReadAllLines(EasyAccessFile).
+        IO.File.ReadAllLines(EasyAccessFile).
         Any(Function(line) line.EndsWith("," & path))
 
         mnuPin.Visible = Not isPinned
@@ -5018,14 +5135,14 @@ Public Class Form1
                "Should return base name when no conflict exists")
 
         ' === One conflict ===
-        File.WriteAllText(Path.Combine(tempDir, "New Text File.txt"), "")
+        IO.File.WriteAllText(Path.Combine(tempDir, "New Text File.txt"), "")
         Dim p2 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
         AssertTrue(p2 = Path.Combine(tempDir, "New Text File (1).txt"),
                "Should append (1) when base file exists")
 
         ' === Multiple conflicts ===
-        File.WriteAllText(Path.Combine(tempDir, "New Text File (1).txt"), "")
-        File.WriteAllText(Path.Combine(tempDir, "New Text File (2).txt"), "")
+        IO.File.WriteAllText(Path.Combine(tempDir, "New Text File (1).txt"), "")
+        IO.File.WriteAllText(Path.Combine(tempDir, "New Text File (2).txt"), "")
         Dim p3 = GetUniqueFilePath(tempDir, "New Text File", ".txt")
         AssertTrue(p3 = Path.Combine(tempDir, "New Text File (3).txt"),
                "Should increment until a free name is found")
@@ -5111,6 +5228,22 @@ Public Class Form1
             End If
         End If
     End Sub
+
+    Private Sub lvFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = lvFiles.HitTest(e.Location)
+            ' If not clicking an item, cancel the context menu
+            If info.Item Is Nothing Then
+                lvFiles.ContextMenuStrip = Nothing
+            Else
+                lvFiles.ContextMenuStrip = cmsFiles
+            End If
+        End If
+
+    End Sub
+
+
 
 
 End Class
