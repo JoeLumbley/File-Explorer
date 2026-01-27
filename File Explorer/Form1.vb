@@ -1353,56 +1353,6 @@ Public Class Form1
                 HandleOpenPath(fullPath)
                 Return
 
-            'Case "find", "search"
-
-            '    If parts.Length > 1 Then
-
-            '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-            '        If String.IsNullOrWhiteSpace(searchTerm) Then
-            '            ShowStatus(StatusPad & IconDialog & " Usage: find [search_term] - e.g., find document")
-            '            Return
-            '        End If
-
-            '        ShowStatus(StatusPad & IconSearch & " Searching for: " & searchTerm)
-
-            '        'SearchInCurrentFolder(searchTerm)
-            '        OnlySearchForFilesInCurrentFolder(searchTerm)
-
-            '        ' Reset index for new search
-            '        SearchIndex = 0
-
-            '        ' Auto-select first result if available
-            '        If SearchResults.Count > 0 Then
-            '            lvFiles.SelectedItems.Clear()
-            '            SelectListViewItemByPath(SearchResults(0))
-
-            '            Dim nextPath As String = SearchResults(SearchIndex)
-            '            Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
-
-            '            txtAddressBar.Focus()
-
-            '            ShowStatus(
-            '                StatusPad & IconSearch &
-            '                "    Result " &
-            '                (SearchIndex + 1) &
-            '                " of " &
-            '                SearchResults.Count &
-            '                $"     ""{fileName}""       Next result  -  F3      Open  -  Ctrl + O      Reset  -  Esc"
-            '            )
-
-
-            '        Else
-            '            ShowStatus(StatusPad & IconDialog & "  No results found for: " & searchTerm)
-            '        End If
-
-            '    Else
-            '        ShowStatus(StatusPad & IconDialog & "  Usage: find [search_term] - e.g., find document")
-            '    End If
-
-            '    Return
-
-
             Case "find", "search"
 
                 If parts.Length > 1 Then
@@ -1423,7 +1373,6 @@ Public Class Form1
                     ' Perform search
                     OnlySearchForFilesInCurrentFolder(searchTerm)
 
-
                     ' Reset index for new search
                     SearchIndex = 0
 
@@ -1436,12 +1385,9 @@ Public Class Form1
                         Dim nextPath As String = SearchResults(SearchIndex)
                         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
-                        'txtAddressBar.Focus()
                         lvFiles.Focus()
 
                         HighlightSearchMatches()
-                        'HighlightCurrentResult()
-
 
                         ' Unified search HUD
                         ShowStatus(
@@ -1468,33 +1414,6 @@ Public Class Form1
             Case "findnext", "searchnext", "next"
 
                 HandleFindNextCommand()
-
-
-                'If SearchResults.Count = 0 Then
-                '    ShowStatus(StatusPad & IconDialog & "  No previous search results. Use 'find [search_term]' to start a search.")
-                '    Return
-                'End If
-
-                '' Advance index
-                'SearchIndex += 1
-
-                '' Wrap around
-                'If SearchIndex >= SearchResults.Count Then
-                '    SearchIndex = 0
-                'End If
-
-                '' Select the next result
-                'lvFiles.SelectedItems.Clear()
-                'Dim nextPath As String = SearchResults(SearchIndex)
-                'SelectListViewItemByPath(nextPath)
-
-                'ShowStatus(
-                '    StatusPad & IconSearch &
-                '    " Showing result " &
-                '    (SearchIndex + 1) &
-                '    " of " &
-                '    SearchResults.Count &
-                '    " To show the next result, enter: findnext")
 
                 Return
 
@@ -3368,7 +3287,7 @@ Public Class Form1
     Private Sub HighlightSearchMatches()
         ' Soft pastel highlight that feels calm and learner-friendly
         'Dim highlightColor As Color = Color.FromArgb(235, 245, 255)  ' very light blue
-        Dim highlightColor As Color = Color.FromArgb(215, 240, 251)  ' very light blue
+        Dim highlightColor As Color = Color.FromArgb(199, 236, 255)  ' very light blue
 
 
         lvFiles.BeginUpdate()
