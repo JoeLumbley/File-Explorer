@@ -1031,7 +1031,7 @@ Public Class Form1
         ' ===========================
         '   CTRL + F (Find)
         ' ===========================
-        If keyData = (Keys.Control Or Keys.F) AndAlso GlobalShortcutsAllowed() Then
+        If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
             InitiateSearch()
             Return True
         End If
