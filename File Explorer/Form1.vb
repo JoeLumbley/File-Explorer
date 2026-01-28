@@ -665,12 +665,10 @@ Public Class Form1
 
             txtAddressBar.Text = currentFolder
 
-            ' Reset search state
-            SearchIndex = 0
-            SearchResults = New List(Of String)
+            ResetSearchState()
 
             ' Navigate without recording history
-            NavigateTo(currentFolder, recordHistory:=False)
+            'NavigateTo(currentFolder, recordHistory:=False)
 
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -678,6 +676,12 @@ Public Class Form1
 
         Return False
     End Function
+
+    Private Sub ResetSearchState()
+        SearchIndex = 0
+        SearchResults = New List(Of String)
+        RestoreBackground()
+    End Sub
 
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
@@ -1321,9 +1325,64 @@ Public Class Form1
                     Debug.WriteLine("Text Command Error: " & ex.Message)
                 End Try
 
-            Case "help", "man"
+            Case "help", "man", "commands"
+
                 ShowHelpFile()
                 Return
+
+            Case "df"   ' Disk Free
+                ' df: Show free disk space for a drive.
+                ' Usage: df C:
+                ' If no drive is provided, show a gentle hint.
+
+                If parts.Length < 2 Then
+                    ShowStatus(StatusPad & IconDialog &
+                               "  Usage: df <drive_letter>:   Example: df C:")
+                    Return
+                End If
+
+                Dim driveInput As String = parts(1).Trim().ToUpperInvariant()
+
+                ' Normalize: allow "C", "C:", or "C:\".
+                If driveInput.EndsWith(":") = False Then
+                    driveInput &= ":"
+                End If
+
+                Try
+                    Dim di As New DriveInfo(driveInput)
+
+                    If Not di.IsReady Then
+                        ShowStatus(StatusPad & IconError &
+                                   "  That drive is not ready or accessible.")
+                        Return
+                    End If
+
+                    'Dim freeBytes As Long = di.AvailableFreeSpace
+                    'Dim totalBytes As Long = di.TotalSize
+
+                    'Dim freeGB As Double = freeBytes / 1024 / 1024 / 1024
+                    'Dim totalGB As Double = totalBytes / 1024 / 1024 / 1024
+
+                    Dim freeText As String = FormatSize(di.AvailableFreeSpace)
+                    Dim totalText As String = FormatSize(di.TotalSize)
+
+                    ShowStatus(StatusPad & IconDialog &
+                               $"   {di.RootDirectory} -   {freeText} free of {totalText}")
+
+
+
+                    'ShowStatus(StatusPad & IconDialog &
+                    '           $"  {driveInput}  —  Free: {freeGB:N2} GB   /   Total: {totalGB:N2} GB")
+                Catch ex As Exception
+                    ShowStatus(StatusPad & IconError &
+                               "  Unable to read free space for that drive.")
+                End Try
+
+                Return
+
+
+
+
 
             Case "open"
 
@@ -1376,6 +1435,8 @@ Public Class Form1
                     ' Reset index for new search
                     SearchIndex = 0
 
+                    RestoreBackground()
+
                     ' If results exist, auto-select the first one
                     If SearchResults.Count > 0 Then
 
@@ -1386,8 +1447,8 @@ Public Class Form1
                         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
                         lvFiles.Focus()
-
                         HighlightSearchMatches()
+                        HighlightCurrentResult()
 
                         ' Unified search HUD
                         ShowStatus(
@@ -3269,8 +3330,10 @@ Public Class Form1
         Dim nextPath As String = SearchResults(SearchIndex)
         SelectListViewItemByPath(nextPath)
 
-        'HighlightSearchMatches()
-        'HighlightCurrentResult()
+        RestoreBackground()
+        HighlightSearchMatches()
+        HighlightCurrentResult()
+
 
 
         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
@@ -3284,18 +3347,51 @@ Public Class Form1
 
     End Sub
 
-    Private Sub HighlightSearchMatches()
-        ' Soft pastel highlight that feels calm and learner-friendly
-        'Dim highlightColor As Color = Color.FromArgb(235, 245, 255)  ' very light blue
-        Dim highlightColor As Color = Color.FromArgb(199, 236, 255)  ' very light blue
+    'Private Sub HighlightSearchMatches()
+    '    ' Soft pastel highlight that feels calm and learner-friendly
+    '    Dim highlightColor As Color = Color.FromArgb(199, 236, 255)  ' very light blue
 
+    '    lvFiles.BeginUpdate()
+
+    '    ' Reset all items first
+    '    For Each item As ListViewItem In lvFiles.Items
+    '        item.BackColor = Color.White
+    '    Next
+
+    '    ' Apply highlight to matched items
+    '    For Each path As String In SearchResults
+    '        Dim item As ListViewItem = FindListViewItemByPath(path)
+    '        If item IsNot Nothing Then
+    '            item.BackColor = highlightColor
+    '        End If
+    '    Next
+
+    '    lvFiles.EndUpdate()
+    'End Sub
+
+
+
+    'Private Sub HighlightSearchMatches()
+    '    ' Soft pastel highlight that feels calm and learner-friendly
+    '    Dim highlightColor As Color = Color.FromArgb(199, 236, 255)  ' very light blue
+
+    '    lvFiles.BeginUpdate()
+
+    '    ' Apply highlight to matched items
+    '    For Each path As String In SearchResults
+    '        Dim item As ListViewItem = FindListViewItemByPath(path)
+    '        If item IsNot Nothing Then
+    '            item.BackColor = highlightColor
+    '        End If
+    '    Next
+
+    '    lvFiles.EndUpdate()
+    'End Sub
+
+    Private Sub HighlightSearchMatches()
+        Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
 
         lvFiles.BeginUpdate()
-
-        ' Reset all items first
-        For Each item As ListViewItem In lvFiles.Items
-            item.BackColor = Color.White
-        Next
 
         ' Apply highlight to matched items
         For Each path As String In SearchResults
@@ -3307,6 +3403,69 @@ Public Class Form1
 
         lvFiles.EndUpdate()
     End Sub
+
+
+    'Private Sub ClearHighlightSearchMatches()
+    '    lvFiles.BeginUpdate()
+
+    '    ' Reset all items first
+    '    For Each item As ListViewItem In lvFiles.Items
+    '        item.BackColor = Color.White
+    '    Next
+
+    '    lvFiles.EndUpdate()
+    'End Sub
+
+    Private Sub RestoreBackground()
+        lvFiles.BeginUpdate()
+
+        For Each item As ListViewItem In lvFiles.Items
+            item.BackColor = Color.White
+        Next
+
+        lvFiles.EndUpdate()
+    End Sub
+
+    'Private Sub HighlightCurrentResult()
+    '    If SearchResults Is Nothing OrElse SearchResults.Count = 0 Then Exit Sub
+    '    If SearchIndex < 0 OrElse SearchIndex >= SearchResults.Count Then Exit Sub
+
+    '    'Dim focusColor As Color = Color.FromArgb(170, 220, 255) ' slightly stronger blue
+    '    Dim focusColor As Color = Color.Purple ' slightly stronger blue
+
+    '    lvFiles.BeginUpdate()
+
+    '    Dim currentPath As String = SearchResults(SearchIndex)
+    '    Dim item As ListViewItem = FindListViewItemByPath(currentPath)
+
+    '    If item IsNot Nothing Then
+    '        item.BackColor = focusColor
+    '    End If
+
+    '    lvFiles.EndUpdate()
+    'End Sub
+
+    Private Sub HighlightCurrentResult()
+        If SearchResults.Count = 0 Then Exit Sub
+
+        Dim currentPath As String = SearchResults(SearchIndex)
+        Dim item As ListViewItem = FindListViewItemByPath(currentPath)
+        If item Is Nothing Then Exit Sub
+
+        ' If selected, let Windows draw the selection color
+        'If item.Selected Then Exit Sub
+
+        'Dim focusColor As Color = Color.FromArgb(170, 220, 255)
+        Dim focusColor As Color = Color.FromArgb(255, 203, 107)
+
+        'Dim focusColor As Color = Color.Orange
+
+        lvFiles.BeginUpdate()
+        item.BackColor = focusColor
+        lvFiles.EndUpdate()
+
+    End Sub
+
 
     Private Function FindListViewItemByPath(fullPath As String) As ListViewItem
         For Each item As ListViewItem In lvFiles.Items
@@ -3762,22 +3921,59 @@ Public Class Form1
 
     End Function
 
-    Private Function FormatSize(bytes As Long) As String
+    'Private Function FormatSize(bytes As Long) As String
 
-        If bytes = 0 Then Return "0 B"
+    '    If bytes = 0 Then Return "0 B"
 
-        Dim absBytes = Math.Abs(bytes)
+    '    Dim absBytes = Math.Abs(bytes)
 
-        For i = SizeUnits.Length - 1 To 0 Step -1
-            If absBytes >= SizeUnits(i).Factor Then
-                Dim value = absBytes / SizeUnits(i).Factor
-                Dim formatted = $"{value:0.##} {SizeUnits(i).Unit}"
+    '    For i = SizeUnits.Length - 1 To 0 Step -1
+    '        If absBytes >= SizeUnits(i).Factor Then
+    '            Dim value = absBytes / SizeUnits(i).Factor
+    '            Dim formatted = $"{value:0.##} {SizeUnits(i).Unit}"
+    '            Return If(bytes < 0, "-" & formatted, formatted)
+    '        End If
+    '    Next
+
+    '    Return $"{bytes} B"
+    'End Function
+
+
+
+
+    Friend Shared Function FormatSize(bytes As Long) As String
+        Dim absValue As Double = Math.Abs(bytes)
+
+        ' Walk from largest to smallest unit
+        For i As Integer = SizeUnits.Length - 1 To 0 Step -1
+            Dim unit = SizeUnits(i)
+
+            If absValue >= unit.Factor Then
+                Dim value As Double = absValue / unit.Factor
+                Dim formatted As String = $"{value:0.##} {unit.Unit}"
                 Return If(bytes < 0, "-" & formatted, formatted)
             End If
         Next
 
+        ' Fallback: smaller than 1 B
         Return $"{bytes} B"
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub UpdateTreeRoots()
         ' Update the TreeView with current drives and special folders at the top level.
