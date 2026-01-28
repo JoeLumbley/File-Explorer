@@ -237,77 +237,115 @@ Public Class Form1
 
     End Sub
 
-    Private Sub tvFolders_MouseClick(sender As Object, e As MouseEventArgs) Handles tvFolders.MouseClick
+    'Private Sub tvFolders_MouseClick(sender As Object, e As MouseEventArgs) Handles tvFolders.MouseClick
 
-        If e.Button = MouseButtons.Right Then
-            Dim info = tvFolders.HitTest(e.Location)
-            ' Only proceed if a node was right-clicked
-            If info.Node Is Nothing Then Exit Sub
-            If Not PathExists(info.Node.Tag) Then Exit Sub
-            ' Select the node under the cursor
-            tvFolders.SelectedNode = info.Node
-            ' Update Pin/Unpin visibility
-            UpdateTreeContextMenu(info.Node)
-        End If
+    '    If e.Button = MouseButtons.Right Then
+    '        Dim info = tvFolders.HitTest(e.Location)
+    '        ' Only proceed if a node was right-clicked
+    '        If info.Node Is Nothing Then Exit Sub
+    '        If Not PathExists(info.Node.Tag) Then Exit Sub
+    '        ' Select the node under the cursor
+    '        tvFolders.SelectedNode = info.Node
+    '        ' Update Pin/Unpin visibility
+    '        UpdateTreeContextMenu(info.Node)
+    '    End If
 
-    End Sub
+    'End Sub
+
+    'Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
+    'Handles tvFolders.MouseDown
+
+    '    If e.Button = MouseButtons.Right Then
+    '        Dim info = tvFolders.HitTest(e.Location)
+
+    '        ' If not clicking a node, cancel the context menu
+    '        If info.Node Is Nothing Then
+    '            tvFolders.ContextMenuStrip = Nothing
+    '        Else
+    '            tvFolders.ContextMenuStrip = cmsTree
+    '        End If
+    '    End If
+    'End Sub
+
+    'Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+    'Handles tvFolders.NodeMouseClick
+
+    '    ' ============================
+    '    '   LEFT CLICK (arrow toggle)
+    '    ' ============================
+    '    If e.Button = MouseButtons.Left Then
+    '        Dim info = tvFolders.HitTest(e.Location)
+
+    '        ' Only toggle when clicking the arrow (state image)
+    '        If info.Location = TreeViewHitTestLocations.StateImage Then
+
+    '            tvFolders.BeginUpdate()
+
+    '            If e.Node.IsExpanded Then
+    '                e.Node.Collapse()
+    '            Else
+    '                e.Node.Expand()
+    '            End If
+
+    '            tvFolders.EndUpdate()
+    '        End If
+    '    End If
+
+
+    '    ' ============================
+    '    '   RIGHT CLICK (context menu)
+    '    ' ============================
+    '    If e.Button = MouseButtons.Right Then
+
+    '        ' If no node was clicked, hide Pin/Unpin entirely
+    '        If e.Node Is Nothing Then
+    '            mnuPin.Visible = False
+    '            mnuUnpin.Visible = False
+    '            Exit Sub
+    '        End If
+
+    '        tvFolders.SelectedNode = e.Node
+    '        UpdateTreeContextMenu(e.Node)
+    '    End If
+
+    'End Sub
+
 
     Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
-    Handles tvFolders.MouseDown
+        Handles tvFolders.MouseDown
 
-        If e.Button = MouseButtons.Right Then
-            Dim info = tvFolders.HitTest(e.Location)
+        If e.Button <> MouseButtons.Right Then Exit Sub
 
-            ' If not clicking a node, cancel the context menu
-            If info.Node Is Nothing Then
-                tvFolders.ContextMenuStrip = Nothing
-            Else
-                tvFolders.ContextMenuStrip = cmsTree
-            End If
+        Dim info = tvFolders.HitTest(e.Location)
+
+        If info.Node Is Nothing Then
+            tvFolders.ContextMenuStrip = Nothing
+            Exit Sub
+        End If
+
+        tvFolders.SelectedNode = info.Node
+
+        If IsTreeNodePinnable(info.Node) Then
+            tvFolders.ContextMenuStrip = cmsTree
+            UpdateTreeContextMenu(info.Node)
+        Else
+            tvFolders.ContextMenuStrip = Nothing
         End If
     End Sub
 
-    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-    Handles tvFolders.NodeMouseClick
 
-        ' ============================
-        '   LEFT CLICK (arrow toggle)
-        ' ============================
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+        Handles tvFolders.NodeMouseClick
+
         If e.Button = MouseButtons.Left Then
             Dim info = tvFolders.HitTest(e.Location)
 
-            ' Only toggle when clicking the arrow (state image)
             If info.Location = TreeViewHitTestLocations.StateImage Then
-
                 tvFolders.BeginUpdate()
-
-                If e.Node.IsExpanded Then
-                    e.Node.Collapse()
-                Else
-                    e.Node.Expand()
-                End If
-
+                If e.Node.IsExpanded Then e.Node.Collapse() Else e.Node.Expand()
                 tvFolders.EndUpdate()
             End If
         End If
-
-
-        ' ============================
-        '   RIGHT CLICK (context menu)
-        ' ============================
-        If e.Button = MouseButtons.Right Then
-
-            ' If no node was clicked, hide Pin/Unpin entirely
-            If e.Node Is Nothing Then
-                mnuPin.Visible = False
-                mnuUnpin.Visible = False
-                Exit Sub
-            End If
-
-            tvFolders.SelectedNode = e.Node
-            UpdateTreeContextMenu(e.Node)
-        End If
-
     End Sub
 
 
@@ -403,36 +441,104 @@ Public Class Form1
     Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
     Handles lvFiles.ItemSelectionChanged
         UpdateFileListPinState()
+        UpdatePinButtonState()
         UpdateEditButtonsAndMenus()
         UpdateFileButtonsAndMenus()
     End Sub
 
-    Private Sub UpdateFileListPinState()
+    'Private Sub UpdateFileListPinState()
 
+    '    Dim mnuPin = cmsFiles.Items("Pin")
+    '    Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+    '    ' Hide both by default
+    '    mnuPin.Visible = False
+    '    mnuUnpin.Visible = False
+
+    '    ' Nothing selected
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    ' Only folders can be pinned
+    '    If Not Directory.Exists(path) Then Exit Sub
+
+    '    ' Prevent pinning special folders2
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    'Dim isPinned As Boolean = IisPinned(path)
+    '    mnuPin.Visible = Not IsPinned(path)
+    '    mnuUnpin.Visible = IsPinned(path)
+
+    'End Sub
+
+    'Private Sub UpdateFileListPinState()
+
+    '    Dim mnuPin = cmsFiles.Items("Pin")
+    '    Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+    '    ' Hide both by default
+    '    mnuPin.Visible = False
+    '    mnuUnpin.Visible = False
+
+    '    ' Nothing selected
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    ' Only folders can be pinned
+    '    If Not Directory.Exists(path) Then Exit Sub
+
+    '    ' Prevent pinning special folders
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    ' Show the correct option
+    '    mnuPin.Visible = Not IsPinned(path)
+    '    mnuUnpin.Visible = IsPinned(path)
+
+    'End Sub
+
+
+    Private Sub UpdateFileListPinState()
         Dim mnuPin = cmsFiles.Items("Pin")
         Dim mnuUnpin = cmsFiles.Items("Unpin")
 
-        ' Hide both by default
         mnuPin.Visible = False
         mnuUnpin.Visible = False
 
-        ' Nothing selected
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
         Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
         If String.IsNullOrEmpty(path) Then Exit Sub
-
-        ' Only folders can be pinned
         If Not Directory.Exists(path) Then Exit Sub
-
-        ' Prevent pinning special folders
         If IsSpecialFolder(path) Then Exit Sub
 
-        'Dim isPinned As Boolean = IisPinned(path)
         mnuPin.Visible = Not IsPinned(path)
         mnuUnpin.Visible = IsPinned(path)
-
     End Sub
+
+
+
+
+
+    Private Function IsTreeNodePinnable(node As TreeNode) As Boolean
+        If node Is Nothing Then Return False
+
+        Dim path As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path) Then Return False
+        If Not Directory.Exists(path) Then Return False
+        If IsSpecialFolder(path) Then Return False
+
+        Return True
+    End Function
+
+
+
+
+
+
 
     Private Function IsPinned(path As String) As Boolean
         ' Determine pinned state
@@ -596,22 +702,181 @@ Public Class Form1
 
     'End Sub
 
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim name As String = GetFolderDisplayName(currentFolder)
+
+    '    If IsPinned(currentFolder) Then
+    '        ' Currently pinned → unpin it
+    '        RemoveFromEasyAccess(currentFolder)
+    '        btnPin.Text = ""   ' Pin icon
+    '    Else
+    '        ' Not pinned → pin it
+    '        AddToEasyAccess(name, currentFolder)
+    '        btnPin.Text = ""   ' Unpin icon
+    '    End If
+
+    'End Sub
+
+
+
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim target As String = GetPinnableTarget()
+    '    If target Is Nothing Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(target)
+
+    '    If IsPinned(target) Then
+    '        RemoveFromEasyAccess(target)
+    '        btnPin.Text = ""   ' Pin icon
+    '    Else
+    '        AddToEasyAccess(name, target)
+    '        btnPin.Text = ""   ' Unpin icon
+    '    End If
+
+    'End Sub
+
+
+
+
+
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim target As String = GetPinnableTarget()
+    '    If target Is Nothing Then Exit Sub
+
+    '    TogglePin(target)
+    'End Sub
+
+
+
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
-        Dim name As String = GetFolderDisplayName(currentFolder)
+        Dim target As String = GetPinnableTarget()
+        If target Is Nothing Then Exit Sub
 
-        If IsPinned(currentFolder) Then
-            ' Currently pinned → unpin it
-            RemoveFromEasyAccess(currentFolder)
-            btnPin.Text = ""   ' Pin icon
-        Else
-            ' Not pinned → pin it
-            AddToEasyAccess(name, currentFolder)
-            btnPin.Text = ""   ' Unpin icon
-        End If
-
+        TogglePin(target)
     End Sub
+
+    'Private Sub UpdatePinButtonState()
+
+    '    ' 1. If something is selected in lvFiles…
+    '    If lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+    '        ' If the selected item has no path, disable the button
+    '        If String.IsNullOrEmpty(path) Then
+    '            btnPin.Enabled = False
+    '            Exit Sub
+    '        End If
+
+    '        ' If the selected item is a folder…
+    '        If Directory.Exists(path) Then
+
+    '            ' If it is pinned → show Unpin icon
+    '            If IsPinned(path) Then
+    '                btnPin.Enabled = True
+    '                btnPin.Text = ""   ' Unpin icon
+    '            Else
+    '                ' If it is not pinned → show Pin icon
+    '                btnPin.Enabled = True
+    '                btnPin.Text = ""   ' Pin icon
+    '            End If
+
+    '        Else
+    '            ' Selected item is NOT a folder → cannot pin
+    '            btnPin.Enabled = False
+    '        End If
+
+    '        Exit Sub
+    '    End If
+
+
+    '    ' 2. Nothing selected → fall back to currentFolder rules
+
+    '    ' If currentFolder is not a folder → disable
+    '    If Not Directory.Exists(currentFolder) Then
+    '        btnPin.Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    ' If currentFolder is pinned → show Unpin icon
+    '    If IsPinned(currentFolder) Then
+    '        btnPin.Enabled = True
+    '        btnPin.Text = ""   ' Unpin icon
+    '        Exit Sub
+    '    End If
+
+    '    ' If currentFolder is not pinned but is pinnable → show Pin icon
+    '    btnPin.Enabled = True
+    '    btnPin.Text = ""       ' Pin icon
+
+    'End Sub
+
+
+    'Private Sub UpdatePinButtonState()
+
+    '    ' Default: disabled and showing Pin icon
+    '    btnPin.Enabled = False
+    '    btnPin.Text = ""   ' Pin icon
+
+    '    ' 1. If something is selected in lvFiles…
+    '    If lvFiles.SelectedItems.Count > 0 Then
+
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '        ' Only folders can be pinned
+    '        If Not Directory.Exists(path) Then Exit Sub
+
+    '        ' Prevent pinning special folders
+    '        If IsSpecialFolder(path) Then Exit Sub
+
+    '        ' Folder is pinnable → enable button
+    '        btnPin.Enabled = True
+
+    '        ' Show correct icon
+    '        If IsPinned(path) Then
+    '            btnPin.Text = ""   ' Unpin
+    '        Else
+    '            btnPin.Text = ""   ' Pin
+    '        End If
+
+    '        Exit Sub
+    '    End If
+
+
+    '    ' 2. Nothing selected → fall back to currentFolder
+
+    '    If Not Directory.Exists(currentFolder) Then Exit Sub
+    '    If IsSpecialFolder(currentFolder) Then Exit Sub
+
+    '    btnPin.Enabled = True
+
+    '    If IsPinned(currentFolder) Then
+    '        btnPin.Text = ""   ' Unpin
+    '    Else
+    '        btnPin.Text = ""   ' Pin
+    '    End If
+
+    'End Sub
+
+    Private Sub UpdatePinButtonState()
+        btnPin.Enabled = False
+        btnPin.Text = ""   ' Default: Pin icon
+
+        Dim target As String = GetPinnableTarget()
+        If target Is Nothing Then Exit Sub
+
+        btnPin.Enabled = True
+        btnPin.Text = If(IsPinned(target), "", "")
+    End Sub
+
 
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
@@ -2183,6 +2448,7 @@ Public Class Form1
                 tvFolders.BeginUpdate()
                 tvFolders.Nodes.Remove(node)
                 tvFolders.EndUpdate()
+
                 ShowStatus(StatusPad & IconWarning & " Drive is not ready and has been removed.")
                 Return
             End If
@@ -2700,7 +2966,11 @@ Public Class Form1
 
         currentFolder = path
         txtAddressBar.Text = path
+
+
         Await PopulateFiles(path) ' Await the async method
+
+
 
         If recordHistory Then
             ' Trim forward history if we branch
@@ -2712,10 +2982,16 @@ Public Class Form1
             UpdateNavButtons()
         End If
 
+        UpdateFileListPinState()
+
+        UpdatePinButtonState()
+
         UpdateFileButtonsAndMenus()
 
         UpdateEditButtonsAndMenus()
     End Sub
+
+
 
     Private Sub GoToFolderOrOpenFile(FileOrFolder As String)
         ' Navigate to folder or open file.
@@ -3287,6 +3563,38 @@ Public Class Form1
         Return list
     End Function
 
+    'Public Sub AddToEasyAccess(name As String, path As String)
+    '    EnsureEasyAccessFile()
+
+    '    Dim entry = $"{name},{path}"
+    '    Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+    '    If Not existing.Contains(entry) Then
+    '        IO.File.AppendAllLines(EasyAccessFile, {entry})
+    '    End If
+
+    '    UpdateTreeRoots()
+    '    UpdateFileListPinState()
+    '    UpdatePinButtonState()
+
+
+    'End Sub
+
+    'Public Sub RemoveFromEasyAccess(path As String)
+    '    EnsureEasyAccessFile()
+
+    '    Dim lines = IO.File.ReadAllLines(EasyAccessFile).ToList()
+    '    Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
+
+    '    IO.File.WriteAllLines(EasyAccessFile, updated)
+
+    '    UpdateTreeRoots()
+    '    UpdateFileListPinState()
+    '    UpdatePinButtonState()
+
+    'End Sub
+
+
     Public Sub AddToEasyAccess(name As String, path As String)
         EnsureEasyAccessFile()
 
@@ -3299,7 +3607,7 @@ Public Class Form1
 
         UpdateTreeRoots()
         UpdateFileListPinState()
-
+        UpdatePinButtonState()
     End Sub
 
     Public Sub RemoveFromEasyAccess(path As String)
@@ -3312,6 +3620,7 @@ Public Class Form1
 
         UpdateTreeRoots()
         UpdateFileListPinState()
+        UpdatePinButtonState()
     End Sub
 
 
@@ -4192,27 +4501,103 @@ Public Class Form1
         Return If(bytes < 0, "-" & formatted, formatted)
     End Function
 
-    Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    'Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
 
-        RemoveFromEasyAccess(path)
-    End Sub
+    '    RemoveFromEasyAccess(path)
+    'End Sub
+
+
+    'Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+
+
+
+    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    If Not Directory.Exists(path) Then Exit Sub
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(path)
+    '    AddToEasyAccess(name, path)
+    'End Sub
+
+
+    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+
 
     Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
         Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        If Not Directory.Exists(path) Then Exit Sub
-        If IsSpecialFolder(path) Then Exit Sub
-
-        Dim name As String = GetFolderDisplayName(path)
-        AddToEasyAccess(name, path)
+        TogglePin(path)
     End Sub
+
+    Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        TogglePin(path)
+    End Sub
+
+    'Private Function GetPinnableTarget() As String
+    '    ' 1. If a file-list item is selected, use that
+    '    If lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' 2. Otherwise fall back to currentFolder
+    '    If Directory.Exists(currentFolder) AndAlso
+    '   Not IsSpecialFolder(currentFolder) Then
+    '        Return currentFolder
+    '    End If
+
+    '    ' 3. Nothing pinnable
+    '    Return Nothing
+    'End Function
+
+    Private Function GetPinnableTarget() As String
+        ' 1. Selected item in lvFiles
+        If lvFiles.SelectedItems.Count > 0 Then
+            Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+            If Not String.IsNullOrEmpty(path) AndAlso
+           Directory.Exists(path) AndAlso
+           Not IsSpecialFolder(path) Then
+                Return path
+            End If
+        End If
+
+        ' 2. Fallback to currentFolder
+        If Directory.Exists(currentFolder) AndAlso
+       Not IsSpecialFolder(currentFolder) Then
+            Return currentFolder
+        End If
+
+        Return Nothing
+    End Function
 
     Private Function IsSpecialFolder(folderPath As String) As Boolean
 
@@ -4229,15 +4614,53 @@ Public Class Form1
 
     End Function
 
+    'Private Sub Pin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(path)
+    '    AddToEasyAccess(name, path)
+    'End Sub
+
+
+
+    'Private Sub Pin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    ' Only folders can be pinned
+    '    If Not Directory.Exists(path) Then Exit Sub
+
+    '    ' Prevent pinning special folders
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    ' Prevent duplicate entries
+    '    If IsPinned(path) Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(path)
+    '    AddToEasyAccess(name, path)
+    'End Sub
+
+
+    'Private Sub Pin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    TogglePin(path)
+    'End Sub
     Private Sub Pin_Click(sender As Object, e As EventArgs)
         Dim node = tvFolders.SelectedNode
         If node Is Nothing Then Exit Sub
 
         Dim path As String = TryCast(node.Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        Dim name As String = GetFolderDisplayName(path)
-        AddToEasyAccess(name, path)
+        TogglePin(path)
     End Sub
 
     Private Sub Unpin_Click(sender As Object, e As EventArgs)
@@ -4245,37 +4668,147 @@ Public Class Form1
         If node Is Nothing Then Exit Sub
 
         Dim path As String = TryCast(node.Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-
-        RemoveFromEasyAccess(path)
+        TogglePin(path)
     End Sub
 
-    Private Sub UpdateTreeContextMenu(node As TreeNode)
 
-        ' No node → hide everything
-        If node Is Nothing Then
-            mnuPin.Visible = False
-            mnuUnpin.Visible = False
-            Exit Sub
+
+
+
+
+    'Private Sub Unpin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    RemoveFromEasyAccess(path)
+    'End Sub
+
+
+
+
+    'Private Sub Unpin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+
+    '    ' Only folders can be unpinned
+    '    If Not Directory.Exists(path) Then Exit Sub
+
+    '    ' Only unpin if actually pinned
+    '    If Not IsPinned(path) Then Exit Sub
+
+    '    RemoveFromEasyAccess(path)
+    'End Sub
+
+    'Private Sub Unpin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+
+
+    'Private Sub TogglePin(path As String)
+    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+    '    If Not Directory.Exists(path) Then Exit Sub
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(path)
+
+    '    If IsPinned(path) Then
+    '        RemoveFromEasyAccess(path)
+    '    Else
+    '        AddToEasyAccess(name, path)
+    '    End If
+
+    '    ' UI refresh (your existing methods already do the right thing)
+    '    UpdateTreeRoots()
+    '    UpdateFileListPinState()
+    '    UpdatePinButtonState()
+    'End Sub
+
+
+    Private Sub TogglePin(path As String)
+        ' ============================
+        '   PIN / UNPIN ENGINE
+        ' ============================
+
+        If String.IsNullOrWhiteSpace(path) Then Exit Sub
+        If Not Directory.Exists(path) Then Exit Sub
+        If IsSpecialFolder(path) Then Exit Sub
+
+        Dim name As String = GetFolderDisplayName(path)
+
+        If IsPinned(path) Then
+            RemoveFromEasyAccess(path)
+        Else
+            AddToEasyAccess(name, path)
         End If
 
-        Dim path As String = TryCast(node.Tag, String)
+        ' UI refresh
+        UpdateTreeRoots()
+        UpdateFileListPinState()
+        UpdatePinButtonState()
+    End Sub
 
-        ' Node has no path → hide everything
+
+
+
+
+    Private Sub UpdateTreeContextMenu(node As TreeNode)
+        Dim path As String = TryCast(node.Tag, String)
         If String.IsNullOrEmpty(path) Then
             mnuPin.Visible = False
             mnuUnpin.Visible = False
             Exit Sub
         End If
 
-        ' Determine pinned state
-        Dim isPinned As Boolean =
-        IO.File.ReadAllLines(EasyAccessFile).
-        Any(Function(line) line.EndsWith("," & path))
+        If Not Directory.Exists(path) OrElse IsSpecialFolder(path) Then
+            mnuPin.Visible = False
+            mnuUnpin.Visible = False
+            Exit Sub
+        End If
 
-        mnuPin.Visible = Not isPinned
-        mnuUnpin.Visible = isPinned
+        mnuPin.Visible = Not IsPinned(path)
+        mnuUnpin.Visible = IsPinned(path)
     End Sub
+
+
+
+
+    'Private Sub UpdateTreeContextMenu(node As TreeNode)
+
+    '    ' No node → hide everything
+    '    If node Is Nothing Then
+    '        mnuPin.Visible = False
+    '        mnuUnpin.Visible = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim path As String = TryCast(node.Tag, String)
+
+    '    ' Node has no path → hide everything
+    '    If String.IsNullOrEmpty(path) Then
+    '        mnuPin.Visible = False
+    '        mnuUnpin.Visible = False
+    '        Exit Sub
+    '    End If
+
+    '    ' Determine pinned state
+    '    Dim isPinned As Boolean =
+    '    IO.File.ReadAllLines(EasyAccessFile).
+    '    Any(Function(line) line.EndsWith("," & path))
+
+    '    mnuPin.Visible = Not isPinned
+    '    mnuUnpin.Visible = isPinned
+    'End Sub
 
 
     Private Sub InitApp()
