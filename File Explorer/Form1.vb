@@ -258,7 +258,6 @@ Public Class Form1
         End If
     End Sub
 
-
     Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
         Handles tvFolders.NodeMouseClick
 
@@ -274,8 +273,6 @@ Public Class Form1
     End Sub
 
 
-
-
     Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
     Handles lvFiles.ItemSelectionChanged
         UpdateFileListPinState()
@@ -283,53 +280,6 @@ Public Class Form1
         UpdateEditButtonsAndMenus()
         UpdateFileButtonsAndMenus()
     End Sub
-
-
-
-    Private Sub UpdateFileListPinState()
-        Dim mnuPin = cmsFiles.Items("Pin")
-        Dim mnuUnpin = cmsFiles.Items("Unpin")
-
-        mnuPin.Visible = False
-        mnuUnpin.Visible = False
-
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        If String.IsNullOrEmpty(path) Then Exit Sub
-        If Not Directory.Exists(path) Then Exit Sub
-        If IsSpecialFolder(path) Then Exit Sub
-
-        mnuPin.Visible = Not IsPinned(path)
-        mnuUnpin.Visible = IsPinned(path)
-    End Sub
-
-
-
-
-
-    Private Function IsTreeNodePinnable(node As TreeNode) As Boolean
-        If node Is Nothing Then Return False
-
-        Dim path As String = TryCast(node.Tag, String)
-        If String.IsNullOrEmpty(path) Then Return False
-        If Not Directory.Exists(path) Then Return False
-        If IsSpecialFolder(path) Then Return False
-
-        Return True
-    End Function
-
-
-
-
-
-
-
-    Private Function IsPinned(path As String) As Boolean
-        ' Determine pinned state
-        Return File.ReadAllLines(EasyAccessFile).
-        Any(Function(line) line.EndsWith("," & path, StringComparison.OrdinalIgnoreCase))
-    End Function
 
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
         Handles lvFiles.ItemActivate
@@ -474,7 +424,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
@@ -483,20 +432,6 @@ Public Class Form1
 
         TogglePin(target)
     End Sub
-
-
-
-    Private Sub UpdatePinButtonState()
-        btnPin.Enabled = False
-        btnPin.Text = ""   ' Default: Pin icon
-
-        Dim target As String = GetPinnableTarget()
-        If target Is Nothing Then Exit Sub
-
-        btnPin.Enabled = True
-        btnPin.Text = If(IsPinned(target), "", "")
-    End Sub
-
 
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
@@ -699,8 +634,6 @@ Public Class Form1
         Return True
     End Function
 
-
-
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
         ' Detect SHIFT + TAB correctly inside ProcessCmdKey
@@ -764,6 +697,7 @@ Public Class Form1
         PlaceCaretAtEndOfAddressBar()
         Return True
     End Function
+
 
     Private Function GlobalShortcutsAllowed() As Boolean
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
@@ -3048,63 +2982,6 @@ Public Class Form1
     End Sub
 
 
-    Private Sub EnsureEasyAccessFile()
-        Dim dir = Path.GetDirectoryName(EasyAccessFile)
-        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
-        If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
-    End Sub
-
-    Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
-        EnsureEasyAccessFile()
-
-        Dim list As New List(Of (String, String))
-
-        For Each line In IO.File.ReadAllLines(EasyAccessFile)
-            If String.IsNullOrWhiteSpace(line) Then Continue For
-
-            Dim parts = line.Split({","c}, 2)
-            If parts.Length = 2 Then
-                Dim name = parts(0).Trim()
-                Dim path = parts(1).Trim()
-
-                If Directory.Exists(path) Then
-                    list.Add((name, path))
-                End If
-            End If
-        Next
-
-        Return list
-    End Function
-
-
-    Public Sub AddToEasyAccess(name As String, path As String)
-        EnsureEasyAccessFile()
-
-        Dim entry = $"{name},{path}"
-        Dim existing = IO.File.ReadAllLines(EasyAccessFile)
-
-        If Not existing.Contains(entry) Then
-            IO.File.AppendAllLines(EasyAccessFile, {entry})
-        End If
-
-        UpdateTreeRoots()
-        UpdateFileListPinState()
-        UpdatePinButtonState()
-    End Sub
-
-    Public Sub RemoveFromEasyAccess(path As String)
-        EnsureEasyAccessFile()
-
-        Dim lines = IO.File.ReadAllLines(EasyAccessFile).ToList()
-        Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
-
-        IO.File.WriteAllLines(EasyAccessFile, updated)
-
-        UpdateTreeRoots()
-        UpdateFileListPinState()
-        UpdatePinButtonState()
-    End Sub
-
 
     Private Sub HandleFindNextCommand()
 
@@ -3145,7 +3022,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub HighlightSearchMatches()
         Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
 
@@ -3161,8 +3037,6 @@ Public Class Form1
 
         lvFiles.EndUpdate()
     End Sub
-
-
 
     Private Sub RestoreBackground()
         lvFiles.BeginUpdate()
@@ -3281,6 +3155,7 @@ Public Class Form1
             Return True
         End Try
     End Function
+
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
@@ -3445,6 +3320,7 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
+
 
     Private Function PathExists(path As String) As Boolean
         Return IO.File.Exists(path) OrElse Directory.Exists(path)
@@ -3822,6 +3698,524 @@ Public Class Form1
         Return If(bytes < 0, "-" & formatted, formatted)
     End Function
 
+
+
+
+
+    'Private Sub EnsureEasyAccessFile()
+    '    Dim dir = Path.GetDirectoryName(EasyAccessFile)
+    '    If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+    '    If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
+    'End Sub
+
+    'Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
+    '    EnsureEasyAccessFile()
+
+    '    Dim list As New List(Of (String, String))
+
+    '    For Each line In IO.File.ReadAllLines(EasyAccessFile)
+    '        If String.IsNullOrWhiteSpace(line) Then Continue For
+
+    '        Dim parts = line.Split({","c}, 2)
+    '        If parts.Length = 2 Then
+    '            Dim name = parts(0).Trim()
+    '            Dim path = parts(1).Trim()
+
+    '            If Directory.Exists(path) Then
+    '                list.Add((name, path))
+    '            End If
+    '        End If
+    '    Next
+
+    '    Return list
+    'End Function
+
+    'Public Sub AddToEasyAccess(name As String, path As String)
+    '    EnsureEasyAccessFile()
+
+    '    Dim entry = $"{name},{path}"
+    '    Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+    '    If Not existing.Contains(entry) Then
+    '        IO.File.AppendAllLines(EasyAccessFile, {entry})
+    '    End If
+
+    '    UpdateTreeRoots()
+    '    UpdateFileListPinState()
+    '    UpdatePinButtonState()
+    'End Sub
+
+    'Public Sub RemoveFromEasyAccess(path As String)
+    '    EnsureEasyAccessFile()
+
+    '    Dim lines = IO.File.ReadAllLines(EasyAccessFile).ToList()
+    '    Dim updated = lines.Where(Function(l) Not l.EndsWith("," & path)).ToList()
+
+    '    IO.File.WriteAllLines(EasyAccessFile, updated)
+
+    '    UpdateTreeRoots()
+    '    UpdateFileListPinState()
+    '    UpdatePinButtonState()
+    'End Sub
+
+    'Private Sub UpdatePinButtonState()
+    '    btnPin.Enabled = False
+    '    btnPin.Text = ""   ' Default: Pin icon
+
+    '    Dim target As String = GetPinnableTarget()
+    '    If target Is Nothing Then Exit Sub
+
+    '    btnPin.Enabled = True
+    '    btnPin.Text = If(IsPinned(target), "", "")
+    'End Sub
+
+    'Private Sub UpdateFileListPinState()
+    '    Dim mnuPin = cmsFiles.Items("Pin")
+    '    Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+    '    mnuPin.Visible = False
+    '    mnuUnpin.Visible = False
+
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Exit Sub
+    '    If Not Directory.Exists(path) Then Exit Sub
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    mnuPin.Visible = Not IsPinned(path)
+    '    mnuUnpin.Visible = IsPinned(path)
+    'End Sub
+
+    'Private Function IsTreeNodePinnable(node As TreeNode) As Boolean
+    '    If node Is Nothing Then Return False
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then Return False
+    '    If Not Directory.Exists(path) Then Return False
+    '    If IsSpecialFolder(path) Then Return False
+
+    '    Return True
+    'End Function
+
+    'Private Function IsPinned(path As String) As Boolean
+    '    ' Determine pinned state
+    '    Return File.ReadAllLines(EasyAccessFile).
+    '    Any(Function(line) line.EndsWith("," & path, StringComparison.OrdinalIgnoreCase))
+    'End Function
+
+    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+    'Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+    'Private Function GetPinnableTarget() As String
+    '    ' ==========================
+    '    ' 1. Selected item in lvFiles (only if lvFiles is focused)
+    '    ' ==========================
+    '    If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 2. Selected item in tvFolders (only if tvFolders is focused)
+    '    ' ==========================
+    '    If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 3. Fallback to currentFolder
+    '    ' ==========================
+    '    If Directory.Exists(currentFolder) AndAlso
+    '   Not IsSpecialFolder(currentFolder) Then
+    '        Return currentFolder
+    '    End If
+
+    '    Return Nothing
+    'End Function
+
+    'Private Function IsSpecialFolder(folderPath As String) As Boolean
+
+    '    Dim specialFolders As (String, String)() = {
+    '        ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+    '        ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
+    '        ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
+    '        ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
+    '        ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
+    '        ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
+    '    }
+
+    '    Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
+
+    'End Function
+
+    'Private Sub Pin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+    'Private Sub Unpin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+    'Private Sub TogglePin(path As String)
+    '    ' ============================
+    '    '   PIN / UNPIN ENGINE
+    '    ' ============================
+
+    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+    '    If Not Directory.Exists(path) Then Exit Sub
+    '    If IsSpecialFolder(path) Then Exit Sub
+
+    '    Dim name As String = GetFolderDisplayName(path)
+
+    '    If IsPinned(path) Then
+    '        RemoveFromEasyAccess(path)
+    '    Else
+    '        AddToEasyAccess(name, path)
+    '    End If
+
+    '    ' UI refresh
+    '    UpdateTreeRoots()
+    '    UpdateFileListPinState()
+    '    UpdatePinButtonState()
+    'End Sub
+
+    'Private Sub UpdateTreeContextMenu(node As TreeNode)
+    '    Dim path As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path) Then
+    '        mnuPin.Visible = False
+    '        mnuUnpin.Visible = False
+    '        Exit Sub
+    '    End If
+
+    '    If Not Directory.Exists(path) OrElse IsSpecialFolder(path) Then
+    '        mnuPin.Visible = False
+    '        mnuUnpin.Visible = False
+    '        Exit Sub
+    '    End If
+
+    '    mnuPin.Visible = Not IsPinned(path)
+    '    mnuUnpin.Visible = IsPinned(path)
+    'End Sub
+
+
+
+
+
+
+    ' ============================================================
+    '  CANONICAL PATH RESOLVER — MATCHES EXPLORER CASING
+    ' ============================================================
+
+    Public Function CanonicalizePath(inputPath As String) As String
+        If String.IsNullOrWhiteSpace(inputPath) Then Return ""
+
+        Dim path = inputPath.Trim()
+
+        ' Normalize slashes
+        path = path.Replace("/"c, "\"c)
+
+        ' Handle root-only paths (C:\)
+        If path.Length = 3 AndAlso path(1) = ":"c AndAlso path.EndsWith("\") Then
+            Return path.ToUpperInvariant()
+        End If
+
+        ' Handle UNC roots (\\server\share)
+        If path.StartsWith("\\") Then
+            Dim parts = path.Split("\"c, StringSplitOptions.RemoveEmptyEntries)
+            If parts.Length < 2 Then Return path
+
+            Dim server = parts(0)
+            Dim share = parts(1)
+
+            Dim root = $"\\{server}\{share}"
+
+            If parts.Length = 2 Then Return root
+
+            Dim remainder = String.Join("\", parts.Skip(2))
+            Return root & "\" & CanonicalizeSegments(root, remainder)
+        End If
+
+        ' Handle drive-rooted paths
+        If path.Length >= 2 AndAlso path(1) = ":"c Then
+            Dim root = path.Substring(0, 2).ToUpperInvariant()
+            Dim remainder = path.Substring(2).TrimStart("\"c)
+
+            If remainder = "" Then Return root & "\"
+            Return root & "\" & CanonicalizeSegments(root & "\", remainder)
+        End If
+
+        ' Relative paths — return as-is
+        Return path
+    End Function
+
+    Private Function CanonicalizeSegments(root As String, remainder As String) As String
+        Dim segments = remainder.Split("\"c)
+        Dim current = root.TrimEnd("\"c)
+
+        For Each seg In segments
+            If seg = "" Then Continue For
+
+            Try
+                Dim dir = New DirectoryInfo(current)
+                Dim match = dir.GetFileSystemInfos().
+                FirstOrDefault(Function(f) f.Name.Equals(seg, StringComparison.OrdinalIgnoreCase))
+
+                If match IsNot Nothing Then
+                    current &= "\" & match.Name
+                Else
+                    ' Segment not found — keep original casing
+                    current &= "\" & seg
+                End If
+
+            Catch
+                ' Directory not accessible — keep original
+                current &= "\" & seg
+            End Try
+        Next
+
+        Return current.Substring(root.Length)
+    End Function
+
+
+
+
+    ' ============================================================
+    '  EASY ACCESS PINNING SYSTEM — REFINED & COMPLETE
+    ' ============================================================
+
+    ' ------------------------------------------------------------
+    '  Helpers
+    ' ------------------------------------------------------------
+
+    Private Function NormalizePath(p As String) As String
+        If String.IsNullOrWhiteSpace(p) Then Return ""
+        Return CanonicalizePath(p) ' Your existing canonicalizer
+    End Function
+
+    Private Function ParseEntry(line As String) As (Name As String, Path As String)?
+        If String.IsNullOrWhiteSpace(line) Then Return Nothing
+        Dim parts = line.Split(","c, 2)
+        If parts.Length <> 2 Then Return Nothing
+        Return (parts(0).Trim(), parts(1).Trim())
+    End Function
+
+    Private Sub RefreshPinUI()
+        UpdateTreeRoots()
+        UpdateFileListPinState()
+        UpdatePinButtonState()
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  Ensure Easy Access File Exists
+    ' ------------------------------------------------------------
+
+    Private Sub EnsureEasyAccessFile()
+        Dim dir = Path.GetDirectoryName(EasyAccessFile)
+        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+        If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  Load Entries
+    ' ------------------------------------------------------------
+
+    Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
+        EnsureEasyAccessFile()
+
+        Dim list As New List(Of (String, String))
+
+        For Each line In IO.File.ReadAllLines(EasyAccessFile)
+            Dim entry = ParseEntry(line)
+            If entry.HasValue Then
+                ' Keep even if missing — Explorer behavior
+                list.Add((entry.Value.Name, entry.Value.Path))
+            End If
+        Next
+
+        Return list
+    End Function
+
+    ' ------------------------------------------------------------
+    '  Add Entry
+    ' ------------------------------------------------------------
+
+    Public Sub AddToEasyAccess(name As String, path As String)
+        EnsureEasyAccessFile()
+
+        Dim normalized = NormalizePath(path)
+        Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+        ' Prevent duplicates by normalized path
+        If existing.Any(Function(line)
+                            Dim e = ParseEntry(line)
+                            Return e.HasValue AndAlso NormalizePath(e.Value.Path) = normalized
+                        End Function) Then
+            RefreshPinUI()
+            Exit Sub
+        End If
+
+        ' Write new entry
+        IO.File.AppendAllLines(EasyAccessFile, {$"{name},{path}"})
+
+        RefreshPinUI()
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  Remove Entry
+    ' ------------------------------------------------------------
+
+    Public Sub RemoveFromEasyAccess(path As String)
+        EnsureEasyAccessFile()
+
+        Dim target = NormalizePath(path)
+        Dim lines = IO.File.ReadAllLines(EasyAccessFile)
+
+        Dim updated = lines.Where(Function(line)
+                                      Dim e = ParseEntry(line)
+                                      If Not e.HasValue Then Return True
+                                      Return NormalizePath(e.Value.Path) <> target
+                                  End Function).ToList()
+
+        IO.File.WriteAllLines(EasyAccessFile, updated)
+
+        RefreshPinUI()
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  IsPinned
+    ' ------------------------------------------------------------
+
+    Private Function IsPinned(path As String) As Boolean
+        Dim target = NormalizePath(path)
+        Return File.ReadAllLines(EasyAccessFile).
+        Any(Function(line)
+                Dim e = ParseEntry(line)
+                Return e.HasValue AndAlso NormalizePath(e.Value.Path) = target
+            End Function)
+    End Function
+
+    ' ------------------------------------------------------------
+    '  Pin Button State
+    ' ------------------------------------------------------------
+
+    Private Sub UpdatePinButtonState()
+        btnPin.Enabled = False
+        btnPin.Text = ""   ' Pin icon
+
+        Dim target As String = GetPinnableTarget()
+        If target Is Nothing Then Exit Sub
+
+        btnPin.Enabled = True
+        btnPin.Text = If(IsPinned(target), "", "")
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  File List Pin State
+    ' ------------------------------------------------------------
+
+    Private Sub UpdateFileListPinState()
+        Dim mnuPin = cmsFiles.Items("Pin")
+        Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+        mnuPin.Visible = False
+        mnuUnpin.Visible = False
+
+        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If String.IsNullOrEmpty(path) Then Exit Sub
+        If Not Directory.Exists(path) Then Exit Sub
+        If IsSpecialFolder(path) Then Exit Sub
+
+        mnuPin.Visible = Not IsPinned(path)
+        mnuUnpin.Visible = IsPinned(path)
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  Tree Node Pinnable Check
+    ' ------------------------------------------------------------
+
+    Private Function IsTreeNodePinnable(node As TreeNode) As Boolean
+        If node Is Nothing Then Return False
+
+        Dim path As String = TryCast(node.Tag, String)
+        If String.IsNullOrEmpty(path) Then Return False
+        If Not Directory.Exists(path) Then Return False
+        If IsSpecialFolder(path) Then Return False
+
+        Return True
+    End Function
+
+    ' ------------------------------------------------------------
+    '  Context Menu for Tree
+    ' ------------------------------------------------------------
+
+    Private Sub UpdateTreeContextMenu(node As TreeNode)
+        Dim path As String = TryCast(node.Tag, String)
+
+        If String.IsNullOrEmpty(path) OrElse
+       Not Directory.Exists(path) OrElse
+       IsSpecialFolder(path) Then
+
+            mnuPin.Visible = False
+            mnuUnpin.Visible = False
+            Exit Sub
+        End If
+
+        mnuPin.Visible = Not IsPinned(path)
+        mnuUnpin.Visible = IsPinned(path)
+    End Sub
+
+    ' ------------------------------------------------------------
+    '  Special Folder Check
+    ' ------------------------------------------------------------
+
+    Private Function IsSpecialFolder(folderPath As String) As Boolean
+        Dim specialFolders As (String, String)() = {
+        ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+        ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
+        ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
+        ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
+        ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
+        ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
+    }
+
+        Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
+    End Function
+
+    ' ------------------------------------------------------------
+    '  Pin / Unpin Actions
+    ' ------------------------------------------------------------
+
     Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
@@ -3834,82 +4228,23 @@ Public Class Form1
         TogglePin(path)
     End Sub
 
-    Private Function GetPinnableTarget() As String
-        ' ==========================
-        ' 1. Selected item in lvFiles (only if lvFiles is focused)
-        ' ==========================
-        If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
-            Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-
-            If Not String.IsNullOrEmpty(path) AndAlso
-           Directory.Exists(path) AndAlso
-           Not IsSpecialFolder(path) Then
-                Return path
-            End If
-        End If
-
-        ' ==========================
-        ' 2. Selected item in tvFolders (only if tvFolders is focused)
-        ' ==========================
-        If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
-            Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
-
-            If Not String.IsNullOrEmpty(path) AndAlso
-           Directory.Exists(path) AndAlso
-           Not IsSpecialFolder(path) Then
-                Return path
-            End If
-        End If
-
-        ' ==========================
-        ' 3. Fallback to currentFolder
-        ' ==========================
-        If Directory.Exists(currentFolder) AndAlso
-       Not IsSpecialFolder(currentFolder) Then
-            Return currentFolder
-        End If
-
-        Return Nothing
-    End Function
-
-
-    Private Function IsSpecialFolder(folderPath As String) As Boolean
-
-        Dim specialFolders As (String, String)() = {
-            ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
-            ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
-            ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
-            ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
-            ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
-            ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
-        }
-
-        Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
-
-    End Function
-
     Private Sub Pin_Click(sender As Object, e As EventArgs)
         Dim node = tvFolders.SelectedNode
         If node Is Nothing Then Exit Sub
-
-        Dim path As String = TryCast(node.Tag, String)
-        TogglePin(path)
+        TogglePin(TryCast(node.Tag, String))
     End Sub
 
     Private Sub Unpin_Click(sender As Object, e As EventArgs)
         Dim node = tvFolders.SelectedNode
         If node Is Nothing Then Exit Sub
-
-        Dim path As String = TryCast(node.Tag, String)
-        TogglePin(path)
+        TogglePin(TryCast(node.Tag, String))
     End Sub
 
+    ' ------------------------------------------------------------
+    '  Toggle Pin
+    ' ------------------------------------------------------------
 
     Private Sub TogglePin(path As String)
-        ' ============================
-        '   PIN / UNPIN ENGINE
-        ' ============================
-
         If String.IsNullOrWhiteSpace(path) Then Exit Sub
         If Not Directory.Exists(path) Then Exit Sub
         If IsSpecialFolder(path) Then Exit Sub
@@ -3922,30 +4257,201 @@ Public Class Form1
             AddToEasyAccess(name, path)
         End If
 
-        ' UI refresh
-        UpdateTreeRoots()
-        UpdateFileListPinState()
-        UpdatePinButtonState()
+        RefreshPinUI()
     End Sub
 
+    ' ------------------------------------------------------------
+    '  Determine Pinnable Target
+    ' ------------------------------------------------------------
 
-    Private Sub UpdateTreeContextMenu(node As TreeNode)
-        Dim path As String = TryCast(node.Tag, String)
-        If String.IsNullOrEmpty(path) Then
-            mnuPin.Visible = False
-            mnuUnpin.Visible = False
-            Exit Sub
+    'Private Function GetPinnableTarget() As String
+    '    ' 1. lvFiles (if focused)
+    '    If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' 2. tvFolders (if focused)
+    '    If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' 3. txtAddressBar (if focused)
+
+
+    '    ' 4. Fallback to currentFolder
+    '    If Directory.Exists(currentFolder) AndAlso
+    '   Not IsSpecialFolder(currentFolder) Then
+    '        Return currentFolder
+    '    End If
+
+    '    Return Nothing
+    'End Function
+
+
+    'Private Function GetPinnableTarget() As String
+
+    '    ' 0. Has to be a directory
+
+
+    '    ' ==========================
+    '    ' 1. Selected item in lvFiles (only if lvFiles is focused)
+    '    ' ==========================
+    '    If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 2. Selected item in tvFolders (only if tvFolders is focused)
+    '    ' ==========================
+    '    If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+
+    '        If Not String.IsNullOrEmpty(path) AndAlso
+    '       Directory.Exists(path) AndAlso
+    '       Not IsSpecialFolder(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 3. Address bar (if focused)
+    '    '    → Use currentFolder, not the text
+    '    ' ==========================
+    '    If txtAddressBar.Focused Then
+    '        If Directory.Exists(currentFolder) AndAlso
+    '       Not IsSpecialFolder(currentFolder) Then
+    '            Return currentFolder
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 4. Fallback to currentFolder
+    '    ' ==========================
+    '    If Directory.Exists(currentFolder) AndAlso
+    '   Not IsSpecialFolder(currentFolder) Then
+    '        Return currentFolder
+    '    End If
+
+    '    Return Nothing
+    'End Function
+
+    'Private Function GetPinnableTarget() As String
+
+    '    ' ==========================
+    '    ' 0. Helper: directory must be valid & pinnable
+    '    ' ==========================
+    '    Dim isValid As Func(Of String, Boolean) =
+    '    Function(p As String)
+    '        Return Not String.IsNullOrEmpty(p) AndAlso
+    '               Directory.Exists(p) AndAlso
+    '               Not IsSpecialFolder(p)
+    '    End Function
+
+    '    ' ==========================
+    '    ' 1. Selected item in lvFiles (only if lvFiles is focused)
+    '    ' ==========================
+    '    If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If isValid(path) Then Return path
+    '    End If
+
+    '    ' ==========================
+    '    ' 2. Selected item in tvFolders (only if tvFolders is focused)
+    '    ' ==========================
+    '    If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+    '        If isValid(path) Then Return path
+    '    End If
+
+    '    ' ==========================
+    '    ' 3. Address bar (if focused)
+    '    '    → Use currentFolder, not the text
+    '    ' ==========================
+    '    If txtAddressBar.Focused Then
+    '        If isValid(currentFolder) Then Return currentFolder
+    '    End If
+
+    '    ' ==========================
+    '    ' 4. Fallback to currentFolder
+    '    ' ==========================
+    '    If isValid(currentFolder) Then Return currentFolder
+
+    '    Return Nothing
+    'End Function
+
+    Private Function GetPinnableTarget() As String
+
+        ' ==========================
+        ' 0. Helper: must be a real, pinnable directory
+        ' ==========================
+        Dim isValidDir As Func(Of String, Boolean) =
+        Function(p As String)
+            Return Not String.IsNullOrEmpty(p) AndAlso
+                   Directory.Exists(p) AndAlso
+                   Not IsSpecialFolder(p)
+        End Function
+
+        ' ==========================
+        ' 1. Selected item in lvFiles (only if lvFiles is focused)
+        ' ==========================
+        If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+            Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+            ' NEW: Reject files explicitly
+            If isValidDir(path) Then
+                Return path
+            End If
         End If
 
-        If Not Directory.Exists(path) OrElse IsSpecialFolder(path) Then
-            mnuPin.Visible = False
-            mnuUnpin.Visible = False
-            Exit Sub
+        ' ==========================
+        ' 2. Selected item in tvFolders (only if tvFolders is focused)
+        ' ==========================
+        If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+            Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+
+            If isValidDir(path) Then
+                Return path
+            End If
         End If
 
-        mnuPin.Visible = Not IsPinned(path)
-        mnuUnpin.Visible = IsPinned(path)
-    End Sub
+        ' ==========================
+        ' 3. Address bar (if focused)
+        ' ==========================
+        If txtAddressBar.Focused Then
+            If isValidDir(currentFolder) Then
+                Return currentFolder
+            End If
+        End If
+
+        ' ==========================
+        ' 4. Fallback to currentFolder
+        ' ==========================
+        'If isValidDir(currentFolder) Then
+        '    Return currentFolder
+        'End If
+
+        Return Nothing
+    End Function
+
+
+
+
 
     Private Sub InitApp()
 
