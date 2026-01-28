@@ -1357,32 +1357,18 @@ Public Class Form1
                         Return
                     End If
 
-                    'Dim freeBytes As Long = di.AvailableFreeSpace
-                    'Dim totalBytes As Long = di.TotalSize
-
-                    'Dim freeGB As Double = freeBytes / 1024 / 1024 / 1024
-                    'Dim totalGB As Double = totalBytes / 1024 / 1024 / 1024
-
                     Dim freeText As String = FormatSize(di.AvailableFreeSpace)
                     Dim totalText As String = FormatSize(di.TotalSize)
 
                     ShowStatus(StatusPad & IconDialog &
                                $"   {di.RootDirectory} -   {freeText} free of {totalText}")
 
-
-
-                    'ShowStatus(StatusPad & IconDialog &
-                    '           $"  {driveInput}  —  Free: {freeGB:N2} GB   /   Total: {totalGB:N2} GB")
                 Catch ex As Exception
                     ShowStatus(StatusPad & IconError &
                                "  Unable to read free space for that drive.")
                 End Try
 
                 Return
-
-
-
-
 
             Case "open"
 
