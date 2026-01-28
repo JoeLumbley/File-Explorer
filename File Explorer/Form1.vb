@@ -104,6 +104,9 @@ Public Class Form1
     Private IconSearch As String = ""
     Private IconMoving As String = ""
     Private IconQuestion As String = ""
+    Private IconFreeSpace As String = ""
+
+    '◔ ◑ ◒ ◓ ◐ ◕ ● ○ ◌ ◎ ◉ ◈ ◇ ◆ ◇ □ ■ △ ▲ ▽ ▼ ▶ ► ◀ ◄ ↖ ↗ ↘ ↙ ↕ ↔ ⇧ ⇩ ⇨ ⇦ ⬆ ⬇ ⬈ ⬉ ⬊ ⬋ ⬌ ⬍ ⬎ ⬏ ⬐ ⬑ ⬒ ⬓ ⬔ ⬕ ⬖ ⬗ ⬘ ⬙ ⬚ ⬛ ⬜
 
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
@@ -425,21 +428,17 @@ Public Class Form1
         ' Prevent pinning special folders
         If IsSpecialFolder(path) Then Exit Sub
 
-        ' Determine pinned state
-        Dim isPinned As Boolean =
-        File.ReadAllLines(EasyAccessFile).
-        Any(Function(line) line.EndsWith("," & path, StringComparison.OrdinalIgnoreCase))
-
-        mnuPin.Visible = Not isPinned
-        mnuUnpin.Visible = isPinned
+        'Dim isPinned As Boolean = IisPinned(path)
+        mnuPin.Visible = Not IsPinned(path)
+        mnuUnpin.Visible = IsPinned(path)
 
     End Sub
 
-
-
-
-
-
+    Private Function IsPinned(path As String) As Boolean
+        ' Determine pinned state
+        Return File.ReadAllLines(EasyAccessFile).
+        Any(Function(line) line.EndsWith("," & path, StringComparison.OrdinalIgnoreCase))
+    End Function
 
     Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
         Handles lvFiles.ItemActivate
@@ -584,11 +583,33 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    ' Use the appropriate icon for the pinned state
+    '    btnPin.Text = "" 'Unpin Icon
+    '    btnPin.Text = "" 'Pin Icon
+
+
+    '    Dim name As String = GetFolderDisplayName(currentFolder)
+    '    AddToEasyAccess(name, currentFolder)
+
+    'End Sub
+
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
         Dim name As String = GetFolderDisplayName(currentFolder)
-        AddToEasyAccess(name, currentFolder)
+
+        If IsPinned(currentFolder) Then
+            ' Currently pinned → unpin it
+            RemoveFromEasyAccess(currentFolder)
+            btnPin.Text = ""   ' Pin icon
+        Else
+            ' Not pinned → pin it
+            AddToEasyAccess(name, currentFolder)
+            btnPin.Text = ""   ' Unpin icon
+        End If
 
     End Sub
 
@@ -1360,8 +1381,8 @@ Public Class Form1
                     Dim freeText As String = FormatSize(di.AvailableFreeSpace)
                     Dim totalText As String = FormatSize(di.TotalSize)
 
-                    ShowStatus(StatusPad & IconDialog &
-                               $"   {di.RootDirectory} -   {freeText} free of {totalText}")
+                    ShowStatus(StatusPad & IconFreeSpace &
+                               $"   {di.RootDirectory} - {freeText} free of {totalText}")
 
                 Catch ex As Exception
                     ShowStatus(StatusPad & IconError &
@@ -4141,17 +4162,34 @@ Public Class Form1
         Return name
     End Function
 
-    Private Function FormatBytes(bytes As Long) As String
-        Dim sizes() As String = {"B", "KB", "MB", "GB", "TB"}
-        Dim order As Integer = 0
-        Dim value As Double = bytes
+    'Private Function FormatBytes(bytes As Long) As String
+    '    Dim sizes() As String = {"B", "KB", "MB", "GB", "TB"}
+    '    Dim order As Integer = 0
+    '    Dim value As Double = bytes
 
-        While value >= 1024 AndAlso order < sizes.Length - 1
+    '    While value >= 1024 AndAlso order < sizes.Length - 1
+    '        order += 1
+    '        value /= 1024
+    '    End While
+
+    '    Return $"{value:0.##} {sizes(order)}"
+    'End Function
+
+
+
+    Private Function FormatBytes(bytes As Long) As String
+        Dim absBytes As Double = Math.Abs(bytes)
+
+        ' Walk upward through SizeUnits until the next unit would be too large
+        Dim order As Integer = 0
+        While order < SizeUnits.Length - 1 AndAlso absBytes >= SizeUnits(order + 1).Factor
             order += 1
-            value /= 1024
         End While
 
-        Return $"{value:0.##} {sizes(order)}"
+        Dim value As Double = absBytes / SizeUnits(order).Factor
+        Dim formatted = $"{value:0.##} {SizeUnits(order).Unit}"
+
+        Return If(bytes < 0, "-" & formatted, formatted)
     End Function
 
     Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
