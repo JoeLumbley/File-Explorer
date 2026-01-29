@@ -170,6 +170,20 @@ Public Class Form1
     Private ReadOnly EasyAccessFile As String =
     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "easyaccess.txt")
 
+
+    Private _lastFocusedControl As Control = Nothing
+
+
+    Private Sub Control_Enter(sender As Object, e As EventArgs) _
+    Handles lvFiles.Enter, tvFolders.Enter, txtAddressBar.Enter
+
+        _lastFocusedControl = DirectCast(sender, Control)
+    End Sub
+
+
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -424,13 +438,33 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim target As String = GetPinnableTarget()
+    '    If target Is Nothing Then Exit Sub
+
+    '    TogglePin(target)
+    '    ShowStatus($"{target}")
+
+    'End Sub
+
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
         Dim target As String = GetPinnableTarget()
-        If target Is Nothing Then Exit Sub
+
+        ' If no contextual target, fall back to currentFolder
+        If target Is Nothing Then
+            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+                target = currentFolder
+            Else
+                Exit Sub
+            End If
+        End If
 
         TogglePin(target)
+        ShowStatus($"{target}")
     End Sub
 
 
@@ -563,6 +597,79 @@ Public Class Form1
     End Function
 
 
+    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
+    '    ' Only handle Tab
+    '    If keyData <> Keys.Tab Then
+    '        Return False
+    '    End If
+
+    '    ' Do not interfere with rename mode
+    '    If _isRenaming Then
+    '        Return False
+    '    End If
+
+    '    ' ==========================
+    '    ' Address Bar → File List
+    '    ' ==========================
+    '    If txtAddressBar.Focused Then
+    '        lvFiles.Focus()
+
+    '        If lvFiles.Items.Count > 0 Then
+    '            Dim item As ListViewItem =
+    '            If(lvFiles.SelectedItems.Count > 0,
+    '               lvFiles.SelectedItems(0),
+    '               lvFiles.Items(0))
+
+    '            item.Selected = True
+    '            item.Focused = True
+    '            item.EnsureVisible()
+
+    '            UpdatePinButtonState()
+
+    '        End If
+
+    '        Return True
+    '    End If
+
+
+    '    ' ==========================
+    '    ' File List → TreeView
+    '    ' ==========================
+    '    If lvFiles.Focused Then
+    '        tvFolders.Focus()
+
+    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '        End If
+
+    '        tvFolders.SelectedNode?.EnsureVisible()
+
+    '        ' NEW: Refresh pin/unpin state after focus change
+    '        UpdateTreeContextMenu(tvFolders.SelectedNode)
+    '        UpdatePinButtonState()
+
+    '        Return True
+    '    End If
+
+    '    ' ==========================
+    '    ' TreeView → Address Bar
+    '    ' ==========================
+    '    If tvFolders.Focused Then
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ==========================
+    '    ' Fallback → Address Bar
+    '    ' ==========================
+    '    txtAddressBar.Focus()
+    '    PlaceCaretAtEndOfAddressBar()
+    '    Return True
+    'End Function
+
+
+
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         ' Only handle Tab
         If keyData <> Keys.Tab Then
@@ -589,14 +696,11 @@ Public Class Form1
                 item.Selected = True
                 item.Focused = True
                 item.EnsureVisible()
-
-                UpdatePinButtonState()
-
             End If
 
+            UpdatePinButtonState()
             Return True
         End If
-
 
         ' ==========================
         ' File List → TreeView
@@ -610,10 +714,8 @@ Public Class Form1
 
             tvFolders.SelectedNode?.EnsureVisible()
 
-            ' NEW: Refresh pin/unpin state after focus change
             UpdateTreeContextMenu(tvFolders.SelectedNode)
             UpdatePinButtonState()
-
             Return True
         End If
 
@@ -623,6 +725,7 @@ Public Class Form1
         If tvFolders.Focused Then
             txtAddressBar.Focus()
             PlaceCaretAtEndOfAddressBar()
+            UpdatePinButtonState()
             Return True
         End If
 
@@ -631,8 +734,12 @@ Public Class Form1
         ' ==========================
         txtAddressBar.Focus()
         PlaceCaretAtEndOfAddressBar()
+        UpdatePinButtonState()
         Return True
     End Function
+
+
+
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
@@ -4395,6 +4502,150 @@ Public Class Form1
     '    Return Nothing
     'End Function
 
+    'Private Function GetPinnableTarget() As String
+
+    '    ' ==========================
+    '    ' 0. Helper: must be a real, pinnable directory
+    '    ' ==========================
+    '    Dim isValidDir As Func(Of String, Boolean) =
+    '    Function(p As String)
+    '        Return Not String.IsNullOrEmpty(p) AndAlso
+    '               Directory.Exists(p) AndAlso
+    '               Not IsSpecialFolder(p)
+    '    End Function
+
+    '    ' ==========================
+    '    ' 1. Selected item in lvFiles (only if lvFiles is focused)
+    '    ' ==========================
+    '    If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+
+    '        ' NEW: Reject files explicitly
+    '        If isValidDir(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 2. Selected item in tvFolders (only if tvFolders is focused)
+    '    ' ==========================
+    '    If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+
+    '        If isValidDir(path) Then
+    '            Return path
+    '        End If
+    '    End If
+
+    '    ' ==========================
+    '    ' 3. Address bar (if focused)
+    '    ' ==========================
+    '    If txtAddressBar.Focused Then
+    '        If isValidDir(currentFolder) Then
+    '            Return currentFolder
+    '        End If
+    '    End If
+
+    '    ' 4. btnPin (if focused)
+
+    '    Return Nothing
+    'End Function
+
+
+    'Private Function GetPinnableTarget() As String
+
+    '    ' ==========================
+    '    ' 0. Helper: must be a real, pinnable directory
+    '    ' ==========================
+    '    Dim isValidDir As Func(Of String, Boolean) =
+    '    Function(p As String)
+    '        Return Not String.IsNullOrEmpty(p) AndAlso
+    '               Directory.Exists(p) AndAlso
+    '               Not IsSpecialFolder(p)
+    '    End Function
+
+    '    ' ==========================
+    '    ' 1. Selected item in lvFiles (only if lvFiles is focused)
+    '    ' ==========================
+    '    If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If isValidDir(path) Then Return path
+    '    End If
+
+    '    ' ==========================
+    '    ' 2. Selected item in tvFolders (only if tvFolders is focused)
+    '    ' ==========================
+    '    If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+    '        If isValidDir(path) Then Return path
+    '    End If
+
+    '    ' ==========================
+    '    ' 3. Address bar (if focused)
+    '    '    → Use currentFolder, not the text
+    '    ' ==========================
+    '    If txtAddressBar.Focused Then
+    '        If isValidDir(currentFolder) Then Return currentFolder
+    '    End If
+
+    '    ' ==========================
+    '    ' 4. Pin button (if focused)
+    '    '    → Same rule as address bar
+    '    ' ==========================
+    '    If btnPin.Focused Then
+    '        'If isValidDir(currentFolder) Then Return currentFolder
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If isValidDir(path) Then Return path
+    '    End If
+
+    'Return Nothing
+    'End Function
+
+    'Private Function GetPinnableTarget() As String
+
+    '    ' ==========================
+    '    ' 0. Helper: must be a real, pinnable directory
+    '    ' ==========================
+    '    Dim isValidDir As Func(Of String, Boolean) =
+    '    Function(p As String)
+    '        Return Not String.IsNullOrEmpty(p) AndAlso
+    '               Directory.Exists(p) AndAlso
+    '               Not IsSpecialFolder(p)
+    '    End Function
+
+    '    ' ==========================
+    '    ' 1. If the last focused control was lvFiles
+    '    ' ==========================
+    '    If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If isValidDir(path) Then Return path
+    '    End If
+
+    '    ' ==========================
+    '    ' 2. If the last focused control was tvFolders
+    '    ' ==========================
+    '    If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+    '        If isValidDir(path) Then Return path
+    '    End If
+
+    '    ' ==========================
+    '    ' 3. If the last focused control was the address bar
+    '    ' ==========================
+    '    If _lastFocusedControl Is txtAddressBar Then
+    '        If isValidDir(currentFolder) Then Return currentFolder
+    '    End If
+
+    '    ' ==========================
+    '    ' 4. Fallback to currentFolder
+    '    ' ==========================
+    '    'If isValidDir(currentFolder) Then Return currentFolder
+
+    '    Return Nothing
+    'End Function
+
+
+
     Private Function GetPinnableTarget() As String
 
         ' ==========================
@@ -4408,49 +4659,33 @@ Public Class Form1
         End Function
 
         ' ==========================
-        ' 1. Selected item in lvFiles (only if lvFiles is focused)
+        ' 1. If the last focused control was lvFiles
         ' ==========================
-        If lvFiles.Focused AndAlso lvFiles.SelectedItems.Count > 0 Then
+        If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
             Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-
-            ' NEW: Reject files explicitly
-            If isValidDir(path) Then
-                Return path
-            End If
+            If isValidDir(path) Then Return path
         End If
 
         ' ==========================
-        ' 2. Selected item in tvFolders (only if tvFolders is focused)
+        ' 2. If the last focused control was tvFolders
         ' ==========================
-        If tvFolders.Focused AndAlso tvFolders.SelectedNode IsNot Nothing Then
+        If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
             Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
-
-            If isValidDir(path) Then
-                Return path
-            End If
+            If isValidDir(path) Then Return path
         End If
 
         ' ==========================
-        ' 3. Address bar (if focused)
+        ' 3. If the last focused control was the address bar
         ' ==========================
-        If txtAddressBar.Focused Then
-            If isValidDir(currentFolder) Then
-                Return currentFolder
-            End If
+        If _lastFocusedControl Is txtAddressBar Then
+            If isValidDir(currentFolder) Then Return currentFolder
         End If
 
         ' ==========================
-        ' 4. Fallback to currentFolder
+        ' 4. No contextual target
         ' ==========================
-        'If isValidDir(currentFolder) Then
-        '    Return currentFolder
-        'End If
-
         Return Nothing
     End Function
-
-
-
 
 
     Private Sub InitApp()
@@ -4910,6 +5145,7 @@ Public Class Form1
     Private Sub AssertFalse(condition As Boolean, message As String)
         Debug.Assert(Not condition, message)
     End Sub
+
 
 
 
