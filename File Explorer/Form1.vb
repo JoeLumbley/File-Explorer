@@ -822,6 +822,27 @@ Public Class Form1
         End If
 
         ' ===========================
+        ' ALT + P (Add to/Remove from pins)
+        ' ===========================
+        If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
+            Dim target As String = GetPinnableTarget()
+            ' If no contextual target, fall back to currentFolder
+            If target Is Nothing Then
+                If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+                    target = currentFolder
+                Else
+                    Return False
+                End If
+            End If
+            TogglePin(target)
+            ShowStatus($"{target}")
+            Return True
+        End If
+
+
+
+
+        ' ===========================
         ' ALT + LEFT (Back)
         ' ===========================
         If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
@@ -4787,6 +4808,8 @@ Public Class Form1
         'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
         tips.SetToolTip(txtAddressBar,
                         "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
+
+        tips.SetToolTip(btnPin, "Add or remove this folder from Easy Access (Alt+P)")
 
     End Sub
 
