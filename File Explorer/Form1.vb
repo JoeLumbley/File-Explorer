@@ -4245,6 +4245,30 @@ Public Class Form1
         btnPin.Text = If(IsPinned(target), "", "")
     End Sub
 
+
+    'Private Sub UpdatePinButtonState()
+    '    btnPin.Enabled = False
+    '    btnPin.Text = ""   ' Pin icon
+
+    '    Dim target As String = GetPinnableTarget()
+
+    '    ' Fallback to currentFolder if no contextual target
+    '    If target Is Nothing Then
+    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '            target = currentFolder
+    '        Else
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    btnPin.Enabled = True
+    '    btnPin.Text = If(IsPinned(target), "", "")
+    'End Sub
+
+
+
+
+
     ' ------------------------------------------------------------
     '  File List Pin State
     ' ------------------------------------------------------------
@@ -4853,12 +4877,12 @@ Public Class Form1
             .ShortcutKeyDisplayString = "Ctrl+O"
         })
 
-        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin From Easy Accesss", Nothing, AddressOf UnpinFromFiles_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin From Easy Access", Nothing, AddressOf UnpinFromFiles_Click) With {
             .Name = "Unpin"
         })
 
 
-        cmsFiles.Items.Add(New ToolStripMenuItem("Pin To Easy Accesss", Nothing, AddressOf PinFromFiles_Click) With {
+        cmsFiles.Items.Add(New ToolStripMenuItem("Pin To Easy Access", Nothing, AddressOf PinFromFiles_Click) With {
             .Name = "Pin"
         })
 
