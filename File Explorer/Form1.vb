@@ -438,17 +438,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
-    '    Handles btnPin.Click
-
-    '    Dim target As String = GetPinnableTarget()
-    '    If target Is Nothing Then Exit Sub
-
-    '    TogglePin(target)
-    '    ShowStatus($"{target}")
-
-    'End Sub
-
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
@@ -467,7 +456,6 @@ Public Class Form1
         ShowStatus($"{target}")
     End Sub
 
-
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
         Handles btnNewFolder.Click
 
@@ -481,7 +469,6 @@ Public Class Form1
         NewTextFile_Click(sender, e)
 
     End Sub
-
 
     Private Sub btnCut_Click(sender As Object, e As EventArgs) _
         Handles btnCut.Click
@@ -542,9 +529,6 @@ Public Class Form1
 
             ResetSearchState()
 
-            ' Navigate without recording history
-            'NavigateTo(currentFolder, recordHistory:=False)
-
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
@@ -595,9 +579,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
-
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         ' Only handle Tab
@@ -667,9 +648,6 @@ Public Class Form1
         Return True
     End Function
 
-
-
-
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
         ' Detect SHIFT + TAB correctly inside ProcessCmdKey
@@ -733,7 +711,6 @@ Public Class Form1
         PlaceCaretAtEndOfAddressBar()
         Return True
     End Function
-
 
     Private Function GlobalShortcutsAllowed() As Boolean
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
