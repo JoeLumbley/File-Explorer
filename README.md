@@ -40,8 +40,48 @@ For users who enjoy the speed and precision of typed commands, the built‑in CL
 The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
+[ Table of Contents](#table-of-contents)
 
 
+
+
+
+---
+---
+---
+---
+
+
+
+
+## Why I’m Creating File Explorer
+
+
+
+
+I decided to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to forget how much is happening behind the scenes—navigation history, sorting, file type detection, context menus, clipboard operations, lazy‑loading folder trees, and so much more. Re‑creating these features myself has been a great way to explore system I/O, UI design, event handling, and performance considerations in a real, hands‑on way.
+
+This project isn’t meant to replace the built‑in Windows Explorer. Instead, it’s a learning tool: a space where I can experiment, break things, fix them, and understand why they work the way they do.
+
+## What I Hope Learners Get From This
+My goal is that anyone looking at this project—whether you’re new to programming or exploring more advanced concepts—can walk away with something useful. Specifically, I hope you gain:
+
+- A clearer understanding of how file systems are accessed and managed
+Seeing the code behind navigation, file operations, and directory structures helps demystify how your OS handles these tasks.
+
+- Insight into building a real Windows Forms application
+This includes UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and user‑friendly design choices.
+
+- Practical examples of organizing and structuring a larger project
+The codebase includes navigation history, sorting logic, search functionality, and a file‑type mapping system—each a small subsystem working together.
+
+- Confidence to modify, extend, or build your own tools
+Because the project is open‑source under the MIT License, you’re free to explore, customize, or use pieces of it in your own applications.
+
+ - A reminder that even “simple” tools are full of interesting engineering challenges
+Re‑creating something familiar is one of the best ways to deepen your understanding.
+
+If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for features. This project is as much about learning as it is about building something functional, and I’m excited to share that process with you.
 
 
 
