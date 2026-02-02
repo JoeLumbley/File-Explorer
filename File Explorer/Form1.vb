@@ -1265,7 +1265,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub OpenSelectedItem()
         ' Is a file or folder selected?
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
