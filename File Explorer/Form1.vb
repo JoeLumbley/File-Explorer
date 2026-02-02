@@ -3023,18 +3023,6 @@ Public Class Form1
         Dim nextPath As String = SearchResults(SearchIndex)
         SelectListViewItemByPath(nextPath)
 
-
-
-        'lvFiles.BeginUpdate()
-
-        'RestoreBackground()
-        'HighlightSearchMatches()
-        'HighlightCurrentResult()
-
-        'lvFiles.EndUpdate()
-
-
-
         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
         ' Status HUD
@@ -3049,7 +3037,7 @@ Public Class Form1
     Private Sub HighlightSearchMatches()
         Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
 
-        'lvFiles.BeginUpdate()
+        lvFiles.BeginUpdate()
 
         ' Apply highlight to matched items
         For Each path As String In SearchResults
@@ -3059,17 +3047,17 @@ Public Class Form1
             End If
         Next
 
-        'lvFiles.EndUpdate()
+        lvFiles.EndUpdate()
     End Sub
 
     Private Sub RestoreBackground()
-        'lvFiles.BeginUpdate()
+        lvFiles.BeginUpdate()
 
         For Each item As ListViewItem In lvFiles.Items
             item.BackColor = Color.White
         Next
 
-        'lvFiles.EndUpdate()
+        lvFiles.EndUpdate()
     End Sub
 
     Private Sub HighlightCurrentResult()
@@ -3081,9 +3069,9 @@ Public Class Form1
 
         Dim focusColor As Color = Color.FromArgb(255, 203, 107)
 
-        'lvFiles.BeginUpdate()
+        lvFiles.BeginUpdate()
         item.BackColor = focusColor
-        'lvFiles.EndUpdate()
+        lvFiles.EndUpdate()
 
     End Sub
 
