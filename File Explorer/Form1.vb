@@ -104,8 +104,7 @@ Public Class Form1
     Private IconSearch As String = ""
     Private IconMoving As String = ""
     Private IconQuestion As String = ""
-    Private IconFreeSpace As String = ""
-
+    Private IconFreeSpace As String = "🌖"
 
     Dim SearchResults As New List(Of String)
     Private SearchIndex As Integer = -1
@@ -2437,12 +2436,19 @@ Public Class Form1
             Return
         End If
 
-        ShowStatus(StatusPad & IconNavigate & " Navigated To: " & path)
+        ShowStatus(StatusPad & IconNavigate & "  Navigating to: " & path)
 
         currentFolder = path
         txtAddressBar.Text = path
 
+        UpdateFileListPinState()
+        UpdatePinButtonState()
+        UpdateFileButtonsAndMenus()
+        UpdateEditButtonsAndMenus()
+
         Await PopulateFiles(path) ' Await the async method
+
+        ShowStatus(StatusPad & IconNavigate & "  Navigated to: " & path)
 
         If recordHistory Then
             ' Trim forward history if we branch
@@ -2454,13 +2460,6 @@ Public Class Form1
             UpdateNavButtons()
         End If
 
-        UpdateFileListPinState()
-
-        UpdatePinButtonState()
-
-        UpdateFileButtonsAndMenus()
-
-        UpdateEditButtonsAndMenus()
     End Sub
 
     Private Sub GoToFolderOrOpenFile(FileOrFolder As String)
