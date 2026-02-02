@@ -219,10 +219,10 @@ The **Command Line Interface (CLI)** is an integrated text‑based command syste
 
 The CLI is designed to be:
 
-- **Fast** — no menus, no dialogs  
-- **Predictable** — clear rules and consistent behavior  
-- **Beginner‑friendly** — helpful messages and examples  
-- **Powerful** — supports navigation, search, file operations, and more  
+- **Fast** - no menus, no dialogs  
+- **Predictable** - clear rules and consistent behavior  
+- **Beginner‑friendly** - helpful messages and examples  
+- **Powerful** - supports navigation, search, file operations, and more  
 
 [ Table of Contents](#table-of-contents)
 
@@ -265,7 +265,7 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
-## 📂 Change Directory — `cd`
+## 📂 Change Directory - `cd`
 
 **Usage:**  
 ```
@@ -285,7 +285,7 @@ cd "C:\My Folder"
 
 ---
 
-## 📁 Create Directory — `mkdir`, `make`
+## 📁 Create Directory - `mkdir`, `make`
 
 **Usage:**  
 ```
@@ -305,7 +305,7 @@ make "C:\My New Folder"
 
 ---
 
-## 📄 Copy — `copy`
+## 📄 Copy - `copy`
 
 **Usage:**  
 ```
@@ -325,7 +325,7 @@ copy "C:\folder A" "C:\folder B"
 
 ---
 
-## 📦 Move — `move`
+## 📦 Move - `move`
 
 **Usage:**  
 ```
@@ -345,7 +345,7 @@ move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
 
 ---
 
-## 🗑 Delete — `delete`
+## 🗑 Delete - `delete`
 
 **Usage:**  
 ```
@@ -365,7 +365,7 @@ delete "C:\My Folder"
 
 ---
 
-## ✏ Rename — `rename`
+## ✏ Rename - `rename`
 
 **Usage:**  
 ```
@@ -385,7 +385,7 @@ rename "C:\folder\old name.txt" "new name.txt"
 
 ---
 
-## 📝 Create Text File — `text`, `txt`
+## 📝 Create Text File - `text`, `txt`
 
 **Usage:**  
 ```
@@ -409,7 +409,7 @@ New Text File.txt
 
 ---
 
-## 📂 Open — `open`
+## 📂 Open - `open`
 
 **Usage:**  
 ```
@@ -440,7 +440,7 @@ open
 ---
 
 
-## 🔍 Search — `find`, `search`
+## 🔍 Search - `find`, `search`
 
 **Usage:**  
 ```
@@ -464,7 +464,7 @@ If results are found:
 
 ---
 
-## ⏭ Next Search Result — `findnext`, `searchnext`
+## ⏭ Next Search Result - `findnext`, `searchnext`
 
 **Usage:**  
 ```
@@ -479,13 +479,13 @@ Wraps around when reaching the end.
 
 ---
 
-## ❌ Exit — `exit`, `quit`
+## ❌ Exit - `exit`, `quit`
 
 Closes the application.
 
 ---
 
-## ❓ Help — `help`
+## ❓ Help - `help`
 
 Displays the full list of commands.
 
@@ -562,7 +562,7 @@ The File Explorer CLI provides:
 - Beginner‑friendly quoting rules  
 - Contextual file/folder opening  
 
-It’s a flexible, efficient alternative to the graphical interface — perfect for users who enjoy command‑driven workflows.
+It’s a flexible, efficient alternative to the graphical interface - perfect for users who enjoy command‑driven workflows.
 
 
 [ Table of Contents](#table-of-contents)
