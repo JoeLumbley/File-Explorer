@@ -59,7 +59,7 @@ The CLI and GUI work together seamlessly, giving users the freedom to choose the
 
 
 
-I decided to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to forget how much is happening behind the scenes—navigation history, sorting, file type detection, context menus, clipboard operations, lazy‑loading folder trees, and so much more. Re‑creating these features myself has been a great way to explore system I/O, UI design, event handling, and performance considerations in a real, hands‑on way.
+I decided to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to forget how much is happening behind the scenes-navigation history, sorting, file type detection, context menus, clipboard operations, lazy-loading folder trees, and so much more. Re-creating these features myself has been a great way to explore system I/O, UI design, event handling, and performance considerations in a real, hands‑on way.
 
 This project isn’t meant to replace the built‑in Windows Explorer. Instead, it’s a learning tool: a space where I can experiment, break things, fix them, and understand why they work the way they do.
 
