@@ -77,7 +77,7 @@ This project isn’t meant to replace the built‑in Windows Explorer. Instead, 
 
 ## What I Hope Learners Get From This
 
-This project is designed for anyone who wants to understand how real applications work—from beginners taking their first steps to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
+This project is designed for anyone who wants to understand how real applications work, from beginners taking their first steps, to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
 
 ### **A clearer understanding of how file systems are accessed and managed**  
 By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
@@ -86,13 +86,13 @@ By looking at the code behind navigation, file operations, and directory structu
 The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
 
 ### **Practical examples of organizing and structuring a larger project**  
-You’ll find subsystems for navigation history, sorting logic, search functionality, and file‑type mapping—all working together in a cohesive, maintainable way.
+You’ll find subsystems for navigation history, sorting logic, search functionality, and file-type mapping-all working together in a cohesive, maintainable way.
 
 ### **Confidence to modify, extend, or build your own tools**  
-Everything is open‑source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
+Everything is open-source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
 
 ### **A reminder that even “simple” tools contain fascinating engineering challenges**  
-Re‑creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
+Re-creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
 
 
 If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
