@@ -40,6 +40,66 @@ For users who enjoy the speed and precision of typed commands, the built‑in CL
 The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
+[ Table of Contents](#table-of-contents)
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+## Why I’m Creating File Explorer
+
+I set out to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to overlook how much is happening behind the scenes: navigation history, sorting, file type detection, context menus, clipboard operations, lazy loading of folder trees, and many other details. Recreating these features myself has been a practical way to explore system I/O, UI design, event handling, and performance considerations in a hands-on, exploratory way.
+
+This project is not meant to replace the built-in Windows Explorer. Instead, it serves as a learning environment, a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, similar to how art students copy the masters to study technique and intention.
+
+
+<img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
+
+
+
+
+
+
+
+
+
+## What I Hope Learners Get From This
+
+This project is designed for anyone who wants to understand how real applications work, from beginners taking their first steps, to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
+
+### **A clearer understanding of how file systems are accessed and managed**  
+By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
+
+### **Insight into building a real Windows Forms application**  
+The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
+
+### **Practical examples of organizing and structuring a larger project**  
+You’ll find subsystems for navigation history, sorting logic, search functionality, and file-type mapping-all working together in a cohesive, maintainable way.
+
+### **Confidence to modify, extend, or build your own tools**  
+Everything is open-source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
+
+### **A reminder that even “simple” tools contain fascinating engineering challenges**  
+Re-creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
+
+
+If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
+
+
+
+
+
+
 
 
 
@@ -159,10 +219,10 @@ The **Command Line Interface (CLI)** is an integrated text‑based command syste
 
 The CLI is designed to be:
 
-- **Fast** — no menus, no dialogs  
-- **Predictable** — clear rules and consistent behavior  
-- **Beginner‑friendly** — helpful messages and examples  
-- **Powerful** — supports navigation, search, file operations, and more  
+- **Fast** - no menus, no dialogs  
+- **Predictable** - clear rules and consistent behavior  
+- **Beginner‑friendly** - helpful messages and examples  
+- **Powerful** - supports navigation, search, file operations, and more  
 
 [ Table of Contents](#table-of-contents)
 
@@ -205,7 +265,7 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
-## 📂 Change Directory — `cd`
+## 📂 Change Directory - `cd`
 
 **Usage:**  
 ```
@@ -225,7 +285,7 @@ cd "C:\My Folder"
 
 ---
 
-## 📁 Create Directory — `mkdir`, `make`
+## 📁 Create Directory - `mkdir`, `make`
 
 **Usage:**  
 ```
@@ -245,7 +305,7 @@ make "C:\My New Folder"
 
 ---
 
-## 📄 Copy — `copy`
+## 📄 Copy - `copy`
 
 **Usage:**  
 ```
@@ -265,7 +325,7 @@ copy "C:\folder A" "C:\folder B"
 
 ---
 
-## 📦 Move — `move`
+## 📦 Move - `move`
 
 **Usage:**  
 ```
@@ -285,7 +345,7 @@ move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
 
 ---
 
-## 🗑 Delete — `delete`
+## 🗑 Delete - `delete`
 
 **Usage:**  
 ```
@@ -305,7 +365,7 @@ delete "C:\My Folder"
 
 ---
 
-## ✏ Rename — `rename`
+## ✏ Rename - `rename`
 
 **Usage:**  
 ```
@@ -325,7 +385,7 @@ rename "C:\folder\old name.txt" "new name.txt"
 
 ---
 
-## 📝 Create Text File — `text`, `txt`
+## 📝 Create Text File - `text`, `txt`
 
 **Usage:**  
 ```
@@ -349,7 +409,7 @@ New Text File.txt
 
 ---
 
-## 📂 Open — `open`
+## 📂 Open - `open`
 
 **Usage:**  
 ```
@@ -380,7 +440,7 @@ open
 ---
 
 
-## 🔍 Search — `find`, `search`
+## 🔍 Search - `find`, `search`
 
 **Usage:**  
 ```
@@ -404,7 +464,7 @@ If results are found:
 
 ---
 
-## ⏭ Next Search Result — `findnext`, `searchnext`
+## ⏭ Next Search Result - `findnext`, `searchnext`
 
 **Usage:**  
 ```
@@ -419,13 +479,13 @@ Wraps around when reaching the end.
 
 ---
 
-## ❌ Exit — `exit`, `quit`
+## ❌ Exit - `exit`, `quit`
 
 Closes the application.
 
 ---
 
-## ❓ Help — `help`
+## ❓ Help - `help`
 
 Displays the full list of commands.
 
@@ -502,7 +562,7 @@ The File Explorer CLI provides:
 - Beginner‑friendly quoting rules  
 - Contextual file/folder opening  
 
-It’s a flexible, efficient alternative to the graphical interface — perfect for users who enjoy command‑driven workflows.
+It’s a flexible, efficient alternative to the graphical interface - perfect for users who enjoy command‑driven workflows.
 
 
 [ Table of Contents](#table-of-contents)
