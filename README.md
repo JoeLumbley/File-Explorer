@@ -63,6 +63,7 @@ I set out to build my own File Explorer because I wanted to understand, from the
 This project is not meant to replace the built-in Windows Explorer. Instead, it serves as a learning environment, a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, similar to how art students copy the masters to study technique and intention.
 
 
+<img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
 
 
 
