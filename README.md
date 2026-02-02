@@ -63,25 +63,47 @@ I decided to build my own File Explorer because I wanted to understand, from the
 
 This project isn’t meant to replace the built‑in Windows Explorer. Instead, it’s a learning tool: a space where I can experiment, break things, fix them, and understand why they work the way they do.
 
+
+
+
+
+
+
+
+
+
+
+
+
 ## What I Hope Learners Get From This
-My goal is that anyone looking at this project—whether you’re new to programming or exploring more advanced concepts—can walk away with something useful. Specifically, I hope you gain:
 
-- A clearer understanding of how file systems are accessed and managed
-Seeing the code behind navigation, file operations, and directory structures helps demystify how your OS handles these tasks.
+This project is designed for anyone who wants to understand how real applications work—from beginners taking their first steps to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
 
-- Insight into building a real Windows Forms application
-This includes UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and user‑friendly design choices.
+### **A clearer understanding of how file systems are accessed and managed**  
+By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
 
-- Practical examples of organizing and structuring a larger project
-The codebase includes navigation history, sorting logic, search functionality, and a file‑type mapping system—each a small subsystem working together.
+### **Insight into building a real Windows Forms application**  
+The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
 
-- Confidence to modify, extend, or build your own tools
-Because the project is open‑source under the MIT License, you’re free to explore, customize, or use pieces of it in your own applications.
+### **Practical examples of organizing and structuring a larger project**  
+You’ll find subsystems for navigation history, sorting logic, search functionality, and file‑type mapping—all working together in a cohesive, maintainable way.
 
- - A reminder that even “simple” tools are full of interesting engineering challenges
-Re‑creating something familiar is one of the best ways to deepen your understanding.
+### **Confidence to modify, extend, or build your own tools**  
+Everything is open‑source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
 
-If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for features. This project is as much about learning as it is about building something functional, and I’m excited to share that process with you.
+### **A reminder that even “simple” tools contain fascinating engineering challenges**  
+Re‑creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
+
+
+If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
+
+
+
+
+
+
+
+
 
 
 
