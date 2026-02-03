@@ -139,6 +139,7 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
   - [➡️ NavigateTo](#navigateto)
 
+  - [ HandleFindNextCommand](#handlefindnextcommand)
 
   - [ SelectListViewItemByPath](#selectlistviewitembypath)
 
@@ -1612,6 +1613,50 @@ This method is essential for any file management application, ensuring smooth an
 
 
 # `HandleFindNextCommand`
+
+<img width="1266" height="713" alt="106" src="https://github.com/user-attachments/assets/28ad95b5-5ccb-4365-bfae-a611108a07f9" />
+
+This method cycles to the next search result, highlights it in the file list, scrolls to it, and updates the status bar so the user always knows where they are and what they can do next.
+
+Below is the full code, then we’ll walk through it one step at a time.
+
+
+```vb.net
+
+    Private Sub HandleFindNextCommand()
+
+        ' No active search
+        If SearchResults.Count = 0 Then
+            ShowStatus(
+            StatusPad & IconDialog &
+            "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+        )
+            Return
+        End If
+
+        ' Advance index with wraparound
+        SearchIndex += 1
+        If SearchIndex >= SearchResults.Count Then
+            SearchIndex = 0
+        End If
+
+        ' Select the next result
+        lvFiles.SelectedItems.Clear()
+        Dim nextPath As String = SearchResults(SearchIndex)
+        SelectListViewItemByPath(nextPath)
+
+        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+        ' Status HUD
+        ShowStatus(
+            StatusPad & IconSearch &
+            $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+        )
+    End Sub
+
+
+```
+
 
 ```vb
 Private Sub HandleFindNextCommand()
