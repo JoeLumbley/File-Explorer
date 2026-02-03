@@ -1761,6 +1761,31 @@ End Sub
 
 # `SelectListViewItemByPath`
 
+This helper is a quiet hero in our search system. It ensures that:
+
+- The correct file is highlighted  
+- The UI scrolls to it  
+- Keyboard navigation starts from the right place  
+- The user feels like the app “knows where they are”
+
+Below is the full code, then we’ll walk through it one step at a time.
+
+```vb.net
+
+    Private Sub SelectListViewItemByPath(fullPath As String)
+        For Each item As ListViewItem In lvFiles.Items
+            If String.Equals(item.Tag.ToString(), fullPath, StringComparison.OrdinalIgnoreCase) Then
+                item.Selected = True
+                item.Focused = True
+                item.EnsureVisible()
+                Exit For
+            End If
+        Next
+    End Sub
+
+```
+
+
 ```vb.net
 Private Sub SelectListViewItemByPath(fullPath As String)
 ```
@@ -1833,14 +1858,8 @@ End Sub
 - Ends the subroutine.
 
 
- **Why this method matters**
 
-This helper is a quiet hero in our search system. It ensures that:
 
-- The correct file is highlighted  
-- The UI scrolls to it  
-- Keyboard navigation starts from the right place  
-- The user feels like the app “knows where they are”  
 
 
 
