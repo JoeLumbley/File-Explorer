@@ -1694,7 +1694,7 @@ Dim nextPath As String = SearchResults(SearchIndex)
 ```vb
 SelectListViewItemByPath(nextPath)
 ```
-- This is your helper function that:
+- This is our helper function that:
   - Finds the matching item in the ListView.
   - Selects the item.
   - Scrolls the ListView so the item is visible.
