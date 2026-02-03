@@ -1797,7 +1797,7 @@ For Each item As ListViewItem In lvFiles.Items
 - Gives the item **keyboard focus**.
 - This ensures:
   - Arrow keys start from this item
-  - The dotted focus rectangle appears (if enabled)
+  - The dotted focus rectangle appears
   - It behaves like the user clicked it
 
 
@@ -1828,7 +1828,6 @@ End Sub
 ```
 - Ends the subroutine.
 
----
 
  **Why this method matters**
 
