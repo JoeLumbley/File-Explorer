@@ -1161,17 +1161,87 @@ Public Class Form1
                 HandleOpenPath(fullPath)
                 Return
 
-            Case "find", "search"
+            'Case "find", "search"
 
+            '    If parts.Length > 1 Then
+
+            '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+            '        If String.IsNullOrWhiteSpace(searchTerm) Then
+            '            ShowStatus(
+            '                StatusPad & IconDialog &
+            '                "  Usage: find [search_term]   e.g., find document"
+            '            )
+            '            Return
+            '        End If
+
+            '        ' Announce search
+            '        ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
+
+            '        ' Perform search
+            '        OnlySearchForFilesInCurrentFolder(searchTerm)
+
+            '        ' Reset index for new search
+            '        SearchIndex = 0
+
+            '        RestoreBackground()
+
+            '        ' If results exist, auto-select the first one
+            '        If SearchResults.Count > 0 Then
+
+            '            lvFiles.SelectedItems.Clear()
+            '            SelectListViewItemByPath(SearchResults(0))
+
+            '            Dim nextPath As String = SearchResults(SearchIndex)
+            '            Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+            '            lvFiles.Focus()
+            '            HighlightSearchMatches()
+            '            'HighlightCurrentResult()
+
+            '            ' Unified search HUD
+            '            ShowStatus(
+            '                StatusPad & IconSearch &
+            '                $"  Result {SearchIndex + 1} of {SearchResults.Count}    " &
+            '                $""“{fileName}”"    Next  F3    Open  Ctrl+O    Reset  Esc"
+            '            )
+            '        Else
+            '            ShowStatus(
+            '                StatusPad & IconDialog &
+            '                "  No results found for: " & searchTerm
+            '            )
+            '        End If
+
+            '    Else
+            '        ShowStatus(
+            '            StatusPad & IconDialog &
+            '            "  Usage: find [search_term]   e.g., find document"
+            '        )
+            '    End If
+
+            '    Return
+
+            'Case "findnext", "searchnext", "next"
+
+            '    HandleFindNextCommand()
+
+            '    Return
+
+
+
+        ' ---------------------------------------------------------
+        ' FIND / SEARCH
+        ' ---------------------------------------------------------
+            Case "find", "search"
                 If parts.Length > 1 Then
 
                     Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
                     If String.IsNullOrWhiteSpace(searchTerm) Then
                         ShowStatus(
-                            StatusPad & IconDialog &
-                            "  Usage: find [search_term]   e.g., find document"
-                        )
+                        StatusPad & IconDialog &
+                        "  Usage: find [search_term]   e.g., find document"
+                    )
                         Return
                     End If
 
@@ -1183,12 +1253,10 @@ Public Class Form1
 
                     ' Reset index for new search
                     SearchIndex = 0
-
                     RestoreBackground()
 
                     ' If results exist, auto-select the first one
                     If SearchResults.Count > 0 Then
-
                         lvFiles.SelectedItems.Clear()
                         SelectListViewItemByPath(SearchResults(0))
 
@@ -1197,35 +1265,47 @@ Public Class Form1
 
                         lvFiles.Focus()
                         HighlightSearchMatches()
-                        'HighlightCurrentResult()
 
                         ' Unified search HUD
                         ShowStatus(
-                            StatusPad & IconSearch &
-                            $"  Result {SearchIndex + 1} of {SearchResults.Count}    " &
-                            $""“{fileName}”"    Next  F3    Open  Ctrl+O    Reset  Esc"
-                        )
+                        StatusPad & IconSearch &
+                        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+                    )
                     Else
                         ShowStatus(
-                            StatusPad & IconDialog &
-                            "  No results found for: " & searchTerm
-                        )
+                        StatusPad & IconDialog &
+                        "  No results found for: " & searchTerm
+                    )
                     End If
 
                 Else
                     ShowStatus(
-                        StatusPad & IconDialog &
-                        "  Usage: find [search_term]   e.g., find document"
-                    )
+                    StatusPad & IconDialog &
+                    "  Usage: find [search_term]   e.g., find document"
+                )
                 End If
 
                 Return
 
+        ' ---------------------------------------------------------
+        ' FIND NEXT
+        ' ---------------------------------------------------------
             Case "findnext", "searchnext", "next"
-
                 HandleFindNextCommand()
-
                 Return
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
@@ -2790,6 +2870,44 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
+
+    '    ' Clear item selection for lvFiles
+    '    lvFiles.SelectedItems.Clear()
+
+    '    Try
+    '        SearchResults = New List(Of String)
+
+    '        ' Search files only in the current folder
+    '        For Each filePath In Directory.GetFiles(currentFolder, "*.*")
+    '            If Path.GetFileName(filePath).IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '                SearchResults.Add(filePath)
+    '            End If
+    '        Next
+
+    '        ' Highlight first match in ListView
+    '        If SearchResults.Count > 0 Then
+    '            SelectListViewItemByPath(SearchResults(0))
+    '            lvFiles.Focus()
+
+    '            ShowStatus(StatusPad & IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
+    '        Else
+    '            ShowStatus(StatusPad & IconDialog & " No items found matching: " & searchTerm)
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Search failed: " & ex.Message)
+    '        Debug.WriteLine("OnlySearchForFilesInCurrentFolder Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
+
+
+    ' =============================================================
+    ' SEARCH FILES IN CURRENT FOLDER
+    ' =============================================================
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
 
         ' Clear item selection for lvFiles
@@ -2810,17 +2928,34 @@ Public Class Form1
                 SelectListViewItemByPath(SearchResults(0))
                 lvFiles.Focus()
 
-                ShowStatus(StatusPad & IconSmile & " Found " & SearchResults.Count & " item(s) matching: " & searchTerm)
+                ShowStatus(
+                    StatusPad & IconSmile &
+                    "  Found " & SearchResults.Count & " item(s) matching: " & searchTerm
+                )
             Else
-                ShowStatus(StatusPad & IconDialog & " No items found matching: " & searchTerm)
+                ShowStatus(
+                    StatusPad & IconDialog &
+                    "  No items found matching: " & searchTerm
+                )
             End If
 
         Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Search failed: " & ex.Message)
+            ShowStatus(StatusPad & IconError & "  Search failed: " & ex.Message)
             Debug.WriteLine("OnlySearchForFilesInCurrentFolder Error: " & ex.Message)
         End Try
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub UpdateNavButtons()
         btnBack.Enabled = _historyIndex > 0
@@ -3001,6 +3136,43 @@ Public Class Form1
         txtAddressBar.SelectionStart = txtAddressBar.Text.Length
     End Sub
 
+    'Private Sub HandleFindNextCommand()
+
+    '    ' No active search
+    '    If SearchResults.Count = 0 Then
+    '        ShowStatus(
+    '        StatusPad & IconDialog &
+    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+    '    )
+    '        Return
+    '    End If
+
+    '    ' Advance index with wraparound
+    '    SearchIndex += 1
+    '    If SearchIndex >= SearchResults.Count Then
+    '        SearchIndex = 0
+    '    End If
+
+    '    ' Select the next result
+    '    lvFiles.SelectedItems.Clear()
+    '    Dim nextPath As String = SearchResults(SearchIndex)
+    '    SelectListViewItemByPath(nextPath)
+
+    '    Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+    '    ' Status HUD
+    '    ShowStatus(
+    '        StatusPad & IconSearch &
+    '        $"  Result {SearchIndex + 1} of {SearchResults.Count}    " &
+    '        $""“{fileName}”"    Next  F3    Open  Ctrl+O    Reset  Esc"
+    '    )
+
+    'End Sub
+
+
+    ' =============================================================
+    ' FIND NEXT HANDLER
+    ' =============================================================
     Private Sub HandleFindNextCommand()
 
         ' No active search
@@ -3027,12 +3199,18 @@ Public Class Form1
 
         ' Status HUD
         ShowStatus(
-            StatusPad & IconSearch &
-            $"  Result {SearchIndex + 1} of {SearchResults.Count}    " &
-            $""“{fileName}”"    Next  F3    Open  Ctrl+O    Reset  Esc"
-        )
-
+        StatusPad & IconSearch &
+        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+    )
     End Sub
+
+
+
+
+
+
+
+
 
     Private Sub HighlightSearchMatches()
         Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
