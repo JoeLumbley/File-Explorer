@@ -1597,6 +1597,342 @@ This method is essential for any file management application, ensuring smooth an
 
 
 
+
+
+
+
+
+
+
+
+
+
+# `HandleFindNextCommand`
+
+```vb
+Private Sub HandleFindNextCommand()
+```
+- This defines a **subroutine** (a block of code) named `HandleFindNextCommand`.
+- It runs whenever the user triggers the “Find Next” action — for example, pressing **F3** or typing `findnext`.
+
+---
+
+```vb
+' No active search
+If SearchResults.Count = 0 Then
+```
+- This checks whether there are **any search results stored**.
+- `SearchResults` is a list of file paths found by the last search.
+- If the list is empty (`Count = 0`), it means the user hasn’t searched yet.
+
+---
+
+```vb
+    ShowStatus(
+        StatusPad & IconDialog &
+        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+    )
+```
+- This displays a friendly message in your status bar.
+- `StatusPad` and `IconDialog` are just decorative pieces that make the message look nice.
+- The message tells the user how to start a search.
+
+---
+
+```vb
+    Return
+End If
+```
+- `Return` stops the subroutine immediately.
+- Since there are no results, there’s nothing else to do.
+
+---
+
+```vb
+' Advance index with wraparound
+SearchIndex += 1
+```
+- This moves to the **next** search result.
+- `SearchIndex` keeps track of which result is currently selected.
+- `+= 1` means “add 1 to the current value.”
+
+---
+
+```vb
+If SearchIndex >= SearchResults.Count Then
+    SearchIndex = 0
+End If
+```
+- This handles **wraparound**.
+- If the index goes past the last result, it jumps back to the first one.
+- This creates a loop: last → first → second → etc.
+- It feels like how Explorer cycles through search results.
+
+---
+
+```vb
+' Select the next result
+lvFiles.SelectedItems.Clear()
+```
+- Clears any previous selection in the file list.
+- This ensures only the new result is highlighted.
+
+---
+
+```vb
+Dim nextPath As String = SearchResults(SearchIndex)
+```
+- Retrieves the file path of the next search result.
+- Stores it in a variable named `nextPath`.
+
+---
+
+```vb
+SelectListViewItemByPath(nextPath)
+```
+- This is your helper function that:
+  - Finds the matching item in the ListView
+  - Selects it
+  - Scrolls it into view (if your helper includes `EnsureVisible`)
+- This is what makes the UI jump to the matching file.
+
+---
+
+```vb
+Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+```
+- Extracts just the **file name** (no folder, no extension).
+- This is used for a cleaner status message.
+
+---
+
+```vb
+' Status HUD
+ShowStatus(
+    StatusPad & IconSearch &
+    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+)
+```
+- Updates the status bar with a compact “search HUD.”
+- It shows:
+  - Which result you’re on  
+    (`Result 3 of 12`)
+  - The file name  
+    (`"Report Q1"`)
+  - Helpful keyboard shortcuts  
+    (`Next F3`, `Open Ctrl+O`, `Reset Esc`)
+- `SearchIndex + 1` is used because lists start at 0, but humans start at 1.
+
+---
+
+```vb
+End Sub
+```
+- Marks the end of the subroutine.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+# `SelectListViewItemByPath`
+
+```vb.net
+Private Sub SelectListViewItemByPath(fullPath As String)
+```
+- This defines a **subroutine** named `SelectListViewItemByPath`.
+- It takes one input: `fullPath`, which is the complete file or folder path you want to select in the ListView.
+- The goal is simple: find the matching item and highlight it.
+
+
+```vb
+For Each item As ListViewItem In lvFiles.Items
+```
+- This starts a loop that goes through **every item** in the ListView (`lvFiles`).
+- `item` represents the current ListViewItem being checked.
+- The loop continues until a match is found or all items have been checked.
+
+
+```vb
+    If String.Equals(item.Tag.ToString(), fullPath, StringComparison.OrdinalIgnoreCase) Then
+```
+- Each ListViewItem stores its full path inside its `.Tag` property.
+- This line compares the item's stored path with the `fullPath` we’re searching for.
+- `StringComparison.OrdinalIgnoreCase` means:
+  - Compare the text exactly
+  - Ignore uppercase/lowercase differences  
+  This matches how Windows treats file paths.
+
+
+```vb
+        item.Selected = True
+```
+- Marks the item as **selected** in the ListView.
+- This highlights it visually.
+
+
+```vb
+        item.Focused = True
+```
+- Gives the item **keyboard focus**.
+- This ensures:
+  - Arrow keys start from this item
+  - The dotted focus rectangle appears (if enabled)
+  - It behaves like the user clicked it
+
+
+```vb
+        item.EnsureVisible()
+```
+- Scrolls the ListView so the item is visible.
+- If the item is off‑screen, the ListView automatically scrolls to bring it into view.
+- This is essential for a smooth “Find Next” experience.
+
+
+```vb
+        Exit For
+```
+- Stops the loop immediately.
+- No need to keep searching once the correct item is found.
+
+
+```vb
+    End If
+Next
+```
+- Ends the `If` block and continues the loop if needed.
+
+
+```vb
+End Sub
+```
+- Ends the subroutine.
+
+---
+
+ **Why this method matters**
+
+This helper is a quiet hero in our search system. It ensures that:
+
+- The correct file is highlighted  
+- The UI scrolls to it  
+- Keyboard navigation starts from the right place  
+- The user feels like the app “knows where they are”  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 
 # Keyboard Shortcuts
