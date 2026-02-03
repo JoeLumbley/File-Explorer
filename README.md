@@ -1761,6 +1761,15 @@ End Sub
 
 # `SelectListViewItemByPath`
 
+
+
+
+<img width="1266" height="713" alt="106" src="https://github.com/user-attachments/assets/28ad95b5-5ccb-4365-bfae-a611108a07f9" />
+
+
+
+
+
 This helper is a quiet hero in our search system. It ensures that:
 
 - The correct file is highlighted  
