@@ -140,6 +140,10 @@ If you’re curious, the GitHub repository includes the full source code and doc
   - [➡️ NavigateTo](#navigateto)
 
 
+  - [ SelectListViewItemByPath](#selectlistviewitembypath)
+
+
+
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
