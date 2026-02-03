@@ -1691,9 +1691,9 @@ Dim nextPath As String = SearchResults(SearchIndex)
 SelectListViewItemByPath(nextPath)
 ```
 - This is your helper function that:
-  - Finds the matching item in the ListView
-  - Selects it
-  - Scrolls it into view (if your helper includes `EnsureVisible`)
+  - Finds the matching item in the ListView.
+  - Selects the item.
+  - Scrolls the ListView so the item is visible.
 - This is what makes the UI jump to the matching file.
 
 ---
