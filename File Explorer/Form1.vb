@@ -1296,17 +1296,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
                 ' Confirm exit
