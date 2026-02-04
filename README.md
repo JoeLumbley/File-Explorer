@@ -145,6 +145,9 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
+  - [ Find Command](#find-command)
+
+
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
@@ -1610,6 +1613,20 @@ This method is essential for any file management application, ensuring smooth an
 
 # `Find Command`
 
+
+
+
+
+
+
+<img width="1266" height="713" alt="108" src="https://github.com/user-attachments/assets/042a5223-4f0a-4926-9068-76e7f4075c78" />
+
+
+
+
+
+
+
 **This code takes the user’s search term, finds matching files in the current folder, highlights the first match, shows how many results there are, and gives the user a clean, Explorer‑style search experience.**
 
 Think of this code as the “start a search” feature in our file explorer.  
@@ -1838,6 +1855,7 @@ End If
 
 
 
+<img width="1266" height="713" alt="106" src="https://github.com/user-attachments/assets/28ad95b5-5ccb-4365-bfae-a611108a07f9" />
 
 
 
@@ -1850,6 +1868,7 @@ End If
 
 
 
+[ Table of Contents](#table-of-contents)
 
 
 ---
