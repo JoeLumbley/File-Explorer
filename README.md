@@ -131,9 +131,10 @@ If you’re curious, the GitHub repository includes the full source code and doc
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
-    - [cd — Change Directory](#--change-directory--`cd`)
-   
-- ## 📂 Change Directory - `cd`
+    - [cd — Change Directory](#change-directory---`cd`)
+
+
+   ## Change Directory - `cd`
 
 
     - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
@@ -286,7 +287,7 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
-## 📂 Change Directory - `cd`
+## Change Directory - `cd`
 
 **Usage:**  
 ```
