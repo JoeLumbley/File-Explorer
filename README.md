@@ -138,6 +138,9 @@ If you’re curious, the GitHub repository includes the full source code and doc
   - [📋 CopyDirectory](#copydirectory)
 
   - [➡️ NavigateTo](#navigateto)
+ 
+  
+  - [ Find Command](#find-command)
 
   - [ HandleFindNextCommand](#handlefindnextcommand)
 
@@ -145,7 +148,6 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
-  - [ Find Command](#find-command)
 
 
 
