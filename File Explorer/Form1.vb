@@ -2814,7 +2814,6 @@ Public Class Form1
     '    Return result
     'End Function
 
-
     Public Async Function CopyDirectory(
     sourceDir As String,
     destDir As String,
