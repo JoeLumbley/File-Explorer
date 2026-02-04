@@ -134,7 +134,6 @@ If you’re curious, the GitHub repository includes the full source code and doc
     - [cd — Change Directory](#change-directory---cd)
 
 
-   ## Change Directory - `cd`
 
 
     - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
