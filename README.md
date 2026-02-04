@@ -143,7 +143,11 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
-    - [move — Move Files or Folders](#-move--move)
+    - [move — Move Files or Folders](#-move---move)
+   
+
+
+
     - [delete — Delete Files or Folders](#-delete--delete)
     - [rename — Rename Files or Folders](#-rename--rename)
     - [text / txt — Create Text Files](#-create-text-file--text-txt)
