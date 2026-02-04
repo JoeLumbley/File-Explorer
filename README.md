@@ -161,12 +161,6 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 - 💻 Code Walkthrough
   
-  - [MoveFileOrDirectory](#movefileordirectory)
-
-  - [RenameFileOrDirectory](#renamefileordirectory)
-
-  - [CopyDirectory](#copydirectory)
-
   - [NavigateTo](#navigateto)
  
   
@@ -176,6 +170,12 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
   - [ SelectListViewItemByPath](#selectlistviewitembypath)
 
+
+  - [MoveFileOrDirectory](#movefileordirectory)
+
+  - [RenameFileOrDirectory](#renamefileordirectory)
+
+  - [CopyDirectory](#copydirectory)
 
 
 
