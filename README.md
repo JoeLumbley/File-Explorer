@@ -131,17 +131,20 @@ If you’re curious, the GitHub repository includes the full source code and doc
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
-    - [cd — Change Directory](#-change-directory--cd)
-    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
-    - [copy — Copy Files or Folders](#-copy--copy)
-    - [move — Move Files or Folders](#-move--move)
-    - [delete — Delete Files or Folders](#-delete--delete)
-    - [rename — Rename Files or Folders](#-rename--rename)
-    - [text / txt — Create Text Files](#-create-text-file--text-txt)
-    - [open — Open Files or Folders](#-open--open)
-    - [find / search — Search](#-search--find-search)
-    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
-    - [help — Show Help](#-help--help)
+    - [cd — Change Directory](#-change-directory---cd)
+    - [mkdir / make — Create Directory](#-create-directory---mkdir-make)
+    - [copy — Copy Files or Folders](#-copy---copy)
+    - [move — Move Files or Folders](#-move---move)
+    - [delete — Delete Files or Folders](#-delete---delete)
+    - [rename — Rename Files or Folders](#-rename---rename)
+    - [text / txt — Create Text Files](#-create-text-file---text-txt)
+    - [open — Open Files or Folders](#-open---open)
+    - [find / search — Search](#-search---find-search)
+    - [findnext / searchnext — Next Search Result](#-next-search-result---findnext-searchnext)
+    - [exit — Closes the App](#-exit---exit-quit)
+    - [help — Show Help](#-help---help)
+   
+      
   - [Quoting Rules](#-quoting-rules-important)
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
@@ -161,12 +164,6 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 - 💻 Code Walkthrough
   
-  - [MoveFileOrDirectory](#movefileordirectory)
-
-  - [RenameFileOrDirectory](#renamefileordirectory)
-
-  - [CopyDirectory](#copydirectory)
-
   - [NavigateTo](#navigateto)
  
   
@@ -176,6 +173,12 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
   - [ SelectListViewItemByPath](#selectlistviewitembypath)
 
+
+  - [MoveFileOrDirectory](#movefileordirectory)
+
+  - [RenameFileOrDirectory](#renamefileordirectory)
+
+  - [CopyDirectory](#copydirectory)
 
 
 
@@ -282,7 +285,7 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
-## 📂 Change Directory - `cd`
+## 📁 Change Directory - `cd`
 
 **Usage:**  
 ```
@@ -1597,6 +1600,7 @@ This method is essential for any file management application, ensuring smooth an
 
 
 
+[ Table of Contents](#table-of-contents)
 
 
 
