@@ -159,15 +159,15 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
-- Code Walkthrough
+- 💻 Code Walkthrough
   
-  - [📦 MoveFileOrDirectory](#movefileordirectory)
+  - [MoveFileOrDirectory](#movefileordirectory)
 
-  - [✏️ RenameFileOrDirectory](#renamefileordirectory)
+  - [RenameFileOrDirectory](#renamefileordirectory)
 
-  - [📋 CopyDirectory](#copydirectory)
+  - [CopyDirectory](#copydirectory)
 
-  - [➡️ NavigateTo](#navigateto)
+  - [NavigateTo](#navigateto)
  
   
   - [ Find Command](#find-command)
