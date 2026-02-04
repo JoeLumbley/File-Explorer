@@ -138,7 +138,11 @@ If you’re curious, the GitHub repository includes the full source code and doc
    
 
 
-    - [copy — Copy Files or Folders](#-copy--copy)
+    - [copy — Copy Files or Folders](#-copy---copy)
+   
+
+
+
     - [move — Move Files or Folders](#-move--move)
     - [delete — Delete Files or Folders](#-delete--delete)
     - [rename — Rename Files or Folders](#-rename--rename)
