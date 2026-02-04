@@ -161,7 +161,10 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
     - [open — Open Files or Folders](#-open---open)
-    - [find / search — Search](#-search--find-search)
+    - [find / search — Search](#-search---find-search)
+ 
+
+
     - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
     - [help — Show Help](#-help--help)
   - [Quoting Rules](#-quoting-rules-important)
