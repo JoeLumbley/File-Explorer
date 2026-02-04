@@ -239,6 +239,8 @@ Public Class Form1
 
         NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
 
+        UpdateAllUIStates()
+
     End Sub
 
     Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
@@ -579,71 +581,149 @@ Public Class Form1
         Return False
     End Function
 
+    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
+    '    ' Only handle Tab
+    '    If keyData <> Keys.Tab Then
+    '        Return False
+    '    End If
+
+    '    ' Do not interfere with rename mode
+    '    If _isRenaming Then
+    '        Return False
+    '    End If
+
+    '    ' ==========================
+    '    ' Address Bar → File List
+    '    ' ==========================
+    '    If txtAddressBar.Focused Then
+    '        lvFiles.Focus()
+
+    '        If lvFiles.Items.Count > 0 Then
+    '            Dim item As ListViewItem =
+    '            If(lvFiles.SelectedItems.Count > 0,
+    '               lvFiles.SelectedItems(0),
+    '               lvFiles.Items(0))
+
+    '            item.Selected = True
+    '            item.Focused = True
+    '            item.EnsureVisible()
+    '        End If
+
+    '        UpdatePinButtonState()
+    '        Return True
+    '    End If
+
+    '    ' ==========================
+    '    ' File List → TreeView
+    '    ' ==========================
+    '    If lvFiles.Focused Then
+    '        tvFolders.Focus()
+
+    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '        End If
+
+    '        tvFolders.SelectedNode?.EnsureVisible()
+
+    '        UpdateTreeContextMenu(tvFolders.SelectedNode)
+    '        UpdatePinButtonState()
+    '        Return True
+    '    End If
+
+    '    ' ==========================
+    '    ' TreeView → Address Bar
+    '    ' ==========================
+    '    If tvFolders.Focused Then
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        UpdatePinButtonState()
+    '        Return True
+    '    End If
+
+    '    ' ==========================
+    '    ' Fallback → Address Bar
+    '    ' ==========================
+    '    txtAddressBar.Focus()
+    '    PlaceCaretAtEndOfAddressBar()
+    '    UpdatePinButtonState()
+    '    Return True
+    'End Function
+
+
+
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         ' Only handle Tab
-        If keyData <> Keys.Tab Then
-            Return False
-        End If
+        If keyData <> Keys.Tab Then Return False
 
         ' Do not interfere with rename mode
-        If _isRenaming Then
-            Return False
-        End If
+        If _isRenaming Then Return False
 
-        ' ==========================
-        ' Address Bar → File List
-        ' ==========================
+        Dim handled As Boolean = False
+
         If txtAddressBar.Focused Then
-            lvFiles.Focus()
-
-            If lvFiles.Items.Count > 0 Then
-                Dim item As ListViewItem =
-                If(lvFiles.SelectedItems.Count > 0,
-                   lvFiles.SelectedItems(0),
-                   lvFiles.Items(0))
-
-                item.Selected = True
-                item.Focused = True
-                item.EnsureVisible()
-            End If
-
-            UpdatePinButtonState()
-            Return True
+            handled = FocusFileList()
+        ElseIf lvFiles.Focused Then
+            handled = FocusTreeView()
+        ElseIf tvFolders.Focused Then
+            handled = FocusAddressBar()
+        Else
+            handled = FocusAddressBar()
         End If
 
-        ' ==========================
-        ' File List → TreeView
-        ' ==========================
-        If lvFiles.Focused Then
-            tvFolders.Focus()
+        'If handled Then
+        '    UpdatePinButtonState()
+        'End If
 
-            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                tvFolders.SelectedNode = tvFolders.Nodes(0)
-            End If
-
-            tvFolders.SelectedNode?.EnsureVisible()
-
-            UpdateTreeContextMenu(tvFolders.SelectedNode)
-            UpdatePinButtonState()
-            Return True
+        If handled Then
+            UpdateAllUIStates()
         End If
 
-        ' ==========================
-        ' TreeView → Address Bar
-        ' ==========================
-        If tvFolders.Focused Then
-            txtAddressBar.Focus()
-            PlaceCaretAtEndOfAddressBar()
-            UpdatePinButtonState()
-            Return True
+        Return handled
+    End Function
+
+    Private Sub UpdateAllUIStates()
+        UpdatePinButtonState()
+        UpdateDestructiveButtonsAndMenus()
+        UpdateCopyButtonAndMenus()
+        UpdateEditButtonsAndMenus()
+        UpdateFileButtonsAndMenus()
+    End Sub
+
+    Private Function FocusFileList() As Boolean
+        lvFiles.Focus()
+
+        If lvFiles.Items.Count > 0 Then
+            Dim item As ListViewItem =
+            If(lvFiles.SelectedItems.Count > 0,
+               lvFiles.SelectedItems(0),
+               lvFiles.Items(0))
+
+            item.Selected = True
+            item.Focused = True
+            item.EnsureVisible()
         End If
 
-        ' ==========================
-        ' Fallback → Address Bar
-        ' ==========================
+        Return True
+    End Function
+
+
+    Private Function FocusTreeView() As Boolean
+        tvFolders.Focus()
+
+        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+            tvFolders.SelectedNode = tvFolders.Nodes(0)
+        End If
+
+        tvFolders.SelectedNode?.EnsureVisible()
+        UpdateTreeContextMenu(tvFolders.SelectedNode)
+
+        Return True
+    End Function
+
+
+    Private Function FocusAddressBar() As Boolean
         txtAddressBar.Focus()
         PlaceCaretAtEndOfAddressBar()
-        UpdatePinButtonState()
         Return True
     End Function
 
@@ -1543,49 +1623,330 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub CopySelected_Click(sender As Object, e As EventArgs)
+
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    '    Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
+
+    '    ' Validate that the selected item actually exists
+    '    If Not PathExists(path) Then
+    '        ShowStatus(StatusPad & IconWarning & " Copy failed: Selected item does not exist.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Update internal clipboard
+    '    _clipboardPath = path
+    '    _clipboardIsCut = False
+
+    '    ShowStatus(StatusPad & IconCopy & " Copied to clipboard: " & _clipboardPath)
+
+    '    UpdateEditButtonsAndMenus()
+
+    '    UpdateFileButtonsAndMenus()
+
+
+    'End Sub
+
+
+
     Private Sub CopySelected_Click(sender As Object, e As EventArgs)
 
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Dim path As String = CStr(lvFiles.SelectedItems(0).Tag)
-
-        ' Validate that the selected item actually exists
-        If Not PathExists(path) Then
-            ShowStatus(StatusPad & IconWarning & " Copy failed: Selected item does not exist.")
+        Dim target As String = GetCopyTarget()
+        If target Is Nothing Then
+            ShowStatus(StatusPad & IconWarning & " Copy failed: No valid item to copy.")
             Exit Sub
         End If
 
         ' Update internal clipboard
-        _clipboardPath = path
+        _clipboardPath = target
         _clipboardIsCut = False
 
         ShowStatus(StatusPad & IconCopy & " Copied to clipboard: " & _clipboardPath)
 
-        UpdateEditButtonsAndMenus()
-
-        UpdateFileButtonsAndMenus()
-
+        ' Unified UI refresh
+        UpdateAllUIStates()
 
     End Sub
 
-    Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-        ' ------------------------------------------------------------
-        ' Paste handler with free-space checks for file + directory
-        ' ------------------------------------------------------------
 
+
+
+
+
+
+
+
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+    '    ' ------------------------------------------------------------
+    '    ' Paste handler with free-space checks for file + directory
+    '    ' ------------------------------------------------------------
+
+    '    If String.IsNullOrWhiteSpace(_clipboardPath) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim sourcePath As String = _clipboardPath
+    '    Dim destDir As String = currentFolder
+
+    '    If String.IsNullOrWhiteSpace(destDir) OrElse Not Path.IsPathRooted(destDir) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination folder.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim name As String = Path.GetFileName(sourcePath)
+    '    Dim destPath As String = Path.Combine(destDir, name)
+
+    '    Dim isFile As Boolean = IO.File.Exists(sourcePath)
+    '    Dim isDir As Boolean = Directory.Exists(sourcePath)
+
+    '    If Not isFile AndAlso Not isDir Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Auto‑rename only when copying (not cutting)
+    '    If Not _clipboardIsCut Then
+    '        destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Try
+    '        ct.ThrowIfCancellationRequested()
+
+    '        ' ------------------------------------------------------------
+    '        ' FILE PASTE
+    '        ' ------------------------------------------------------------
+    '        If isFile Then
+    '            Dim src As New FileInfo(sourcePath)
+
+    '            ' Free-space check
+    '            If Not _clipboardIsCut AndAlso Not HasEnoughSpace(src, destPath) Then
+    '                ShowStatus(StatusPad & IconError & " Not enough space to paste file: " & src.Name)
+    '                Exit Sub
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyFile(sourcePath, destPath, ct)
+
+    '            If result.Success Then
+    '                ShowStatus(StatusPad & IconPaste & " File pasted into " & txtAddressBar.Text)
+    '            End If
+
+    '            ' ------------------------------------------------------------
+    '            ' DIRECTORY PASTE
+    '            ' ------------------------------------------------------------
+    '        ElseIf isDir Then
+
+    '            ' Free-space check (sum of all files)
+    '            If Not _clipboardIsCut Then
+    '                Dim totalSize As Long =
+    '                Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).
+    '                Sum(Function(f) New FileInfo(f).Length)
+
+    '                Dim root = Path.GetPathRoot(destPath)
+    '                Dim drive As New DriveInfo(root)
+
+    '                If totalSize > drive.AvailableFreeSpace Then
+    '                    ShowStatus(StatusPad & IconError & " Not enough space to paste folder.")
+    '                    Exit Sub
+    '                End If
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyDirectory(sourcePath, destPath, ct)
+
+    '            ShowStatus(StatusPad & IconPaste &
+    '                   $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
+    '        End If
+
+    '        ' Reset clipboard state
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        Await PopulateFiles(destDir)
+
+    '        ' ------------------------------------------------------------
+    '        ' Select the newly pasted item
+    '        ' ------------------------------------------------------------
+    '        Dim pastedName As String = Path.GetFileName(destPath)
+
+    '        For Each item As ListViewItem In lvFiles.Items
+    '            If String.Equals(item.Text, pastedName, StringComparison.OrdinalIgnoreCase) Then
+    '                item.Selected = True
+    '                item.Focused = True
+    '                item.EnsureVisible()
+    '                Exit For
+    '            End If
+    '        Next
+
+    '        lvFiles.Focus()
+
+    '        ResetCutVisuals()
+    '        UpdateEditButtonsAndMenus()
+
+    '    Catch ex As OperationCanceledException
+    '        ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+    '    If String.IsNullOrWhiteSpace(_clipboardPath) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim sourcePath As String = _clipboardPath
+    '    Dim destDir As String = GetPasteDestination()
+
+    '    If destDir Is Nothing Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Destination is not writable.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ... your entire existing paste logic stays exactly the same ...
+
+
+
+    '    If String.IsNullOrWhiteSpace(destDir) OrElse Not Path.IsPathRooted(destDir) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination folder.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim name As String = Path.GetFileName(sourcePath)
+    '    Dim destPath As String = Path.Combine(destDir, name)
+
+    '    Dim isFile As Boolean = IO.File.Exists(sourcePath)
+    '    Dim isDir As Boolean = Directory.Exists(sourcePath)
+
+    '    If Not isFile AndAlso Not isDir Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Auto‑rename only when copying (not cutting)
+    '    If Not _clipboardIsCut Then
+    '        destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Try
+    '        ct.ThrowIfCancellationRequested()
+
+    '        ' ------------------------------------------------------------
+    '        ' FILE PASTE
+    '        ' ------------------------------------------------------------
+    '        If isFile Then
+    '            Dim src As New FileInfo(sourcePath)
+
+    '            ' Free-space check
+    '            If Not _clipboardIsCut AndAlso Not HasEnoughSpace(src, destPath) Then
+    '                ShowStatus(StatusPad & IconError & " Not enough space to paste file: " & src.Name)
+    '                Exit Sub
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyFile(sourcePath, destPath, ct)
+
+    '            If result.Success Then
+    '                ShowStatus(StatusPad & IconPaste & " File pasted into " & txtAddressBar.Text)
+    '            End If
+
+    '            ' ------------------------------------------------------------
+    '            ' DIRECTORY PASTE
+    '            ' ------------------------------------------------------------
+    '        ElseIf isDir Then
+
+    '            ' Free-space check (sum of all files)
+    '            If Not _clipboardIsCut Then
+    '                Dim totalSize As Long =
+    '                Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).
+    '                Sum(Function(f) New FileInfo(f).Length)
+
+    '                Dim root = Path.GetPathRoot(destPath)
+    '                Dim drive As New DriveInfo(root)
+
+    '                If totalSize > drive.AvailableFreeSpace Then
+    '                    ShowStatus(StatusPad & IconError & " Not enough space to paste folder.")
+    '                    Exit Sub
+    '                End If
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyDirectory(sourcePath, destPath, ct)
+
+    '            ShowStatus(StatusPad & IconPaste &
+    '                   $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
+    '        End If
+
+    '        ' Reset clipboard state
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        Await PopulateFiles(destDir)
+
+    '        ' ------------------------------------------------------------
+    '        ' Select the newly pasted item
+    '        ' ------------------------------------------------------------
+    '        Dim pastedName As String = Path.GetFileName(destPath)
+
+    '        For Each item As ListViewItem In lvFiles.Items
+    '            If String.Equals(item.Text, pastedName, StringComparison.OrdinalIgnoreCase) Then
+    '                item.Selected = True
+    '                item.Focused = True
+    '                item.EnsureVisible()
+    '                Exit For
+    '            End If
+    '        Next
+
+
+    '        lvFiles.Focus()
+    '        ResetCutVisuals()
+
+    '        ' Unified UI refresh
+    '        UpdateAllUIStates()
+
+
+    '    Catch ex As OperationCanceledException
+    '        ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
+    '    End Try
+
+
+
+    'End Sub
+
+    Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+        ' ------------------------------------------------------------
+        ' Validate clipboard
+        ' ------------------------------------------------------------
         If String.IsNullOrWhiteSpace(_clipboardPath) Then
             ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
             Exit Sub
         End If
 
         Dim sourcePath As String = _clipboardPath
-        Dim destDir As String = currentFolder
+        Dim destDir As String = GetPasteDestination()
 
-        If String.IsNullOrWhiteSpace(destDir) OrElse Not Path.IsPathRooted(destDir) Then
-            ShowStatus(StatusPad & IconError & " Paste failed: Invalid destination folder.")
+        ' Destination must be a real, writable folder
+        If destDir Is Nothing Then
+            ShowStatus(StatusPad & IconError & " Paste failed: Destination is not writable.")
             Exit Sub
         End If
 
+        ' ------------------------------------------------------------
+        ' Prepare destination path
+        ' ------------------------------------------------------------
         Dim name As String = Path.GetFileName(sourcePath)
         Dim destPath As String = Path.Combine(destDir, name)
 
@@ -1652,10 +2013,13 @@ Public Class Form1
                        $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
             End If
 
+            ' ------------------------------------------------------------
             ' Reset clipboard state
+            ' ------------------------------------------------------------
             _clipboardPath = Nothing
             _clipboardIsCut = False
 
+            ' Refresh file list
             Await PopulateFiles(destDir)
 
             ' ------------------------------------------------------------
@@ -1673,9 +2037,10 @@ Public Class Form1
             Next
 
             lvFiles.Focus()
-
             ResetCutVisuals()
-            UpdateEditButtonsAndMenus()
+
+            ' Unified UI refresh
+            UpdateAllUIStates()
 
         Catch ex As OperationCanceledException
             ShowStatus(StatusPad & IconWarning & " Paste canceled.")
@@ -1685,6 +2050,33 @@ Public Class Form1
         End Try
 
     End Sub
+
+
+    Private Function GetPasteDestination() As String
+
+        ' 1. If TreeView is focused → paste into selected folder
+        If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+            Dim p As String = TryCast(tvFolders.SelectedNode.Tag, String)
+            If Directory.Exists(p) AndAlso HasWriteAccess(p) Then Return p
+        End If
+
+        ' 2. If ListView is focused → paste into current folder
+        If _lastFocusedControl Is lvFiles Then
+            If Directory.Exists(currentFolder) AndAlso HasWriteAccess(currentFolder) Then
+                Return currentFolder
+            End If
+        End If
+
+        ' 3. If Address Bar is focused → paste into current folder
+        If _lastFocusedControl Is txtAddressBar Then
+            If Directory.Exists(currentFolder) AndAlso HasWriteAccess(currentFolder) Then
+                Return currentFolder
+            End If
+        End If
+
+        Return Nothing
+    End Function
+
 
 
     Private Sub RenameFile_Click(sender As Object, e As EventArgs)
@@ -1973,39 +2365,80 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
+
+    '    ' Get the selected node
+    '    Dim node As TreeNode = e.Node
+    '    If node Is Nothing Then Exit Sub
+
+    '    ' Ensure the Tag is a string path
+    '    Dim path2Nav As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path2Nav) Then Exit Sub
+
+    '    ' Check if the node represents a drive root
+    '    Try
+    '        Dim driveInfo As New DriveInfo(IO.Path.GetPathRoot(path2Nav))
+
+    '        ' Prune the tree if the drive is not ready
+    '        If driveInfo.IsReady = False Then
+
+    '            tvFolders.BeginUpdate()
+    '            tvFolders.Nodes.Remove(node)
+    '            tvFolders.EndUpdate()
+
+    '            ShowStatus(StatusPad & IconWarning & " Drive is not ready and has been removed.")
+    '            Return
+    '        End If
+
+    '    Catch ex As Exception
+    '        ' Handle any exceptions when accessing DriveInfo
+    '        ShowStatus(StatusPad & IconError & " NavTree: Error accessing drive: " & ex.Message)
+    '        Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
+    '        Return
+    '    End Try
+
+    '    ' If the drive is ready, navigate to the folder
+    '    NavigateTo(path2Nav)
+
+    'End Sub
+
+
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
 
-        ' Get the selected node
         Dim node As TreeNode = e.Node
         If node Is Nothing Then Exit Sub
 
-        ' Ensure the Tag is a string path
         Dim path2Nav As String = TryCast(node.Tag, String)
         If String.IsNullOrEmpty(path2Nav) Then Exit Sub
 
-        ' Check if the node represents a drive root
-        Try
-            Dim driveInfo As New DriveInfo(IO.Path.GetPathRoot(path2Nav))
+        ' Determine if THIS node is a drive root (e.g., "C:\")
+        Dim isDriveRoot As Boolean =
+        Path.GetFullPath(path2Nav).TrimEnd("\"c).Length = 2 AndAlso
+        path2Nav(1) = ":"c
 
-            ' Prune the tree if the drive is not ready
-            If driveInfo.IsReady = False Then
+        If isDriveRoot Then
+            Try
+                Dim driveInfo As New DriveInfo(path2Nav)
 
-                tvFolders.BeginUpdate()
-                tvFolders.Nodes.Remove(node)
-                tvFolders.EndUpdate()
+                If driveInfo.IsReady = False Then
+                    tvFolders.BeginUpdate()
+                    tvFolders.Nodes.Remove(node)
+                    tvFolders.EndUpdate()
 
-                ShowStatus(StatusPad & IconWarning & " Drive is not ready and has been removed.")
+                    ShowStatus(StatusPad & IconWarning &
+                           " Drive is not ready and has been removed.")
+                    Return
+                End If
+
+            Catch ex As Exception
+                ShowStatus(StatusPad & IconError &
+                       " NavTree: Error accessing drive: " & ex.Message)
+                Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
                 Return
-            End If
+            End Try
+        End If
 
-        Catch ex As Exception
-            ' Handle any exceptions when accessing DriveInfo
-            ShowStatus(StatusPad & IconError & " NavTree: Error accessing drive: " & ex.Message)
-            Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
-            Return
-        End Try
-
-        ' If the drive is ready, navigate to the folder
+        ' Drive is ready OR node is not a drive root → navigate normally
         NavigateTo(path2Nav)
 
     End Sub
@@ -2257,15 +2690,136 @@ Public Class Form1
         Return result
     End Function
 
-    Public Async Function CopyDirectory(
-        sourceDir As String,
-        destDir As String,
-        ct As CancellationToken
-    ) As Task(Of CopyResult)
+    'Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
 
-        ' ------------------------------------------------------------
-        ' Recursive directory copy with free-space checks + taxonomy
-        ' ------------------------------------------------------------
+    '    ' ------------------------------------------------------------
+    '    ' Recursive directory copy with free-space checks + taxonomy
+    '    ' ------------------------------------------------------------
+
+    '    Dim result As New CopyResult()
+    '    Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '    If Not dirInfo.Exists Then
+    '        result.Errors.Add("Source directory not found: " & sourceDir)
+    '        ShowStatus(StatusPad & IconError & " Source directory not found: " & sourceDir)
+    '        Return result
+    '    End If
+
+    '    Try
+    '        ct.ThrowIfCancellationRequested()
+
+    '        ' Create destination directory
+    '        Try
+    '            Directory.CreateDirectory(destDir)
+    '            result.DirectoriesCreated += 1
+    '        Catch ex As Exception
+    '            result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+    '            ShowStatus(StatusPad & IconError & " Failed to create directory: " & destDir)
+    '            Return result
+    '        End Try
+
+    '        ' ------------------------------------------------------------
+    '        ' Copy files
+    '        ' ------------------------------------------------------------
+    '        For Each srcFile In dirInfo.GetFiles()
+    '            ct.ThrowIfCancellationRequested()
+
+    '            Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+    '            ' Locked file skip
+    '            If IsFileLocked(srcFile) Then
+    '                result.FilesSkipped += 1
+    '                ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & srcFile.FullName)
+    '                Continue For
+    '            End If
+
+    '            ' Free-space check
+    '            If Not HasEnoughSpace(srcFile, targetFile) Then
+    '                result.FilesSkipped += 1
+    '                result.Errors.Add("Not enough space for: " & srcFile.FullName)
+    '                ShowStatus(StatusPad & IconError & " Not enough space, skipping: " & srcFile.Name)
+    '                Continue For
+    '            End If
+
+    '            Try
+    '                Await Task.Run(Sub()
+    '                                   ct.ThrowIfCancellationRequested()
+    '                                   srcFile.CopyTo(targetFile, overwrite:=False)
+    '                               End Sub, ct)
+
+    '                result.FilesCopied += 1
+    '                ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+
+    '            Catch ex As IOException When ex.HResult = &H80070070
+    '                result.FilesSkipped += 1
+    '                result.Errors.Add("Disk full while copying: " & srcFile.FullName)
+    '                ShowStatus(StatusPad & IconError & " Disk full, skipping: " & srcFile.Name)
+
+    '            Catch ex As IOException When ex.HResult = &H80070050
+    '                result.FilesSkipped += 1
+    '                result.Errors.Add("File already exists: " & srcFile.FullName)
+    '                ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & srcFile.Name)
+
+    '            Catch ex As IOException
+    '                result.FilesSkipped += 1
+    '                result.Errors.Add("I/O error: " & srcFile.FullName & " - " & ex.Message)
+    '                ShowStatus(StatusPad & IconError & " I/O error copying: " & srcFile.Name)
+
+    '            Catch ex As UnauthorizedAccessException
+    '                result.FilesSkipped += 1
+    '                result.Errors.Add("Unauthorized: " & srcFile.FullName)
+    '                ShowStatus(StatusPad & IconError & " Unauthorized: " & srcFile.Name)
+
+    '            Catch ex As Exception
+    '                result.FilesSkipped += 1
+    '                result.Errors.Add("Copy failed: " & srcFile.FullName & " - " & ex.Message)
+    '                ShowStatus(StatusPad & IconError & " Copy failed: " & srcFile.Name)
+    '            End Try
+    '        Next
+
+    '        ' ------------------------------------------------------------
+    '        ' Copy subdirectories in parallel
+    '        ' ------------------------------------------------------------
+    '        Dim subTasks As New List(Of Task(Of CopyResult))()
+
+    '        For Each subDir In dirInfo.GetDirectories()
+    '            Dim newDest = Path.Combine(destDir, subDir.Name)
+    '            subTasks.Add(CopyDirectory(subDir.FullName, newDest, ct))
+    '        Next
+
+    '        Dim subResults = Await Task.WhenAll(subTasks)
+
+    '        For Each r In subResults
+    '            result.FilesCopied += r.FilesCopied
+    '            result.FilesSkipped += r.FilesSkipped
+    '            result.DirectoriesCreated += r.DirectoriesCreated
+    '            result.Errors.AddRange(r.Errors)
+    '        Next
+
+    '    Catch ex As OperationCanceledException
+    '        result.Errors.Add("Canceled: " & ex.Message)
+    '        ShowStatus(StatusPad & IconWarning & " Directory copy canceled.")
+    '        Debug.WriteLine("CopyDirectory canceled: " & ex.Message)
+
+    '    Catch ex As Exception
+    '        result.Errors.Add("Error: " & ex.Message)
+    '        ShowStatus(StatusPad & IconError & " Copy failed: " & ex.Message)
+    '        Debug.WriteLine("CopyDirectory error: " & ex.Message)
+    '    End Try
+
+    '    Return result
+    'End Function
+
+
+    Public Async Function CopyDirectory(
+    sourceDir As String,
+    destDir As String,
+    ct As CancellationToken
+) As Task(Of CopyResult)
 
         Dim result As New CopyResult()
         Dim dirInfo As New DirectoryInfo(sourceDir)
@@ -2279,7 +2833,6 @@ Public Class Form1
         Try
             ct.ThrowIfCancellationRequested()
 
-            ' Create destination directory
             Try
                 Directory.CreateDirectory(destDir)
                 result.DirectoriesCreated += 1
@@ -2289,22 +2842,17 @@ Public Class Form1
                 Return result
             End Try
 
-            ' ------------------------------------------------------------
-            ' Copy files
-            ' ------------------------------------------------------------
             For Each srcFile In dirInfo.GetFiles()
                 ct.ThrowIfCancellationRequested()
 
                 Dim targetFile = Path.Combine(destDir, srcFile.Name)
 
-                ' Locked file skip
                 If IsFileLocked(srcFile) Then
                     result.FilesSkipped += 1
                     ShowStatus(StatusPad & IconWarning & " Skipped locked file: " & srcFile.FullName)
                     Continue For
                 End If
 
-                ' Free-space check
                 If Not HasEnoughSpace(srcFile, targetFile) Then
                     result.FilesSkipped += 1
                     result.Errors.Add("Not enough space for: " & srcFile.FullName)
@@ -2313,33 +2861,19 @@ Public Class Form1
                 End If
 
                 Try
-                    Await Task.Run(Sub()
-                                       ct.ThrowIfCancellationRequested()
-                                       srcFile.CopyTo(targetFile, overwrite:=False)
-                                   End Sub, ct)
+                    Dim fileResult As CopyResult =
+                    Await CopyFile(srcFile.FullName, targetFile, ct)
 
-                    result.FilesCopied += 1
-                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+                    If fileResult.Success Then
+                        result.FilesCopied += 1
+                        ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+                    Else
+                        result.FilesSkipped += 1
+                        result.Errors.AddRange(fileResult.Errors)
+                    End If
 
-                Catch ex As IOException When ex.HResult = &H80070070
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Disk full while copying: " & srcFile.FullName)
-                    ShowStatus(StatusPad & IconError & " Disk full, skipping: " & srcFile.Name)
-
-                Catch ex As IOException When ex.HResult = &H80070050
-                    result.FilesSkipped += 1
-                    result.Errors.Add("File already exists: " & srcFile.FullName)
-                    ShowStatus(StatusPad & IconWarning & " Skipped existing file: " & srcFile.Name)
-
-                Catch ex As IOException
-                    result.FilesSkipped += 1
-                    result.Errors.Add("I/O error: " & srcFile.FullName & " - " & ex.Message)
-                    ShowStatus(StatusPad & IconError & " I/O error copying: " & srcFile.Name)
-
-                Catch ex As UnauthorizedAccessException
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Unauthorized: " & srcFile.FullName)
-                    ShowStatus(StatusPad & IconError & " Unauthorized: " & srcFile.Name)
+                Catch ex As OperationCanceledException
+                    Throw
 
                 Catch ex As Exception
                     result.FilesSkipped += 1
@@ -2348,9 +2882,6 @@ Public Class Form1
                 End Try
             Next
 
-            ' ------------------------------------------------------------
-            ' Copy subdirectories in parallel
-            ' ------------------------------------------------------------
             Dim subTasks As New List(Of Task(Of CopyResult))()
 
             For Each subDir In dirInfo.GetDirectories()
@@ -2380,6 +2911,12 @@ Public Class Form1
 
         Return result
     End Function
+
+
+
+
+
+
 
     Private Async Function CopyFileOrDirectory(
         source As String,
@@ -2509,10 +3046,11 @@ Public Class Form1
         currentFolder = path
         txtAddressBar.Text = path
 
-        UpdateFileListPinState()
-        UpdatePinButtonState()
-        UpdateFileButtonsAndMenus()
-        UpdateEditButtonsAndMenus()
+        'UpdateFileListPinState()
+        'UpdatePinButtonState()
+        'UpdateFileButtonsAndMenus()
+        'UpdateEditButtonsAndMenus()
+        UpdateAllUIStates()
 
         Await PopulateFiles(path) ' Await the async method
 
@@ -2954,132 +3492,208 @@ Public Class Form1
         btnForward.Enabled = _historyIndex >= 0 AndAlso _historyIndex < _history.Count - 1
     End Sub
 
-    Private Sub UpdateDestructiveButtonsAndMenus()
+    'Private Sub UpdateDestructiveButtonsAndMenus()
 
-        ' --- Rule 0: Something must be selected ---
-        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
-        If Not hasSelection Then
-            SetDestructiveButtons(False, False, False)
-            SetContextDestructiveItems(False)
-            Exit Sub
-        End If
+    '    ' --- Rule 0: Something must be selected ---
+    '    Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    If Not hasSelection Then
+    '        SetDestructiveButtons(False, False, False)
+    '        SetContextDestructiveItems(False)
+    '        Exit Sub
+    '    End If
 
-        Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+    '    Dim fullPath As String = CStr(lvFiles.SelectedItems(0).Tag)
 
-        ' --- Rule 1: Path must exist ---
-        If Not PathExists(fullPath) Then
-            SetDestructiveButtons(False, False, False)
-            SetContextDestructiveItems(False)
-            Exit Sub
-        End If
+    '    ' --- Rule 1: Path must exist ---
+    '    If Not PathExists(fullPath) Then
+    '        SetDestructiveButtons(False, False, False)
+    '        SetContextDestructiveItems(False)
+    '        Exit Sub
+    '    End If
 
-        ' --- Rule 2: Protected items cannot be renamed or deleted ---
-        If IsProtectedPathOrFolder(fullPath) Then
-            SetDestructiveButtons(False, False, False)
-            SetContextDestructiveItems(False)
-            Exit Sub
-        End If
+    '    ' --- Rule 2: Protected items cannot be renamed or deleted ---
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        SetDestructiveButtons(False, False, False)
+    '        SetContextDestructiveItems(False)
+    '        Exit Sub
+    '    End If
 
-        ' --- Rule 3: User must have rename permission ---
-        Dim parentDir As String =
-        If(Directory.Exists(fullPath),
-           fullPath,                          ' Folder → check write access ON the folder
-           Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
+    '    ' --- Rule 3: User must have rename permission ---
+    '    Dim parentDir As String =
+    '    If(Directory.Exists(fullPath),
+    '       fullPath,                          ' Folder → check write access ON the folder
+    '       Path.GetDirectoryName(fullPath))   ' File → check write access on parent folder
 
-        Dim canRename As Boolean = HasWriteAccess(parentDir)
+    '    Dim canRename As Boolean = HasWriteAccess(parentDir)
 
-        ' --- Apply toolbar rules ---
-        btnCut.Enabled = canRename
-        btnRename.Enabled = canRename
-        btnDelete.Enabled = True   ' Delete allowed if path exists + not protected
+    '    ' --- Apply toolbar rules ---
+    '    btnCut.Enabled = canRename
+    '    btnRename.Enabled = canRename
+    '    btnDelete.Enabled = True   ' Delete allowed if path exists + not protected
 
-        ' --- Apply context menu rules ---
-        SetContextDestructiveItems(True)
+    '    ' --- Apply context menu rules ---
+    '    SetContextDestructiveItems(True)
 
-    End Sub
+    'End Sub
 
-    Private Sub SetDestructiveButtons(cut As Boolean, rename As Boolean, delete As Boolean)
-        btnCut.Enabled = cut
-        btnRename.Enabled = rename
-        btnDelete.Enabled = delete
-    End Sub
+    'Private Sub UpdateDestructiveButtonsAndMenus()
 
-    Private Sub SetContextDestructiveItems(enabled As Boolean)
-        cmsFiles.Items("Cut").Enabled = enabled
-        cmsFiles.Items("Rename").Enabled = enabled
-        cmsFiles.Items("Delete").Enabled = enabled
-    End Sub
+    '    Dim target As String = GetDestructiveTarget()
 
-    Private Sub UpdateCopyButtonAndMenus()
+    '    If target Is Nothing Then
+    '        SetDestructiveButtons(False, False, False)
+    '        SetContextDestructiveItems(False)
+    '        Exit Sub
+    '    End If
 
-        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
-        Dim fullPath As String = If(hasSelection, CStr(lvFiles.SelectedItems(0).Tag), Nothing)
-        Dim exists As Boolean = hasSelection AndAlso PathExists(fullPath)
+    '    ' Rule: rename requires write access on parent
+    '    Dim parentDir As String =
+    '    If(Directory.Exists(target),
+    '       target,
+    '       Path.GetDirectoryName(target))
 
-        Dim canCopy As Boolean = exists
+    '    Dim canRename As Boolean = HasWriteAccess(parentDir)
 
-        btnCopy.Enabled = canCopy
+    '    btnCut.Enabled = canRename
+    '    btnRename.Enabled = canRename
+    '    btnDelete.Enabled = True
 
-        If cmsFiles.Items.Count > 0 Then
-            cmsFiles.Items("Copy").Enabled = canCopy
-        End If
-
-    End Sub
-
-    Private Sub UpdateEditButtonsAndMenus()
-
-        UpdateCopyButtonAndMenus()
-
-        UpdateDestructiveButtonsAndMenus()
-
-        ' Update Paste button
-        If _clipboardIsCut Then
-            btnPaste.Enabled = True
-        Else
-            btnPaste.Enabled = Not String.IsNullOrEmpty(_clipboardPath)
-        End If
-
-        If cmsFiles.Items.Count = 0 Then Return
-
-        If _clipboardIsCut Then
-            cmsFiles.Items("Paste").Enabled = True
-        Else
-            cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
-        End If
-
-    End Sub
-
-    Private Sub UpdateFileButtonsAndMenus()
-
-        ' --- Folder-level permissions ---
-        Dim canWrite As Boolean = HasWriteAccess(currentFolder)
-        Dim canCreateFolders As Boolean = HasDirectoryCreationAccess(currentFolder)
-
-        btnNewTextFile.Enabled = canWrite
-        btnNewFolder.Enabled = canCreateFolders
-
-        If cmsFiles.Items.Count = 0 Then Exit Sub
-
-        cmsFiles.Items("NewFolder").Enabled = canCreateFolders
-        cmsFiles.Items("NewTextFile").Enabled = canWrite
+    '    SetContextDestructiveItems(True)
+    'End Sub
 
 
-        ' --- Item-level actions ---
-        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+    'Private Function GetDestructiveTarget() As String
+    '    ' 0. Helper: must be a real, non-protected, existing path
+    '    Dim isValid As Func(Of String, Boolean) =
+    '    Function(p As String)
+    '        Return Not String.IsNullOrEmpty(p) AndAlso
+    '               PathExists(p) AndAlso
+    '               Not IsProtectedPathOrFolder(p)
+    '    End Function
 
-        If Not hasSelection Then
-            cmsFiles.Items("Open").Enabled = False
-            cmsFiles.Items("CopyPath").Enabled = False
-            Exit Sub
-        End If
+    '    ' 1. If last focus was lvFiles
+    '    If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
+    '        Dim p As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '        If isValid(p) Then Return p
+    '    End If
 
-        Dim selectedPath As String = CStr(lvFiles.SelectedItems(0).Tag)
-        Dim exists As Boolean = PathExists(selectedPath)
+    '    ' 2. If last focus was tvFolders
+    '    If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+    '        Dim p As String = TryCast(tvFolders.SelectedNode.Tag, String)
+    '        If isValid(p) Then Return p
+    '    End If
 
-        cmsFiles.Items("Open").Enabled = exists
-        cmsFiles.Items("CopyPath").Enabled = exists
+    '    ' 3. If last focus was address bar → destructive actions apply to current folder?
+    '    '    (Only if you WANT to allow Delete/Rename on the current folder)
+    '    '    If not, simply skip this block.
+    '    If _lastFocusedControl Is txtAddressBar Then
+    '        If isValid(currentFolder) Then Return currentFolder
+    '    End If
 
-    End Sub
+    '    ' 4. No contextual target
+    '    Return Nothing
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub SetDestructiveButtons(cut As Boolean, rename As Boolean, delete As Boolean)
+    '    btnCut.Enabled = cut
+    '    btnRename.Enabled = rename
+    '    btnDelete.Enabled = delete
+    'End Sub
+
+    'Private Sub SetContextDestructiveItems(enabled As Boolean)
+    '    cmsFiles.Items("Cut").Enabled = enabled
+    '    cmsFiles.Items("Rename").Enabled = enabled
+    '    cmsFiles.Items("Delete").Enabled = enabled
+    'End Sub
+
+    'Private Sub UpdateCopyButtonAndMenus()
+
+    '    Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    Dim fullPath As String = If(hasSelection, CStr(lvFiles.SelectedItems(0).Tag), Nothing)
+    '    Dim exists As Boolean = hasSelection AndAlso PathExists(fullPath)
+
+    '    Dim canCopy As Boolean = exists
+
+    '    btnCopy.Enabled = canCopy
+
+    '    If cmsFiles.Items.Count > 0 Then
+    '        cmsFiles.Items("Copy").Enabled = canCopy
+    '    End If
+
+    'End Sub
+
+    'Private Sub UpdateEditButtonsAndMenus()
+
+    '    UpdateCopyButtonAndMenus()
+
+    '    UpdateDestructiveButtonsAndMenus()
+
+    '    ' Update Paste button
+    '    If _clipboardIsCut Then
+    '        btnPaste.Enabled = True
+    '    Else
+    '        btnPaste.Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+    '    End If
+
+    '    If cmsFiles.Items.Count = 0 Then Return
+
+    '    If _clipboardIsCut Then
+    '        cmsFiles.Items("Paste").Enabled = True
+    '    Else
+    '        cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+    '    End If
+
+    'End Sub
+
+    'Private Sub UpdateFileButtonsAndMenus()
+
+    '    ' --- Folder-level permissions ---
+    '    Dim canWrite As Boolean = HasWriteAccess(currentFolder)
+    '    Dim canCreateFolders As Boolean = HasDirectoryCreationAccess(currentFolder)
+
+    '    btnNewTextFile.Enabled = canWrite
+    '    btnNewFolder.Enabled = canCreateFolders
+
+    '    If cmsFiles.Items.Count = 0 Then Exit Sub
+
+    '    cmsFiles.Items("NewFolder").Enabled = canCreateFolders
+    '    cmsFiles.Items("NewTextFile").Enabled = canWrite
+
+
+    '    ' --- Item-level actions ---
+    '    Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+
+    '    If Not hasSelection Then
+    '        cmsFiles.Items("Open").Enabled = False
+    '        cmsFiles.Items("CopyPath").Enabled = False
+    '        Exit Sub
+    '    End If
+
+    '    Dim selectedPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+    '    Dim exists As Boolean = PathExists(selectedPath)
+
+    '    cmsFiles.Items("Open").Enabled = exists
+    '    cmsFiles.Items("CopyPath").Enabled = exists
+
+    'End Sub
+
+
+
+
 
     Private Sub UpdateColumnHeaders(sortedColumn As Integer, order As SortOrder)
         For i As Integer = 0 To lvFiles.Columns.Count - 1
@@ -3791,6 +4405,72 @@ Public Class Form1
         End Try
     End Function
 
+    'Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
+
+    '    If String.IsNullOrWhiteSpace(path2Check) Then Return False
+
+    '    ' Reject relative paths outright
+    '    If Not Path.IsPathRooted(path2Check) Then Return False
+
+    '    ' Normalize the input path: full path, trim trailing slashes
+    '    Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
+
+    '    ' Define protected paths (normalized) - Exact match and subpaths
+    '    Dim protectedPaths As String() = {
+    '        "C:\Windows",
+    '        "C:\Program Files",
+    '        "C:\Program Files (x86)",
+    '        "C:\ProgramData"
+    '    }
+
+    '    ' Normalize protected paths too
+    '    For Each protectedPath In protectedPaths
+    '        Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
+
+    '        ' Exact match
+    '        If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+
+    '        ' Subdirectory match (ensure proper boundary with "\")
+    '        If normalizedInput.StartsWith(normalizedProtected & "\", StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+
+    '    Next
+
+    '    ' Define protected folders (normalized) for the current user - Exact match only
+    '    Dim protectedFolders As String() = {
+    '        "C:\Users",
+    '        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
+    '        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
+    '    }
+
+    '    ' Normalize protected folders too
+    '    For Each protectedFolder In protectedFolders
+    '        Dim normalizedProtected As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
+
+    '        ' Exact match
+    '        If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+
+    '    Next
+
+    '    Return False
+
+    'End Function
+
+    ' ============================================================
+    '  PATH PROTECTION LOGIC
+    ' ============================================================
     Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
 
         If String.IsNullOrWhiteSpace(path2Check) Then Return False
@@ -3798,61 +4478,321 @@ Public Class Form1
         ' Reject relative paths outright
         If Not Path.IsPathRooted(path2Check) Then Return False
 
-        ' Normalize the input path: full path, trim trailing slashes
+        ' Normalize input
         Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
 
-        ' Define protected paths (normalized) - Exact match and subpaths
-        Dim protectedPaths As String() = {
-            "C:\Windows",
-            "C:\Program Files",
-            "C:\Program Files (x86)",
-            "C:\ProgramData"
-        }
+        ' ------------------------------------------------------------
+        ' 1. Drive roots (C:, D:, E:) are ALWAYS protected
+        ' ------------------------------------------------------------
+        If normalizedInput.Length = 2 AndAlso normalizedInput(1) = ":"c Then
+            Return True
+        End If
 
-        ' Normalize protected paths too
+        ' ------------------------------------------------------------
+        ' 2. System-level protected folders (exact or subpaths)
+        ' ------------------------------------------------------------
+        Dim protectedPaths As String() = {
+        "C:\Windows",
+        "C:\Program Files",
+        "C:\Program Files (x86)",
+        "C:\ProgramData"
+    }
+
         For Each protectedPath In protectedPaths
-            Dim normalizedProtected As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
+            Dim normProt As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
 
             ' Exact match
-            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+            If normalizedInput.Equals(normProt, StringComparison.OrdinalIgnoreCase) Then
                 Return True
             End If
 
-            ' Subdirectory match (ensure proper boundary with "\")
-            If normalizedInput.StartsWith(normalizedProtected & "\", StringComparison.OrdinalIgnoreCase) Then
+            ' Subdirectory match
+            If normalizedInput.StartsWith(normProt & "\", StringComparison.OrdinalIgnoreCase) Then
                 Return True
             End If
-
         Next
 
-        ' Define protected folders (normalized) for the current user - Exact match only
-        Dim protectedFolders As String() = {
-            "C:\Users",
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Videos"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Local"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData\Roaming")
-        }
+        ' ------------------------------------------------------------
+        ' 3. User-profile protected folders (exact match only)
+        ' ------------------------------------------------------------
+        Dim userRoot As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
 
-        ' Normalize protected folders too
-        For Each protectedFolder In protectedFolders
-            Dim normalizedProtected As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
+        Dim protectedUserFolders As String() = {
+        "C:\Users",
+        userRoot,
+        Path.Combine(userRoot, "Documents"),
+        Path.Combine(userRoot, "Desktop"),
+        Path.Combine(userRoot, "Downloads"),
+        Path.Combine(userRoot, "Pictures"),
+        Path.Combine(userRoot, "Music"),
+        Path.Combine(userRoot, "Videos"),
+        Path.Combine(userRoot, "AppData\Local"),
+        Path.Combine(userRoot, "AppData\Roaming")
+    }
 
-            ' Exact match
-            If normalizedInput.Equals(normalizedProtected, StringComparison.OrdinalIgnoreCase) Then
+        For Each protectedFolder In protectedUserFolders
+            Dim normProt As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
+
+            If normalizedInput.Equals(normProt, StringComparison.OrdinalIgnoreCase) Then
                 Return True
             End If
-
         Next
 
         Return False
-
     End Function
+
+
+
+    ' ============================================================
+    '  CONTEXTUAL TARGET RESOLVER FOR DESTRUCTIVE ACTIONS
+    ' ============================================================
+    Private Function GetDestructiveTarget() As String
+
+        ' Helper: must be a real, existing, non-protected path
+        Dim isValid As Func(Of String, Boolean) =
+        Function(p As String)
+            Return Not String.IsNullOrEmpty(p) AndAlso
+                   PathExists(p) AndAlso
+                   Not IsProtectedPathOrFolder(p)
+        End Function
+
+        ' 1. Last focus was ListView
+        If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
+            Dim p As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+            If isValid(p) Then Return p
+        End If
+
+        ' 2. Last focus was TreeView
+        If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+            Dim p As String = TryCast(tvFolders.SelectedNode.Tag, String)
+            If isValid(p) Then Return p
+        End If
+
+        ' 3. Last focus was Address Bar → current folder
+        If _lastFocusedControl Is txtAddressBar Then
+            If isValid(currentFolder) Then Return currentFolder
+        End If
+
+        ' 4. No valid target
+        Return Nothing
+    End Function
+
+
+
+    ' ============================================================
+    '  DESTRUCTIVE BUTTONS + MENUS
+    ' ============================================================
+    Private Sub UpdateDestructiveButtonsAndMenus()
+
+        Dim target As String = GetDestructiveTarget()
+
+        If target Is Nothing Then
+            SetDestructiveButtons(False, False, False)
+            SetContextDestructiveItems(False)
+            Exit Sub
+        End If
+
+        ' Rename requires write access on parent folder
+        Dim parentDir As String =
+        If(Directory.Exists(target),
+           target,
+           Path.GetDirectoryName(target))
+
+        Dim canRename As Boolean = HasWriteAccess(parentDir)
+
+        btnCut.Enabled = canRename
+        btnRename.Enabled = canRename
+        btnDelete.Enabled = True   ' Delete allowed because resolver already filtered protected paths
+
+        SetContextDestructiveItems(True)
+    End Sub
+
+    Private Sub SetDestructiveButtons(cut As Boolean, rename As Boolean, delete As Boolean)
+        btnCut.Enabled = cut
+        btnRename.Enabled = rename
+        btnDelete.Enabled = delete
+    End Sub
+
+    Private Sub SetContextDestructiveItems(enabled As Boolean)
+        cmsFiles.Items("Cut").Enabled = enabled
+        cmsFiles.Items("Rename").Enabled = enabled
+        cmsFiles.Items("Delete").Enabled = enabled
+    End Sub
+
+
+
+    ' ============================================================
+    '  COPY BUTTON + MENUS
+    ' ============================================================
+    'Private Sub UpdateCopyButtonAndMenus()
+
+    '    Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+    '    Dim fullPath As String = If(hasSelection, CStr(lvFiles.SelectedItems(0).Tag), Nothing)
+    '    Dim exists As Boolean = hasSelection AndAlso PathExists(fullPath)
+
+    '    Dim canCopy As Boolean = exists
+
+    '    btnCopy.Enabled = canCopy
+
+    '    If cmsFiles.Items.Count > 0 Then
+    '        cmsFiles.Items("Copy").Enabled = canCopy
+    '    End If
+
+    'End Sub
+
+    Private Sub UpdateCopyButtonAndMenus()
+
+        Dim target As String = GetCopyTarget()
+        Dim canCopy As Boolean = (target IsNot Nothing)
+
+        btnCopy.Enabled = canCopy
+
+        If cmsFiles.Items.Count > 0 Then
+            cmsFiles.Items("Copy").Enabled = canCopy
+        End If
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Private Function GetCopyTarget() As String
+
+        'Dim isValid As Func(Of String, Boolean) =
+        'Function(p As String)
+        '    Return Not String.IsNullOrEmpty(p) AndAlso
+        '           PathExists(p) AndAlso
+        '           Not IsProtectedPathOrFolder(p)
+        'End Function
+
+        Dim isValid As Func(Of String, Boolean) =
+        Function(p As String)
+            Return Not String.IsNullOrEmpty(p) AndAlso
+               PathExists(p)
+        End Function
+
+        ' 1. ListView
+        If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
+            Dim p As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+            If isValid(p) Then Return p
+        End If
+
+        ' 2. TreeView
+        If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+            Dim p As String = TryCast(tvFolders.SelectedNode.Tag, String)
+            If isValid(p) Then Return p
+        End If
+
+        ' 3. Address bar → current folder
+        If _lastFocusedControl Is txtAddressBar Then
+            If isValid(currentFolder) Then Return currentFolder
+        End If
+
+        Return Nothing
+    End Function
+
+    ' ============================================================
+    '  EDIT BUTTONS + MENUS (Cut/Copy/Paste)
+    ' ============================================================
+    'Private Sub UpdateEditButtonsAndMenus()
+
+    '    UpdateCopyButtonAndMenus()
+    '    UpdateDestructiveButtonsAndMenus()
+
+    '    ' Paste button
+    '    If _clipboardIsCut Then
+    '        btnPaste.Enabled = True
+    '    Else
+    '        btnPaste.Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+    '    End If
+
+    '    If cmsFiles.Items.Count = 0 Then Return
+
+    '    If _clipboardIsCut Then
+    '        cmsFiles.Items("Paste").Enabled = True
+    '    Else
+    '        cmsFiles.Items("Paste").Enabled = Not String.IsNullOrEmpty(_clipboardPath)
+    '    End If
+
+    'End Sub
+
+    Private Sub UpdateEditButtonsAndMenus()
+
+        ' Update Copy and Destructive actions first
+        UpdateCopyButtonAndMenus()
+        UpdateDestructiveButtonsAndMenus()
+
+        ' Determine if paste is allowed
+        Dim hasClipboardData As Boolean =
+        _clipboardIsCut OrElse Not String.IsNullOrEmpty(_clipboardPath)
+
+        Dim canPaste As Boolean =
+        hasClipboardData AndAlso HasWriteAccess(currentFolder)
+
+        ' Toolbar
+        btnPaste.Enabled = canPaste
+
+        ' Context menu
+        If cmsFiles.Items.Count > 0 Then
+            cmsFiles.Items("Paste").Enabled = canPaste
+        End If
+
+    End Sub
+
+
+
+    ' ============================================================
+    '  FILE CREATION BUTTONS + MENUS
+    ' ============================================================
+    Private Sub UpdateFileButtonsAndMenus()
+
+        ' Folder-level permissions
+        Dim canWrite As Boolean = HasWriteAccess(currentFolder)
+        Dim canCreateFolders As Boolean = HasDirectoryCreationAccess(currentFolder)
+
+        btnNewTextFile.Enabled = canWrite
+        btnNewFolder.Enabled = canCreateFolders
+
+        If cmsFiles.Items.Count = 0 Then Exit Sub
+
+        cmsFiles.Items("NewFolder").Enabled = canCreateFolders
+        cmsFiles.Items("NewTextFile").Enabled = canWrite
+
+        ' Item-level actions
+        Dim hasSelection As Boolean = (lvFiles.SelectedItems.Count > 0)
+
+        If Not hasSelection Then
+            cmsFiles.Items("Open").Enabled = False
+            cmsFiles.Items("CopyPath").Enabled = False
+            Exit Sub
+        End If
+
+        Dim selectedPath As String = CStr(lvFiles.SelectedItems(0).Tag)
+        Dim exists As Boolean = PathExists(selectedPath)
+
+        cmsFiles.Items("Open").Enabled = exists
+        cmsFiles.Items("CopyPath").Enabled = exists
+
+    End Sub
+
+
+
+
+
+
+
+
 
     Friend Shared Function FormatSize(bytes As Long) As String
         Dim absValue As Double = Math.Abs(bytes)
