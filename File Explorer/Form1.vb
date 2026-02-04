@@ -973,7 +973,7 @@ Public Class Form1
                     Await CopyFileOrDirectory(source, destination, copyCts.Token)
 
                 Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - e.g., copy C:\folder1\file.doc C:\folder2")
+                    ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - Example: copy C:\folder1\file.doc C:\folder2")
                 End If
 
 
@@ -1008,14 +1008,14 @@ Public Class Form1
 
                     ' Validate the directory path
                     If String.IsNullOrWhiteSpace(directoryPath) Then
-                        ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                        ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
                         Return
                     End If
 
                     CreateDirectory(directoryPath)
 
                 Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - e.g., mkdir C:\newfolder")
+                    ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
                 End If
 
             Case "rename"
@@ -1030,7 +1030,7 @@ Public Class Form1
                     RenameFileOrDirectory(sourcePath, newName)
 
                 Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: rename [source_path] [new_name] - e.g., rename C:\folder\oldname.txt newname.txt")
+                    ShowStatus(StatusPad & IconDialog & " Usage: rename [source_path] [new_name] - Example:, rename C:\folder\oldname.txt newname.txt")
                 End If
 
             Case "text", "txt"
@@ -1043,7 +1043,7 @@ Public Class Form1
 
                     If filePath Is Nothing Then
 
-                        ShowStatus(StatusPad & IconDialog & " Usage: text [file_path]  e.g., text C:\example.txt")
+                        ShowStatus(StatusPad & IconDialog & " Usage: text [file_path]  Example:, text C:\example.txt")
 
                         Return
 
@@ -1239,9 +1239,9 @@ Public Class Form1
 
                     If String.IsNullOrWhiteSpace(searchTerm) Then
                         ShowStatus(
-                        StatusPad & IconDialog &
-                        "  Usage: find [search_term]   e.g., find document"
-                    )
+                            StatusPad & IconDialog &
+                            "  Usage: find [search_term]   Example: find document"
+                        )
                         Return
                     End If
 
@@ -1280,9 +1280,9 @@ Public Class Form1
 
                 Else
                     ShowStatus(
-                    StatusPad & IconDialog &
-                    "  Usage: find [search_term]   e.g., find document"
-                )
+                        StatusPad & IconDialog &
+                        "  Usage: find [search_term]   Example: find document"
+                    )
                 End If
 
                 Return
@@ -2858,8 +2858,11 @@ Public Class Form1
                 ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
             Else
                 ' Path does not exist
-                ShowStatus(StatusPad & IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" e.g., rename ""C:\folder\old name.txt"" ""new name.txt""")
-
+                'ShowStatus(StatusPad & IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" Example:, rename ""C:\folder\old name.txt"" ""new name.txt""")
+                ShowStatus(
+                    StatusPad & IconError &
+                    "  Rename failed: No path provided. Paths containing spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]""   Example: rename ""C:\folder\old name.txt"" ""new name.txt"""
+                )
             End If
 
         Catch ex As Exception
@@ -3199,9 +3202,9 @@ Public Class Form1
 
         ' Status HUD
         ShowStatus(
-        StatusPad & IconSearch &
-        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
-    )
+            StatusPad & IconSearch &
+            $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+        )
     End Sub
 
 
@@ -4448,7 +4451,7 @@ Public Class Form1
 
         ' General tooltip settings
         tips.AutoPopDelay = 6000
-        tips.InitialDelay = 300
+        tips.InitialDelay = 500
         tips.ReshowDelay = 100
         tips.ShowAlways = True
 
