@@ -150,8 +150,17 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
     - [delete — Delete Files or Folders](#-delete---delete)
     - [rename — Rename Files or Folders](#-rename---rename)
-    - [text / txt — Create Text Files](#-create-text-file--text-txt)
-    - [open — Open Files or Folders](#-open--open)
+    - [text / txt — Create Text Files](#-create-text-file---text-txt)
+   
+
+
+
+
+
+
+
+
+    - [open — Open Files or Folders](#-open---open)
     - [find / search — Search](#-search--find-search)
     - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
     - [help — Show Help](#-help--help)
