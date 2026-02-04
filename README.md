@@ -291,7 +291,7 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
-## Change Directory - `cd`
+## 📁 Change Directory - `cd`
 
 **Usage:**  
 ```
