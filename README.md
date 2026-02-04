@@ -165,7 +165,11 @@ If you’re curious, the GitHub repository includes the full source code and doc
  
 
 
-    - [findnext / searchnext — Next Search Result](#-next-search-result--findnext-searchnext)
+    - [findnext / searchnext — Next Search Result](#-next-search-result---findnext-searchnext)
+   
+
+
+
     - [help — Show Help](#-help--help)
   - [Quoting Rules](#-quoting-rules-important)
   - [Contextual Navigation](#-contextual-navigation)
