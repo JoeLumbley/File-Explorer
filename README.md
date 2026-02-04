@@ -170,10 +170,8 @@ If you’re curious, the GitHub repository includes the full source code and doc
 - [exit — Closes the App](#-exit---exit-quit)
 
 
-https://github.com/JoeLumbley/File-Explorer/blob/master/README.md#-exit---exit-quit
 
-
-    - [help — Show Help](#-help--help)
+    - [help — Show Help](#-help---help)
   - [Quoting Rules](#-quoting-rules-important)
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
