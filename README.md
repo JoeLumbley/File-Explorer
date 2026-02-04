@@ -1608,6 +1608,283 @@ This method is essential for any file management application, ensuring smooth an
 
 
 
+# `Find Command`
+
+**This code takes the user’s search term, finds matching files in the current folder, highlights the first match, shows how many results there are, and gives the user a clean, Explorer‑style search experience.**
+
+Think of this code as the “start a search” feature in our file explorer.  
+When the user types something like:
+
+
+```
+
+find report
+
+```
+
+this block of code runs.
+
+
+```vb
+
+            Case "find", "search"
+                If parts.Length > 1 Then
+
+                    Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+                    If String.IsNullOrWhiteSpace(searchTerm) Then
+                        ShowStatus(
+                            StatusPad & IconDialog &
+                            "  Usage: find [search_term]   Example: find document"
+                        )
+                        Return
+                    End If
+
+                    ' Announce search
+                    ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
+
+                    ' Perform search
+                    OnlySearchForFilesInCurrentFolder(searchTerm)
+
+                    ' Reset index for new search
+                    SearchIndex = 0
+                    RestoreBackground()
+
+                    ' If results exist, auto-select the first one
+                    If SearchResults.Count > 0 Then
+                        lvFiles.SelectedItems.Clear()
+                        SelectListViewItemByPath(SearchResults(0))
+
+                        Dim nextPath As String = SearchResults(SearchIndex)
+                        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+                        lvFiles.Focus()
+                        HighlightSearchMatches()
+
+                        ' Unified search HUD
+                        ShowStatus(
+                        StatusPad & IconSearch &
+                        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+                    )
+                    Else
+                        ShowStatus(
+                        StatusPad & IconDialog &
+                        "  No results found for: " & searchTerm
+                    )
+                    End If
+
+                Else
+                    ShowStatus(
+                        StatusPad & IconDialog &
+                        "  Usage: find [search_term]   Example: find document"
+                    )
+                End If
+
+                Return
+
+```
+
+
+Let’s go through it step by step.
+
+
+ **Make sure the user actually typed a search term**
+
+```vb
+If parts.Length > 1 Then
+```
+
+- `parts` is the command split into words.
+- If the user typed only `find` with nothing after it, then there’s nothing to search for.
+
+
+ **Combine everything after the command into one search term**
+
+```vb
+Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+```
+
+- This takes everything after the word `find` and turns it into one string.
+- Example:  
+  `find my report` → `"my report"`
+
+
+ **If the search term is empty, show a helpful message**
+
+```vb
+If String.IsNullOrWhiteSpace(searchTerm) Then
+    ShowStatus("Usage: find [search_term] Example: find document")
+    Return
+End If
+```
+
+- This protects the user from mistakes.
+- It stops the command early and explains how to use it.
+
+
+ **Tell the user that the search has started**
+
+```vb
+ShowStatus("Searching for: " & searchTerm)
+```
+
+- This updates your status bar so the user knows something is happening.
+
+
+ **Actually perform the search**
+
+```vb
+OnlySearchForFilesInCurrentFolder(searchTerm)
+```
+
+- This is your search engine.
+- It looks through the current folder and fills `SearchResults` with matching file paths.
+
+
+ **Reset the search index**
+
+```vb
+SearchIndex = 0
+RestoreBackground()
+```
+
+- Since this is a *new* search, you always start at the first result.
+- `RestoreBackground()` clears any old highlighting from a previous search.
+
+
+ **If matches were found…**
+
+```vb
+If SearchResults.Count > 0 Then
+```
+
+Now the fun part begins.
+
+
+ **Select the first matching file**
+
+```vb
+lvFiles.SelectedItems.Clear()
+SelectListViewItemByPath(SearchResults(0))
+```
+
+- Clears any previous selection.
+- Highlights the first matching file in the ListView.
+- Scrolls to it so the user can see it.
+
+
+ **Get a clean file name for display**
+
+```vb
+Dim nextPath As String = SearchResults(SearchIndex)
+Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+```
+
+- Turns something like  
+  `C:\Users\Joseph\Documents\Report1.pdf`  
+  into  
+  `"Report1"`
+
+
+ **Focus the ListView and highlight all matches**
+
+```vb
+lvFiles.Focus()
+HighlightSearchMatches()
+```
+
+- Gives keyboard focus to the file list.
+- Highlights all matching items.
+
+
+ **Show the unified search HUD**
+
+```vb
+ShowStatus(
+    $"Result {SearchIndex + 1} of {SearchResults.Count}  ""{fileName}""  Next F3  Open Ctrl+O  Reset Esc"
+)
+```
+
+This status message that tells the user:
+
+- Which result they’re on  
+- How many results exist  
+- The file name  
+- Helpful keyboard shortcuts  
+
+
+ **If no results were found…**
+
+```vb
+Else
+    ShowStatus("No results found for: " & searchTerm)
+End If
+```
+
+- The app gently tells the user nothing matched.
+
+
+ **If the user typed only “find” with no term**
+
+```vb
+Else
+    ShowStatus("Usage: find [search_term] Example: find document")
+End If
+```
+
+- Another friendly reminder about how to use the command.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
