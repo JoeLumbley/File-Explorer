@@ -167,7 +167,7 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
     - [findnext / searchnext — Next Search Result](#-next-search-result---findnext-searchnext)
    
-- [exit — Exit App](#-exit---exit-quit)
+- [exit — Closes the App](#-exit---exit-quit)
 
 
 https://github.com/JoeLumbley/File-Explorer/blob/master/README.md#-exit---exit-quit
