@@ -136,7 +136,7 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
-    - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
+    - [mkdir / make — Create Directory](#--create-directory--mkdir-make)
     - [copy — Copy Files or Folders](#-copy--copy)
     - [move — Move Files or Folders](#-move--move)
     - [delete — Delete Files or Folders](#-delete--delete)
