@@ -131,7 +131,11 @@ If you’re curious, the GitHub repository includes the full source code and doc
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
-    - [cd — Change Directory](#-change-directory--cd)
+    - [cd — Change Directory](#-change-directory--`cd`)
+   
+- ## 📂 Change Directory - `cd`
+
+
     - [mkdir / make — Create Directory](#-create-directory--mkdir-make)
     - [copy — Copy Files or Folders](#-copy--copy)
     - [move — Move Files or Folders](#-move--move)
