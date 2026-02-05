@@ -2555,6 +2555,20 @@ For more details, check the source code and documentation within the repository.
 
 
 
+<img width="1920" height="1080" alt="109" src="https://github.com/user-attachments/assets/452552a8-38b6-4296-bcd2-3183cc2c6b72" />
+
+
+
+
+
+
+
+
+
+
+
+
+
 <img width="1920" height="1080" alt="094" src="https://github.com/user-attachments/assets/0d9b3b5f-32c2-496c-a025-b2ec26e5276f" />
 
 
@@ -2666,6 +2680,24 @@ For more details, check the source code and documentation within the repository.
 
 
 # YearBook
+
+
+
+
+
+
+<img width="1920" height="1080" alt="110" src="https://github.com/user-attachments/assets/17878ab7-5ee8-443b-b455-7c9e5c462d91" />
+
+
+
+
+
+
+
+
+
+
+
 
 
 
