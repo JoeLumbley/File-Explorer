@@ -3515,6 +3515,17 @@ Public Class Form1
                 result = Await CopyDirectory(source, finalTarget, ct)
             End If
 
+
+
+
+            ' Navigation
+            NavigateAfterCopy(finalTarget, isDirectory)
+
+            ' Focus restoration
+            txtAddressBar.Focus()
+            PlaceCaretAtEndOfAddressBar()
+
+
             ' -------------------------
             ' Post‑copy messaging
             ' -------------------------
@@ -3525,12 +3536,6 @@ Public Class Form1
                        $"{result.FilesSkipped} skipped, " &
                        $"{result.DirectoriesCreated} folder(s) created.")
 
-                ' Navigation
-                NavigateAfterCopy(finalTarget, isDirectory)
-
-                ' Focus restoration
-                txtAddressBar.Focus()
-                PlaceCaretAtEndOfAddressBar()
             Else
                 ' At least one error occurred
                 ShowStatus(StatusPad & IconError &
@@ -3865,6 +3870,12 @@ Public Class Form1
         'UpdateFileButtonsAndMenus()
         'UpdateEditButtonsAndMenus()
         UpdateAllUIStates()
+
+        'lvFiles.BeginUpdate()
+        'lvFiles.Items.Clear()
+        'lvFiles.EndUpdate()
+
+
 
         Await PopulateFiles(path) ' Await the async method
 
