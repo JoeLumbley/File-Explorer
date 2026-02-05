@@ -1925,6 +1925,133 @@ Public Class Form1
 
     'End Sub
 
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate clipboard
+    '    ' ------------------------------------------------------------
+    '    If String.IsNullOrWhiteSpace(_clipboardPath) Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No item in clipboard.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim sourcePath As String = _clipboardPath
+    '    Dim destDir As String = GetPasteDestination()
+
+    '    ' Destination must be a real, writable folder
+    '    If destDir Is Nothing Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Destination is not writable.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Prepare destination path
+    '    ' ------------------------------------------------------------
+    '    Dim name As String = Path.GetFileName(sourcePath)
+    '    Dim destPath As String = Path.Combine(destDir, name)
+
+    '    Dim isFile As Boolean = IO.File.Exists(sourcePath)
+    '    Dim isDir As Boolean = Directory.Exists(sourcePath)
+
+    '    If Not isFile AndAlso Not isDir Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Auto‑rename only when copying (not cutting)
+    '    If Not _clipboardIsCut Then
+    '        destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Try
+    '        ct.ThrowIfCancellationRequested()
+
+    '        ' ------------------------------------------------------------
+    '        ' FILE PASTE
+    '        ' ------------------------------------------------------------
+    '        If isFile Then
+    '            Dim src As New FileInfo(sourcePath)
+
+    '            ' Free-space check
+    '            If Not _clipboardIsCut AndAlso Not HasEnoughSpace(src, destPath) Then
+    '                ShowStatus(StatusPad & IconError & " Not enough space to paste file: " & src.Name)
+    '                Exit Sub
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyFile(sourcePath, destPath, ct)
+
+    '            If result.Success Then
+    '                ShowStatus(StatusPad & IconPaste & " File pasted into " & txtAddressBar.Text)
+    '            End If
+
+    '            ' ------------------------------------------------------------
+    '            ' DIRECTORY PASTE
+    '            ' ------------------------------------------------------------
+    '        ElseIf isDir Then
+
+    '            ' Free-space check (sum of all files)
+    '            If Not _clipboardIsCut Then
+    '                Dim totalSize As Long =
+    '                Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).
+    '                Sum(Function(f) New FileInfo(f).Length)
+
+    '                Dim root = Path.GetPathRoot(destPath)
+    '                Dim drive As New DriveInfo(root)
+
+    '                If totalSize > drive.AvailableFreeSpace Then
+    '                    ShowStatus(StatusPad & IconError & " Not enough space to paste folder.")
+    '                    Exit Sub
+    '                End If
+    '            End If
+
+    '            Dim result As CopyResult = Await CopyDirectory(sourcePath, destPath, ct)
+
+    '            ShowStatus(StatusPad & IconPaste &
+    '                   $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' Reset clipboard state
+    '        ' ------------------------------------------------------------
+    '        _clipboardPath = Nothing
+    '        _clipboardIsCut = False
+
+    '        ' Refresh file list
+    '        Await PopulateFiles(destDir)
+
+    '        ' ------------------------------------------------------------
+    '        ' Select the newly pasted item
+    '        ' ------------------------------------------------------------
+    '        Dim pastedName As String = Path.GetFileName(destPath)
+
+    '        For Each item As ListViewItem In lvFiles.Items
+    '            If String.Equals(item.Text, pastedName, StringComparison.OrdinalIgnoreCase) Then
+    '                item.Selected = True
+    '                item.Focused = True
+    '                item.EnsureVisible()
+    '                Exit For
+    '            End If
+    '        Next
+
+    '        lvFiles.Focus()
+    '        ResetCutVisuals()
+
+    '        ' Unified UI refresh
+    '        UpdateAllUIStates()
+
+    '    Catch ex As OperationCanceledException
+    '        ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Paste failed: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
         ' ------------------------------------------------------------
@@ -1945,23 +2072,24 @@ Public Class Form1
         End If
 
         ' ------------------------------------------------------------
-        ' Prepare destination path
+        ' Prevent copying a folder into itself or its own subtree
+        ' ------------------------------------------------------------
+        If Directory.Exists(sourcePath) Then
+            Dim srcFull = Path.GetFullPath(sourcePath).TrimEnd(Path.DirectorySeparatorChar)
+            Dim destFull = Path.GetFullPath(destDir).TrimEnd(Path.DirectorySeparatorChar)
+
+            If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+                ShowStatus(StatusPad & IconError &
+                       " Cannot paste a folder into itself or one of its subfolders.")
+                Exit Sub
+            End If
+        End If
+
+        ' ------------------------------------------------------------
+        ' Build final destination path (wrapper will auto‑rename if needed)
         ' ------------------------------------------------------------
         Dim name As String = Path.GetFileName(sourcePath)
         Dim destPath As String = Path.Combine(destDir, name)
-
-        Dim isFile As Boolean = IO.File.Exists(sourcePath)
-        Dim isDir As Boolean = Directory.Exists(sourcePath)
-
-        If Not isFile AndAlso Not isDir Then
-            ShowStatus(StatusPad & IconError & " Paste failed: Source not found.")
-            Exit Sub
-        End If
-
-        ' Auto‑rename only when copying (not cutting)
-        If Not _clipboardIsCut Then
-            destPath = ResolveDestinationPathWithAutoRename(destPath, isDir)
-        End If
 
         copyCts = New CancellationTokenSource()
         Dim ct = copyCts.Token
@@ -1970,47 +2098,17 @@ Public Class Form1
             ct.ThrowIfCancellationRequested()
 
             ' ------------------------------------------------------------
-            ' FILE PASTE
+            ' Unified copy engine call
             ' ------------------------------------------------------------
-            If isFile Then
-                Dim src As New FileInfo(sourcePath)
+            Dim result As CopyResult =
+            Await CopyFileOrDirectoryUnified(sourcePath, destDir, _clipboardIsCut, ct)
 
-                ' Free-space check
-                If Not _clipboardIsCut AndAlso Not HasEnoughSpace(src, destPath) Then
-                    ShowStatus(StatusPad & IconError & " Not enough space to paste file: " & src.Name)
-                    Exit Sub
-                End If
-
-                Dim result As CopyResult = Await CopyFile(sourcePath, destPath, ct)
-
-                If result.Success Then
-                    ShowStatus(StatusPad & IconPaste & " File pasted into " & txtAddressBar.Text)
-                End If
-
-                ' ------------------------------------------------------------
-                ' DIRECTORY PASTE
-                ' ------------------------------------------------------------
-            ElseIf isDir Then
-
-                ' Free-space check (sum of all files)
-                If Not _clipboardIsCut Then
-                    Dim totalSize As Long =
-                    Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).
-                    Sum(Function(f) New FileInfo(f).Length)
-
-                    Dim root = Path.GetPathRoot(destPath)
-                    Dim drive As New DriveInfo(root)
-
-                    If totalSize > drive.AvailableFreeSpace Then
-                        ShowStatus(StatusPad & IconError & " Not enough space to paste folder.")
-                        Exit Sub
-                    End If
-                End If
-
-                Dim result As CopyResult = Await CopyDirectory(sourcePath, destPath, ct)
-
+            If result.Success Then
                 ShowStatus(StatusPad & IconPaste &
-                       $" Pasted folder: {result.FilesCopied} files, {result.FilesSkipped} skipped.")
+                       $" Pasted {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+            Else
+                ShowStatus(StatusPad & IconError &
+                       " Paste completed with errors. Some items could not be copied.")
             End If
 
             ' ------------------------------------------------------------
@@ -2050,6 +2148,108 @@ Public Class Form1
         End Try
 
     End Sub
+
+
+
+    Public Async Function CopyFileOrDirectoryUnified(
+    source As String,
+    destinationRoot As String,
+    isCut As Boolean,
+    ct As CancellationToken
+) As Task(Of CopyResult)
+
+        Dim result As New CopyResult()
+
+        Try
+            ct.ThrowIfCancellationRequested()
+
+            Dim isFile As Boolean = IO.File.Exists(source)
+            Dim isDir As Boolean = Directory.Exists(source)
+
+            If Not (isFile OrElse isDir) Then
+                result.Errors.Add("Source does not exist.")
+                Return result
+            End If
+
+            ' ------------------------------------------------------------
+            ' Prevent copying a folder into itself or its own subtree
+            ' ------------------------------------------------------------
+            If isDir Then
+                Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+                Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+                If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+                    result.Errors.Add("Cannot copy a folder into itself or its subfolders.")
+                    Return result
+                End If
+            End If
+
+            ' ------------------------------------------------------------
+            ' Resolve final target path (auto‑rename only for Copy)
+            ' ------------------------------------------------------------
+            Dim baseName = Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar))
+            Dim initialTarget = Path.Combine(destinationRoot, baseName)
+            Dim finalTarget As String = initialTarget
+
+            If Not isCut Then
+                finalTarget = ResolveDestinationPathWithAutoRename(initialTarget, isDir)
+            End If
+
+            ' ------------------------------------------------------------
+            ' Free‑space check (files + directories)
+            ' ------------------------------------------------------------
+            If Not isCut Then
+                Dim requiredBytes As Long = GetRequiredSpace(source)
+
+                If Not HasEnoughSpace(requiredBytes, finalTarget) Then
+                    result.Errors.Add("Not enough disk space.")
+                    Return result
+                End If
+            End If
+
+            ' ------------------------------------------------------------
+            ' Perform the actual copy using pure engine
+            ' ------------------------------------------------------------
+            If isFile Then
+                result = Await CopyFile(source, finalTarget, ct)
+            Else
+                result = Await CopyDirectory(source, finalTarget, ct)
+            End If
+
+            ' ------------------------------------------------------------
+            ' If this was a CUT operation, delete the original
+            ' ------------------------------------------------------------
+            If isCut AndAlso result.Success Then
+                Try
+                    If isFile Then
+                        IO.File.Delete(source)
+                    Else
+                        Directory.Delete(source, recursive:=True)
+                    End If
+                Catch ex As Exception
+                    result.Errors.Add("Cut completed, but failed to delete original: " & ex.Message)
+                End Try
+            End If
+
+            ' ------------------------------------------------------------
+            ' Navigation + focus (Explorer‑style)
+            ' ------------------------------------------------------------
+            If result.Success Then
+                NavigateAfterCopy(finalTarget, isDir)
+                txtAddressBar.Focus()
+                PlaceCaretAtEndOfAddressBar()
+            End If
+
+        Catch ex As OperationCanceledException
+            result.Errors.Add("Copy canceled: " & ex.Message)
+
+        Catch ex As Exception
+            result.Errors.Add("Copy failed: " & ex.Message)
+        End Try
+
+        Return result
+    End Function
+
 
 
     Private Function GetPasteDestination() As String
