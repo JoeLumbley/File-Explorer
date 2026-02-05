@@ -1022,38 +1022,108 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
                 End If
 
+            'Case "copy", "cp"
+            '    If parts.Length > 2 Then
+            '        Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+            '        Dim destination As String = parts(parts.Length - 1).Trim()
+
+            '        ' Check if source file or directory exists
+            '        If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+
+            '            ShowStatus(StatusPad & IconError &
+            '                       " Copy failed:  Source """ &
+            '                       source &
+            '                       """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
+            '            Return
+            '        End If
+
+            '        ' Check if destination directory exists
+            '        If Not Directory.Exists(destination) Then
+
+            '            ShowStatus(StatusPad & IconError &
+            '                       " Copy failed.  Destination: """ &
+            '                       destination &
+            '                       """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
+
+            '            Return
+            '        End If
+
+            '        copyCts = New CancellationTokenSource()
+
+            '        Await CopyFileOrDirectory(source, destination, copyCts.Token)
+
+            '    Else
+            '        ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - Example: copy C:\folder1\file.doc C:\folder2")
+            '    End If
+
+
             Case "copy", "cp"
                 If parts.Length > 2 Then
-                    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-                    Dim destination As String = parts(parts.Length - 1).Trim()
 
-                    ' Check if source file or directory exists
+                    Dim source As String =
+                        String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+                    Dim destinationRoot As String =
+                        parts(parts.Length - 1).Trim()
+
+                    ' ------------------------------------------------------------
+                    ' Validate source
+                    ' ------------------------------------------------------------
                     If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
-
                         ShowStatus(StatusPad & IconError &
-                                   " Copy failed:  Source """ &
-                                   source &
-                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
+                                   $" Copy failed: Source ""{source}"" does not exist." &
+                                   " If the path contains spaces, enclose it in quotes.")
                         Return
                     End If
 
-                    ' Check if destination directory exists
-                    If Not Directory.Exists(destination) Then
-
+                    ' ------------------------------------------------------------
+                    ' Validate destination root
+                    ' ------------------------------------------------------------
+                    If Not Directory.Exists(destinationRoot) Then
                         ShowStatus(StatusPad & IconError &
-                                   " Copy failed.  Destination: """ &
-                                   destination &
-                                   """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
-
+                                   $" Copy failed: Destination ""{destinationRoot}"" does not exist." &
+                                   " If the path contains spaces, enclose it in quotes.")
                         Return
                     End If
 
+                    ' ------------------------------------------------------------
+                    ' Prevent copying a folder into itself or its own subtree
+                    ' ------------------------------------------------------------
+                    If Directory.Exists(source) Then
+                        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+                        Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+                        If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+                            ShowStatus(StatusPad & IconError &
+                                       " Cannot copy a folder into itself or one of its subfolders.")
+                            Return
+                        End If
+                    End If
+
+                    ' ------------------------------------------------------------
+                    ' Perform unified copy (always Copy, never Cut)
+                    ' ------------------------------------------------------------
                     copyCts = New CancellationTokenSource()
+                    Dim ct = copyCts.Token
 
-                    Await CopyFileOrDirectory(source, destination, copyCts.Token)
+                    Dim result As CopyResult =
+                        Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+
+                    ' ------------------------------------------------------------
+                    ' Report result
+                    ' ------------------------------------------------------------
+                    If result.Success Then
+                        ShowStatus(StatusPad & IconCopy &
+                                   $" Copied {result.FilesCopied} file(s), " &
+                                   $"{result.FilesSkipped} skipped.")
+                    Else
+                        ShowStatus(StatusPad & IconError &
+                                   " Copy completed with errors. Some items could not be copied.")
+                    End If
 
                 Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - Example: copy C:\folder1\file.doc C:\folder2")
+                    ShowStatus(StatusPad & IconDialog &
+                               " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
                 End If
 
 
