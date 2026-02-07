@@ -447,6 +447,26 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim target As String = GetPinnableTarget()
+
+    '    ' If no contextual target, fall back to currentFolder
+    '    If target Is Nothing Then
+    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '            target = currentFolder
+    '        Else
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    TogglePin(target)
+    '    ShowStatus($"{target}")
+    'End Sub
+
+
+
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
@@ -461,9 +481,16 @@ Public Class Form1
             End If
         End If
 
+        ' Perform the toggle
         TogglePin(target)
-        ShowStatus($"{target}")
+
+        ' Now check the new state
+        Dim state As String = If(IsPinned(target), "Pinned", "Unpinned")
+
+        ShowStatus($"{state}: {target}")
     End Sub
+
+
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
         Handles btnNewFolder.Click
