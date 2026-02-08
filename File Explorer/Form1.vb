@@ -185,6 +185,9 @@ Public Class Form1
     Handles lvFiles.Enter, tvFolders.Enter, txtAddressBar.Enter
 
         _lastFocusedControl = DirectCast(sender, Control)
+
+        UpdateAllUIStates()
+
     End Sub
 
 
