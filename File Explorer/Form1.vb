@@ -364,14 +364,227 @@ Public Class Form1
             Exit Sub
         End If
 
+        ' Rule 4: Item must not be locked or otherwise unrenamable
+        If Not CanRenameItem(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " This item is currently in use and cannot be renamed.")
+            Exit Sub
+        End If
+
+
+        ' Rule 5: Item must be a real filesystem path
+        If Not IsRealFileSystemPath(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " This item cannot be renamed.")
+            Exit Sub
+        End If
+
     End Sub
 
-    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
-        Handles lvFiles.AfterLabelEdit
 
-        RenameFileOrFolder_AfterLabelEdit(e)
+    Private Function IsRealFileSystemPath(path2check As String) As Boolean
+        Try
+            ' Must be rooted (C:\..., D:\..., etc.)
+            If Not Path.IsPathRooted(path2check) Then Return False
 
-    End Sub
+            ' Must not contain shell namespace prefixes
+            If path2check.StartsWith("::") Then Return False
+
+            ' Must not be empty or whitespace
+            If String.IsNullOrWhiteSpace(path2check) Then Return False
+
+            Return True
+        Catch
+            Return False
+        End Try
+    End Function
+
+
+
+
+    Private Function CanRenameItem(itemPath As String) As Boolean
+        Try
+            If File.Exists(itemPath) Then
+                Using fs As FileStream = File.Open(itemPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None)
+                    ' If we can open it with no sharing, it's not locked
+                End Using
+                Return True
+
+            ElseIf Directory.Exists(itemPath) Then
+                ' Try creating a temp file inside the folder
+                Dim testPath = Path.Combine(itemPath, ".__rename_test__")
+                File.WriteAllText(testPath, "")
+                File.Delete(testPath)
+                Return True
+            End If
+
+            Return False
+
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Private Function ValidateNewName(newName As String) As (IsValid As Boolean, ErrorMessage As String)
+
+        ' ------------------------------------------------------------
+        ' Rule 1: Empty or whitespace-only names are not allowed
+        ' ------------------------------------------------------------
+        If String.IsNullOrWhiteSpace(newName) Then
+            Return (False, "A name cannot be empty.")
+        End If
+
+        ' ------------------------------------------------------------
+        ' Rule 2: Names cannot end with a space or a period
+        ' ------------------------------------------------------------
+        If newName.EndsWith(" ") Then
+            Return (False, "A name cannot end with a space.")
+        End If
+
+        If newName.EndsWith(".") Then
+            Return (False, "A name cannot end with a period.")
+        End If
+
+        ' ------------------------------------------------------------
+        ' Rule 3: Illegal characters (Explorer rules)
+        ' ------------------------------------------------------------
+        Dim illegalChars As Char() = Path.GetInvalidFileNameChars()
+
+        If newName.IndexOfAny(illegalChars) >= 0 Then
+            Return (False, "A name cannot contain any of the following characters: \ / : * ? "" < > |")
+        End If
+
+        ' ------------------------------------------------------------
+        ' Rule 4: Reserved Windows device names
+        ' ------------------------------------------------------------
+        Dim reserved() As String = {
+        "CON", "PRN", "AUX", "NUL",
+        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+    }
+
+        Dim baseName As String = Path.GetFileNameWithoutExtension(newName).ToUpperInvariant()
+
+        If reserved.Contains(baseName) Then
+            Return (False, $"The name '{newName}' is reserved by Windows.")
+        End If
+
+        ' ------------------------------------------------------------
+        ' Rule 5: Name cannot be "." or ".."
+        ' ------------------------------------------------------------
+        If newName = "." OrElse newName = ".." Then
+            Return (False, "This name is not allowed.")
+        End If
+
+        ' ------------------------------------------------------------
+        ' All rules passed
+        ' ------------------------------------------------------------
+        Return (True, "")
+    End Function
+
+
+    'Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.BeforeLabelEdit
+
+    '    _isRenaming = True
+
+    '    Dim item As ListViewItem = lvFiles.Items(e.Item)
+    '    Dim fullPath As String = CStr(item.Tag)
+
+    '    ' Rule 1: Path must exist
+    '    If Not PathExists(fullPath) Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " The selected item doesn't exist and cannot be renamed.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Rule 2: Protected items cannot be renamed
+    '    If IsProtectedPathOrFolder(fullPath) Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconProtect & " This item is protected and cannot be renamed.")
+    '        Exit Sub
+    '    End If
+
+    '    ' Rule 3: User must have rename permission
+    '    Dim parentDir As String
+    '    If Directory.Exists(fullPath) Then
+    '        parentDir = fullPath
+    '    Else
+    '        parentDir = Path.GetDirectoryName(fullPath)
+    '    End If
+
+    '    If Not HasWriteAccess(parentDir) Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " This location does not allow renaming.")
+    '        Exit Sub
+    '    End If
+
+
+    '    '' ============================================================
+    '    ''   Explorer-style behavior: highlight only the filename
+    '    '' ============================================================
+    '    'Dim fileName As String = item.Text
+    '    'Dim ext As String = Path.GetExtension(fileName)
+
+    '    '' Only apply partial selection for files (folders have no extension)
+    '    'If ext <> "" Then
+    '    '    Dim nameOnly As String = Path.GetFileNameWithoutExtension(fileName)
+
+    '    '    ' Delay until the edit TextBox is created
+    '    '    BeginInvoke(Sub()
+    '    '                    Dim editBox = lvFiles.Controls.OfType(Of TextBox).FirstOrDefault()
+    '    '                    If editBox IsNot Nothing Then
+    '    '                        editBox.SelectionStart = 0
+    '    '                        editBox.SelectionLength = nameOnly.Length
+    '    '                    End If
+    '    '                End Sub)
+    '    'End If
+
+    '    ' ============================================================
+    '    '   Explorer-style behavior: highlight only the filename
+    '    ' ============================================================
+    '    Dim fileName As String = item.Text
+    '    Dim ext As String = Path.GetExtension(fileName)
+
+    '    If ext <> "" Then
+    '        Dim nameOnly As String = Path.GetFileNameWithoutExtension(fileName)
+
+    '        ' Delay until the edit TextBox is fully created and focused
+    '        BeginInvoke(Sub()
+    '                        Dim editBox = lvFiles.Controls.OfType(Of TextBox).FirstOrDefault()
+
+    '                        If editBox Is Nothing Then Exit Sub
+
+    '                        ' Ensure the text is fully loaded before selecting
+    '                        BeginInvoke(Sub()
+    '                                        If editBox IsNot Nothing Then
+    '                                            editBox.SelectionStart = 0
+    '                                            editBox.SelectionLength = nameOnly.Length
+    '                                        End If
+    '                                    End Sub)
+    '                    End Sub)
+    '    End If
+
+    'End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    '    Handles lvFiles.AfterLabelEdit
+
+    '    RenameFileOrFolder_AfterLabelEdit(e)
+
+    'End Sub
 
     Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) _
         Handles lvFiles.ColumnClick
@@ -3436,50 +3649,329 @@ Public Class Form1
 
     End Sub
 
-    Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
-        ' -------- Rename file or folder after label edit in lvFiles --------
+    'Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
+    '    ' -------- Rename file or folder after label edit in lvFiles --------
+
+    '    _isRenaming = False
+
+
+    '    If e.Label Is Nothing Then Return ' user cancelled
+
+    '    Dim item = lvFiles.Items(e.Item)
+    '    Dim oldPath = CStr(item.Tag)
+    '    Dim newName = e.Label
+    '    Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
+
+    '    If oldPath = newPath Then Return ' no change
+
+    '    Try
+    '        ' Validate new name
+    '        If Directory.Exists(oldPath) Then
+
+    '            Directory.Move(oldPath, newPath)
+
+    '            ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
+
+    '        ElseIf IO.File.Exists(oldPath) Then
+
+    '            IO.File.Move(oldPath, newPath)
+
+    '            ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
+
+    '        End If
+
+    '        item.Tag = newPath
+
+    '    Catch ex As Exception
+
+    '        e.CancelEdit = True
+
+    '        ShowStatus(StatusPad & IconError & " Rename Failed. " & ex.Message)
+
+    '        Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
+
+    '    End Try
+
+    'End Sub
+
+
+    'Private Sub RenameFileOrFolder_AfterLabelEdit(ByRef e As LabelEditEventArgs)
+    '    _isRenaming = False
+
+    '    If e.Label Is Nothing Then Return ' user cancelled
+
+    '    Dim item = lvFiles.Items(e.Item)
+    '    Dim oldPath = CStr(item.Tag)
+    '    Dim newName = e.Label
+    '    Dim oldExt = Path.GetExtension(oldPath)
+    '    Dim newExt = Path.GetExtension(newName)
+
+    '    ' ================================
+    '    '   Prevent removing or changing extension
+    '    ' ================================
+    '    If IO.File.Exists(oldPath) Then
+    '        If String.IsNullOrEmpty(newExt) OrElse Not newExt.Equals(oldExt, StringComparison.OrdinalIgnoreCase) Then
+    '            e.CancelEdit = True
+    '            ShowStatus(StatusPad & IconError & " You cannot remove or change the file extension.")
+    '            Return
+    '        End If
+    '    End If
+
+    '    Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
+
+    '    If oldPath = newPath Then Return ' no change
+
+    '    Try
+    '        If Directory.Exists(oldPath) Then
+    '            Directory.Move(oldPath, newPath)
+    '            ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
+
+    '        ElseIf IO.File.Exists(oldPath) Then
+    '            IO.File.Move(oldPath, newPath)
+    '            ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
+    '        End If
+
+    '        item.Tag = newPath
+
+    '    Catch ex As Exception
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " Rename Failed. " & ex.Message)
+    '        Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+
+    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.AfterLabelEdit
+
+    '    _isRenaming = False
+
+    '    ' User pressed ESC → cancel silently
+    '    If e.Label Is Nothing Then Exit Sub
+
+    '    Dim result = ValidateNewName(e.Label)
+
+    '    If Not result.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
+    '        Exit Sub
+    '    End If
+
+    '    ' If valid → rename using your unified engine
+    '    PerformRename(CStr(lvFiles.Items(e.Item).Tag), e.Label)
+    'End Sub
+
+
+
+    Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    Handles lvFiles.AfterLabelEdit
 
         _isRenaming = False
 
-
-        If e.Label Is Nothing Then Return ' user cancelled
+        If e.Label Is Nothing Then Exit Sub
 
         Dim item = lvFiles.Items(e.Item)
         Dim oldPath = CStr(item.Tag)
-        Dim newName = e.Label
-        Dim newPath = Path.Combine(Path.GetDirectoryName(oldPath), newName)
 
-        If oldPath = newPath Then Return ' no change
+        ' First: general validation
+        Dim result = ValidateNewName(e.Label)
+        If Not result.IsValid Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
+            Exit Sub
+        End If
 
+        ' Second: extension protection (files only)
+        Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
+        If Not extCheck.IsValid Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
+            Exit Sub
+        End If
+
+        ' If valid → rename using your unified engine
+        PerformRename(oldPath, e.Label)
+    End Sub
+
+
+
+
+
+
+
+    'Private Sub PerformRename(oldFullPath As String, newName As String)
+    '    Try
+    '        Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
+    '        Dim newFullPath As String = Path.Combine(parentDir, newName)
+
+    '        ' File → rename file
+    '        If File.Exists(oldFullPath) Then
+    '            File.Move(oldFullPath, newFullPath)
+    '        ElseIf Directory.Exists(oldFullPath) Then
+    '            ' Folder → rename folder
+    '            Directory.Move(oldFullPath, newFullPath)
+    '        Else
+    '            ShowStatus(StatusPad & IconError & " The item no longer exists.")
+    '            Exit Sub
+    '        End If
+
+    '        ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+    'Private Sub PerformRename(oldFullPath As String, newName As String)
+    '    Try
+    '        Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
+    '        Dim newFullPath As String = Path.Combine(parentDir, newName)
+
+    '        ' ============================================================
+    '        '   Rule 0: No change → silently return (Explorer behavior)
+    '        ' ============================================================
+    '        If String.Equals(oldFullPath, newFullPath, StringComparison.OrdinalIgnoreCase) Then
+    '            Exit Sub
+    '        End If
+
+    '        ' File → rename file
+    '        If File.Exists(oldFullPath) Then
+    '            File.Move(oldFullPath, newFullPath)
+
+    '        ElseIf Directory.Exists(oldFullPath) Then
+    '            Directory.Move(oldFullPath, newFullPath)
+
+    '        Else
+    '            ShowStatus(StatusPad & IconError & " The item no longer exists.")
+    '            Exit Sub
+    '        End If
+
+    '        ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+
+
+
+
+
+
+
+    'Private Sub PerformRename(oldFullPath As String, newName As String)
+    '    Try
+    '        Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
+    '        Dim newFullPath As String = Path.Combine(parentDir, newName)
+
+    '        ' Rule 0: No change → silently return
+    '        If String.Equals(oldFullPath, newFullPath, StringComparison.OrdinalIgnoreCase) Then
+    '            Exit Sub
+    '        End If
+
+    '        ' File → rename file
+    '        If File.Exists(oldFullPath) Then
+    '            File.Move(oldFullPath, newFullPath)
+
+    '        ElseIf Directory.Exists(oldFullPath) Then
+    '            Directory.Move(oldFullPath, newFullPath)
+
+    '        Else
+    '            ShowStatus(StatusPad & IconError & " The item no longer exists.")
+    '            Exit Sub
+    '        End If
+
+    '        ' Update the ListViewItem.Tag to the new path
+    '        Dim item = lvFiles.Items.Cast(Of ListViewItem)().
+    '               FirstOrDefault(Function(i) CStr(i.Tag) = oldFullPath)
+
+    '        If item IsNot Nothing Then
+    '            item.Tag = newFullPath
+    '            item.Text = newName
+    '        End If
+
+    '        ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+    Private Sub PerformRename(oldFullPath As String, newName As String)
         Try
-            ' Validate new name
-            If Directory.Exists(oldPath) Then
+            Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
+            Dim newFullPath As String = Path.Combine(parentDir, newName)
 
-                Directory.Move(oldPath, newPath)
-
-                ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
-
-            ElseIf IO.File.Exists(oldPath) Then
-
-                IO.File.Move(oldPath, newPath)
-
-                ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
-
+            ' ============================================================
+            '   Rule 0: No change (case-sensitive)
+            ' ============================================================
+            If String.Equals(oldFullPath, newFullPath, StringComparison.Ordinal) Then
+                Exit Sub
             End If
 
-            item.Tag = newPath
+            ' File → rename file
+            If File.Exists(oldFullPath) Then
+                File.Move(oldFullPath, newFullPath)
+
+            ElseIf Directory.Exists(oldFullPath) Then
+                Directory.Move(oldFullPath, newFullPath)
+
+            Else
+                ShowStatus(StatusPad & IconError & " The item no longer exists.")
+                Exit Sub
+            End If
+
+            ' Update ListView item
+            Dim item = lvFiles.Items.Cast(Of ListViewItem)().
+                   FirstOrDefault(Function(i) CStr(i.Tag) = oldFullPath)
+
+            If item IsNot Nothing Then
+                item.Tag = newFullPath
+                item.Text = newName
+            End If
+
+            ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
 
         Catch ex As Exception
-
-            e.CancelEdit = True
-
-            ShowStatus(StatusPad & IconError & " Rename Failed. " & ex.Message)
-
-            Debug.WriteLine("RenameFileOrFolder_AfterLabelEdit Error: " & ex.Message)
-
+            ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
         End Try
-
     End Sub
+
+
+
+
+
+    ' ------------------------------------------------------------
+    ' Rule X: Prevent removing or changing the file extension
+    ' ------------------------------------------------------------
+    Private Function ValidateNewNameForFile(oldFullPath As String, newName As String) _
+    As (IsValid As Boolean, ErrorMessage As String)
+
+        ' Only applies to files
+        If File.Exists(oldFullPath) Then
+            Dim oldExt = Path.GetExtension(oldFullPath)
+            Dim newExt = Path.GetExtension(newName)
+
+            If String.IsNullOrEmpty(newExt) OrElse
+           Not newExt.Equals(oldExt, StringComparison.OrdinalIgnoreCase) Then
+
+                Return (False, "You cannot remove or change the file extension.")
+            End If
+        End If
+
+        Return (True, "")
+    End Function
+
+
+
+
+
 
     'Private Async Function CopyFile(
     '    source As String,
