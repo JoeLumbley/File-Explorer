@@ -24,9 +24,7 @@
 ' Github repo: https://github.com/JoeLumbley/File-Explorer
 ' Documentation: You can find the documentation at the GitHub repository.
 
-
 Imports System.IO
-'Imports System.Net.WebRequestMethods
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
