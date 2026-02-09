@@ -954,14 +954,9 @@ Public Class Form1
                 If parts.Length > 1 Then
                     Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
                     NavigateTo(newPath)
-
-
                 Else
-                    'ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
                     ShowStatus(StatusPad & IconDialog & "  Usage: cd [directory]  -  Example: cd C:\")
                 End If
-
-
 
             Case "copy", "cp"
                 If parts.Length > 2 Then
