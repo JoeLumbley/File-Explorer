@@ -2771,17 +2771,7 @@ Public Class Form1
         currentFolder = path
         txtAddressBar.Text = path
 
-        'UpdateFileListPinState()
-        'UpdatePinButtonState()
-        'UpdateFileButtonsAndMenus()
-        'UpdateEditButtonsAndMenus()
         UpdateAllUIStates()
-
-        'lvFiles.BeginUpdate()
-        'lvFiles.Items.Clear()
-        'lvFiles.EndUpdate()
-
-
 
         Await PopulateFiles(path) ' Await the async method
 
