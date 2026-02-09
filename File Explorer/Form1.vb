@@ -958,39 +958,6 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
                 End If
 
-            'Case "copy", "cp"
-            '    If parts.Length > 2 Then
-            '        Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-            '        Dim destination As String = parts(parts.Length - 1).Trim()
-
-            '        ' Check if source file or directory exists
-            '        If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
-
-            '            ShowStatus(StatusPad & IconError &
-            '                       " Copy failed:  Source """ &
-            '                       source &
-            '                       """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
-            '            Return
-            '        End If
-
-            '        ' Check if destination directory exists
-            '        If Not Directory.Exists(destination) Then
-
-            '            ShowStatus(StatusPad & IconError &
-            '                       " Copy failed.  Destination: """ &
-            '                       destination &
-            '                       """ does not exist.  Paths with spaces must be enclosed in quotes.  Example: copy ""C:\folder A"" ""C:\folder B""")
-
-            '            Return
-            '        End If
-
-            '        copyCts = New CancellationTokenSource()
-
-            '        Await CopyFileOrDirectory(source, destination, copyCts.Token)
-
-            '    Else
-            '        ShowStatus(StatusPad & IconDialog & " Usage: copy [source] [destination] - Example: copy C:\folder1\file.doc C:\folder2")
-            '    End If
 
 
             Case "copy", "cp"
