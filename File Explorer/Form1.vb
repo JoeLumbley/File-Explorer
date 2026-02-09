@@ -958,75 +958,83 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & "  Usage: cd [directory]  -  Example: cd C:\")
                 End If
 
+            'Case "copy", "cp"
+            '    If parts.Length > 2 Then
+
+            '        Dim source As String =
+            '            String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+            '        Dim destinationRoot As String =
+            '            parts(parts.Length - 1).Trim()
+
+            '        ' ------------------------------------------------------------
+            '        ' Validate source
+            '        ' ------------------------------------------------------------
+            '        If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+            '            ShowStatus(StatusPad & IconError &
+            '                       $" Copy failed: Source ""{source}"" does not exist." &
+            '                       " If the path contains spaces, enclose it in quotes.")
+            '            Return
+            '        End If
+
+            '        ' ------------------------------------------------------------
+            '        ' Validate destination root
+            '        ' ------------------------------------------------------------
+            '        If Not Directory.Exists(destinationRoot) Then
+            '            ShowStatus(StatusPad & IconError &
+            '                       $" Copy failed: Destination ""{destinationRoot}"" does not exist." &
+            '                       " If the path contains spaces, enclose it in quotes.")
+            '            Return
+            '        End If
+
+            '        ' ------------------------------------------------------------
+            '        ' Prevent copying a folder into itself or its own subtree
+            '        ' ------------------------------------------------------------
+            '        If Directory.Exists(source) Then
+            '            Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+            '            Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+            '            If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+            '                ShowStatus(StatusPad & IconError &
+            '                           " Cannot copy a folder into itself or one of its subfolders.")
+            '                Return
+            '            End If
+            '        End If
+
+            '        ' ------------------------------------------------------------
+            '        ' Perform unified copy (always Copy, never Cut)
+            '        ' ------------------------------------------------------------
+            '        copyCts = New CancellationTokenSource()
+            '        Dim ct = copyCts.Token
+
+            '        Dim result As CopyResult =
+            '            Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+
+            '        ' ------------------------------------------------------------
+            '        ' Report result
+            '        ' ------------------------------------------------------------
+            '        If result.Success Then
+            '            ShowStatus(StatusPad & IconCopy &
+            '                       $" Copied {result.FilesCopied} file(s), " &
+            '                       $"{result.FilesSkipped} skipped.")
+            '        Else
+            '            ShowStatus(StatusPad & IconError &
+            '                       " Copy completed with errors. Some items could not be copied.")
+            '        End If
+
+            '    Else
+            '        ShowStatus(StatusPad & IconDialog &
+            '                   " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+            '    End If
+
+
+
+
+
+
             Case "copy", "cp"
-                If parts.Length > 2 Then
 
-                    Dim source As String =
-                        String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-
-                    Dim destinationRoot As String =
-                        parts(parts.Length - 1).Trim()
-
-                    ' ------------------------------------------------------------
-                    ' Validate source
-                    ' ------------------------------------------------------------
-                    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
-                        ShowStatus(StatusPad & IconError &
-                                   $" Copy failed: Source ""{source}"" does not exist." &
-                                   " If the path contains spaces, enclose it in quotes.")
-                        Return
-                    End If
-
-                    ' ------------------------------------------------------------
-                    ' Validate destination root
-                    ' ------------------------------------------------------------
-                    If Not Directory.Exists(destinationRoot) Then
-                        ShowStatus(StatusPad & IconError &
-                                   $" Copy failed: Destination ""{destinationRoot}"" does not exist." &
-                                   " If the path contains spaces, enclose it in quotes.")
-                        Return
-                    End If
-
-                    ' ------------------------------------------------------------
-                    ' Prevent copying a folder into itself or its own subtree
-                    ' ------------------------------------------------------------
-                    If Directory.Exists(source) Then
-                        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
-                        Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
-
-                        If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
-                            ShowStatus(StatusPad & IconError &
-                                       " Cannot copy a folder into itself or one of its subfolders.")
-                            Return
-                        End If
-                    End If
-
-                    ' ------------------------------------------------------------
-                    ' Perform unified copy (always Copy, never Cut)
-                    ' ------------------------------------------------------------
-                    copyCts = New CancellationTokenSource()
-                    Dim ct = copyCts.Token
-
-                    Dim result As CopyResult =
-                        Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
-
-                    ' ------------------------------------------------------------
-                    ' Report result
-                    ' ------------------------------------------------------------
-                    If result.Success Then
-                        ShowStatus(StatusPad & IconCopy &
-                                   $" Copied {result.FilesCopied} file(s), " &
-                                   $"{result.FilesSkipped} skipped.")
-                    Else
-                        ShowStatus(StatusPad & IconError &
-                                   " Copy completed with errors. Some items could not be copied.")
-                    End If
-
-                Else
-                    ShowStatus(StatusPad & IconDialog &
-                               " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
-                End If
-
+                HandleCopyCommand(parts)
 
             Case "move", "mv"
 
@@ -1384,6 +1392,110 @@ Public Class Form1
         End Select
 
     End Sub
+
+
+
+    Private Async Sub HandleCopyCommand(parts As String())
+        If parts.Length <= 2 Then
+            ShowUsageCopy()
+            Return
+        End If
+
+        Dim source = ParseSource(parts)
+        Dim destinationRoot = ParseDestination(parts)
+
+        If Not ValidateSourceExists(source) Then Return
+        If Not ValidateDestinationExists(destinationRoot) Then Return
+        If Not ValidateNotCopyingIntoSelf(source, destinationRoot) Then Return
+
+        Await PerformCopy(source, destinationRoot)
+    End Sub
+
+
+
+    Private Function ParseSource(parts As String()) As String
+        Return String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+    End Function
+
+    'Private Function ParseDestination(parts As String()) As String
+    '    Return parts(parts.Length - 1).Trim()
+    'End Function
+
+    Private Function ParseDestination(parts As String()) As String
+        If parts.Length < 2 Then
+            Return ""
+        End If
+
+        Return parts(parts.Length - 1).Trim()
+    End Function
+
+    Private Function ValidateSourceExists(source As String) As Boolean
+        If IO.File.Exists(source) OrElse Directory.Exists(source) Then
+            Return True
+        End If
+
+        ShowStatus(StatusPad & IconError &
+               $"  Copy failed: Source ""{source}"" does not exist." &
+               " If the path contains spaces, enclose it in quotes.")
+        Return False
+    End Function
+
+
+
+
+    Private Function ValidateDestinationExists(dest As String) As Boolean
+        If Directory.Exists(dest) Then
+            Return True
+        End If
+
+        ShowStatus(StatusPad & IconError &
+               $"  Copy failed: Destination ""{dest}"" does not exist." &
+               " If the path contains spaces, enclose it in quotes.")
+        Return False
+    End Function
+
+
+
+
+    Private Function ValidateNotCopyingIntoSelf(source As String, dest As String) As Boolean
+        If Not Directory.Exists(source) Then Return True
+
+        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+        Dim destFull = Path.GetFullPath(dest).TrimEnd(Path.DirectorySeparatorChar)
+
+        If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+            ShowStatus(StatusPad & IconError &
+                   "  Cannot copy a folder into itself or one of its subfolders.")
+            Return False
+        End If
+
+        Return True
+    End Function
+
+
+    Private Async Function PerformCopy(source As String, dest As String) As Task
+        copyCts = New CancellationTokenSource()
+        Dim ct = copyCts.Token
+
+        Dim result As CopyResult =
+        Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
+
+        If result.Success Then
+            ShowStatus(StatusPad & IconCopy &
+                   $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+        Else
+            ShowStatus(StatusPad & IconError &
+                   "  Copy completed with errors. Some items could not be copied.")
+        End If
+    End Function
+
+
+    Private Sub ShowUsageCopy()
+        ShowStatus(StatusPad & IconDialog &
+               "  Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    End Sub
+
+
 
     Private Sub OpenSelectedItem()
         ' Is a file or folder selected?
@@ -4710,6 +4822,20 @@ Public Class Form1
 
         Test_RoundTrip()
 
+        TestParseSource()
+
+
+        TestParseDestination()
+
+        TestValidateSourceExists()
+
+        TestValidateDestinationExists()
+
+        TestValidateNotCopyingIntoSelf()
+
+
+
+
         Debug.WriteLine("All tests executed.")
 
     End Sub
@@ -4898,6 +5024,181 @@ Public Class Form1
         Debug.WriteLine("✓ GetUniqueFilePath tests passed")
 
     End Sub
+
+    Private Sub TestParseSource()
+
+        Debug.WriteLine("→ Testing ParseSource")
+
+        ' === Basic Cases ===
+        AssertTrue(ParseSource({"copy", "A", "B"}) = "A",
+               "Simple two-argument form should return 'A'")
+
+        AssertTrue(ParseSource({"copy", "C:\A", "C:\Dest"}) = "C:\A",
+               "Minimum valid form should return the source path")
+
+        ' === Multi‑segment source (spaces reconstructed) ===
+        AssertTrue(ParseSource({"copy", "C:\A", "B", "C:\Dest"}) = "C:\A B",
+               "Source with two segments should join correctly")
+
+        AssertTrue(ParseSource({"copy", "C:\A", "B", "C", "C:\Dest"}) = "C:\A B C",
+               "Source with three segments should join correctly")
+
+        AssertTrue(ParseSource({"copy", "C:\A", "B", "C", "D", "C:\Dest"}) = "C:\A B C D",
+               "Source with four segments should join correctly")
+
+        ' === Whitespace handling ===
+        AssertTrue(ParseSource({"copy", "   C:\A", "B   ", "C:\Dest"}) = "C:\A B",
+               "Leading/trailing whitespace should be trimmed")
+
+        ' === Edge Cases ===
+        AssertTrue(ParseSource({"copy", "onlyone"}) = "",
+               "Too few parts should return empty string (safe fallback)")
+
+        AssertTrue(ParseSource({"copy"}) = "",
+               "Single token should return empty string (safe fallback)")
+
+        Debug.WriteLine("✓ ParseSource tests passed")
+
+    End Sub
+
+    Private Sub TestParseDestination()
+
+        Debug.WriteLine("→ Testing ParseDestination")
+
+        ' === Basic Cases ===
+        AssertTrue(ParseDestination({"copy", "A", "B"}) = "B",
+               "Destination should be the last argument")
+
+        AssertTrue(ParseDestination({"copy", "C:\A", "C:\Dest"}) = "C:\Dest",
+               "Two-argument form should return the last token")
+
+        ' === Multi-segment source (destination unaffected) ===
+        AssertTrue(ParseDestination({"copy", "C:\A", "B", "C:\Dest"}) = "C:\Dest",
+               "Destination should remain the final token")
+
+        AssertTrue(ParseDestination({"copy", "C:\A", "B", "C", "D", "C:\Dest"}) = "C:\Dest",
+               "Destination should remain the final token even with long sources")
+
+        ' === Whitespace handling ===
+        AssertTrue(ParseDestination({"copy", "C:\A", "B", "   C:\Dest   "}) = "C:\Dest",
+               "Destination should be trimmed")
+
+        ' === Edge Cases ===
+        AssertTrue(ParseDestination({"copy"}) = "",
+               "Single token should return empty string (safe fallback)")
+
+        AssertTrue(ParseDestination({"copy", "onlyone"}) = "onlyone",
+               "Two tokens should return the second token")
+
+        Debug.WriteLine("✓ ParseDestination tests passed")
+
+    End Sub
+
+    Private Sub TestValidateSourceExists()
+
+        Debug.WriteLine("→ Testing ValidateSourceExists")
+
+        ' === Setup ===
+        Dim tempFile = Path.GetTempFileName()
+        Dim tempDir = Path.Combine(Path.GetTempPath(), "TestSrcDir_" & Guid.NewGuid().ToString())
+        Directory.CreateDirectory(tempDir)
+
+        ' === Positive Tests ===
+        AssertTrue(ValidateSourceExists(tempFile),
+               "Existing file should be considered valid")
+
+        AssertTrue(ValidateSourceExists(tempDir),
+               "Existing directory should be considered valid")
+
+        ' === Negative Tests ===
+        AssertFalse(ValidateSourceExists("Z:\DefinitelyDoesNotExist.xyz"),
+                "Nonexistent file should be invalid")
+
+        AssertFalse(ValidateSourceExists("C:\ThisFolderShouldNotExist_12345"),
+                "Nonexistent directory should be invalid")
+
+        ' === Cleanup ===
+        File.Delete(tempFile)
+        Directory.Delete(tempDir)
+
+        Debug.WriteLine("✓ ValidateSourceExists tests passed")
+
+    End Sub
+
+    Private Sub TestValidateDestinationExists()
+
+        Debug.WriteLine("→ Testing ValidateDestinationExists")
+
+        ' === Setup ===
+        Dim tempDir = Path.Combine(Path.GetTempPath(), "TestDestDir_" & Guid.NewGuid().ToString())
+        Directory.CreateDirectory(tempDir)
+
+        ' === Positive Tests ===
+        AssertTrue(ValidateDestinationExists(tempDir),
+               "Existing directory should be considered valid")
+
+        ' === Negative Tests ===
+        AssertFalse(ValidateDestinationExists("Z:\Nope_Nope_Nope"),
+                "Nonexistent directory should be invalid")
+
+        AssertFalse(ValidateDestinationExists(Path.Combine(tempDir, "NotARealSubfolder")),
+                "Nonexistent subdirectory should be invalid")
+
+        ' === Cleanup ===
+        Directory.Delete(tempDir)
+
+        Debug.WriteLine("✓ ValidateDestinationExists tests passed")
+
+    End Sub
+
+    Private Sub TestValidateNotCopyingIntoSelf()
+
+        Debug.WriteLine("→ Testing ValidateNotCopyingIntoSelf")
+
+        ' === Setup ===
+        Dim root = Path.Combine(Path.GetTempPath(), "CopySelfTest_" & Guid.NewGuid().ToString())
+        Dim sub1 = Path.Combine(root, "Sub1")
+        Dim sub2 = Path.Combine(sub1, "Sub2")
+
+        Directory.CreateDirectory(root)
+        Directory.CreateDirectory(sub1)
+        Directory.CreateDirectory(sub2)
+
+        ' === Positive Tests (Allowed) ===
+        AssertTrue(ValidateNotCopyingIntoSelf(root, Path.GetTempPath()),
+               "Copying root into unrelated folder should be allowed")
+
+        AssertTrue(ValidateNotCopyingIntoSelf(sub1, root),
+               "Copying subfolder into its parent should be allowed")
+
+        ' === Negative Tests (Blocked) ===
+        AssertFalse(ValidateNotCopyingIntoSelf(root, sub1),
+                "Copying folder into its own subfolder should be blocked")
+
+        AssertFalse(ValidateNotCopyingIntoSelf(root, sub2),
+                "Copying folder into deep subfolder should be blocked")
+
+        AssertFalse(ValidateNotCopyingIntoSelf(sub1, sub2),
+                "Copying subfolder into its own subfolder should be blocked")
+
+        ' === Edge Case: Case-insensitive match ===
+        AssertFalse(ValidateNotCopyingIntoSelf(root.ToUpper(), sub1.ToLower()),
+                "Case-insensitive path comparison should still block unsafe copies")
+
+        ' === Cleanup ===
+        Directory.Delete(sub2)
+        Directory.Delete(sub1)
+        Directory.Delete(root)
+
+        Debug.WriteLine("✓ ValidateNotCopyingIntoSelf tests passed")
+
+    End Sub
+
+
+
+
+
+
 
     Private Sub TestListViewParser()
 
