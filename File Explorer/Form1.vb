@@ -954,8 +954,11 @@ Public Class Form1
                 If parts.Length > 1 Then
                     Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
                     NavigateTo(newPath)
+
+
                 Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
+                    'ShowStatus(StatusPad & IconDialog & " Usage: cd [directory] - cd C:\ ")
+                    ShowStatus(StatusPad & IconDialog & "  Usage: cd [directory]  -  Example: cd C:\")
                 End If
 
 
@@ -2757,7 +2760,8 @@ Public Class Form1
         ' Validate that the folder exists
         If Not Directory.Exists(path) Then
             'MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            ShowStatus(StatusPad & IconError & " Folder not found: " & path)
+            'ShowStatus(StatusPad & IconError & $" Folder not found:  ""{path}"")
+            ShowStatus(StatusPad & IconError & $"  Folder not found: ""{path}""")
             Exit Sub
         End If
 
@@ -2766,10 +2770,11 @@ Public Class Form1
             Return
         End If
 
-        ShowStatus(StatusPad & IconNavigate & "  Navigating to: " & path)
+        ShowStatus(StatusPad & IconNavigate & "  Navigating to:  " & path)
 
         currentFolder = path
         txtAddressBar.Text = path
+        PlaceCaretAtEndOfAddressBar()
 
         UpdateAllUIStates()
 
