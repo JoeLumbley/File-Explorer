@@ -2756,8 +2756,8 @@ Public Class Form1
 
         ' Validate that the folder exists
         If Not Directory.Exists(path) Then
-            MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            ShowStatus(StatusPad & IconWarning & " Folder not found: " & path)
+            'MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ShowStatus(StatusPad & IconError & " Folder not found: " & path)
             Exit Sub
         End If
 
