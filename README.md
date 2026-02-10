@@ -525,7 +525,11 @@ df D
 
 ---
 
+
+
 ## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `signout`, `poweroff`, `halt`, `end`, `terminate`, `stop`, `leave`, `farewell`, `adios`, `ciao`, `sayonara`, `goodbye`, `later`
+
+
 
 **Usage:**  
 ```
@@ -579,7 +583,7 @@ man
 
 
 
-# 📌 Pin - `pin`
+## 📌 Pin - `pin`
 
 **Usage:**  
 ```
@@ -587,7 +591,7 @@ pin [path]
 ```
 
 **Description:**  
-Pins a folder to Easy Access using the unified pin engine.  
+Pins a folder to Easy Access.  
 If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
 
 **Examples:**  
