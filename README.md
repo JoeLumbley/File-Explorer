@@ -12,7 +12,7 @@
 
 ## Features
 
-### 🗂 Graphical Interface
+### 🖱️ Graphical Interface
 - **Navigation**: Browse directories using a tree view and list view.
 - **File Operations**: Perform essential actions such as:
   - Change Directory (`cd`)
