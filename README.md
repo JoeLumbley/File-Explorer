@@ -569,6 +569,55 @@ man
 ---
 
 
+
+
+
+
+
+
+
+
+
+
+# 📌 Pin - `pin`
+
+**Usage:**  
+```
+pin [path]
+```
+
+**Description:**  
+Pins a folder to Easy Access using the unified pin engine.  
+If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+
+**Examples:**  
+```
+pin C:\Docs
+pin "C:\My Folder"
+pin
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 🧠 Quoting Rules (Important)
 
 Paths containing spaces **must** be enclosed in quotes:
