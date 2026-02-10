@@ -12,7 +12,7 @@
 
 ## Features
 
-### 🗂 Graphical Interface
+### 🖱️ Graphical Interface
 - **Navigation**: Browse directories using a tree view and list view.
 - **File Operations**: Perform essential actions such as:
   - Change Directory (`cd`)
@@ -131,18 +131,18 @@ If you’re curious, the GitHub repository includes the full source code and doc
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#-features-overview)
   - [Commands](#-commands)
-    - [cd — Change Directory](#-change-directory---cd)
-    - [mkdir / make — Create Directory](#-create-directory---mkdir-make)
-    - [copy — Copy Files or Folders](#-copy---copy)
-    - [move — Move Files or Folders](#-move---move)
-    - [delete — Delete Files or Folders](#-delete---delete)
-    - [rename — Rename Files or Folders](#-rename---rename)
-    - [text / txt — Create Text Files](#-create-text-file---text-txt)
-    - [open — Open Files or Folders](#-open---open)
-    - [find / search — Search](#-search---find-search)
-    - [findnext / searchnext — Next Search Result](#-next-search-result---findnext-searchnext)
-    - [exit — Closes the App](#-exit---exit-quit)
-    - [help — Show Help](#-help---help)
+    - [cd - Change Directory](#-change-directory---cd)
+    - [mkdir / make - Create Directory](#-create-directory---mkdir-make)
+    - [copy - Copy Files or Folders](#-copy---copy)
+    - [move - Move Files or Folders](#-move---move)
+    - [delete - Delete Files or Folders](#-delete---delete)
+    - [rename - Rename Files or Folders](#-rename---rename)
+    - [text / txt - Create Text Files](#-create-text-file---text-txt)
+    - [open - Open Files or Folders](#-open---open)
+    - [find / search - Search](#-search---find-search)
+    - [findnext / searchnext - Next Search Result](#-next-search-result---findnext-searchnext)
+    - [exit - Closes the App](#-exit---exit-quit)
+    - [help - Show Help](#-help---help)
    
       
   - [Quoting Rules](#-quoting-rules-important)
@@ -497,19 +497,77 @@ Wraps around when reaching the end.
 
 [ Table of Contents](#table-of-contents)
 
----
-
-## ❌ Exit - `exit`, `quit`
-
-Closes the application.
 
 ---
 
-## ❓ Help - `help`
+## 💽 Disk Free - `df`
 
-Displays the full list of commands.
+**Usage:**  
+```
+df <drive_letter>:
+```
+
+**Description:**  
+Shows free and total disk space for the specified drive.  
+Accepts any of the following formats:
+
+- `C`
+- `C:`
+- `C:\`
+
+**Examples:**  
+```
+df C:
+df D
+```
+
+[ Table of Contents](#table-of-contents)
 
 ---
+
+## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `signout`, `poweroff`, `halt`, `end`, `terminate`, `stop`, `leave`, `farewell`, `adios`, `ciao`, `sayonara`, `goodbye`, `later`
+
+**Usage:**  
+```
+exit
+```
+
+**Description:**  
+Closes the application.  
+A confirmation dialog appears to prevent accidental exits.
+
+**Examples:**  
+```
+exit
+quit
+bye
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+## ❓ Help - `help`, `man`, `commands`
+
+**Usage:**  
+```
+help
+```
+
+**Description:**  
+Displays the full list of available commands and their descriptions.
+
+**Examples:**  
+```
+help
+commands
+man
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
 
 # 🧠 Quoting Rules (Important)
 
