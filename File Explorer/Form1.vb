@@ -176,7 +176,7 @@ Public Class Form1
     Private _tabDown As Boolean = False
 
 
-
+    Private _altPDown As Boolean = False
 
 
 
@@ -508,6 +508,9 @@ Public Class Form1
 
         PinOrUnpin(target)
 
+        'UpdateAllUIStates()
+        UpdatePinButtonState()
+
     End Sub
 
 
@@ -695,6 +698,20 @@ Public Class Form1
 
     'End Sub
 
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+    '    Select Case e.KeyCode
+    '        Case Keys.Enter
+    '            _enterDown = False
+
+    '        Case Keys.Tab
+    '            _tabDown = False
+    '    End Select
+    'End Sub
+
+
+
+
+
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
         Select Case e.KeyCode
             Case Keys.Enter
@@ -702,8 +719,19 @@ Public Class Form1
 
             Case Keys.Tab
                 _tabDown = False
+
+            Case Keys.P
+                If ModifierKeys = Keys.Alt Then
+                    _altPDown = False
+                End If
         End Select
     End Sub
+
+
+
+
+
+
 
     'Private Function HandleTabNavigation(keyData As Keys) As Boolean
     '    ' Only handle Tab
@@ -915,11 +943,62 @@ Public Class Form1
             Return True
         End If
 
+        '' ===========================
+        '' ALT + P (Add to/Remove from pins)
+        '' ===========================
+        'If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
+        '    Dim target As String = GetPinnableTarget()
+        '    ' If no contextual target, fall back to currentFolder
+        '    If target Is Nothing Then
+        '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+        '            target = currentFolder
+        '        Else
+        '            Return False
+        '        End If
+        '    End If
+        '    TogglePin(target)
+        '    ShowStatus($"{target}")
+        '    Return True
+        'End If
+
+        ' ===========================
+        ' ALT + P (Add to/Remove from pins)
+        ' ===========================
+        'If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
+
+        '    Dim target As String = GetPinnableTarget()
+
+        '    ' If no contextual target, fall back to currentFolder
+        '    If target Is Nothing Then
+        '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+        '            target = currentFolder
+        '        Else
+        '            Return False
+        '        End If
+        '    End If
+
+        '    ' Unified pin/unpin engine
+        '    PinOrUnpin(target)
+
+        '    UpdateAllUIStates()
+
+        '    Return True
+        'End If
+
+
         ' ===========================
         ' ALT + P (Add to/Remove from pins)
         ' ===========================
         If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
+
+            ' Block repeated Alt+P while key is held down
+            If _altPDown Then
+                Return True   ' swallow repeat safely
+            End If
+            _altPDown = True
+
             Dim target As String = GetPinnableTarget()
+
             ' If no contextual target, fall back to currentFolder
             If target Is Nothing Then
                 If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
@@ -928,10 +1007,18 @@ Public Class Form1
                     Return False
                 End If
             End If
-            TogglePin(target)
-            ShowStatus($"{target}")
+
+            ' Unified pin/unpin engine
+            PinOrUnpin(target)
+
+            'UpdateAllUIStates()
+            UpdatePinButtonState()
+
             Return True
         End If
+
+
+
 
         ' ===========================
         ' ALT + LEFT (Back)
@@ -1544,6 +1631,8 @@ Public Class Form1
                         'ShowStatus($"{state}: {target}")
                         PinOrUnpin(target)
 
+                        UpdatePinButtonState()
+
                     Else
                         ShowStatus(StatusPad & IconDialog &
                                    "  Invalid folder. Usage: pin [folder_path]")
@@ -1570,6 +1659,10 @@ Public Class Form1
                 'ShowStatus($"{newState}: {fallback}")
 
                 PinOrUnpin(fallback)
+
+                'UpdateAllUIStates()
+                UpdatePinButtonState()
+
 
                 Return
 
