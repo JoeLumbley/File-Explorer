@@ -169,6 +169,11 @@ Public Class Form1
 
     Private _lastFocusedControl As Control = Nothing
 
+
+    Private _enterDown As Boolean = False
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -553,11 +558,58 @@ Public Class Form1
         RestoreBackground()
     End Sub
 
+    'Private Function HandleEnterKey(keyData As Keys) As Boolean
+
+    '    If keyData <> Keys.Enter Then
+    '        Return False
+    '    End If
+
+    '    ' Block global Enter behavior during rename mode
+    '    If _isRenaming Then
+    '        Return False
+    '    End If
+
+    '    ' ===========================
+    '    '   ENTER (Address Bar execute)
+    '    ' ===========================
+    '    If txtAddressBar.Focused Then
+    '        ExecuteCommand(txtAddressBar.Text.Trim())
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   ENTER (TreeView toggle)
+    '    ' ===========================
+    '    If tvFolders.Focused Then
+    '        ToggleExpandCollapse()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   ENTER (File List open)
+    '    ' ===========================
+    '    If lvFiles.Focused Then
+    '        OpenSelectedItem()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
         If keyData <> Keys.Enter Then
+            _enterDown = False
             Return False
         End If
+
+        ' Block repeated Enter while key is held down
+        If _enterDown Then
+            Return True   ' swallow repeat safely
+        End If
+
+        _enterDown = True
 
         ' Block global Enter behavior during rename mode
         If _isRenaming Then
@@ -590,6 +642,14 @@ Public Class Form1
 
         Return False
     End Function
+
+
+
+    Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+        If e.KeyCode = Keys.Enter Then
+            _enterDown = False
+        End If
+    End Sub
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         ' Only handle Tab
@@ -932,7 +992,8 @@ Public Class Form1
     End Function
 
 
-    Private Async Sub ExecuteCommand(command As String)
+    'Private Async Sub ExecuteCommand(command As String)
+    Private Sub ExecuteCommand(command As String)
 
         ' Use regex to split by spaces but keep quoted substrings together
         Dim parts As String() = Regex.Matches(command, "[\""].+?[\""]|[^ ]+").
@@ -2703,18 +2764,6 @@ Public Class Form1
 
     End Function
 
-    Public Class CopyResult
-        Public Property FilesCopied As Integer
-        Public Property FilesSkipped As Integer
-        Public Property DirectoriesCreated As Integer
-        Public Property Errors As New List(Of String)
-
-        Public ReadOnly Property Success As Boolean
-            Get
-                Return Errors.Count = 0
-            End Get
-        End Property
-    End Class
 
     ' ------------------------------------------------------------
     ' Pure file copy
@@ -5339,11 +5388,8 @@ End Class
 ' Unified result object for file and directory copy operations
 ' ------------------------------------------------------------
 Public Class CopyResult
-    Public Property FilesCopied As Integer = 0
-    Public Property FilesSkipped As Integer = 0
-
-    Public Property FilesRenamed As Integer = 0
-
+    Public Property FilesCopied As Integer
+    Public Property FilesSkipped As Integer
     Public Property DirectoriesCreated As Integer
     Public Property Errors As New List(Of String)
 
@@ -5353,6 +5399,14 @@ Public Class CopyResult
         End Get
     End Property
 End Class
+
+
+
+
+
+
+
+
 
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
 ' The goal: Explorer‑grade behavior with learner‑friendly clarity.
