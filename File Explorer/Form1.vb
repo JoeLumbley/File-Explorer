@@ -173,6 +173,18 @@ Public Class Form1
     Private _enterDown As Boolean = False
 
 
+    Private _tabDown As Boolean = False
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -645,15 +657,67 @@ Public Class Form1
 
 
 
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+    '    If e.KeyCode = Keys.Enter Then
+    '        _enterDown = False
+    '    End If
+    '    If e.KeyCode = Keys.Tab Then
+    '        _tabDown = False
+    '    End If
+
+    'End Sub
+
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-        If e.KeyCode = Keys.Enter Then
-            _enterDown = False
-        End If
+        Select Case e.KeyCode
+            Case Keys.Enter
+                _enterDown = False
+
+            Case Keys.Tab
+                _tabDown = False
+        End Select
     End Sub
+
+    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
+    '    ' Only handle Tab
+    '    If keyData <> Keys.Tab Then Return False
+
+    '    ' Do not interfere with rename mode
+    '    If _isRenaming Then Return False
+
+    '    Dim handled As Boolean = False
+
+    '    If txtAddressBar.Focused Then
+    '        handled = FocusFileList()
+    '    ElseIf lvFiles.Focused Then
+    '        handled = FocusTreeView()
+    '    ElseIf tvFolders.Focused Then
+    '        handled = FocusAddressBar()
+    '    Else
+    '        handled = FocusAddressBar()
+    '    End If
+
+    '    If handled Then
+    '        UpdateAllUIStates()
+    '    End If
+
+    '    Return handled
+    'End Function
+
+
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         ' Only handle Tab
-        If keyData <> Keys.Tab Then Return False
+        If keyData <> Keys.Tab Then
+            _tabDown = False
+            Return False
+        End If
+
+        ' Block repeated Tab while key is held
+        If _tabDown Then
+            Return True   ' swallow repeat safely
+        End If
+
+        _tabDown = True
 
         ' Do not interfere with rename mode
         If _isRenaming Then Return False
@@ -676,6 +740,27 @@ Public Class Form1
 
         Return handled
     End Function
+
+
+
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+    '    If e.KeyCode = Keys.Tab Then
+    '        _tabDown = False
+    '    End If
+    'End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
