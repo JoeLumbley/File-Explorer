@@ -459,6 +459,39 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim target As String = GetPinnableTarget()
+
+    '    ' If no contextual target, fall back to currentFolder
+    '    If target Is Nothing Then
+    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '            target = currentFolder
+    '        Else
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    '' Perform the toggle
+    '    'TogglePin(target)
+
+    '    '' Now check the new state
+    '    'Dim state As String = If(IsPinned(target), "Pinned", "Unpinned")
+
+    '    'ShowStatus($"{state}: {target}")
+
+    '    PinOrUnpin(target)
+
+
+    'End Sub
+
+
+
+
+
+
+
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
@@ -473,13 +506,8 @@ Public Class Form1
             End If
         End If
 
-        ' Perform the toggle
-        TogglePin(target)
+        PinOrUnpin(target)
 
-        ' Now check the new state
-        Dim state As String = If(IsPinned(target), "Pinned", "Unpinned")
-
-        ShowStatus($"{state}: {target}")
     End Sub
 
 
@@ -1078,6 +1106,8 @@ Public Class Form1
 
 
     'Private Async Sub ExecuteCommand(command As String)
+
+
     Private Sub ExecuteCommand(command As String)
 
         ' Use regex to split by spaces but keep quoted substrings together
@@ -1501,6 +1531,49 @@ Public Class Form1
 
 
 
+
+            Case "pin"
+
+                ' If a path was provided
+                If parts.Length > 1 Then
+                    Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+                    If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
+                        'TogglePin(target)
+                        'Dim state As String = If(IsPinned(target), "Pinned", "Unpinned")
+                        'ShowStatus($"{state}: {target}")
+                        PinOrUnpin(target)
+
+                    Else
+                        ShowStatus(StatusPad & IconDialog &
+                                   "  Invalid folder. Usage: pin [folder_path]")
+                    End If
+
+                    Return
+                End If
+
+                ' No path provided → fall back to contextual target
+                Dim fallback As String = GetPinnableTarget()
+
+                If fallback Is Nothing Then
+                    If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+                        fallback = currentFolder
+                    Else
+                        ShowStatus(StatusPad & IconDialog &
+                                   "  No valid folder to pin. Usage: pin [folder_path]")
+                        Return
+                    End If
+                End If
+
+                'TogglePin(fallback)
+                'Dim newState As String = If(IsPinned(fallback), "Pinned", "Unpinned")
+                'ShowStatus($"{newState}: {fallback}")
+
+                PinOrUnpin(fallback)
+
+                Return
+
+
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
                 ' Confirm exit
@@ -1538,6 +1611,16 @@ Public Class Form1
         End Select
 
     End Sub
+
+
+
+
+    Private Sub PinOrUnpin(path As String)
+        TogglePin(path)
+        Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
+        ShowStatus($"{state}: {path}")
+    End Sub
+
 
 
 
