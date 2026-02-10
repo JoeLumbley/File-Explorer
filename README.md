@@ -497,19 +497,77 @@ Wraps around when reaching the end.
 
 [ Table of Contents](#table-of-contents)
 
----
-
-## ❌ Exit - `exit`, `quit`
-
-Closes the application.
 
 ---
 
-## ❓ Help - `help`
+## 💽 Disk Free - `df`
 
-Displays the full list of commands.
+**Usage:**  
+```
+df <drive_letter>:
+```
+
+**Description:**  
+Shows free and total disk space for the specified drive.  
+Accepts any of the following formats:
+
+- `C`
+- `C:`
+- `C:\`
+
+**Examples:**  
+```
+df C:
+df D
+```
+
+[ Table of Contents](#table-of-contents)
 
 ---
+
+## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `signout`, `poweroff`, `halt`, `end`, `terminate`, `stop`, `leave`, `farewell`, `adios`, `ciao`, `sayonara`, `goodbye`, `later`
+
+**Usage:**  
+```
+exit
+```
+
+**Description:**  
+Closes the application.  
+A confirmation dialog appears to prevent accidental exits.
+
+**Examples:**  
+```
+exit
+quit
+bye
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+## ❓ Help - `help`, `man`, `commands`
+
+**Usage:**  
+```
+help
+```
+
+**Description:**  
+Displays the full list of available commands and their descriptions.
+
+**Examples:**  
+```
+help
+commands
+man
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
 
 # 🧠 Quoting Rules (Important)
 
