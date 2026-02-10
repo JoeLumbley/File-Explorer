@@ -527,30 +527,6 @@ df D
 
 
 
-## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `signout`, `poweroff`, `halt`, `end`, `terminate`, `stop`, `leave`, `farewell`, `adios`, `ciao`, `sayonara`, `goodbye`, `later`
-
-
-
-**Usage:**  
-```
-exit
-```
-
-**Description:**  
-Closes the application.  
-A confirmation dialog appears to prevent accidental exits.
-
-**Examples:**  
-```
-exit
-quit
-bye
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
 ## ❓ Help - `help`, `man`, `commands`
 
 **Usage:**  
@@ -611,6 +587,29 @@ pin
 
 
 
+
+## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
+
+
+**Usage:**  
+```
+exit
+```
+
+**Description:**  
+Closes the application.  
+A confirmation dialog appears to prevent accidental exits.
+
+**Examples:**  
+```
+exit
+quit
+bye
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
 
 
 
