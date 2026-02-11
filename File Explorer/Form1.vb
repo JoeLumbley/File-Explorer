@@ -170,46 +170,98 @@ Public Class Form1
     Private _lastFocusedControl As Control = Nothing
 
 
+    'Private _enterDown As Boolean = False
+    'Private _tabDown As Boolean = False
+    'Private _shiftTabDown As Boolean = False
+    'Private _escapeDown As Boolean = False
+    'Private _deleteDown As Boolean = False
+
+    'Private _ctrlODown As Boolean = False
+    'Private _ctrlCDown As Boolean = False
+    'Private _ctrlVDown As Boolean = False
+    'Private _ctrlXDown As Boolean = False
+    'Private _ctrlADown As Boolean = False
+    'Private _ctrlDDown As Boolean = False
+    'Private _ctrlFDown As Boolean = False
+    'Private _ctrlShiftEDown As Boolean = False
+    'Private _ctrlShiftCDown As Boolean = False
+    'Private _ctrlShiftNDown As Boolean = False
+    'Private _ctrlShiftTDown As Boolean = False
+
+    'Private _altLeftDown As Boolean = False
+    'Private _altRightDown As Boolean = False
+    'Private _altUpDown As Boolean = False
+    'Private _altHomeDown As Boolean = False
+    'Private _altPDown As Boolean = False
+
+    'Private _f2Down As Boolean = False
+    'Private _f3Down As Boolean = False
+    'Private _f5Down As Boolean = False
+    'Private _f11Down As Boolean = False
+
+    'Private _shiftF3Down As Boolean = False
+
+    'Private _addressBarFocusDown As Boolean = False
+
+    ' ===========================
+    '   BASIC KEYS
+    ' ===========================
+    Private _deleteDown As Boolean = False
     Private _enterDown As Boolean = False
-
-
+    Private _escapeDown As Boolean = False
+    Private _shiftTabDown As Boolean = False
     Private _tabDown As Boolean = False
 
 
-    Private _altPDown As Boolean = False
-
-    Private _altLeftDown As Boolean = False
-    Private _altRightDown As Boolean = False
-    Private _altUpDown As Boolean = False
-    Private _altHomeDown As Boolean = False
-    Private _f5Down As Boolean = False
-    Private _f11Down As Boolean = False
-
-
-    Private _shiftTabDown As Boolean = False
-
-    Private _escapeDown As Boolean = False
-
-
-    'Private _altDDown As Boolean = False
-
-    Private _ctrlODown As Boolean = False
-    Private _ctrlShiftEDown As Boolean = False
-    Private _ctrlShiftCDown As Boolean = False
-    Private _ctrlShiftNDown As Boolean = False
-    Private _ctrlShiftTDown As Boolean = False
-    Private _f2Down As Boolean = False
+    ' ===========================
+    '   CTRL SHORTCUTS
+    ' ===========================
+    Private _ctrlADown As Boolean = False
     Private _ctrlCDown As Boolean = False
+    Private _ctrlDDown As Boolean = False
+    Private _ctrlFDown As Boolean = False
+    Private _ctrlODown As Boolean = False
     Private _ctrlVDown As Boolean = False
     Private _ctrlXDown As Boolean = False
-    Private _ctrlADown As Boolean = False
-    Private _ctrlDDown As Boolean = False
-    Private _deleteDown As Boolean = False
 
-    Private _ctrlFDown As Boolean = False
+
+    ' ===========================
+    '   CTRL + SHIFT SHORTCUTS
+    ' ===========================
+    Private _ctrlShiftCDown As Boolean = False
+    Private _ctrlShiftEDown As Boolean = False
+    Private _ctrlShiftNDown As Boolean = False
+    Private _ctrlShiftTDown As Boolean = False
+
+
+    ' ===========================
+    '   ALT NAVIGATION
+    ' ===========================
+    Private _altHomeDown As Boolean = False
+    Private _altLeftDown As Boolean = False
+    Private _altPDown As Boolean = False
+    Private _altRightDown As Boolean = False
+    Private _altUpDown As Boolean = False
+
+
+    ' ===========================
+    '   FUNCTION KEYS
+    ' ===========================
+    Private _f11Down As Boolean = False
+    Private _f2Down As Boolean = False
     Private _f3Down As Boolean = False
+    Private _f5Down As Boolean = False
+
+
+    ' ===========================
+    '   SEARCH SHORTCUTS
+    ' ===========================
     Private _shiftF3Down As Boolean = False
 
+
+    ' ===========================
+    '   ADDRESS BAR SHORTCUTS
+    ' ===========================
     Private _addressBarFocusDown As Boolean = False
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
