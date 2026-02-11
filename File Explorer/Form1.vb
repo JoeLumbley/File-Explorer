@@ -188,7 +188,10 @@ Public Class Form1
 
     Private _shiftTabDown As Boolean = False
 
+    Private _escapeDown As Boolean = False
 
+
+    Private _addressBarFocusDown As Boolean = False
 
 
 
@@ -538,40 +541,147 @@ Public Class Form1
     End Sub
 
 
+    'Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
+    '    ' ===========================
+    '    If keyData = (Keys.Control Or Keys.L) _
+    '        OrElse keyData = (Keys.Alt Or Keys.D) _
+    '        OrElse keyData = Keys.F4 Then
+
+    '        txtAddressBar.Focus()
+    '        txtAddressBar.SelectAll()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   ESCAPE (Address Bar reset)
+    '    ' ===========================
+    '    If keyData = Keys.Escape AndAlso Not _isRenaming Then
+
+    '        txtAddressBar.Text = currentFolder
+
+    '        ResetSearchState()
+
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
     Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
         '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
         If keyData = (Keys.Control Or Keys.L) _
-            OrElse keyData = (Keys.Alt Or Keys.D) _
-            OrElse keyData = Keys.F4 Then
+        OrElse keyData = (Keys.Alt Or Keys.D) _
+        OrElse keyData = Keys.F4 Then
+
+            ' Block repeated focus triggers while key is held down
+            If _addressBarFocusDown Then
+                Return True   ' swallow repeat safely
+            End If
+            _addressBarFocusDown = True
 
             txtAddressBar.Focus()
             txtAddressBar.SelectAll()
             Return True
         End If
 
+
+        '' ===========================
+        ''   ESCAPE (Address Bar reset)
+        '' ===========================
+        'If keyData = Keys.Escape AndAlso Not _isRenaming Then
+
+        '    txtAddressBar.Text = currentFolder
+        '    ResetSearchState()
+        '    PlaceCaretAtEndOfAddressBar()
+        '    Return True
+        'End If
+
+        '' ===========================
+        ''   ESCAPE (Address Bar reset)
+        '' ===========================
+        'If keyData = Keys.Escape AndAlso Not _isRenaming Then
+
+        '    ' Block repeated Escape while key is held down
+        '    If _escapeDown Then
+        '        Return True   ' swallow repeat safely
+        '    End If
+        '    _escapeDown = True
+
+        '    txtAddressBar.Text = currentFolder
+
+        '    ' check search state needs to be reset
+        '    If SearchResults.Count > 0 Then
+        '        ResetSearchState()
+        '    End If
+
+
+        '    PlaceCaretAtEndOfAddressBar()
+        '    Return True
+        'End If
+
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
         If keyData = Keys.Escape AndAlso Not _isRenaming Then
 
+            ' Block repeated Escape while key is held down
+            If _escapeDown Then
+                Return True   ' swallow repeat safely
+            End If
+            _escapeDown = True
+
+            ' Restore the address bar to the current folder
             txtAddressBar.Text = currentFolder
 
+            '' Reset search state only if a search is active
+            'If SearchResults.Count > 0 Then
             ResetSearchState()
+            'End If
 
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
         Return False
+
     End Function
 
+
+
+
+
+
+    'Private Sub ResetSearchState()
+
+    '    ' Reset search state only if a search is active
+    '    If SearchResults.Count > 0 Then
+    '        SearchIndex = 0
+    '        SearchResults = New List(Of String)
+    '        RestoreBackground()
+
+    '    End If
+
+    'End Sub
+
     Private Sub ResetSearchState()
-        SearchIndex = 0
-        SearchResults = New List(Of String)
+
+        ' If a search was active, reset index and clear results
+        If SearchResults.Count > 0 Then
+            SearchIndex = 0
+            SearchResults = New List(Of String)
+        End If
+
+        ' Always restore background to remove any lingering highlights
         RestoreBackground()
+
     End Sub
 
 
@@ -696,7 +806,27 @@ Public Class Form1
 
             Case Keys.F5 : _f5Down = False
             Case Keys.F11 : _f11Down = False
+            Case Keys.Escape
+                _escapeDown = False
 
+
+
+
+
+
+
+            Case Keys.L
+                If ModifierKeys = Keys.Control Then
+                    _addressBarFocusDown = False
+                End If
+
+            Case Keys.D
+                If ModifierKeys = Keys.Alt Then
+                    _addressBarFocusDown = False
+                End If
+
+            Case Keys.F4
+                _addressBarFocusDown = False
 
         End Select
     End Sub
