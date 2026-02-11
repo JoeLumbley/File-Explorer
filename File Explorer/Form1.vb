@@ -186,6 +186,8 @@ Public Class Form1
     Private _f11Down As Boolean = False
 
 
+    Private _shiftTabDown As Boolean = False
+
 
 
 
@@ -634,11 +636,48 @@ Public Class Form1
     '    End Select
     'End Sub
 
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+    '    Select Case e.KeyCode
+
+    '        Case Keys.Enter : _enterDown = False
+    '        Case Keys.Tab : _tabDown = False
+
+    '        Case Keys.P
+    '            If ModifierKeys = Keys.Alt Then _altPDown = False
+
+    '        Case Keys.Left
+    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+    '        Case Keys.Right
+    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+    '        Case Keys.Up
+    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+    '        Case Keys.Home
+    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+    '        Case Keys.F5 : _f5Down = False
+    '        Case Keys.F11 : _f11Down = False
+
+    '    End Select
+    'End Sub
+
+
+
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
         Select Case e.KeyCode
 
-            Case Keys.Enter : _enterDown = False
-            Case Keys.Tab : _tabDown = False
+            Case Keys.Enter
+                _enterDown = False
+
+            Case Keys.Tab
+                If ModifierKeys = Keys.Shift Then
+                    _shiftTabDown = False
+                Else
+                    _tabDown = False
+                End If
 
             Case Keys.P
                 If ModifierKeys = Keys.Alt Then _altPDown = False
@@ -658,9 +697,9 @@ Public Class Form1
             Case Keys.F5 : _f5Down = False
             Case Keys.F11 : _f11Down = False
 
+
         End Select
     End Sub
-
 
 
 
@@ -757,10 +796,76 @@ Public Class Form1
         Return True
     End Function
 
+    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+
+    '    ' Detect SHIFT + TAB correctly inside ProcessCmdKey
+    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
+    '        Return False
+    '    End If
+
+    '    ' Prevent Shift+Tab navigation while renaming
+    '    If _isRenaming Then
+    '        Return False
+    '    End If
+
+    '    ' ===========================
+    '    '   TreeView → File List
+    '    ' ===========================
+    '    If tvFolders.Focused Then
+    '        lvFiles.Focus()
+
+    '        If lvFiles.Items.Count > 0 Then
+    '            If lvFiles.SelectedItems.Count > 0 Then
+    '                Dim sel = lvFiles.SelectedItems(0)
+    '                sel.Focused = True
+    '                sel.EnsureVisible()
+    '            Else
+    '                lvFiles.Items(0).Selected = True
+    '                lvFiles.Items(0).Focused = True
+    '                lvFiles.Items(0).EnsureVisible()
+    '            End If
+    '        End If
+
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   File List → Address Bar
+    '    ' ===========================
+    '    If lvFiles.Focused Then
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   Address Bar → TreeView
+    '    ' ===========================
+    '    If txtAddressBar.Focused Then
+    '        tvFolders.Focus()
+
+    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '        End If
+
+    '        tvFolders.SelectedNode?.EnsureVisible()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   Fallback
+    '    ' ===========================
+    '    txtAddressBar.Focus()
+    '    PlaceCaretAtEndOfAddressBar()
+    '    Return True
+    'End Function
+
+
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
         ' Detect SHIFT + TAB correctly inside ProcessCmdKey
         If keyData <> (Keys.Shift Or Keys.Tab) Then
+            _shiftTabDown = False
             Return False
         End If
 
@@ -768,6 +873,13 @@ Public Class Form1
         If _isRenaming Then
             Return False
         End If
+
+        ' Block repeated Shift+Tab while key is held down
+        If _shiftTabDown Then
+            Return True   ' swallow repeat safely
+        End If
+        _shiftTabDown = True
+
 
         ' ===========================
         '   TreeView → File List
@@ -790,6 +902,7 @@ Public Class Form1
             Return True
         End If
 
+
         ' ===========================
         '   File List → Address Bar
         ' ===========================
@@ -798,6 +911,7 @@ Public Class Form1
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
+
 
         ' ===========================
         '   Address Bar → TreeView
@@ -813,13 +927,18 @@ Public Class Form1
             Return True
         End If
 
+
         ' ===========================
         '   Fallback
         ' ===========================
         txtAddressBar.Focus()
         PlaceCaretAtEndOfAddressBar()
         Return True
+
     End Function
+
+
+
 
     Private Function GlobalShortcutsAllowed() As Boolean
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
