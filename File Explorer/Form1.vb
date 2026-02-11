@@ -169,40 +169,6 @@ Public Class Form1
 
     Private _lastFocusedControl As Control = Nothing
 
-
-    'Private _enterDown As Boolean = False
-    'Private _tabDown As Boolean = False
-    'Private _shiftTabDown As Boolean = False
-    'Private _escapeDown As Boolean = False
-    'Private _deleteDown As Boolean = False
-
-    'Private _ctrlODown As Boolean = False
-    'Private _ctrlCDown As Boolean = False
-    'Private _ctrlVDown As Boolean = False
-    'Private _ctrlXDown As Boolean = False
-    'Private _ctrlADown As Boolean = False
-    'Private _ctrlDDown As Boolean = False
-    'Private _ctrlFDown As Boolean = False
-    'Private _ctrlShiftEDown As Boolean = False
-    'Private _ctrlShiftCDown As Boolean = False
-    'Private _ctrlShiftNDown As Boolean = False
-    'Private _ctrlShiftTDown As Boolean = False
-
-    'Private _altLeftDown As Boolean = False
-    'Private _altRightDown As Boolean = False
-    'Private _altUpDown As Boolean = False
-    'Private _altHomeDown As Boolean = False
-    'Private _altPDown As Boolean = False
-
-    'Private _f2Down As Boolean = False
-    'Private _f3Down As Boolean = False
-    'Private _f5Down As Boolean = False
-    'Private _f11Down As Boolean = False
-
-    'Private _shiftF3Down As Boolean = False
-
-    'Private _addressBarFocusDown As Boolean = False
-
     ' ===========================
     '   BASIC KEYS
     ' ===========================
@@ -609,60 +575,11 @@ Public Class Form1
     End Sub
 
 
-    'Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.L) _
-    '        OrElse keyData = (Keys.Alt Or Keys.D) _
-    '        OrElse keyData = Keys.F4 Then
-
-    '        txtAddressBar.Focus()
-    '        txtAddressBar.SelectAll()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ESCAPE (Address Bar reset)
-    '    ' ===========================
-    '    If keyData = Keys.Escape AndAlso Not _isRenaming Then
-
-    '        txtAddressBar.Text = currentFolder
-
-    '        ResetSearchState()
-
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
     Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
         '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
-        'If keyData = (Keys.Control Or Keys.L) _
-        'OrElse keyData = (Keys.Alt Or Keys.D) _
-        'OrElse keyData = Keys.F4 Then
-
-        '    ' Block repeated focus triggers while key is held down
-        '    If _altDDown Then
-        '        Return True   ' swallow repeat safely
-        '    End If
-        '    _altDDown = True
-
-        '    txtAddressBar.Focus()
-        '    txtAddressBar.SelectAll()
-
-        '    Return True
-        'End If
-
-
-
         If keyData = (Keys.Control Or Keys.L) _
         OrElse keyData = (Keys.Alt Or Keys.D) _
         OrElse keyData = Keys.F4 Then
@@ -678,42 +595,6 @@ Public Class Form1
             Return True
         End If
 
-
-
-        '' ===========================
-        ''   ESCAPE (Address Bar reset)
-        '' ===========================
-        'If keyData = Keys.Escape AndAlso Not _isRenaming Then
-
-        '    txtAddressBar.Text = currentFolder
-        '    ResetSearchState()
-        '    PlaceCaretAtEndOfAddressBar()
-        '    Return True
-        'End If
-
-        '' ===========================
-        ''   ESCAPE (Address Bar reset)
-        '' ===========================
-        'If keyData = Keys.Escape AndAlso Not _isRenaming Then
-
-        '    ' Block repeated Escape while key is held down
-        '    If _escapeDown Then
-        '        Return True   ' swallow repeat safely
-        '    End If
-        '    _escapeDown = True
-
-        '    txtAddressBar.Text = currentFolder
-
-        '    ' check search state needs to be reset
-        '    If SearchResults.Count > 0 Then
-        '        ResetSearchState()
-        '    End If
-
-
-        '    PlaceCaretAtEndOfAddressBar()
-        '    Return True
-        'End If
-
         ' ===========================
         '   ESCAPE (Address Bar reset)
         ' ===========================
@@ -728,10 +609,7 @@ Public Class Form1
             ' Restore the address bar to the current folder
             txtAddressBar.Text = currentFolder
 
-            '' Reset search state only if a search is active
-            'If SearchResults.Count > 0 Then
             ResetSearchState()
-            'End If
 
             PlaceCaretAtEndOfAddressBar()
             Return True
@@ -740,24 +618,6 @@ Public Class Form1
         Return False
 
     End Function
-
-
-
-
-
-
-
-    'Private Sub ResetSearchState()
-
-    '    ' Reset search state only if a search is active
-    '    If SearchResults.Count > 0 Then
-    '        SearchIndex = 0
-    '        SearchResults = New List(Of String)
-    '        RestoreBackground()
-
-    '    End If
-
-    'End Sub
 
     Private Sub ResetSearchState()
 
@@ -771,7 +631,6 @@ Public Class Form1
         RestoreBackground()
 
     End Sub
-
 
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
@@ -818,356 +677,6 @@ Public Class Form1
 
         Return False
     End Function
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-    '    Select Case e.KeyCode
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            _tabDown = False
-
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then
-    '                _altPDown = False
-    '            End If
-    '    End Select
-    'End Sub
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-    '    Select Case e.KeyCode
-
-    '        Case Keys.Enter : _enterDown = False
-    '        Case Keys.Tab : _tabDown = False
-
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then _altPDown = False
-
-    '        Case Keys.Left
-    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-    '        Case Keys.Right
-    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-    '        Case Keys.Up
-    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-    '        Case Keys.Home
-    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-    '        Case Keys.F5 : _f5Down = False
-    '        Case Keys.F11 : _f11Down = False
-
-    '    End Select
-    'End Sub
-
-
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-
-    '    Select Case e.KeyCode
-
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftTabDown = False
-    '            Else
-    '                _tabDown = False
-    '            End If
-
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then _altPDown = False
-
-    '        Case Keys.Left
-    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-    '        Case Keys.Right
-    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-    '        Case Keys.Up
-    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-    '        Case Keys.Home
-    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-    '        Case Keys.F5 : _f5Down = False
-    '        Case Keys.F11 : _f11Down = False
-    '        Case Keys.Escape
-    '            _escapeDown = False
-
-    '        Case Keys.L
-    '            If ModifierKeys = Keys.Control Then
-    '                _addressBarFocusDown = False
-    '            End If
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Alt Then
-    '                _addressBarFocusDown = False
-    '            End If
-
-    '        Case Keys.F4
-    '            _addressBarFocusDown = False
-
-    '        Case Keys.O : If ModifierKeys = Keys.Control Then _ctrlODown = False
-    '        Case Keys.E : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
-    '        Case Keys.C : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftCDown = False
-    '        Case Keys.N : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
-    '        Case Keys.T : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
-
-    '        Case Keys.F2 : _f2Down = False
-
-    '        Case Keys.C : If ModifierKeys = Keys.Control Then _ctrlCDown = False
-    '        Case Keys.V : If ModifierKeys = Keys.Control Then _ctrlVDown = False
-    '        Case Keys.X : If ModifierKeys = Keys.Control Then _ctrlXDown = False
-    '        Case Keys.A : If ModifierKeys = Keys.Control Then _ctrlADown = False
-    '        Case Keys.D : If ModifierKeys = Keys.Control Then _ctrlDDown = False
-
-    '        Case Keys.Delete : _deleteDown = False
-
-
-    '    End Select
-    'End Sub
-
-
-
-
-
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-
-    '    Select Case e.KeyCode
-
-    '    ' ===========================
-    '    '   ENTER / TAB / SHIFT+TAB
-    '    ' ===========================
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftTabDown = False
-    '            Else
-    '                _tabDown = False
-    '            End If
-
-
-    '    ' ===========================
-    '    '   ALT + NAVIGATION
-    '    ' ===========================
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then _altPDown = False
-
-    '        Case Keys.Left
-    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-    '        Case Keys.Right
-    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-    '        Case Keys.Up
-    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-    '        Case Keys.Home
-    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-
-    '    ' ===========================
-    '    '   F5 / F11 / ESC
-    '    ' ===========================
-    '        Case Keys.F5
-    '            _f5Down = False
-
-    '        Case Keys.F11
-    '            _f11Down = False
-
-    '        Case Keys.Escape
-    '            _escapeDown = False
-
-
-    '    ' ===========================
-    '    '   ADDRESS BAR SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.L
-    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
-
-    '        Case Keys.F4
-    '            _addressBarFocusDown = False
-
-
-    '    ' ===========================
-    '    '   FILE / FOLDER OPERATIONS
-    '    ' ===========================
-    '        Case Keys.O
-    '            If ModifierKeys = Keys.Control Then _ctrlODown = False
-
-    '        Case Keys.E
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
-
-    '        Case Keys.C
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
-    '                _ctrlShiftCDown = False
-    '            ElseIf ModifierKeys = Keys.Control Then
-    '                _ctrlCDown = False
-    '            End If
-
-    '        Case Keys.N
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
-
-    '        Case Keys.T
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
-
-    '        Case Keys.F2
-    '            _f2Down = False
-
-    '        Case Keys.V
-    '            If ModifierKeys = Keys.Control Then _ctrlVDown = False
-
-    '        Case Keys.X
-    '            If ModifierKeys = Keys.Control Then _ctrlXDown = False
-
-    '        Case Keys.A
-    '            If ModifierKeys = Keys.Control Then _ctrlADown = False
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Control Then _ctrlDDown = False
-
-    '        Case Keys.Delete
-    '            _deleteDown = False
-
-    '        Case Keys.F3
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftF3Down = False
-    '            Else
-    '                _f3Down = False
-    '            End If
-
-    '    End Select
-
-    'End Sub
-
-
-
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-
-    '    Select Case e.KeyCode
-
-    '    ' ===========================
-    '    '   ENTER / TAB / SHIFT+TAB
-    '    ' ===========================
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftTabDown = False
-    '            Else
-    '                _tabDown = False
-    '            End If
-
-
-    '    ' ===========================
-    '    '   ALT + NAVIGATION
-    '    ' ===========================
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then _altPDown = False
-
-    '        Case Keys.Left
-    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-    '        Case Keys.Right
-    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-    '        Case Keys.Up
-    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-    '        Case Keys.Home
-    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-
-    '    ' ===========================
-    '    '   F5 / F11 / ESC
-    '    ' ===========================
-    '        Case Keys.F5
-    '            _f5Down = False
-
-    '        Case Keys.F11
-    '            _f11Down = False
-
-    '        Case Keys.Escape
-    '            _escapeDown = False
-
-    '            ' ===========================
-    '            '   ADDRESS BAR SHORTCUTS
-    '            ' ===========================
-
-    '        Case Keys.L
-    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
-
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
-
-    '        Case Keys.F4
-    '            _addressBarFocusDown = False
-
-    '    ' ===========================
-    '    '   FILE / FOLDER OPERATIONS
-    '    ' ===========================
-    '        Case Keys.O
-    '            If ModifierKeys = Keys.Control Then _ctrlODown = False
-
-    '        Case Keys.E
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
-
-    '        Case Keys.C
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
-    '                _ctrlShiftCDown = False
-    '            ElseIf ModifierKeys = Keys.Control Then
-    '                _ctrlCDown = False
-    '            End If
-
-    '        Case Keys.N
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
-
-    '        Case Keys.T
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
-
-    '        Case Keys.F2
-    '            _f2Down = False
-
-    '        Case Keys.V
-    '            If ModifierKeys = Keys.Control Then _ctrlVDown = False
-
-    '        Case Keys.X
-    '            If ModifierKeys = Keys.Control Then _ctrlXDown = False
-
-    '        Case Keys.A
-    '            If ModifierKeys = Keys.Control Then _ctrlADown = False
-
-    '        Case Keys.Delete
-    '            _deleteDown = False
-
-
-    '    ' ===========================
-    '    '   SEARCH SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.F3
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftF3Down = False
-    '            Else
-    '                _f3Down = False
-    '            End If
-
-    '    End Select
-
-    'End Sub
-
-
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
 
@@ -1284,13 +793,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
         ' Only handle Tab
         If keyData <> Keys.Tab Then
@@ -1326,13 +828,6 @@ Public Class Form1
 
         Return handled
     End Function
-
-
-
-
-
-
-
 
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
@@ -1379,71 +874,6 @@ Public Class Form1
         PlaceCaretAtEndOfAddressBar()
         Return True
     End Function
-
-    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
-
-    '    ' Detect SHIFT + TAB correctly inside ProcessCmdKey
-    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
-    '        Return False
-    '    End If
-
-    '    ' Prevent Shift+Tab navigation while renaming
-    '    If _isRenaming Then
-    '        Return False
-    '    End If
-
-    '    ' ===========================
-    '    '   TreeView → File List
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        lvFiles.Focus()
-
-    '        If lvFiles.Items.Count > 0 Then
-    '            If lvFiles.SelectedItems.Count > 0 Then
-    '                Dim sel = lvFiles.SelectedItems(0)
-    '                sel.Focused = True
-    '                sel.EnsureVisible()
-    '            Else
-    '                lvFiles.Items(0).Selected = True
-    '                lvFiles.Items(0).Focused = True
-    '                lvFiles.Items(0).EnsureVisible()
-    '            End If
-    '        End If
-
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   File List → Address Bar
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   Address Bar → TreeView
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        tvFolders.Focus()
-
-    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
-    '        End If
-
-    '        tvFolders.SelectedNode?.EnsureVisible()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   Fallback
-    '    ' ===========================
-    '    txtAddressBar.Focus()
-    '    PlaceCaretAtEndOfAddressBar()
-    '    Return True
-    'End Function
-
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
@@ -1521,152 +951,9 @@ Public Class Form1
 
     End Function
 
-
-
-
     Private Function GlobalShortcutsAllowed() As Boolean
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
     End Function
-
-    'Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    ' ALT + HOME (Goto User Folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
-    '        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    '' ===========================
-    '    '' ALT + P (Add to/Remove from pins)
-    '    '' ===========================
-    '    'If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
-    '    '    Dim target As String = GetPinnableTarget()
-    '    '    ' If no contextual target, fall back to currentFolder
-    '    '    If target Is Nothing Then
-    '    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '    '            target = currentFolder
-    '    '        Else
-    '    '            Return False
-    '    '        End If
-    '    '    End If
-    '    '    TogglePin(target)
-    '    '    ShowStatus($"{target}")
-    '    '    Return True
-    '    'End If
-
-    '    ' ===========================
-    '    ' ALT + P (Add to/Remove from pins)
-    '    ' ===========================
-    '    'If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
-
-    '    '    Dim target As String = GetPinnableTarget()
-
-    '    '    ' If no contextual target, fall back to currentFolder
-    '    '    If target Is Nothing Then
-    '    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '    '            target = currentFolder
-    '    '        Else
-    '    '            Return False
-    '    '        End If
-    '    '    End If
-
-    '    '    ' Unified pin/unpin engine
-    '    '    PinOrUnpin(target)
-
-    '    '    UpdateAllUIStates()
-
-    '    '    Return True
-    '    'End If
-
-
-    '    ' ===========================
-    '    ' ALT + P (Add to/Remove from pins)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
-
-    '        ' Block repeated Alt+P while key is held down
-    '        If _altPDown Then
-    '            Return True   ' swallow repeat safely
-    '        End If
-    '        _altPDown = True
-
-    '        Dim target As String = GetPinnableTarget()
-
-    '        ' If no contextual target, fall back to currentFolder
-    '        If target Is Nothing Then
-    '            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '                target = currentFolder
-    '            Else
-    '                Return False
-    '            End If
-    '        End If
-
-    '        ' Unified pin/unpin engine
-    '        PinOrUnpin(target)
-
-    '        'UpdateAllUIStates()
-    '        UpdatePinButtonState()
-
-    '        Return True
-    '    End If
-
-
-
-
-    '    ' ===========================
-    '    ' ALT + LEFT (Back)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
-    '        NavigateBackward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + RIGHT (Forward)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Right) AndAlso Not _isRenaming Then
-    '        NavigateForward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + UP (Parent folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
-    '        NavigateToParent()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' F5 (Refresh)
-    '    ' ===========================
-    '    If keyData = Keys.F5 AndAlso Not _isRenaming Then
-    '        RefreshCurrentFolder()
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' F11 (Full screen)
-    '    ' ===========================
-    '    If keyData = Keys.F11 AndAlso Not _isRenaming Then
-    '        ToggleFullScreen()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
-
 
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
@@ -1780,73 +1067,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
-
-    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   CTRL + F (Find)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
-    '        InitiateSearch()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   F3 (Find Next)
-    '    ' ===========================
-    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
-    '        HandleFindNextCommand()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
-
-
-
-    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   CTRL + F (Find)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
-
-    '        ' Block repeated Ctrl+F while key is held down
-    '        If _ctrlFDown Then
-    '            Return True   ' swallow repeat safely
-    '        End If
-    '        _ctrlFDown = True
-
-    '        InitiateSearch()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    '   F3 (Find Next)
-    '    ' ===========================
-    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
-
-    '        ' Block repeated F3 while key is held down
-    '        If _f3Down Then
-    '            Return True   ' swallow repeat safely
-    '        End If
-    '        _f3Down = True
-
-    '        HandleFindNextCommand()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
-
-
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
@@ -1890,7 +1110,6 @@ Public Class Form1
         Return False
     End Function
 
-
     Private Sub HandleFindPreviousCommand()
 
         ' No active search
@@ -1921,117 +1140,6 @@ Public Class Form1
         $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
     )
     End Sub
-
-
-
-
-
-
-
-
-
-
-    'Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
-    '    Try
-    '        ' ===========================
-    '        '   CTRL + O  (Open)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.O) AndAlso GlobalShortcutsAllowed() Then
-    '            OpenSelectedOrStartCommand()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + E  (Expand one level)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.E) AndAlso GlobalShortcutsAllowed() Then
-    '            ExpandOneLevel()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + C  (Collapse one level)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
-    '            CollapseOneLevel()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + N  (New folder)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.N) AndAlso GlobalShortcutsAllowed() Then
-    '            NewFolder_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + SHIFT + T  (New text file)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.T) AndAlso GlobalShortcutsAllowed() Then
-    '            NewTextFile_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   F2 (Rename)
-    '        ' ===========================
-    '        If keyData = Keys.F2 AndAlso GlobalShortcutsAllowed() Then
-    '            RenameFile_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + C (Copy)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
-    '            CopySelected_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + V (Paste)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.V) AndAlso GlobalShortcutsAllowed() Then
-    '            PasteSelected_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + X (Cut)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.X) AndAlso GlobalShortcutsAllowed() Then
-    '            CutSelected_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + A (Select all)
-    '        ' ===========================
-    '        If keyData = (Keys.Control Or Keys.A) AndAlso GlobalShortcutsAllowed() Then
-    '            SelectAllItems()
-    '            lvFiles.Focus()
-    '            Return True
-    '        End If
-
-    '        ' ===========================
-    '        '   CTRL + D  OR  DELETE  (Delete)
-    '        ' ===========================
-    '        If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso GlobalShortcutsAllowed() Then
-    '            Delete_Click(sender, EventArgs.Empty)
-    '            Return True
-    '        End If
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("An error occurred: " & ex.Message,
-    '                    "Error",
-    '                    MessageBoxButtons.OK,
-    '                    MessageBoxIcon.Error)
-    '    End Try
-
-    '    Return False
-    'End Function
-
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
         Try
@@ -2182,14 +1290,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
-
-
-
-
-
-    'Private Async Sub ExecuteCommand(command As String)
 
 
     Private Sub ExecuteCommand(command As String)
@@ -2559,13 +1659,11 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
         Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
         ShowStatus($"{state}: {path}")
     End Sub
-
 
     Private Async Sub HandleCopyCommand(parts As String())
         If parts.Length <= 2 Then
@@ -2588,9 +1686,6 @@ Public Class Form1
         Return String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
     End Function
 
-    'Private Function ParseDestination(parts As String()) As String
-    '    Return parts(parts.Length - 1).Trim()
-    'End Function
 
     Private Function ParseDestination(parts As String()) As String
         If parts.Length < 2 Then
@@ -4015,8 +3110,6 @@ Public Class Form1
 
         ' Validate that the folder exists
         If Not Directory.Exists(path) Then
-            'MessageBox.Show("Folder not found: " & path, "Navigation", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            'ShowStatus(StatusPad & IconError & $" Folder not found:  ""{path}"")
             ShowStatus(StatusPad & IconError & $"  Folder not found: ""{path}""")
             Exit Sub
         End If
