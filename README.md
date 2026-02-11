@@ -525,27 +525,7 @@ df D
 
 ---
 
-## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `signout`, `poweroff`, `halt`, `end`, `terminate`, `stop`, `leave`, `farewell`, `adios`, `ciao`, `sayonara`, `goodbye`, `later`
 
-**Usage:**  
-```
-exit
-```
-
-**Description:**  
-Closes the application.  
-A confirmation dialog appears to prevent accidental exits.
-
-**Examples:**  
-```
-exit
-quit
-bye
-```
-
-[ Table of Contents](#table-of-contents)
-
----
 
 ## ❓ Help - `help`, `man`, `commands`
 
@@ -567,6 +547,88 @@ man
 [ Table of Contents](#table-of-contents)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+## 📌 Pin - `pin`
+
+**Usage:**  
+```
+pin [path]
+```
+
+**Description:**  
+Pins or unpins a folder to Easy Access.  
+If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+The `pin` command acts as a **toggle**:
+
+- If the folder is **not pinned**, it becomes pinned  
+- If the folder **is already pinned**, it becomes unpinned  
+
+**Examples:**  
+```
+pin C:\Docs
+pin "C:\My Folder"
+pin
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
+
+
+**Usage:**  
+```
+exit
+```
+
+**Description:**  
+Closes the application.  
+A confirmation dialog appears to prevent accidental exits.
+
+**Examples:**  
+```
+exit
+quit
+bye
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
 
 
 # 🧠 Quoting Rules (Important)
