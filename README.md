@@ -567,8 +567,12 @@ pin [path]
 ```
 
 **Description:**  
-Pins a folder to Easy Access.  
+Pins or unpins a folder to Easy Access.  
 If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+The `pin` command acts as a **toggle**:
+
+- If the folder is **not pinned**, it becomes pinned  
+- If the folder **is already pinned**, it becomes unpinned  
 
 **Examples:**  
 ```
@@ -580,6 +584,12 @@ pin
 [ Table of Contents](#table-of-contents)
 
 ---
+
+
+
+
+
+
 
 
 
