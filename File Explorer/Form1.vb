@@ -191,10 +191,26 @@ Public Class Form1
     Private _escapeDown As Boolean = False
 
 
+    'Private _altDDown As Boolean = False
+
+    Private _ctrlODown As Boolean = False
+    Private _ctrlShiftEDown As Boolean = False
+    Private _ctrlShiftCDown As Boolean = False
+    Private _ctrlShiftNDown As Boolean = False
+    Private _ctrlShiftTDown As Boolean = False
+    Private _f2Down As Boolean = False
+    Private _ctrlCDown As Boolean = False
+    Private _ctrlVDown As Boolean = False
+    Private _ctrlXDown As Boolean = False
+    Private _ctrlADown As Boolean = False
+    Private _ctrlDDown As Boolean = False
+    Private _deleteDown As Boolean = False
+
+    Private _ctrlFDown As Boolean = False
+    Private _f3Down As Boolean = False
+    Private _shiftF3Down As Boolean = False
+
     Private _addressBarFocusDown As Boolean = False
-
-
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -577,6 +593,24 @@ Public Class Form1
         ' ===========================
         '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
         ' ===========================
+        'If keyData = (Keys.Control Or Keys.L) _
+        'OrElse keyData = (Keys.Alt Or Keys.D) _
+        'OrElse keyData = Keys.F4 Then
+
+        '    ' Block repeated focus triggers while key is held down
+        '    If _altDDown Then
+        '        Return True   ' swallow repeat safely
+        '    End If
+        '    _altDDown = True
+
+        '    txtAddressBar.Focus()
+        '    txtAddressBar.SelectAll()
+
+        '    Return True
+        'End If
+
+
+
         If keyData = (Keys.Control Or Keys.L) _
         OrElse keyData = (Keys.Alt Or Keys.D) _
         OrElse keyData = Keys.F4 Then
@@ -591,6 +625,7 @@ Public Class Form1
             txtAddressBar.SelectAll()
             Return True
         End If
+
 
 
         '' ===========================
@@ -653,6 +688,7 @@ Public Class Form1
         Return False
 
     End Function
+
 
 
 
@@ -775,10 +811,319 @@ Public Class Form1
 
 
 
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
+    '    Select Case e.KeyCode
+
+    '        Case Keys.Enter
+    '            _enterDown = False
+
+    '        Case Keys.Tab
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftTabDown = False
+    '            Else
+    '                _tabDown = False
+    '            End If
+
+    '        Case Keys.P
+    '            If ModifierKeys = Keys.Alt Then _altPDown = False
+
+    '        Case Keys.Left
+    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+    '        Case Keys.Right
+    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+    '        Case Keys.Up
+    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+    '        Case Keys.Home
+    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+    '        Case Keys.F5 : _f5Down = False
+    '        Case Keys.F11 : _f11Down = False
+    '        Case Keys.Escape
+    '            _escapeDown = False
+
+    '        Case Keys.L
+    '            If ModifierKeys = Keys.Control Then
+    '                _addressBarFocusDown = False
+    '            End If
+
+    '        Case Keys.D
+    '            If ModifierKeys = Keys.Alt Then
+    '                _addressBarFocusDown = False
+    '            End If
+
+    '        Case Keys.F4
+    '            _addressBarFocusDown = False
+
+    '        Case Keys.O : If ModifierKeys = Keys.Control Then _ctrlODown = False
+    '        Case Keys.E : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
+    '        Case Keys.C : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftCDown = False
+    '        Case Keys.N : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
+    '        Case Keys.T : If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
+
+    '        Case Keys.F2 : _f2Down = False
+
+    '        Case Keys.C : If ModifierKeys = Keys.Control Then _ctrlCDown = False
+    '        Case Keys.V : If ModifierKeys = Keys.Control Then _ctrlVDown = False
+    '        Case Keys.X : If ModifierKeys = Keys.Control Then _ctrlXDown = False
+    '        Case Keys.A : If ModifierKeys = Keys.Control Then _ctrlADown = False
+    '        Case Keys.D : If ModifierKeys = Keys.Control Then _ctrlDDown = False
+
+    '        Case Keys.Delete : _deleteDown = False
+
+
+    '    End Select
+    'End Sub
+
+
+
+
+
+
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
+    '    Select Case e.KeyCode
+
+    '    ' ===========================
+    '    '   ENTER / TAB / SHIFT+TAB
+    '    ' ===========================
+    '        Case Keys.Enter
+    '            _enterDown = False
+
+    '        Case Keys.Tab
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftTabDown = False
+    '            Else
+    '                _tabDown = False
+    '            End If
+
+
+    '    ' ===========================
+    '    '   ALT + NAVIGATION
+    '    ' ===========================
+    '        Case Keys.P
+    '            If ModifierKeys = Keys.Alt Then _altPDown = False
+
+    '        Case Keys.Left
+    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+    '        Case Keys.Right
+    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+    '        Case Keys.Up
+    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+    '        Case Keys.Home
+    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+
+    '    ' ===========================
+    '    '   F5 / F11 / ESC
+    '    ' ===========================
+    '        Case Keys.F5
+    '            _f5Down = False
+
+    '        Case Keys.F11
+    '            _f11Down = False
+
+    '        Case Keys.Escape
+    '            _escapeDown = False
+
+
+    '    ' ===========================
+    '    '   ADDRESS BAR SHORTCUTS
+    '    ' ===========================
+    '        Case Keys.L
+    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
+
+    '        Case Keys.D
+    '            If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
+
+    '        Case Keys.F4
+    '            _addressBarFocusDown = False
+
+
+    '    ' ===========================
+    '    '   FILE / FOLDER OPERATIONS
+    '    ' ===========================
+    '        Case Keys.O
+    '            If ModifierKeys = Keys.Control Then _ctrlODown = False
+
+    '        Case Keys.E
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
+
+    '        Case Keys.C
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftCDown = False
+    '            ElseIf ModifierKeys = Keys.Control Then
+    '                _ctrlCDown = False
+    '            End If
+
+    '        Case Keys.N
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
+
+    '        Case Keys.T
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
+
+    '        Case Keys.F2
+    '            _f2Down = False
+
+    '        Case Keys.V
+    '            If ModifierKeys = Keys.Control Then _ctrlVDown = False
+
+    '        Case Keys.X
+    '            If ModifierKeys = Keys.Control Then _ctrlXDown = False
+
+    '        Case Keys.A
+    '            If ModifierKeys = Keys.Control Then _ctrlADown = False
+
+    '        Case Keys.D
+    '            If ModifierKeys = Keys.Control Then _ctrlDDown = False
+
+    '        Case Keys.Delete
+    '            _deleteDown = False
+
+    '        Case Keys.F3
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftF3Down = False
+    '            Else
+    '                _f3Down = False
+    '            End If
+
+    '    End Select
+
+    'End Sub
+
+
+
+
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
+    '    Select Case e.KeyCode
+
+    '    ' ===========================
+    '    '   ENTER / TAB / SHIFT+TAB
+    '    ' ===========================
+    '        Case Keys.Enter
+    '            _enterDown = False
+
+    '        Case Keys.Tab
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftTabDown = False
+    '            Else
+    '                _tabDown = False
+    '            End If
+
+
+    '    ' ===========================
+    '    '   ALT + NAVIGATION
+    '    ' ===========================
+    '        Case Keys.P
+    '            If ModifierKeys = Keys.Alt Then _altPDown = False
+
+    '        Case Keys.Left
+    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+    '        Case Keys.Right
+    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+    '        Case Keys.Up
+    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+    '        Case Keys.Home
+    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+
+    '    ' ===========================
+    '    '   F5 / F11 / ESC
+    '    ' ===========================
+    '        Case Keys.F5
+    '            _f5Down = False
+
+    '        Case Keys.F11
+    '            _f11Down = False
+
+    '        Case Keys.Escape
+    '            _escapeDown = False
+
+    '            ' ===========================
+    '            '   ADDRESS BAR SHORTCUTS
+    '            ' ===========================
+
+    '        Case Keys.L
+    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
+
+
+    '        Case Keys.D
+    '            If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
+
+    '        Case Keys.F4
+    '            _addressBarFocusDown = False
+
+    '    ' ===========================
+    '    '   FILE / FOLDER OPERATIONS
+    '    ' ===========================
+    '        Case Keys.O
+    '            If ModifierKeys = Keys.Control Then _ctrlODown = False
+
+    '        Case Keys.E
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
+
+    '        Case Keys.C
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftCDown = False
+    '            ElseIf ModifierKeys = Keys.Control Then
+    '                _ctrlCDown = False
+    '            End If
+
+    '        Case Keys.N
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
+
+    '        Case Keys.T
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
+
+    '        Case Keys.F2
+    '            _f2Down = False
+
+    '        Case Keys.V
+    '            If ModifierKeys = Keys.Control Then _ctrlVDown = False
+
+    '        Case Keys.X
+    '            If ModifierKeys = Keys.Control Then _ctrlXDown = False
+
+    '        Case Keys.A
+    '            If ModifierKeys = Keys.Control Then _ctrlADown = False
+
+    '        Case Keys.Delete
+    '            _deleteDown = False
+
+
+    '    ' ===========================
+    '    '   SEARCH SHORTCUTS
+    '    ' ===========================
+    '        Case Keys.F3
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftF3Down = False
+    '            Else
+    '                _f3Down = False
+    '            End If
+
+    '    End Select
+
+    'End Sub
+
+
+
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
 
         Select Case e.KeyCode
 
+        ' ===========================
+        '   ENTER / TAB / SHIFT+TAB
+        ' ===========================
             Case Keys.Enter
                 _enterDown = False
 
@@ -789,6 +1134,10 @@ Public Class Form1
                     _tabDown = False
                 End If
 
+
+        ' ===========================
+        '   ALT + NAVIGATION
+        ' ===========================
             Case Keys.P
                 If ModifierKeys = Keys.Alt Then _altPDown = False
 
@@ -804,32 +1153,85 @@ Public Class Form1
             Case Keys.Home
                 If ModifierKeys = Keys.Alt Then _altHomeDown = False
 
-            Case Keys.F5 : _f5Down = False
-            Case Keys.F11 : _f11Down = False
+
+        ' ===========================
+        '   F5 / F11 / ESC
+        ' ===========================
+            Case Keys.F5
+                _f5Down = False
+
+            Case Keys.F11
+                _f11Down = False
+
             Case Keys.Escape
                 _escapeDown = False
 
 
-
-
-
-
-
+        ' ===========================
+        '   ADDRESS BAR SHORTCUTS
+        ' ===========================
             Case Keys.L
-                If ModifierKeys = Keys.Control Then
-                    _addressBarFocusDown = False
-                End If
+                If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
 
             Case Keys.D
-                If ModifierKeys = Keys.Alt Then
-                    _addressBarFocusDown = False
-                End If
+                If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
 
             Case Keys.F4
                 _addressBarFocusDown = False
 
+
+        ' ===========================
+        '   FILE / FOLDER OPERATIONS
+        ' ===========================
+            Case Keys.O
+                If ModifierKeys = Keys.Control Then _ctrlODown = False
+
+            Case Keys.E
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
+
+            Case Keys.C
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+                    _ctrlShiftCDown = False
+                ElseIf ModifierKeys = Keys.Control Then
+                    _ctrlCDown = False
+                End If
+
+            Case Keys.N
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
+
+            Case Keys.T
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
+
+            Case Keys.F2
+                _f2Down = False
+
+            Case Keys.V
+                If ModifierKeys = Keys.Control Then _ctrlVDown = False
+
+            Case Keys.X
+                If ModifierKeys = Keys.Control Then _ctrlXDown = False
+
+            Case Keys.A
+                If ModifierKeys = Keys.Control Then _ctrlADown = False
+
+            Case Keys.Delete
+                _deleteDown = False
+
+
+        ' ===========================
+        '   SEARCH SHORTCUTS
+        ' ===========================
+            Case Keys.F3
+                If ModifierKeys = Keys.Shift Then
+                    _shiftF3Down = False
+                Else
+                    _f3Down = False
+                End If
+
         End Select
+
     End Sub
+
 
 
 
@@ -1329,127 +1731,410 @@ Public Class Form1
 
 
 
+    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    '   CTRL + F (Find)
+    '    ' ===========================
+    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
+    '        InitiateSearch()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   F3 (Find Next)
+    '    ' ===========================
+    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
+    '        HandleFindNextCommand()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
+
+
+
+    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    '   CTRL + F (Find)
+    '    ' ===========================
+    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
+
+    '        ' Block repeated Ctrl+F while key is held down
+    '        If _ctrlFDown Then
+    '            Return True   ' swallow repeat safely
+    '        End If
+    '        _ctrlFDown = True
+
+    '        InitiateSearch()
+    '        Return True
+    '    End If
+
+
+    '    ' ===========================
+    '    '   F3 (Find Next)
+    '    ' ===========================
+    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
+
+    '        ' Block repeated F3 while key is held down
+    '        If _f3Down Then
+    '            Return True   ' swallow repeat safely
+    '        End If
+    '        _f3Down = True
+
+    '        HandleFindNextCommand()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
+
+
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
         ' ===========================
         '   CTRL + F (Find)
         ' ===========================
         If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
+
+            If _ctrlFDown Then Return True
+            _ctrlFDown = True
+
             InitiateSearch()
             Return True
         End If
+
 
         ' ===========================
         '   F3 (Find Next)
         ' ===========================
         If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
+
+            If _f3Down Then Return True
+            _f3Down = True
+
             HandleFindNextCommand()
+            Return True
+        End If
+
+
+        ' ===========================
+        '   SHIFT + F3 (Find Previous)
+        ' ===========================
+        If keyData = (Keys.Shift Or Keys.F3) AndAlso GlobalShortcutsAllowed() Then
+
+            If _shiftF3Down Then Return True
+            _shiftF3Down = True
+
+            HandleFindPreviousCommand()
             Return True
         End If
 
         Return False
     End Function
 
+
+    Private Sub HandleFindPreviousCommand()
+
+        ' No active search
+        If SearchResults.Count = 0 Then
+            ShowStatus(
+            StatusPad & IconDialog &
+            "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+        )
+            Return
+        End If
+
+        ' Move backward with wraparound
+        SearchIndex -= 1
+        If SearchIndex < 0 Then
+            SearchIndex = SearchResults.Count - 1
+        End If
+
+        ' Select the previous result
+        lvFiles.SelectedItems.Clear()
+        Dim prevPath As String = SearchResults(SearchIndex)
+        SelectListViewItemByPath(prevPath)
+
+        Dim fileName As String = Path.GetFileNameWithoutExtension(prevPath)
+
+        ' Status HUD
+        ShowStatus(
+        StatusPad & IconSearch &
+        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+    )
+    End Sub
+
+
+
+
+
+
+
+
+
+
+    'Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
+    '    Try
+    '        ' ===========================
+    '        '   CTRL + O  (Open)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.O) AndAlso GlobalShortcutsAllowed() Then
+    '            OpenSelectedOrStartCommand()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + E  (Expand one level)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.E) AndAlso GlobalShortcutsAllowed() Then
+    '            ExpandOneLevel()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + C  (Collapse one level)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
+    '            CollapseOneLevel()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + N  (New folder)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.N) AndAlso GlobalShortcutsAllowed() Then
+    '            NewFolder_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + T  (New text file)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.Shift Or Keys.T) AndAlso GlobalShortcutsAllowed() Then
+    '            NewTextFile_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   F2 (Rename)
+    '        ' ===========================
+    '        If keyData = Keys.F2 AndAlso GlobalShortcutsAllowed() Then
+    '            RenameFile_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + C (Copy)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
+    '            CopySelected_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + V (Paste)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.V) AndAlso GlobalShortcutsAllowed() Then
+    '            PasteSelected_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + X (Cut)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.X) AndAlso GlobalShortcutsAllowed() Then
+    '            CutSelected_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + A (Select all)
+    '        ' ===========================
+    '        If keyData = (Keys.Control Or Keys.A) AndAlso GlobalShortcutsAllowed() Then
+    '            SelectAllItems()
+    '            lvFiles.Focus()
+    '            Return True
+    '        End If
+
+    '        ' ===========================
+    '        '   CTRL + D  OR  DELETE  (Delete)
+    '        ' ===========================
+    '        If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso GlobalShortcutsAllowed() Then
+    '            Delete_Click(sender, EventArgs.Empty)
+    '            Return True
+    '        End If
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("An error occurred: " & ex.Message,
+    '                    "Error",
+    '                    MessageBoxButtons.OK,
+    '                    MessageBoxIcon.Error)
+    '    End Try
+
+    '    Return False
+    'End Function
+
+
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
         Try
+            If Not GlobalShortcutsAllowed() Then
+                Return False
+            End If
+
+            Select Case keyData
+
             ' ===========================
             '   CTRL + O  (Open)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.O) AndAlso GlobalShortcutsAllowed() Then
-                OpenSelectedOrStartCommand()
-                Return True
-            End If
+                Case (Keys.Control Or Keys.O)
+                    If _ctrlODown Then Return True
+                    _ctrlODown = True
+
+                    OpenSelectedOrStartCommand()
+                    Return True
+
 
             ' ===========================
             '   CTRL + SHIFT + E  (Expand one level)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.E) AndAlso GlobalShortcutsAllowed() Then
-                ExpandOneLevel()
-                Return True
-            End If
+                Case (Keys.Control Or Keys.Shift Or Keys.E)
+                    If _ctrlShiftEDown Then Return True
+                    _ctrlShiftEDown = True
+
+                    ExpandOneLevel()
+                    Return True
+
 
             ' ===========================
             '   CTRL + SHIFT + C  (Collapse one level)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
-                CollapseOneLevel()
-                Return True
-            End If
+                Case (Keys.Control Or Keys.Shift Or Keys.C)
+                    If _ctrlShiftCDown Then Return True
+                    _ctrlShiftCDown = True
+
+                    CollapseOneLevel()
+                    Return True
+
 
             ' ===========================
             '   CTRL + SHIFT + N  (New folder)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.N) AndAlso GlobalShortcutsAllowed() Then
-                NewFolder_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case (Keys.Control Or Keys.Shift Or Keys.N)
+                    If _ctrlShiftNDown Then Return True
+                    _ctrlShiftNDown = True
+
+                    NewFolder_Click(sender, EventArgs.Empty)
+                    Return True
+
 
             ' ===========================
             '   CTRL + SHIFT + T  (New text file)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.Shift Or Keys.T) AndAlso GlobalShortcutsAllowed() Then
-                NewTextFile_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case (Keys.Control Or Keys.Shift Or Keys.T)
+                    If _ctrlShiftTDown Then Return True
+                    _ctrlShiftTDown = True
+
+                    NewTextFile_Click(sender, EventArgs.Empty)
+                    Return True
+
 
             ' ===========================
             '   F2 (Rename)
             ' ===========================
-            If keyData = Keys.F2 AndAlso GlobalShortcutsAllowed() Then
-                RenameFile_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case Keys.F2
+                    If _f2Down Then Return True
+                    _f2Down = True
+
+                    RenameFile_Click(sender, EventArgs.Empty)
+                    Return True
+
 
             ' ===========================
             '   CTRL + C (Copy)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.C) AndAlso GlobalShortcutsAllowed() Then
-                CopySelected_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case (Keys.Control Or Keys.C)
+                    If _ctrlCDown Then Return True
+                    _ctrlCDown = True
+
+                    CopySelected_Click(sender, EventArgs.Empty)
+                    Return True
+
 
             ' ===========================
             '   CTRL + V (Paste)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.V) AndAlso GlobalShortcutsAllowed() Then
-                PasteSelected_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case (Keys.Control Or Keys.V)
+                    If _ctrlVDown Then Return True
+                    _ctrlVDown = True
+
+                    PasteSelected_Click(sender, EventArgs.Empty)
+                    Return True
+
 
             ' ===========================
             '   CTRL + X (Cut)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.X) AndAlso GlobalShortcutsAllowed() Then
-                CutSelected_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case (Keys.Control Or Keys.X)
+                    If _ctrlXDown Then Return True
+                    _ctrlXDown = True
+
+                    CutSelected_Click(sender, EventArgs.Empty)
+                    Return True
+
 
             ' ===========================
             '   CTRL + A (Select all)
             ' ===========================
-            If keyData = (Keys.Control Or Keys.A) AndAlso GlobalShortcutsAllowed() Then
-                SelectAllItems()
-                lvFiles.Focus()
-                Return True
-            End If
+                Case (Keys.Control Or Keys.A)
+                    If _ctrlADown Then Return True
+                    _ctrlADown = True
+
+                    SelectAllItems()
+                    lvFiles.Focus()
+                    Return True
+
 
             ' ===========================
             '   CTRL + D  OR  DELETE  (Delete)
             ' ===========================
-            If (keyData = (Keys.Control Or Keys.D) OrElse keyData = Keys.Delete) AndAlso GlobalShortcutsAllowed() Then
-                Delete_Click(sender, EventArgs.Empty)
-                Return True
-            End If
+                Case (Keys.Control Or Keys.D)
+                    If _ctrlDDown Then Return True
+                    _ctrlDDown = True
+
+                    Delete_Click(sender, EventArgs.Empty)
+                    Return True
+
+                Case Keys.Delete
+                    If _deleteDown Then Return True
+                    _deleteDown = True
+
+                    Delete_Click(sender, EventArgs.Empty)
+                    Return True
+
+            End Select
 
         Catch ex As Exception
-            MessageBox.Show("An error occurred: " & ex.Message,
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error)
+            MessageBox.Show(
+            "An error occurred: " & ex.Message,
+            "Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+        )
         End Try
 
         Return False
     End Function
+
+
+
+
+
 
 
     'Private Async Sub ExecuteCommand(command As String)
