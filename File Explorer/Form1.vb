@@ -459,39 +459,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
-    '    Handles btnPin.Click
-
-    '    Dim target As String = GetPinnableTarget()
-
-    '    ' If no contextual target, fall back to currentFolder
-    '    If target Is Nothing Then
-    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '            target = currentFolder
-    '        Else
-    '            Exit Sub
-    '        End If
-    '    End If
-
-    '    '' Perform the toggle
-    '    'TogglePin(target)
-
-    '    '' Now check the new state
-    '    'Dim state As String = If(IsPinned(target), "Pinned", "Unpinned")
-
-    '    'ShowStatus($"{state}: {target}")
-
-    '    PinOrUnpin(target)
-
-
-    'End Sub
-
-
-
-
-
-
-
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
         Handles btnPin.Click
 
@@ -508,7 +475,6 @@ Public Class Form1
 
         PinOrUnpin(target)
 
-        'UpdateAllUIStates()
         UpdatePinButtonState()
 
     End Sub
@@ -601,44 +567,6 @@ Public Class Form1
         RestoreBackground()
     End Sub
 
-    'Private Function HandleEnterKey(keyData As Keys) As Boolean
-
-    '    If keyData <> Keys.Enter Then
-    '        Return False
-    '    End If
-
-    '    ' Block global Enter behavior during rename mode
-    '    If _isRenaming Then
-    '        Return False
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (Address Bar execute)
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        ExecuteCommand(txtAddressBar.Text.Trim())
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (TreeView toggle)
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        ToggleExpandCollapse()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (File List open)
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        OpenSelectedItem()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
 
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
@@ -686,32 +614,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-    '    If e.KeyCode = Keys.Enter Then
-    '        _enterDown = False
-    '    End If
-    '    If e.KeyCode = Keys.Tab Then
-    '        _tabDown = False
-    '    End If
-
-    'End Sub
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-    '    Select Case e.KeyCode
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            _tabDown = False
-    '    End Select
-    'End Sub
-
-
-
-
-
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
         Select Case e.KeyCode
             Case Keys.Enter
@@ -726,39 +628,6 @@ Public Class Form1
                 End If
         End Select
     End Sub
-
-
-
-
-
-
-
-    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
-    '    ' Only handle Tab
-    '    If keyData <> Keys.Tab Then Return False
-
-    '    ' Do not interfere with rename mode
-    '    If _isRenaming Then Return False
-
-    '    Dim handled As Boolean = False
-
-    '    If txtAddressBar.Focused Then
-    '        handled = FocusFileList()
-    '    ElseIf lvFiles.Focused Then
-    '        handled = FocusTreeView()
-    '    ElseIf tvFolders.Focused Then
-    '        handled = FocusAddressBar()
-    '    Else
-    '        handled = FocusAddressBar()
-    '    End If
-
-    '    If handled Then
-    '        UpdateAllUIStates()
-    '    End If
-
-    '    Return handled
-    'End Function
-
 
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
@@ -796,20 +665,6 @@ Public Class Form1
 
         Return handled
     End Function
-
-
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-    '    If e.KeyCode = Keys.Tab Then
-    '        _tabDown = False
-    '    End If
-    'End Sub
-
-
-
-
-
-
 
 
 
@@ -1221,79 +1076,7 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & "  Usage: cd [directory]  -  Example: cd C:\")
                 End If
 
-            'Case "copy", "cp"
-            '    If parts.Length > 2 Then
-
-            '        Dim source As String =
-            '            String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-
-            '        Dim destinationRoot As String =
-            '            parts(parts.Length - 1).Trim()
-
-            '        ' ------------------------------------------------------------
-            '        ' Validate source
-            '        ' ------------------------------------------------------------
-            '        If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
-            '            ShowStatus(StatusPad & IconError &
-            '                       $" Copy failed: Source ""{source}"" does not exist." &
-            '                       " If the path contains spaces, enclose it in quotes.")
-            '            Return
-            '        End If
-
-            '        ' ------------------------------------------------------------
-            '        ' Validate destination root
-            '        ' ------------------------------------------------------------
-            '        If Not Directory.Exists(destinationRoot) Then
-            '            ShowStatus(StatusPad & IconError &
-            '                       $" Copy failed: Destination ""{destinationRoot}"" does not exist." &
-            '                       " If the path contains spaces, enclose it in quotes.")
-            '            Return
-            '        End If
-
-            '        ' ------------------------------------------------------------
-            '        ' Prevent copying a folder into itself or its own subtree
-            '        ' ------------------------------------------------------------
-            '        If Directory.Exists(source) Then
-            '            Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
-            '            Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
-
-            '            If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
-            '                ShowStatus(StatusPad & IconError &
-            '                           " Cannot copy a folder into itself or one of its subfolders.")
-            '                Return
-            '            End If
-            '        End If
-
-            '        ' ------------------------------------------------------------
-            '        ' Perform unified copy (always Copy, never Cut)
-            '        ' ------------------------------------------------------------
-            '        copyCts = New CancellationTokenSource()
-            '        Dim ct = copyCts.Token
-
-            '        Dim result As CopyResult =
-            '            Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
-
-            '        ' ------------------------------------------------------------
-            '        ' Report result
-            '        ' ------------------------------------------------------------
-            '        If result.Success Then
-            '            ShowStatus(StatusPad & IconCopy &
-            '                       $" Copied {result.FilesCopied} file(s), " &
-            '                       $"{result.FilesSkipped} skipped.")
-            '        Else
-            '            ShowStatus(StatusPad & IconError &
-            '                       " Copy completed with errors. Some items could not be copied.")
-            '        End If
-
-            '    Else
-            '        ShowStatus(StatusPad & IconDialog &
-            '                   " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
-            '    End If
-
-
-
-
-
+                Return
 
             Case "copy", "cp"
 
@@ -1312,6 +1095,8 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
                 End If
 
+                Return
+
             Case "delete", "rm"
 
                 If parts.Length > 1 Then
@@ -1324,7 +1109,10 @@ Public Class Form1
                     ShowStatus(StatusPad & IconDialog & " Usage: delete [file_or_directory]")
                 End If
 
+                Return
+
             Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
+
                 If parts.Length > 1 Then
                     Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
 
@@ -1339,6 +1127,8 @@ Public Class Form1
                 Else
                     ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
                 End If
+
+                Return
 
             Case "rename"
                 ' Rename file or directory
@@ -1483,74 +1273,6 @@ Public Class Form1
                 HandleOpenPath(fullPath)
                 Return
 
-            'Case "find", "search"
-
-            '    If parts.Length > 1 Then
-
-            '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-            '        If String.IsNullOrWhiteSpace(searchTerm) Then
-            '            ShowStatus(
-            '                StatusPad & IconDialog &
-            '                "  Usage: find [search_term]   e.g., find document"
-            '            )
-            '            Return
-            '        End If
-
-            '        ' Announce search
-            '        ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
-
-            '        ' Perform search
-            '        OnlySearchForFilesInCurrentFolder(searchTerm)
-
-            '        ' Reset index for new search
-            '        SearchIndex = 0
-
-            '        RestoreBackground()
-
-            '        ' If results exist, auto-select the first one
-            '        If SearchResults.Count > 0 Then
-
-            '            lvFiles.SelectedItems.Clear()
-            '            SelectListViewItemByPath(SearchResults(0))
-
-            '            Dim nextPath As String = SearchResults(SearchIndex)
-            '            Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
-
-            '            lvFiles.Focus()
-            '            HighlightSearchMatches()
-            '            'HighlightCurrentResult()
-
-            '            ' Unified search HUD
-            '            ShowStatus(
-            '                StatusPad & IconSearch &
-            '                $"  Result {SearchIndex + 1} of {SearchResults.Count}    " &
-            '                $""“{fileName}”"    Next  F3    Open  Ctrl+O    Reset  Esc"
-            '            )
-            '        Else
-            '            ShowStatus(
-            '                StatusPad & IconDialog &
-            '                "  No results found for: " & searchTerm
-            '            )
-            '        End If
-
-            '    Else
-            '        ShowStatus(
-            '            StatusPad & IconDialog &
-            '            "  Usage: find [search_term]   e.g., find document"
-            '        )
-            '    End If
-
-            '    Return
-
-            'Case "findnext", "searchnext", "next"
-
-            '    HandleFindNextCommand()
-
-            '    Return
-
-
-
         ' ---------------------------------------------------------
         ' FIND / SEARCH
         ' ---------------------------------------------------------
@@ -1616,9 +1338,6 @@ Public Class Form1
                 HandleFindNextCommand()
                 Return
 
-
-
-
             Case "pin"
 
                 ' If a path was provided
@@ -1626,9 +1345,7 @@ Public Class Form1
                     Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
 
                     If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
-                        'TogglePin(target)
-                        'Dim state As String = If(IsPinned(target), "Pinned", "Unpinned")
-                        'ShowStatus($"{state}: {target}")
+
                         PinOrUnpin(target)
 
                         UpdatePinButtonState()
@@ -1654,13 +1371,8 @@ Public Class Form1
                     End If
                 End If
 
-                'TogglePin(fallback)
-                'Dim newState As String = If(IsPinned(fallback), "Pinned", "Unpinned")
-                'ShowStatus($"{newState}: {fallback}")
-
                 PinOrUnpin(fallback)
 
-                'UpdateAllUIStates()
                 UpdatePinButtonState()
 
 
@@ -1706,15 +1418,11 @@ Public Class Form1
     End Sub
 
 
-
-
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
         Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
         ShowStatus($"{state}: {path}")
     End Sub
-
-
 
 
     Private Async Sub HandleCopyCommand(parts As String())
@@ -1732,7 +1440,6 @@ Public Class Form1
 
         Await PerformCopy(source, destinationRoot)
     End Sub
-
 
 
     Private Function ParseSource(parts As String()) As String
@@ -1763,8 +1470,6 @@ Public Class Form1
     End Function
 
 
-
-
     Private Function ValidateDestinationExists(dest As String) As Boolean
         If Directory.Exists(dest) Then
             Return True
@@ -1775,8 +1480,6 @@ Public Class Form1
                " If the path contains spaces, enclose it in quotes.")
         Return False
     End Function
-
-
 
 
     Private Function ValidateNotCopyingIntoSelf(source As String, dest As String) As Boolean
