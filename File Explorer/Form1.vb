@@ -1378,7 +1378,8 @@ Public Class Form1
 
                 Return
 
-            Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
+            Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end",
+                 "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
                 ' Confirm exit
                 If MessageBox.Show("Are you sure you want to exit?",
