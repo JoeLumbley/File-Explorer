@@ -1378,7 +1378,6 @@ Public Class Form1
 
                 Return
 
-
             Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end", "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
 
                 ' Confirm exit
@@ -1469,7 +1468,6 @@ Public Class Form1
         Return False
     End Function
 
-
     Private Function ValidateDestinationExists(dest As String) As Boolean
         If Directory.Exists(dest) Then
             Return True
@@ -1480,7 +1478,6 @@ Public Class Form1
                " If the path contains spaces, enclose it in quotes.")
         Return False
     End Function
-
 
     Private Function ValidateNotCopyingIntoSelf(source As String, dest As String) As Boolean
         If Not Directory.Exists(source) Then Return True
@@ -1496,7 +1493,6 @@ Public Class Form1
 
         Return True
     End Function
-
 
     Private Async Function PerformCopy(source As String, dest As String) As Task
         copyCts = New CancellationTokenSource()
@@ -1514,13 +1510,10 @@ Public Class Form1
         End If
     End Function
 
-
     Private Sub ShowUsageCopy()
         ShowStatus(StatusPad & IconDialog &
                "  Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
     End Sub
-
-
 
     Private Sub OpenSelectedItem()
         ' Is a file or folder selected?
