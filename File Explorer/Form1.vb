@@ -1,4 +1,5 @@
-﻿' File Explorer - A simple file explorer.
+﻿' File Explorer is a simple, fast, and user‑friendly file management application
+' designed to make navigating, organizing, and manipulating files intuitive for all users.
 
 ' MIT License
 ' Copyright(c) 2025 Joseph W. Lumbley
