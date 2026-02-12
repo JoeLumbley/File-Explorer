@@ -286,25 +286,13 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
-## 📁 Change Directory - `cd`
 
-**Usage:**  
-```
-cd [directory]
-```
 
-**Description:**  
-Changes the current working directory.
 
-**Examples:**  
-```
-cd C:\
-cd "C:\My Folder"
-```
 
-[ Table of Contents](#table-of-contents)
 
----
+
+
 
 ## 📁 Create Directory - `mkdir`, `make`
 
@@ -326,228 +314,6 @@ make "C:\My New Folder"
 
 ---
 
-## 📄⇢📄 Copy - `copy`
-
-**Usage:**  
-```
-copy [source] [destination]
-```
-
-**Description:**  
-Copies a file or folder to a destination directory.
-
-**Examples:**  
-```
-copy C:\folderA\file.txt C:\folderB
-copy "C:\folder A" "C:\folder B"
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## 📦 Move - `move`
-
-**Usage:**  
-```
-move [source] [destination]
-```
-
-**Description:**  
-Moves a file or folder to a new location.
-
-**Examples:**  
-```
-move C:\folderA\file.txt C:\folderB\file.txt
-move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## 🗑 Delete - `delete`
-
-**Usage:**  
-```
-delete [file_or_directory]
-```
-
-**Description:**  
-Deletes a file or folder.
-
-**Examples:**  
-```
-delete C:\file.txt
-delete "C:\My Folder"
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## ✏ Rename - `rename`
-
-**Usage:**  
-```
-rename [source_path] [new_name]
-```
-
-**Important:**  
-Paths containing spaces **must** be enclosed in quotes.
-
-**Examples:**  
-```
-rename "C:\folder\oldname.txt" "newname.txt"
-rename "C:\folder\old name.txt" "new name.txt"
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## 📝 Create Text File - `text`, `txt`
-
-**Usage:**  
-```
-text [file_path]
-```
-
-**Description:**  
-Creates a new text file at the specified path and opens it.
-
-**Example:**  
-```
-text "C:\folder\example.txt"
-```
-
-If no file name is provided, the CLI creates a new file named:  
-```
-New Text File.txt
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## 📂 Open - `open`
-
-**Usage:**  
-```
-open [file_or_directory]
-```
-
-**Description:**  
-Opens a file with its default application, or navigates into a folder.
-
-If no path is provided, the command opens the **currently selected** file or folder in the File Explorer list.
-
-**Examples:**  
-```
-open C:\folder\file.txt
-open "C:\My Folder"
-open
-```
-
-**Behavior:**
-
-- If the target is a **file** → opens it using the default program  
-- If the target is a **folder** → navigates into it  
-- If nothing is selected and no path is provided → shows usage help  
-- Supports quoted paths with spaces  
-
-[ Table of Contents](#table-of-contents)
-
----
-
-
-## 🔍 Search - `find`, `search`
-
-**Usage:**  
-```
-find [search_term]
-```
-
-**Description:**  
-Searches the current folder for files or folders containing the term.
-
-**Example:**  
-```
-find report
-```
-
-If results are found:
-
-- The first result is automatically selected  
-- The status bar shows how many matches were found  
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## ⏭ Next Search Result - `findnext`, `searchnext`
-
-**Usage:**  
-```
-findnext
-```
-
-**Description:**  
-Cycles to the next result from the previous search.  
-Wraps around when reaching the end.
-
-[ Table of Contents](#table-of-contents)
-
-
----
-
-## 💽 Disk Free - `df`
-
-**Usage:**  
-```
-df <drive_letter>:
-```
-
-**Description:**  
-Shows free and total disk space for the specified drive.  
-Accepts any of the following formats:
-
-- `C`
-- `C:`
-- `C:\`
-
-**Examples:**  
-```
-df C:
-df D
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-
-
-## ❓ Help - `help`, `man`, `commands`
-
-**Usage:**  
-```
-help
-```
-
-**Description:**  
-Displays the full list of available commands and their descriptions.
-
-**Examples:**  
-```
-help
-commands
-man
-```
-
-[ Table of Contents](#table-of-contents)
-
----
 
 
 
@@ -585,6 +351,469 @@ pin
 [ Table of Contents](#table-of-contents)
 
 ---
+
+
+
+
+
+
+
+## 📄⇢📁 Copy - `copy`
+
+**Usage:**  
+```
+copy [source] [destination]
+```
+
+**Description:**  
+Copies a file or folder to a destination directory.
+
+**Examples:**  
+```
+copy C:\folderA\file.txt C:\folderB
+copy "C:\folder A" "C:\folder B"
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+## 📦 Move - `move`
+
+**Usage:**  
+```
+move [source] [destination]
+```
+
+**Description:**  
+Moves a file or folder to a new location.
+
+**Examples:**  
+```
+move C:\folderA\file.txt C:\folderB\file.txt
+move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+## ✏ Rename - `rename`
+
+**Usage:**  
+```
+rename [source_path] [new_name]
+```
+
+**Important:**  
+Paths containing spaces **must** be enclosed in quotes.
+
+**Examples:**  
+```
+rename "C:\folder\oldname.txt" "newname.txt"
+rename "C:\folder\old name.txt" "new name.txt"
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 🗑 Delete - `delete`
+
+**Usage:**  
+```
+delete [file_or_directory]
+```
+
+**Description:**  
+Deletes a file or folder.
+
+**Examples:**  
+```
+delete C:\file.txt
+delete "C:\My Folder"
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+## 🔍 Search - `find`, `search`
+
+**Usage:**  
+```
+find [search_term]
+```
+
+**Description:**  
+Searches the current folder for files or folders containing the term.
+
+**Example:**  
+```
+find report
+```
+
+If results are found:
+
+- The first result is automatically selected  
+- The status bar shows how many matches were found  
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+## ⏭ Next Search Result - `findnext`, `searchnext`
+
+**Usage:**  
+```
+findnext
+```
+
+**Description:**  
+Cycles to the next result from the previous search.  
+Wraps around when reaching the end.
+
+[ Table of Contents](#table-of-contents)
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 📁 Change Directory - `cd`
+
+**Usage:**  
+```
+cd [directory]
+```
+
+**Description:**  
+Changes the current working directory.
+
+**Examples:**  
+```
+cd C:\
+cd "C:\My Folder"
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+## 📂 Open - `open`
+
+**Usage:**  
+```
+open [file_or_directory]
+```
+
+**Description:**  
+Opens a file with its default application, or navigates into a folder.
+
+If no path is provided, the command opens the **currently selected** file or folder in the File Explorer list.
+
+**Examples:**  
+```
+open C:\folder\file.txt
+open "C:\My Folder"
+open
+```
+
+**Behavior:**
+
+- If the target is a **file** → opens it using the default program  
+- If the target is a **folder** → navigates into it  
+- If nothing is selected and no path is provided → shows usage help  
+- Supports quoted paths with spaces  
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 📝 Create Text File - `text`, `txt`
+
+**Usage:**  
+```
+text [file_path]
+```
+
+**Description:**  
+Creates a new text file at the specified path and opens it.
+
+**Example:**  
+```
+text "C:\folder\example.txt"
+```
+
+If no file name is provided, the CLI creates a new file named:  
+```
+New Text File.txt
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 💽 Disk Free - `df`
+
+**Usage:**  
+```
+df <drive_letter>:
+```
+
+**Description:**  
+Shows free and total disk space for the specified drive.  
+Accepts any of the following formats:
+
+- `C`
+- `C:`
+- `C:\`
+
+**Examples:**  
+```
+df C:
+df D
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## ❓ Help - `help`, `man`, `commands`
+
+**Usage:**  
+```
+help
+```
+
+**Description:**  
+Displays the full list of available commands and their descriptions.
+
+**Examples:**  
+```
+help
+commands
+man
+```
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
