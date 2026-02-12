@@ -1,4 +1,4 @@
-# 📁 File Explorer
+# 📄🧭 File Explorer
 
 **File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
 
