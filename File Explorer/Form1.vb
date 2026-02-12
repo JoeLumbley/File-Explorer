@@ -496,7 +496,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub btnGo_Click(sender As Object, e As EventArgs) _
         Handles btnGo.Click
 
