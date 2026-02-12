@@ -678,127 +678,6 @@ Public Class Form1
         Return False
     End Function
 
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-
-    '    Select Case e.KeyCode
-
-    '    ' ===========================
-    '    '   ENTER / TAB / SHIFT+TAB
-    '    ' ===========================
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftTabDown = False
-    '            Else
-    '                _tabDown = False
-    '            End If
-
-
-    '    ' ===========================
-    '    '   ALT + NAVIGATION
-    '    ' ===========================
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then _altPDown = False
-
-    '        Case Keys.Left
-    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-    '        Case Keys.Right
-    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-    '        Case Keys.Up
-    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-    '        Case Keys.Home
-    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-
-    '    ' ===========================
-    '    '   F5 / F11 / ESC
-    '    ' ===========================
-    '        Case Keys.F5
-    '            _f5Down = False
-
-    '        Case Keys.F11
-    '            _f11Down = False
-
-    '        Case Keys.Escape
-    '            _escapeDown = False
-
-
-    '    ' ===========================
-    '    '   ADDRESS BAR SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.L
-    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
-
-    '        Case Keys.F4
-    '            _addressBarFocusDown = False
-
-
-    '    ' ===========================
-    '    '   FILE / FOLDER OPERATIONS
-    '    ' ===========================
-    '        Case Keys.O
-    '            If ModifierKeys = Keys.Control Then _ctrlODown = False
-
-    '        Case Keys.E
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
-
-    '        Case Keys.C
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
-    '                _ctrlShiftCDown = False
-    '            ElseIf ModifierKeys = Keys.Control Then
-    '                _ctrlCDown = False
-    '            End If
-
-    '        Case Keys.N
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
-
-    '        Case Keys.T
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
-
-    '        Case Keys.F2
-    '            _f2Down = False
-
-    '        Case Keys.V
-    '            If ModifierKeys = Keys.Control Then _ctrlVDown = False
-
-    '        Case Keys.X
-    '            If ModifierKeys = Keys.Control Then _ctrlXDown = False
-
-    '        Case Keys.A
-    '            If ModifierKeys = Keys.Control Then _ctrlADown = False
-
-    '        Case Keys.Delete
-    '            _deleteDown = False
-
-
-    '    ' ===========================
-    '    '   SEARCH SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.F3
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftF3Down = False
-    '            Else
-    '                _f3Down = False
-    '            End If
-
-    '    End Select
-
-    'End Sub
-
-
-
-
-
-
-
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
 
@@ -5570,12 +5449,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
     Private Sub TestListViewParser()
 
         lvFiles.Items.Add(New ListViewItem({"alpha.txt", "Text", "12 KB", "1/2/2024"}))
@@ -5726,14 +5599,6 @@ Public Class CopyResult
         End Get
     End Property
 End Class
-
-
-
-
-
-
-
-
 
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
 ' The goal: Explorer‑grade behavior with learner‑friendly clarity.
