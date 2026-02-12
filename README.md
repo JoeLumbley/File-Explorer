@@ -131,16 +131,21 @@ If you’re curious, the GitHub repository includes the full source code and doc
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#features-overview)
   - [Commands](#commands)
-    - [cd - Change Directory](#-change-directory---cd)
+
     - [mkdir / make - Create Directory](#-create-directory---mkdir-make)
     - [copy - Copy Files or Folders](#-copy---copy)
     - [move - Move Files or Folders](#-move---move)
-    - [delete - Delete Files or Folders](#-delete---delete)
     - [rename - Rename Files or Folders](#-rename---rename)
-    - [text / txt - Create Text Files](#-create-text-file---text-txt)
-    - [open - Open Files or Folders](#-open---open)
+    - [delete - Delete Files or Folders](#-delete---delete)
+   
     - [find / search - Search](#-search---find-search)
     - [findnext / searchnext - Next Search Result](#-next-search-result---findnext-searchnext)
+    - 
+    - [text / txt - Create Text Files](#-create-text-file---text-txt)
+    - [cd - Change Directory](#-change-directory---cd)
+    - [open - Open Files or Folders](#-open---open)
+    - 
+    - 
     - [exit - Closes the App](#-exit---exit-quit)
     - [help - Show Help](#-help---help)
    
@@ -280,21 +285,15 @@ This makes the CLI feel natural and forgiving.
 
 ---
 
-#  Commands
+
+
+# **Commands**
 
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
 
 ---
 
-
-
-
-
-
-
-
-
-## 📁 Create Directory - `mkdir`, `make`
+## 📁 Create Directory — `mkdir`, `make`
 
 **Usage:**  
 ```
@@ -310,23 +309,11 @@ mkdir C:\newfolder
 make "C:\My New Folder"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-## 📌 Pin - `pin`
+## 📌 Pin — `pin`
 
 **Usage:**  
 ```
@@ -334,8 +321,9 @@ pin [path]
 ```
 
 **Description:**  
-Pins or unpins a folder to Easy Access.  
+Pins or unpins a folder in Easy Access.  
 If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+
 The `pin` command acts as a **toggle**:
 
 - If the folder is **not pinned**, it becomes pinned  
@@ -348,17 +336,11 @@ pin "C:\My Folder"
 pin
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-## 📄⇢📁 Copy - `copy`
+## 📄⇢📁 Copy — `copy`
 
 **Usage:**  
 ```
@@ -374,22 +356,11 @@ copy C:\folderA\file.txt C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-## 📦 Move - `move`
+## 📦 Move — `move`
 
 **Usage:**  
 ```
@@ -405,19 +376,11 @@ move C:\folderA\file.txt C:\folderB\file.txt
 move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-## ✏ Rename - `rename`
+## ✏ Rename — `rename`
 
 **Usage:**  
 ```
@@ -433,26 +396,11 @@ rename "C:\folder\oldname.txt" "newname.txt"
 rename "C:\folder\old name.txt" "new name.txt"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 🗑 Delete - `delete`
+## 🗑 Delete — `delete`
 
 **Usage:**  
 ```
@@ -468,19 +416,11 @@ delete C:\file.txt
 delete "C:\My Folder"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-## 🔍 Search - `find`, `search`
+## 🔍 Search — `find`, `search`
 
 **Usage:**  
 ```
@@ -500,22 +440,11 @@ If results are found:
 - The first result is automatically selected  
 - The status bar shows how many matches were found  
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-## ⏭ Next Search Result - `findnext`, `searchnext`
+## ⏭ Next Search Result — `findnext`, `searchnext`
 
 **Usage:**  
 ```
@@ -526,27 +455,11 @@ findnext
 Cycles to the next result from the previous search.  
 Wraps around when reaching the end.
 
-[ Table of Contents](#table-of-contents)
-
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 📁 Change Directory - `cd`
+## 📁 Change Directory — `cd`
 
 **Usage:**  
 ```
@@ -562,19 +475,11 @@ cd C:\
 cd "C:\My Folder"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-## 📂 Open - `open`
+## 📂 Open — `open`
 
 **Usage:**  
 ```
@@ -600,74 +505,11 @@ open
 - If nothing is selected and no path is provided → shows usage help  
 - Supports quoted paths with spaces  
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 📝 Create Text File - `text`, `txt`
+## 📝 Create Text File — `text`, `txt`
 
 **Usage:**  
 ```
@@ -687,50 +529,11 @@ If no file name is provided, the CLI creates a new file named:
 New Text File.txt
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 💽 Disk Free - `df`
+## 💽 Disk Free — `df`
 
 **Usage:**  
 ```
@@ -741,9 +544,9 @@ df <drive_letter>:
 Shows free and total disk space for the specified drive.  
 Accepts any of the following formats:
 
-- `C`
-- `C:`
-- `C:\`
+- `C`  
+- `C:`  
+- `C:\`  
 
 **Examples:**  
 ```
@@ -751,37 +554,11 @@ df C:
 df D
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## ❓ Help - `help`, `man`, `commands`
+## ❓ Help — `help`, `man`, `commands`
 
 **Usage:**  
 ```
@@ -798,38 +575,11 @@ commands
 man
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
-
+## ❌ Exit — `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
 
 **Usage:**  
 ```
@@ -847,9 +597,22 @@ quit
 bye
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
