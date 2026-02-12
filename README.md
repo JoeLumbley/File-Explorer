@@ -249,25 +249,25 @@ The CLI is designed to be:
 
 ---
 
-## 🚀 Features Overview
+##  Features Overview
 
-### ✔ Navigation  
+###  Navigation  
 - Change directories  
 - Open files directly  
 - Navigate to folders by typing their path  
 - Supports paths with spaces using quotes  
 
-### ✔ File & Folder Operations  
+###  File & Folder Operations  
 - Create, copy, move, rename, and delete  
 - Works with both files and directories  
 - Handles quoted paths safely  
 
-### ✔ Search  
+###  Search  
 - Search the current folder  
 - Cycle through results with `findnext`  
 - Highlights and selects results in the UI  
 
-### ✔ Contextual Behavior  
+###  Contextual Behavior  
 If a command doesn’t match a known keyword, the CLI checks:
 
 - **Is it a folder?** → Navigate to it  
@@ -280,7 +280,7 @@ This makes the CLI feel natural and forgiving.
 
 ---
 
-# 🧭 Commands
+#  Commands
 
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
 
