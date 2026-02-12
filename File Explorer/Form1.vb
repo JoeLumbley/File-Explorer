@@ -273,9 +273,6 @@ Public Class Form1
     '    Return MyBase.ProcessCmdKey(msg, keyData)
     'End Function
 
-
-
-
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
         ' Highest‑priority, context‑sensitive actions
@@ -295,12 +292,6 @@ Public Class Form1
 
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
-
-
-
-
-
-
 
     Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
