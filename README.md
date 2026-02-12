@@ -129,7 +129,7 @@ If you’re curious, the GitHub repository includes the full source code and doc
 ## Table of Contents
 
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
-  - [Features Overview](#-features-overview)
+  - [Features Overview](#features-overview)
   - [Commands](#commands)
     - [cd - Change Directory](#-change-directory---cd)
     - [mkdir / make - Create Directory](#-create-directory---mkdir-make)
