@@ -1,4 +1,4 @@
-# 📁 File Explorer
+# 📄🧭 File Explorer
 
 **File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
 
@@ -129,18 +129,23 @@ If you’re curious, the GitHub repository includes the full source code and doc
 ## Table of Contents
 
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
-  - [Features Overview](#-features-overview)
-  - [Commands](#-commands)
-    - [cd - Change Directory](#-change-directory---cd)
+  - [Features Overview](#features-overview)
+  - [Commands](#commands)
+
     - [mkdir / make - Create Directory](#-create-directory---mkdir-make)
     - [copy - Copy Files or Folders](#-copy---copy)
     - [move - Move Files or Folders](#-move---move)
-    - [delete - Delete Files or Folders](#-delete---delete)
     - [rename - Rename Files or Folders](#-rename---rename)
-    - [text / txt - Create Text Files](#-create-text-file---text-txt)
-    - [open - Open Files or Folders](#-open---open)
+    - [delete - Delete Files or Folders](#-delete---delete)
+   
     - [find / search - Search](#-search---find-search)
     - [findnext / searchnext - Next Search Result](#-next-search-result---findnext-searchnext)
+    - 
+    - [text / txt - Create Text Files](#-create-text-file---text-txt)
+    - [cd - Change Directory](#-change-directory---cd)
+    - [open - Open Files or Folders](#-open---open)
+    - 
+    - 
     - [exit - Closes the App](#-exit---exit-quit)
     - [help - Show Help](#-help---help)
    
@@ -249,25 +254,25 @@ The CLI is designed to be:
 
 ---
 
-## 🚀 Features Overview
+##  Features Overview
 
-### ✔ Navigation  
+###  Navigation  
 - Change directories  
 - Open files directly  
 - Navigate to folders by typing their path  
 - Supports paths with spaces using quotes  
 
-### ✔ File & Folder Operations  
+###  File & Folder Operations  
 - Create, copy, move, rename, and delete  
 - Works with both files and directories  
 - Handles quoted paths safely  
 
-### ✔ Search  
+###  Search  
 - Search the current folder  
 - Cycle through results with `findnext`  
 - Highlights and selects results in the UI  
 
-### ✔ Contextual Behavior  
+###  Contextual Behavior  
 If a command doesn’t match a known keyword, the CLI checks:
 
 - **Is it a folder?** → Navigate to it  
@@ -280,33 +285,15 @@ This makes the CLI feel natural and forgiving.
 
 ---
 
-# 🧭 Commands
+
+
+# **Commands**
 
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
 
 ---
 
-## 📁 Change Directory - `cd`
-
-**Usage:**  
-```
-cd [directory]
-```
-
-**Description:**  
-Changes the current working directory.
-
-**Examples:**  
-```
-cd C:\
-cd "C:\My Folder"
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## 📁 Create Directory - `mkdir`, `make`
+## 📁 Create Directory — `mkdir`, `make`
 
 **Usage:**  
 ```
@@ -322,11 +309,38 @@ mkdir C:\newfolder
 make "C:\My New Folder"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-## 📄 Copy - `copy`
+## 📌 Pin — `pin`
+
+**Usage:**  
+```
+pin [path]
+```
+
+**Description:**  
+Pins or unpins a folder in Easy Access.  
+If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+
+The `pin` command acts as a **toggle**:
+
+- If the folder is **not pinned**, it becomes pinned  
+- If the folder **is already pinned**, it becomes unpinned  
+
+**Examples:**  
+```
+pin C:\Docs
+pin "C:\My Folder"
+pin
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📄⇢📁 Copy — `copy`
 
 **Usage:**  
 ```
@@ -342,11 +356,11 @@ copy C:\folderA\file.txt C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-## 📦 Move - `move`
+## 📦 Move — `move`
 
 **Usage:**  
 ```
@@ -362,31 +376,11 @@ move C:\folderA\file.txt C:\folderB\file.txt
 move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-## 🗑 Delete - `delete`
-
-**Usage:**  
-```
-delete [file_or_directory]
-```
-
-**Description:**  
-Deletes a file or folder.
-
-**Examples:**  
-```
-delete C:\file.txt
-delete "C:\My Folder"
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-## ✏ Rename - `rename`
+## ✏ Rename — `rename`
 
 **Usage:**  
 ```
@@ -402,35 +396,90 @@ rename "C:\folder\oldname.txt" "newname.txt"
 rename "C:\folder\old name.txt" "new name.txt"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-## 📝 Create Text File - `text`, `txt`
+## 🗑 Delete — `delete`
 
 **Usage:**  
 ```
-text [file_path]
+delete [file_or_directory]
 ```
 
 **Description:**  
-Creates a new text file at the specified path and opens it.
+Deletes a file or folder.
 
-**Example:**  
+**Examples:**  
 ```
-text "C:\folder\example.txt"
-```
-
-If no file name is provided, the CLI creates a new file named:  
-```
-New Text File.txt
+delete C:\file.txt
+delete "C:\My Folder"
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-## 📂 Open - `open`
+## 🔍 Search — `find`, `search`
+
+**Usage:**  
+```
+find [search_term]
+```
+
+**Description:**  
+Searches the current folder for files or folders containing the term.
+
+**Example:**  
+```
+find report
+```
+
+If results are found:
+
+- The first result is automatically selected  
+- The status bar shows how many matches were found  
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## ⏭ Next Search Result — `findnext`, `searchnext`
+
+**Usage:**  
+```
+findnext
+```
+
+**Description:**  
+Cycles to the next result from the previous search.  
+Wraps around when reaching the end.
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📁 Change Directory — `cd`
+
+**Usage:**  
+```
+cd [directory]
+```
+
+**Description:**  
+Changes the current working directory.
+
+**Examples:**  
+```
+cd C:\
+cd "C:\My Folder"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📂 Open — `open`
 
 **Usage:**  
 ```
@@ -456,52 +505,35 @@ open
 - If nothing is selected and no path is provided → shows usage help  
 - Supports quoted paths with spaces  
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-## 🔍 Search - `find`, `search`
+## 📝 Create Text File — `text`, `txt`
 
 **Usage:**  
 ```
-find [search_term]
+text [file_path]
 ```
 
 **Description:**  
-Searches the current folder for files or folders containing the term.
+Creates a new text file at the specified path and opens it.
 
 **Example:**  
 ```
-find report
+text "C:\folder\example.txt"
 ```
 
-If results are found:
+If no file name is provided, the CLI creates a new file named:  
+```
+New Text File.txt
+```
 
-- The first result is automatically selected  
-- The status bar shows how many matches were found  
-
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-## ⏭ Next Search Result - `findnext`, `searchnext`
-
-**Usage:**  
-```
-findnext
-```
-
-**Description:**  
-Cycles to the next result from the previous search.  
-Wraps around when reaching the end.
-
-[ Table of Contents](#table-of-contents)
-
-
----
-
-## 💽 Disk Free - `df`
+## 💽 Disk Free — `df`
 
 **Usage:**  
 ```
@@ -512,9 +544,9 @@ df <drive_letter>:
 Shows free and total disk space for the specified drive.  
 Accepts any of the following formats:
 
-- `C`
-- `C:`
-- `C:\`
+- `C`  
+- `C:`  
+- `C:\`  
 
 **Examples:**  
 ```
@@ -522,13 +554,11 @@ df C:
 df D
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-## ❓ Help - `help`, `man`, `commands`
+## ❓ Help — `help`, `man`, `commands`
 
 **Usage:**  
 ```
@@ -545,62 +575,11 @@ commands
 man
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-## 📌 Pin - `pin`
-
-**Usage:**  
-```
-pin [path]
-```
-
-**Description:**  
-Pins or unpins a folder to Easy Access.  
-If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
-The `pin` command acts as a **toggle**:
-
-- If the folder is **not pinned**, it becomes pinned  
-- If the folder **is already pinned**, it becomes unpinned  
-
-**Examples:**  
-```
-pin C:\Docs
-pin "C:\My Folder"
-pin
-```
-
-[ Table of Contents](#table-of-contents)
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## ❌ Exit - `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
-
+## ❌ Exit — `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
 
 **Usage:**  
 ```
@@ -618,9 +597,22 @@ quit
 bye
 ```
 
-[ Table of Contents](#table-of-contents)
+[Table of Contents](#table-of-contents)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
