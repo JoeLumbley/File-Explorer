@@ -253,25 +253,6 @@ Public Class Form1
 
     End Sub
 
-    'Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
-
-    '    ' Highest‑priority, context‑sensitive actions
-    '    If HandleEnterKey(keyData) Then Return True
-    '    If HandleAddressBarShortcuts(keyData) Then Return True
-
-    '    ' Focus navigation (Shift+Tab should be checked before Tab)
-    '    If HandleShiftTabNavigation(keyData) Then Return True
-    '    If HandleTabNavigation(keyData) Then Return True
-
-    '    ' Explorer‑style navigation shortcuts
-    '    If HandleNavigationShortcuts(keyData) Then Return True
-
-    '    ' Search and file operations (lowest priority)
-    '    If HandleSearchShortcuts(keyData) Then Return True
-    '    If HandleFileFolderOperations(Nothing, keyData) Then Return True
-
-    '    Return MyBase.ProcessCmdKey(msg, keyData)
-    'End Function
 
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
@@ -602,25 +583,6 @@ Public Class Form1
     End Function
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub Control_Enter(sender As Object, e As EventArgs) _
     Handles lvFiles.Enter, tvFolders.Enter, txtAddressBar.Enter
 
@@ -922,49 +884,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.L) _
-    '    OrElse keyData = (Keys.Alt Or Keys.D) _
-    '    OrElse keyData = Keys.F4 Then
-
-    '        ' Block repeated focus triggers while key is held down
-    '        If _addressBarFocusDown Then
-    '            Return True   ' swallow repeat safely
-    '        End If
-    '        _addressBarFocusDown = True
-
-    '        txtAddressBar.Focus()
-    '        txtAddressBar.SelectAll()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ESCAPE (Address Bar reset)
-    '    ' ===========================
-    '    If keyData = Keys.Escape AndAlso Not _isRenaming Then
-
-    '        ' Block repeated Escape while key is held down
-    '        If _escapeDown Then
-    '            Return True   ' swallow repeat safely
-    '        End If
-    '        _escapeDown = True
-
-    '        ' Restore the address bar to the current folder
-    '        txtAddressBar.Text = currentFolder
-
-    '        ResetSearchState()
-
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    Return False
-
-    'End Function
 
     Private Sub ResetSearchState()
 
@@ -979,172 +898,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Function HandleEnterKey(keyData As Keys) As Boolean
-
-    '    If keyData <> Keys.Enter Then
-    '        _enterDown = False
-    '        Return False
-    '    End If
-
-    '    ' Block repeated Enter while key is held down
-    '    If _enterDown Then
-    '        Return True   ' swallow repeat safely
-    '    End If
-
-    '    _enterDown = True
-
-    '    ' Block global Enter behavior during rename mode
-    '    If _isRenaming Then
-    '        Return False
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (Address Bar execute)
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        ExecuteCommand(txtAddressBar.Text.Trim())
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (TreeView toggle)
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        ToggleExpandCollapse()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   ENTER (File List open)
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        OpenSelectedItem()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
-    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
-
-    '    Select Case e.KeyCode
-
-    '    ' ===========================
-    '    '   BASIC KEYS
-    '    ' ===========================
-    '        Case Keys.Enter
-    '            _enterDown = False
-
-    '        Case Keys.Tab
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftTabDown = False
-    '            Else
-    '                _tabDown = False
-    '            End If
-
-    '        Case Keys.Delete
-    '            _deleteDown = False
-
-    '        Case Keys.Escape
-    '            _escapeDown = False
-
-
-    '    ' ===========================
-    '    '   CTRL SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.A
-    '            If ModifierKeys = Keys.Control Then _ctrlADown = False
-
-    '        Case Keys.C
-    '            If ModifierKeys = Keys.Control Then _ctrlCDown = False
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Control Then _ctrlDDown = False
-
-    '        Case Keys.F
-    '            If ModifierKeys = Keys.Control Then _ctrlFDown = False
-
-    '        Case Keys.O
-    '            If ModifierKeys = Keys.Control Then _ctrlODown = False
-
-    '        Case Keys.V
-    '            If ModifierKeys = Keys.Control Then _ctrlVDown = False
-
-    '        Case Keys.X
-    '            If ModifierKeys = Keys.Control Then _ctrlXDown = False
-
-
-    '    ' ===========================
-    '    '   CTRL + SHIFT SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.C
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftCDown = False
-
-    '        Case Keys.E
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
-
-    '        Case Keys.N
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
-
-    '        Case Keys.T
-    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
-
-
-    '    ' ===========================
-    '    '   ALT NAVIGATION
-    '    ' ===========================
-    '        Case Keys.Home
-    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-    '        Case Keys.Left
-    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-    '        Case Keys.P
-    '            If ModifierKeys = Keys.Alt Then _altPDown = False
-
-    '        Case Keys.Right
-    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-    '        Case Keys.Up
-    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-
-    '    ' ===========================
-    '    '   FUNCTION KEYS
-    '    ' ===========================
-    '        Case Keys.F2
-    '            _f2Down = False
-
-    '        Case Keys.F3
-    '            If ModifierKeys = Keys.Shift Then
-    '                _shiftF3Down = False
-    '            Else
-    '                _f3Down = False
-    '            End If
-
-    '        Case Keys.F5
-    '            _f5Down = False
-
-    '        Case Keys.F11
-    '            _f11Down = False
-
-
-    '    ' ===========================
-    '    '   ADDRESS BAR SHORTCUTS
-    '    ' ===========================
-    '        Case Keys.L
-    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
-
-    '        Case Keys.D
-    '            If ModifierKeys = Keys.Alt Then _addressBarFocusDown = False
-
-    '        Case Keys.F4
-    '            _addressBarFocusDown = False
-
-    '    End Select
-
-    'End Sub
 
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
@@ -1283,46 +1036,6 @@ Public Class Form1
 
 
 
-
-
-
-
-    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
-    '    ' Only handle Tab
-    '    If keyData <> Keys.Tab Then
-    '        _tabDown = False
-    '        Return False
-    '    End If
-
-    '    ' Block repeated Tab while key is held
-    '    If _tabDown Then
-    '        Return True   ' swallow repeat safely
-    '    End If
-
-    '    _tabDown = True
-
-    '    ' Do not interfere with rename mode
-    '    If _isRenaming Then Return False
-
-    '    Dim handled As Boolean = False
-
-    '    If txtAddressBar.Focused Then
-    '        handled = FocusFileList()
-    '    ElseIf lvFiles.Focused Then
-    '        handled = FocusTreeView()
-    '    ElseIf tvFolders.Focused Then
-    '        handled = FocusAddressBar()
-    '    Else
-    '        handled = FocusAddressBar()
-    '    End If
-
-    '    If handled Then
-    '        UpdateAllUIStates()
-    '    End If
-
-    '    Return handled
-    'End Function
-
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
         UpdateDestructiveButtonsAndMenus()
@@ -1369,240 +1082,11 @@ Public Class Form1
         Return True
     End Function
 
-    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
-
-    '    ' Detect SHIFT + TAB correctly inside ProcessCmdKey
-    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
-    '        _shiftTabDown = False
-    '        Return False
-    '    End If
-
-    '    ' Prevent Shift+Tab navigation while renaming
-    '    If _isRenaming Then
-    '        Return False
-    '    End If
-
-    '    ' Block repeated Shift+Tab while key is held down
-    '    If _shiftTabDown Then
-    '        Return True   ' swallow repeat safely
-    '    End If
-    '    _shiftTabDown = True
-
-
-    '    ' ===========================
-    '    '   TreeView → File List
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        lvFiles.Focus()
-
-    '        If lvFiles.Items.Count > 0 Then
-    '            If lvFiles.SelectedItems.Count > 0 Then
-    '                Dim sel = lvFiles.SelectedItems(0)
-    '                sel.Focused = True
-    '                sel.EnsureVisible()
-    '            Else
-    '                lvFiles.Items(0).Selected = True
-    '                lvFiles.Items(0).Focused = True
-    '                lvFiles.Items(0).EnsureVisible()
-    '            End If
-    '        End If
-
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    '   File List → Address Bar
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    '   Address Bar → TreeView
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        tvFolders.Focus()
-
-    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
-    '        End If
-
-    '        tvFolders.SelectedNode?.EnsureVisible()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    '   Fallback
-    '    ' ===========================
-    '    txtAddressBar.Focus()
-    '    PlaceCaretAtEndOfAddressBar()
-    '    Return True
-
-    'End Function
 
     Private Function GlobalShortcutsAllowed() As Boolean
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
     End Function
 
-    'Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    ' ALT + HOME (Goto User Folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
-
-    '        If _altHomeDown Then Return True
-    '        _altHomeDown = True
-
-    '        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' ALT + P (Add to/Remove from pins)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
-
-    '        If _altPDown Then Return True
-    '        _altPDown = True
-
-    '        Dim target As String = GetPinnableTarget()
-
-    '        If target Is Nothing Then
-    '            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '                target = currentFolder
-    '            Else
-    '                Return False
-    '            End If
-    '        End If
-
-    '        PinOrUnpin(target)
-    '        UpdatePinButtonState()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' ALT + LEFT (Back)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
-
-    '        If _altLeftDown Then Return True
-    '        _altLeftDown = True
-
-    '        NavigateBackward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' ALT + RIGHT (Forward)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Right) AndAlso Not _isRenaming Then
-
-    '        If _altRightDown Then Return True
-    '        _altRightDown = True
-
-    '        NavigateForward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' ALT + UP (Parent folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
-
-    '        If _altUpDown Then Return True
-    '        _altUpDown = True
-
-    '        NavigateToParent()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' F5 (Refresh)
-    '    ' ===========================
-    '    If keyData = Keys.F5 AndAlso Not _isRenaming Then
-
-    '        If _f5Down Then Return True
-    '        _f5Down = True
-
-    '        RefreshCurrentFolder()
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    ' F11 (Full screen)
-    '    ' ===========================
-    '    If keyData = Keys.F11 AndAlso Not _isRenaming Then
-
-    '        If _f11Down Then Return True
-    '        _f11Down = True
-
-    '        ToggleFullScreen()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    '   CTRL + F (Find)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
-
-    '        If _ctrlFDown Then Return True
-    '        _ctrlFDown = True
-
-    '        InitiateSearch()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    '   F3 (Find Next)
-    '    ' ===========================
-    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
-
-    '        If _f3Down Then Return True
-    '        _f3Down = True
-
-    '        HandleFindNextCommand()
-    '        Return True
-    '    End If
-
-
-    '    ' ===========================
-    '    '   SHIFT + F3 (Find Previous)
-    '    ' ===========================
-    '    If keyData = (Keys.Shift Or Keys.F3) AndAlso GlobalShortcutsAllowed() Then
-
-    '        If _shiftF3Down Then Return True
-    '        _shiftF3Down = True
-
-    '        HandleFindPreviousCommand()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
 
     Private Sub HandleFindPreviousCommand()
 
@@ -1628,11 +1112,6 @@ Public Class Form1
 
         Dim fileName As String = Path.GetFileNameWithoutExtension(prevPath)
 
-        ' Status HUD
-        'ShowStatus(
-        '    StatusPad & IconSearch &
-        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
-        ')
         ShowSearchHud()
     End Sub
 
@@ -2609,67 +2088,67 @@ Public Class Form1
 
     End Sub
 
-    Private Function ResolveNameCollision(destPath As String) As String
+    'Private Function ResolveNameCollision(destPath As String) As String
 
-        Dim folder As String = Path.GetDirectoryName(destPath)
-        Dim baseName As String = Path.GetFileNameWithoutExtension(destPath)
-        Dim ext As String = Path.GetExtension(destPath)
+    '    Dim folder As String = Path.GetDirectoryName(destPath)
+    '    Dim baseName As String = Path.GetFileNameWithoutExtension(destPath)
+    '    Dim ext As String = Path.GetExtension(destPath)
 
-        Dim candidate As String = destPath
-        Dim counter As Integer = 1
+    '    Dim candidate As String = destPath
+    '    Dim counter As Integer = 1
 
-        While File.Exists(candidate) OrElse Directory.Exists(candidate)
-            candidate = Path.Combine(folder, $"{baseName} ({counter}){ext}")
-            counter += 1
-        End While
+    '    While File.Exists(candidate) OrElse Directory.Exists(candidate)
+    '        candidate = Path.Combine(folder, $"{baseName} ({counter}){ext}")
+    '        counter += 1
+    '    End While
 
-        Return candidate
+    '    Return candidate
 
-    End Function
+    'End Function
 
-    Private Function PerformPasteOperation(sourcePath As String, destFolder As String) As String
+    'Private Function PerformPasteOperation(sourcePath As String, destFolder As String) As String
 
-        Try
-            Dim name As String = Path.GetFileName(sourcePath)
-            Dim destPath As String = Path.Combine(destFolder, name)
+    '    Try
+    '        Dim name As String = Path.GetFileName(sourcePath)
+    '        Dim destPath As String = Path.Combine(destFolder, name)
 
-            ' Auto-rename
-            destPath = ResolveNameCollision(destPath)
+    '        ' Auto-rename
+    '        destPath = ResolveNameCollision(destPath)
 
-            Dim ct As CancellationToken = CancellationToken.None
+    '        Dim ct As CancellationToken = CancellationToken.None
 
-            If File.Exists(sourcePath) Then
-                Dim result = CopyFile(sourcePath, destPath, ct)
-            ElseIf Directory.Exists(sourcePath) Then
-                Dim result = CopyDirectory(sourcePath, destPath, ct)
-            Else
-                Return Nothing
-            End If
+    '        If File.Exists(sourcePath) Then
+    '            Dim result = CopyFile(sourcePath, destPath, ct)
+    '        ElseIf Directory.Exists(sourcePath) Then
+    '            Dim result = CopyDirectory(sourcePath, destPath, ct)
+    '        Else
+    '            Return Nothing
+    '        End If
 
-            Return destPath
+    '        Return destPath
 
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconWarning & " Paste skipped: " & ex.Message)
-            Return Nothing
-        End Try
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconWarning & " Paste skipped: " & ex.Message)
+    '        Return Nothing
+    '    End Try
 
-    End Function
+    'End Function
 
-    Private Sub DeleteOriginalsAfterCut(paths As List(Of String))
+    'Private Sub DeleteOriginalsAfterCut(paths As List(Of String))
 
-        For Each p In paths
-            Try
-                If File.Exists(p) Then
-                    File.Delete(p)
-                ElseIf Directory.Exists(p) Then
-                    Directory.Delete(p, True)
-                End If
-            Catch ex As Exception
-                ShowStatus(StatusPad & IconWarning & " Could not delete: " & p)
-            End Try
-        Next
+    '    For Each p In paths
+    '        Try
+    '            If File.Exists(p) Then
+    '                File.Delete(p)
+    '            ElseIf Directory.Exists(p) Then
+    '                Directory.Delete(p, True)
+    '            End If
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconWarning & " Could not delete: " & p)
+    '        End Try
+    '    Next
 
-    End Sub
+    'End Sub
 
     Public Async Function CopyFileOrDirectoryUnified(
     source As String,
@@ -2938,17 +2417,6 @@ Public Class Form1
     End Sub
 
 
-    Private Sub CopyFileName_Click(sender As Object, e As EventArgs)
-        ' Copy selected file name to clipboard - Mouse right-click context menu for lvFiles
-
-        ' Is a file or folder selected?
-        If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-        Clipboard.SetText(lvFiles.SelectedItems(0).Text)
-
-        ShowStatus(StatusPad & IconCopy & " Copied File Name " & lvFiles.SelectedItems(0).Text)
-
-    End Sub
 
     Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
         ' Copy selected file path to clipboard - Mouse right-click context menu for lvFiles
@@ -3396,33 +2864,33 @@ Public Class Form1
         Return (True, "")
     End Function
 
-    Private Function GetRequiredSpace(path As String) As Long
-        ' ------------------------------------------------------------
-        ' Helper: compute required space for file or directory
-        ' ------------------------------------------------------------
+    'Private Function GetRequiredSpace(path As String) As Long
+    '    ' ------------------------------------------------------------
+    '    ' Helper: compute required space for file or directory
+    '    ' ------------------------------------------------------------
 
-        If IO.File.Exists(path) Then
-            Dim fi As New FileInfo(path)
-            Return fi.Length
-        End If
+    '    If IO.File.Exists(path) Then
+    '        Dim fi As New FileInfo(path)
+    '        Return fi.Length
+    '    End If
 
-        If Directory.Exists(path) Then
-            Return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).
-            Sum(Function(f) New FileInfo(f).Length)
-        End If
+    '    If Directory.Exists(path) Then
+    '        Return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).
+    '        Sum(Function(f) New FileInfo(f).Length)
+    '    End If
 
-        Return 0
-    End Function
+    '    Return 0
+    'End Function
 
-    Private Function HasEnoughSpace(requiredBytes As Long, destinationPath As String) As Boolean
-        ' ------------------------------------------------------------
-        ' Helper: free‑space check by bytes + destination drive
-        ' ------------------------------------------------------------
+    'Private Function HasEnoughSpace(requiredBytes As Long, destinationPath As String) As Boolean
+    '    ' ------------------------------------------------------------
+    '    ' Helper: free‑space check by bytes + destination drive
+    '    ' ------------------------------------------------------------
 
-        Dim root = Path.GetPathRoot(destinationPath)
-        Dim drive As New DriveInfo(root)
-        Return requiredBytes <= drive.AvailableFreeSpace
-    End Function
+    '    Dim root = Path.GetPathRoot(destinationPath)
+    '    Dim drive As New DriveInfo(root)
+    '    Return requiredBytes <= drive.AvailableFreeSpace
+    'End Function
 
 
     Private Function ResolveDestinationPathWithAutoRename(initialPath As String, isDir As Boolean) As String
@@ -4084,14 +3552,6 @@ Public Class Form1
 
         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
-        ' Status HUD
-        'ShowStatus(
-        '    StatusPad & IconSearch &
-        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
-        ')
-        'ShowStatus(StatusPad & IconSearch &
-        '           $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
-        ')
         ShowSearchHud()
 
     End Sub
@@ -4166,16 +3626,16 @@ Public Class Form1
     End Sub
 
 
-    Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
-        Try
-            Dim root = Path.GetPathRoot(destinationPath)
-            Dim drive As New DriveInfo(root)
-            Return sourceFile.Length <= drive.AvailableFreeSpace
-        Catch
-            ' If free space cannot be determined, allow the copy attempt
-            Return True
-        End Try
-    End Function
+    'Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
+    '    Try
+    '        Dim root = Path.GetPathRoot(destinationPath)
+    '        Dim drive As New DriveInfo(root)
+    '        Return sourceFile.Length <= drive.AvailableFreeSpace
+    '    Catch
+    '        ' If free space cannot be determined, allow the copy attempt
+    '        Return True
+    '    End Try
+    'End Function
 
     Private Sub EnsureHelpFileExists(helpFilePath As String)
 
@@ -4589,11 +4049,6 @@ Public Class Form1
             Dim p As String = TryCast(tvFolders.SelectedNode.Tag, String)
             If isValid(p) Then Return p
         End If
-
-        '' 3. Last focus was Address Bar → current folder
-        'If _lastFocusedControl Is txtAddressBar Then
-        '    If isValid(currentFolder) Then Return currentFolder
-        'End If
 
         ' 4. No valid target
         Return Nothing
@@ -5393,8 +4848,6 @@ Public Class Form1
         ' ============================
         tips.SetToolTip(btnRename, "Rename the selected item  (F2)")
         tips.SetToolTip(btnDelete, "Delete the selected item  (Delete or Ctrl + D)")
-
-        'tips.SetToolTip(txtAddressBar, "Address Bar: Type a path or command here.  (Ctrl + L, Alt + D, or F4 to focus)")
         tips.SetToolTip(txtAddressBar,
                         "Type a path or command. Enter runs it, Esc resets. Ctrl+L, Alt+D, or F4 to focus.")
 
@@ -5946,14 +5399,14 @@ Public Class Form1
 
     End Sub
 
-    Private Sub TestListViewParser()
+    'Private Sub TestListViewParser()
 
-        lvFiles.Items.Add(New ListViewItem({"alpha.txt", "Text", "12 KB", "1/2/2024"}))
-        lvFiles.Items.Add(New ListViewItem({"beta.txt", "Text", "3,200", "12/25/2023"}))
-        lvFiles.Items.Add(New ListViewItem({"gamma.txt", "Text", "1.5 MB", "5/10/2024"}))
-        lvFiles.Items.Add(New ListViewItem({"delta.txt", "Text", "1.2 GB", "3/1/2023"}))
+    '    lvFiles.Items.Add(New ListViewItem({"alpha.txt", "Text", "12 KB", "1/2/2024"}))
+    '    lvFiles.Items.Add(New ListViewItem({"beta.txt", "Text", "3,200", "12/25/2023"}))
+    '    lvFiles.Items.Add(New ListViewItem({"gamma.txt", "Text", "1.5 MB", "5/10/2024"}))
+    '    lvFiles.Items.Add(New ListViewItem({"delta.txt", "Text", "1.2 GB", "3/1/2023"}))
 
-    End Sub
+    'End Sub
 
     Private Sub AssertTrue(condition As Boolean, message As String)
         Debug.Assert(condition, message)
