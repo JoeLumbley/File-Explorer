@@ -2047,19 +2047,7 @@ Public Class Form1
                         lvFiles.Focus()
                         HighlightSearchMatches()
 
-                        ' Unified search HUD
-                        'ShowStatus(
-                        '    StatusPad & IconSearch &
-                        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
-                        ')
-                        'ShowStatus(
-                        '    StatusPad & IconSearch &
-                        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
-                        ')
                         ShowSearchHud()
-
-
-                        '$"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
 
                     Else
                         ShowStatus(
@@ -2083,61 +2071,6 @@ Public Class Form1
             Case "findnext", "searchnext", "next"
                 HandleFindNextCommand()
                 Return
-
-            'Case "pin"
-
-            '    ' If a path was provided
-            '    If parts.Length > 1 Then
-            '        Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
-
-            '        If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
-
-            '            PinOrUnpin(target)
-
-            '            UpdatePinButtonState()
-
-            '            RestoreAddressBar()
-
-
-            '        Else
-            '            'ShowStatus(StatusPad & IconDialog &
-            '            '           "  Invalid folder. Usage: pin [folder_path]")
-            '            ShowStatus(StatusPad & IconError &
-            '                       "  That folder can’t be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
-
-            '        End If
-
-            '        Return
-            '    End If
-
-            '    ' No path provided → fall back to contextual target
-            '    Dim fallback As String = GetPinnableTarget()
-
-            '    If fallback Is Nothing Then
-            '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-            '            fallback = currentFolder
-            '        Else
-            '            'ShowStatus(StatusPad & IconDialog &
-            '            '           "  No valid folder to pin. Usage: pin [folder_path]")
-
-
-            '            ShowStatus(StatusPad & IconError &
-            '                       "  That folder can’t be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
-
-
-            '            Return
-            '        End If
-            '    End If
-
-            '    PinOrUnpin(fallback)
-
-            '    UpdatePinButtonState()
-
-            '    RestoreAddressBar()
-
-
-
-            '    Return
 
             Case "pin"
 
@@ -2216,12 +2149,6 @@ Public Class Form1
         End Select
 
     End Sub
-
-    'Private Sub PinOrUnpin(path As String)
-    '    TogglePin(path)
-    '    Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
-    '    ShowStatus($"{state}: {path}")
-    'End Sub
 
 
     Private Sub PinOrUnpin(path As String)
