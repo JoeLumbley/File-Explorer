@@ -1711,6 +1711,9 @@ Public Class Form1
         Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
 
         If result.Success Then
+            'navagate to dest
+
+
             ShowStatus(StatusPad & IconCopy &
                    $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
         Else
