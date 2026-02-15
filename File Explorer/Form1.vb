@@ -1629,10 +1629,11 @@ Public Class Form1
         Dim fileName As String = Path.GetFileNameWithoutExtension(prevPath)
 
         ' Status HUD
-        ShowStatus(
-        StatusPad & IconSearch &
-        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
-    )
+        'ShowStatus(
+        '    StatusPad & IconSearch &
+        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+        ')
+        ShowSearchHud()
     End Sub
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
@@ -2047,15 +2048,24 @@ Public Class Form1
                         HighlightSearchMatches()
 
                         ' Unified search HUD
-                        ShowStatus(
-                        StatusPad & IconSearch &
-                        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
-                    )
+                        'ShowStatus(
+                        '    StatusPad & IconSearch &
+                        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+                        ')
+                        'ShowStatus(
+                        '    StatusPad & IconSearch &
+                        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+                        ')
+                        ShowSearchHud()
+
+
+                        '$"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+
                     Else
                         ShowStatus(
-                        StatusPad & IconDialog &
-                        "  No results found for: " & searchTerm
-                    )
+                            StatusPad & IconDialog &
+                            "  No results found for: " & searchTerm
+                        )
                     End If
 
                 Else
@@ -4148,11 +4158,29 @@ Public Class Form1
         Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
         ' Status HUD
-        ShowStatus(
-            StatusPad & IconSearch &
-            $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
-        )
+        'ShowStatus(
+        '    StatusPad & IconSearch &
+        '    $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Next  F3    Open  Ctrl+O    Reset  Esc"
+        ')
+        'ShowStatus(StatusPad & IconSearch &
+        '           $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+        ')
+        ShowSearchHud()
+
     End Sub
+
+
+
+    Private Sub ShowSearchHud()
+        Dim ResultPath As String = SearchResults(SearchIndex)
+        Dim fileName As String = Path.GetFileNameWithoutExtension(ResultPath)
+
+        ShowStatus(
+        StatusPad & IconSearch &
+        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+    )
+    End Sub
+
 
     Private Sub HighlightSearchMatches()
         Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
