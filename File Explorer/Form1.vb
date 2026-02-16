@@ -231,6 +231,42 @@ Public Class Form1
     ' ===========================
     Private _addressBarFocusDown As Boolean = False
 
+
+    ' ============================================================
+    ' IMAGE KEY MAP
+    ' ============================================================
+
+    Private ReadOnly imageKeyMap As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
+        {"Audio", "Music"},
+        {"Image", "Pictures"},
+        {"Document", "Documents"},
+        {"Video", "Videos"},
+        {"Archive", "Downloads"},
+        {"Executable", "Executable"},
+        {"Shortcut", "Shortcut"},
+        {"Folder", "Folder"}
+    }
+
+    'Public Structure ValidationResult
+    '    Public ReadOnly IsValid As Boolean
+    '    Public ReadOnly ErrorMessage As String
+
+    '    Public Sub New(valid As Boolean, message As String)
+    '        IsValid = valid
+    '        ErrorMessage = message
+    '    End Sub
+    'End Structure
+
+
+
+
+
+
+
+
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -2355,62 +2391,62 @@ Public Class Form1
         End Try
     End Function
 
-    Private Function ValidateNewName(newName As String) As (IsValid As Boolean, ErrorMessage As String)
+    'Private Function ValidateNewName(newName As String) As (IsValid As Boolean, ErrorMessage As String)
 
-        ' ------------------------------------------------------------
-        ' Rule 1: Empty or whitespace-only names are not allowed
-        ' ------------------------------------------------------------
-        If String.IsNullOrWhiteSpace(newName) Then
-            Return (False, "A name cannot be empty.")
-        End If
+    '    ' ------------------------------------------------------------
+    '    ' Rule 1: Empty or whitespace-only names are not allowed
+    '    ' ------------------------------------------------------------
+    '    If String.IsNullOrWhiteSpace(newName) Then
+    '        Return (False, "A name cannot be empty.")
+    '    End If
 
-        ' ------------------------------------------------------------
-        ' Rule 2: Names cannot end with a space or a period
-        ' ------------------------------------------------------------
-        If newName.EndsWith(" ") Then
-            Return (False, "A name cannot end with a space.")
-        End If
+    '    ' ------------------------------------------------------------
+    '    ' Rule 2: Names cannot end with a space or a period
+    '    ' ------------------------------------------------------------
+    '    If newName.EndsWith(" ") Then
+    '        Return (False, "A name cannot end with a space.")
+    '    End If
 
-        If newName.EndsWith(".") Then
-            Return (False, "A name cannot end with a period.")
-        End If
+    '    If newName.EndsWith(".") Then
+    '        Return (False, "A name cannot end with a period.")
+    '    End If
 
-        ' ------------------------------------------------------------
-        ' Rule 3: Illegal characters (Explorer rules)
-        ' ------------------------------------------------------------
-        Dim illegalChars As Char() = Path.GetInvalidFileNameChars()
+    '    ' ------------------------------------------------------------
+    '    ' Rule 3: Illegal characters (Explorer rules)
+    '    ' ------------------------------------------------------------
+    '    Dim illegalChars As Char() = Path.GetInvalidFileNameChars()
 
-        If newName.IndexOfAny(illegalChars) >= 0 Then
-            Return (False, "A name cannot contain any of the following characters: \ / : * ? "" < > |")
-        End If
+    '    If newName.IndexOfAny(illegalChars) >= 0 Then
+    '        Return (False, "A name cannot contain any of the following characters: \ / : * ? "" < > |")
+    '    End If
 
-        ' ------------------------------------------------------------
-        ' Rule 4: Reserved Windows device names
-        ' ------------------------------------------------------------
-        Dim reserved() As String = {
-        "CON", "PRN", "AUX", "NUL",
-        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
-    }
+    '    ' ------------------------------------------------------------
+    '    ' Rule 4: Reserved Windows device names
+    '    ' ------------------------------------------------------------
+    '    Dim reserved() As String = {
+    '    "CON", "PRN", "AUX", "NUL",
+    '    "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+    '    "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+    '}
 
-        Dim baseName As String = Path.GetFileNameWithoutExtension(newName).ToUpperInvariant()
+    '    Dim baseName As String = Path.GetFileNameWithoutExtension(newName).ToUpperInvariant()
 
-        If reserved.Contains(baseName) Then
-            Return (False, $"The name '{newName}' is reserved by Windows.")
-        End If
+    '    If reserved.Contains(baseName) Then
+    '        Return (False, $"The name '{newName}' is reserved by Windows.")
+    '    End If
 
-        ' ------------------------------------------------------------
-        ' Rule 5: Name cannot be "." or ".."
-        ' ------------------------------------------------------------
-        If newName = "." OrElse newName = ".." Then
-            Return (False, "This name is not allowed.")
-        End If
+    '    ' ------------------------------------------------------------
+    '    ' Rule 5: Name cannot be "." or ".."
+    '    ' ------------------------------------------------------------
+    '    If newName = "." OrElse newName = ".." Then
+    '        Return (False, "This name is not allowed.")
+    '    End If
 
-        ' ------------------------------------------------------------
-        ' All rules passed
-        ' ------------------------------------------------------------
-        Return (True, "")
-    End Function
+    '    ' ------------------------------------------------------------
+    '    ' All rules passed
+    '    ' ------------------------------------------------------------
+    '    Return (True, "")
+    'End Function
 
     Private Function GetPasteDestination() As String
         If Directory.Exists(currentFolder) Then
@@ -2533,12 +2569,38 @@ Public Class Form1
         UpdateTreeRoots()
     End Sub
 
+    'Private Sub NavigateToParent()
+    '    Dim parent = Directory.GetParent(currentFolder)
+    '    If parent IsNot Nothing Then
+    '        NavigateTo(parent.FullName, recordHistory:=True)
+    '    End If
+    'End Sub
+
+
+
     Private Sub NavigateToParent()
-        Dim parent = Directory.GetParent(currentFolder)
-        If parent IsNot Nothing Then
-            NavigateTo(parent.FullName, recordHistory:=True)
+        Dim parentPath As String = Path.GetDirectoryName(currentFolder)
+
+        If String.IsNullOrEmpty(parentPath) Then
+            ' Root drive or no parent → stay where you are
+            Return
         End If
+
+        Dim navTarget As String = ResolveNavigationTarget(parentPath)
+        NavigateTo(navTarget, recordHistory:=True)
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub SelectAllItems()
         For Each item As ListViewItem In lvFiles.Items
@@ -2735,122 +2797,315 @@ Public Class Form1
 
     End Sub
 
+    'Private Async Function PopulateFiles(path As String) As Task
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.Items.Clear()
+
+    '    Try
+
+    '        ' -------------------------------
+    '        ' Load directories asynchronously
+    '        ' -------------------------------
+    '        Dim directories = Await Task.Run(Function()
+
+    '                                             Dim dirList As New List(Of String)()
+    '                                             Try
+
+    '                                                 dirList.AddRange(
+    '                                                 Directory.GetDirectories(path).
+    '                                                 Where(Function(d) _
+    '                                                 ShowHiddenFiles OrElse
+    '                                                 Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0)))
+
+    '                                             Catch ex As UnauthorizedAccessException
+    '                                                 ShowStatus(StatusPad & IconWarning & " Access denied to some directories in: " & path)
+    '                                                 Debug.WriteLine($"PopulateFiles - {path} - Directories - UnauthorizedAccessException - {ex.Message}") ' Log exception details
+    '                                             Catch ex As Exception
+    '                                                 ShowStatus(StatusPad & IconError & " An error occurred: " & ex.Message)
+    '                                                 Debug.WriteLine($"PopulateFiles - {path} - Directories - Error - {ex.Message}")
+    '                                             End Try
+
+    '                                             Return dirList ' Ensure that an empty list is returned if an exception occurs
+    '                                         End Function)
+
+    '        Dim itemsToAdd As New List(Of ListViewItem)
+
+    '        For Each mDir In directories
+    '            Dim di As New DirectoryInfo(mDir)
+    '            Dim item As New ListViewItem(di.Name)
+
+    '            item.SubItems.Add("Folder")
+    '            item.SubItems.Add("") ' No size for folders
+    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = di.FullName
+    '            item.ImageKey = "Folder"
+
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        ' ---------------------------
+    '        ' Load files asynchronously
+    '        ' ---------------------------
+    '        Dim files = Await Task.Run(Function()
+
+    '                                       Dim fileList As New List(Of String)
+    '                                       Try
+
+    '                                           fileList.AddRange(
+    '                                           Directory.GetFiles(path).
+    '                                           Where(Function(f) _
+    '                                           ShowHiddenFiles OrElse
+    '                                           (New FileInfo(f).Attributes And
+    '                                           (FileAttributes.Hidden Or FileAttributes.System)) = 0))
+
+    '                                       Catch ex As UnauthorizedAccessException
+    '                                           ShowStatus(StatusPad & IconError & " Access denied to some files in: " & path)
+    '                                           Debug.WriteLine($"PopulateFiles - {path} - Files - UnauthorizedAccessException - {ex.Message}")
+    '                                       Catch ex As Exception
+    '                                           ShowStatus(StatusPad & IconError & " An error occurred: " & ex.Message)
+    '                                           Debug.WriteLine($"PopulateFiles - {path} - Files - Error - {ex.Message}")
+
+    '                                       End Try
+
+    '                                       Return fileList
+    '                                   End Function)
+
+    '        For Each file In files
+    '            Dim fi As New FileInfo(file)
+    '            Dim item As New ListViewItem(fi.Name)
+
+    '            Dim ext = fi.Extension.ToLowerInvariant()
+    '            Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '            ' Category column
+    '            item.SubItems.Add(category)
+
+    '            ' Size + date
+    '            item.SubItems.Add(FormatSize(fi.Length))
+    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '            item.Tag = fi.FullName
+
+    '            ' Image assignment
+    '            Select Case category
+    '                Case "Audio" : item.ImageKey = "Music"
+    '                Case "Image" : item.ImageKey = "Pictures"
+    '                Case "Document" : item.ImageKey = "Documents"
+    '                Case "Video" : item.ImageKey = "Videos"
+    '                Case "Archive" : item.ImageKey = "Downloads"
+    '                Case "Executable" : item.ImageKey = "Executable"
+    '                Case "Shortcut" : item.ImageKey = "Shortcut"
+    '                Case Else : item.ImageKey = "Documents"
+    '            End Select
+
+    '            itemsToAdd.Add(item)
+    '        Next
+
+    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
+
+    '        'ShowStatus(StatusPad & lvFiles.Items.Count & "  items")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"General Error: {ex.Message}")
+
+    '    Finally
+    '        lvFiles.EndUpdate()
+    '    End Try
+
+    'End Function
+
+
+
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
 
         Try
+            ' Kick off both enumerations in parallel
+            Dim dirTask = Task.Run(Function() GetDirectoriesSafe(path))
+            Dim fileTask = Task.Run(Function() GetFilesSafe(path))
 
-            ' -------------------------------
-            ' Load directories asynchronously
-            ' -------------------------------
-            Dim directories = Await Task.Run(Function()
-
-                                                 Dim dirList As New List(Of String)()
-                                                 Try
-
-                                                     dirList.AddRange(
-                                                     Directory.GetDirectories(path).
-                                                     Where(Function(d) _
-                                                     ShowHiddenFiles OrElse
-                                                     Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0)))
-
-                                                 Catch ex As UnauthorizedAccessException
-                                                     ShowStatus(StatusPad & IconWarning & " Access denied to some directories in: " & path)
-                                                     Debug.WriteLine($"PopulateFiles - {path} - Directories - UnauthorizedAccessException - {ex.Message}") ' Log exception details
-                                                 Catch ex As Exception
-                                                     ShowStatus(StatusPad & IconError & " An error occurred: " & ex.Message)
-                                                     Debug.WriteLine($"PopulateFiles - {path} - Directories - Error - {ex.Message}")
-                                                 End Try
-
-                                                 Return dirList ' Ensure that an empty list is returned if an exception occurs
-                                             End Function)
+            Dim directories = Await dirTask
+            Dim files = Await fileTask
 
             Dim itemsToAdd As New List(Of ListViewItem)
 
-            For Each mDir In directories
-                Dim di As New DirectoryInfo(mDir)
-                Dim item As New ListViewItem(di.Name)
-
-                item.SubItems.Add("Folder")
-                item.SubItems.Add("") ' No size for folders
-                item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-                item.Tag = di.FullName
-                item.ImageKey = "Folder"
-
-                itemsToAdd.Add(item)
+            ' Build directory items
+            For Each d In directories
+                Dim di As New DirectoryInfo(d)
+                itemsToAdd.Add(BuildListViewItemForDirectory(di))
             Next
 
-            ' ---------------------------
-            ' Load files asynchronously
-            ' ---------------------------
-            Dim files = Await Task.Run(Function()
-
-                                           Dim fileList As New List(Of String)
-                                           Try
-
-                                               fileList.AddRange(
-                                               Directory.GetFiles(path).
-                                               Where(Function(f) _
-                                               ShowHiddenFiles OrElse
-                                               (New FileInfo(f).Attributes And
-                                               (FileAttributes.Hidden Or FileAttributes.System)) = 0))
-
-                                           Catch ex As UnauthorizedAccessException
-                                               ShowStatus(StatusPad & IconError & " Access denied to some files in: " & path)
-                                               Debug.WriteLine($"PopulateFiles - {path} - Files - UnauthorizedAccessException - {ex.Message}")
-                                           Catch ex As Exception
-                                               ShowStatus(StatusPad & IconError & " An error occurred: " & ex.Message)
-                                               Debug.WriteLine($"PopulateFiles - {path} - Files - Error - {ex.Message}")
-
-                                           End Try
-
-                                           Return fileList
-                                       End Function)
-
-            For Each file In files
-                Dim fi As New FileInfo(file)
-                Dim item As New ListViewItem(fi.Name)
-
-                Dim ext = fi.Extension.ToLowerInvariant()
-                Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-                ' Category column
-                item.SubItems.Add(category)
-
-                ' Size + date
-                item.SubItems.Add(FormatSize(fi.Length))
-                item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-                item.Tag = fi.FullName
-
-                ' Image assignment
-                Select Case category
-                    Case "Audio" : item.ImageKey = "Music"
-                    Case "Image" : item.ImageKey = "Pictures"
-                    Case "Document" : item.ImageKey = "Documents"
-                    Case "Video" : item.ImageKey = "Videos"
-                    Case "Archive" : item.ImageKey = "Downloads"
-                    Case "Executable" : item.ImageKey = "Executable"
-                    Case "Shortcut" : item.ImageKey = "Shortcut"
-                    Case Else : item.ImageKey = "Documents"
-                End Select
-
-                itemsToAdd.Add(item)
+            ' Build file items
+            For Each f In files
+                Dim fi As New FileInfo(f)
+                itemsToAdd.Add(BuildListViewItemForFile(fi))
             Next
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
 
-            'ShowStatus(StatusPad & lvFiles.Items.Count & "  items")
-
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
-            Debug.WriteLine($"General Error: {ex.Message}")
+            Debug.WriteLine($"PopulateFiles - General Error - {ex.Message}")
 
         Finally
             lvFiles.EndUpdate()
         End Try
-
     End Function
+
+    ' ============================================================
+    ' SAFE ENUMERATION HELPERS
+    ' ============================================================
+
+    Private Function GetDirectoriesSafe(path As String) As List(Of String)
+        Dim list As New List(Of String)
+
+        Try
+            list.AddRange(
+            Directory.GetDirectories(path).
+            Where(Function(d)
+                      If ShowHiddenFiles Then Return True
+                      Dim attr = New DirectoryInfo(d).Attributes
+                      Return (attr And (FileAttributes.Hidden Or FileAttributes.System)) = 0
+                  End Function))
+        Catch ex As UnauthorizedAccessException
+            ShowStatus(StatusPad & IconWarning & " Access denied to some directories.")
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Error loading directories.")
+        End Try
+
+        Return list
+    End Function
+
+    Private Function GetFilesSafe(path As String) As List(Of String)
+        Dim list As New List(Of String)
+
+        Try
+            list.AddRange(
+            Directory.GetFiles(path).
+            Where(Function(f)
+                      If ShowHiddenFiles Then Return True
+                      Dim attr = New FileInfo(f).Attributes
+                      Return (attr And (FileAttributes.Hidden Or FileAttributes.System)) = 0
+                  End Function))
+        Catch ex As UnauthorizedAccessException
+            ShowStatus(StatusPad & IconWarning & " Access denied to some files.")
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Error loading files.")
+        End Try
+
+        Return list
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+    ' ============================================================
+    ' LISTVIEW ITEM BUILDERS
+    ' ============================================================
+
+    Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
+        Dim item As New ListViewItem(di.Name)
+
+        item.SubItems.Add("Folder")
+        item.SubItems.Add("") ' No size
+        item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+        item.Tag = di.FullName
+        item.ImageKey = "Folder"
+
+        Return item
+    End Function
+
+    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+        Dim item As New ListViewItem(fi.Name)
+
+        Dim ext = fi.Extension.ToLowerInvariant()
+        Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+        item.SubItems.Add(category)
+        item.SubItems.Add(FormatSize(fi.Length))
+        item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+        item.Tag = fi.FullName
+
+        item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+
+        Return item
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ' ============================================================
+    ' VALIDATION HELPERS
+    ' ============================================================
+
+    Private Shared ReadOnly InvalidNameChars As Char() =
+    Path.GetInvalidFileNameChars()
+
+    Public Structure ValidationResult
+        Public ReadOnly IsValid As Boolean
+        Public ReadOnly ErrorMessage As String
+
+        Public Sub New(valid As Boolean, message As String)
+            IsValid = valid
+            ErrorMessage = message
+        End Sub
+    End Structure
+
+    Private Function ValidateNewName(newName As String) As ValidationResult
+        If String.IsNullOrWhiteSpace(newName) Then
+            Return New ValidationResult(False, "Name cannot be empty.")
+        End If
+
+        If newName.IndexOfAny(InvalidNameChars) >= 0 Then
+            Return New ValidationResult(False, "Name contains invalid characters.")
+        End If
+
+        If newName.EndsWith(" ") OrElse newName.EndsWith(".") Then
+            Return New ValidationResult(False, "Name cannot end with a space or period.")
+        End If
+
+        Return New ValidationResult(True, "")
+    End Function
+
+    'Private Function ValidateNewNameForFile(oldFullPath As String, newName As String) As ValidationResult
+    '    If Not File.Exists(oldFullPath) Then
+    '        Return New ValidationResult(True, "") ' Not a file → no extension rules
+    '    End If
+
+    '    Dim oldExt = Path.GetExtension(oldFullPath)
+    '    Dim newExt = Path.GetExtension(newName)
+
+    '    If Not String.Equals(oldExt, newExt, StringComparison.OrdinalIgnoreCase) Then
+    '        Return New ValidationResult(False, "File extension cannot be changed.")
+    '    End If
+
+    '    Return New ValidationResult(True, "")
+    'End Function
+
+
+
+
+
+
+
+
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
@@ -2866,6 +3121,44 @@ Public Class Form1
         GoToFolderOrOpenFile(fullPath)
 
     End Sub
+
+    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.AfterLabelEdit
+
+    '    _isRenaming = False
+
+    '    If e.Label Is Nothing Then Exit Sub
+
+    '    Dim item = lvFiles.Items(e.Item)
+    '    Dim oldPath = CStr(item.Tag)
+
+    '    ' First: general validation
+    '    Dim result = ValidateNewName(e.Label)
+    '    If Not result.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
+    '        Exit Sub
+    '    End If
+
+    '    ' Second: extension protection (files only)
+    '    Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
+    '    If Not extCheck.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
+    '        Exit Sub
+    '    End If
+
+    '    ' If valid → rename using your unified engine
+    '    PerformRename(oldPath, e.Label)
+    'End Sub
+
+
+
+
+
+
+
+
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
     Handles lvFiles.AfterLabelEdit
@@ -2895,7 +3188,66 @@ Public Class Form1
 
         ' If valid → rename using your unified engine
         PerformRename(oldPath, e.Label)
+
+        ' Explorer-style: keep the renamed item selected and visible
+        item.Selected = True
+        item.EnsureVisible()
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub PerformRename(oldFullPath As String, newName As String)
+    '    Try
+    '        Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
+    '        Dim newFullPath As String = Path.Combine(parentDir, newName)
+
+    '        ' ============================================================
+    '        '   Rule 0: No change (case-sensitive)
+    '        ' ============================================================
+    '        If String.Equals(oldFullPath, newFullPath, StringComparison.Ordinal) Then
+    '            Exit Sub
+    '        End If
+
+    '        ' File → rename file
+    '        If File.Exists(oldFullPath) Then
+    '            File.Move(oldFullPath, newFullPath)
+
+    '        ElseIf Directory.Exists(oldFullPath) Then
+    '            Directory.Move(oldFullPath, newFullPath)
+
+    '        Else
+    '            ShowStatus(StatusPad & IconError & " The item no longer exists.")
+    '            Exit Sub
+    '        End If
+
+    '        ' Update ListView item
+    '        Dim item = lvFiles.Items.Cast(Of ListViewItem)().
+    '               FirstOrDefault(Function(i) CStr(i.Tag) = oldFullPath)
+
+    '        If item IsNot Nothing Then
+    '            item.Tag = newFullPath
+    '            item.Text = newName
+    '        End If
+
+    '        ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
 
 
     Private Sub PerformRename(oldFullPath As String, newName As String)
@@ -2922,7 +3274,7 @@ Public Class Form1
                 Exit Sub
             End If
 
-            ' Update ListView item
+            ' Update ListView item (canonical path + display name)
             Dim item = lvFiles.Items.Cast(Of ListViewItem)().
                    FirstOrDefault(Function(i) CStr(i.Tag) = oldFullPath)
 
@@ -2933,10 +3285,21 @@ Public Class Form1
 
             ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
 
+            ' (Optional future-proofing)
+            'Dim navTarget As String = ResolveNavigationTarget(newFullPath)
+            'NavigateTo(navTarget)
+
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
         End Try
     End Sub
+
+
+
+
+
+
+
 
     Private Function ValidateNewNameForFile(oldFullPath As String, newName As String) _
     As (IsValid As Boolean, ErrorMessage As String)
