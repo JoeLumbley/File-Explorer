@@ -3288,6 +3288,19 @@ Public Class Form1
             ' (Optional future-proofing)
             'Dim navTarget As String = ResolveNavigationTarget(newFullPath)
             'NavigateTo(navTarget)
+            'If String.Equals(oldFullPath, currentFolder, StringComparison.OrdinalIgnoreCase) Then
+            '    Dim navTarget As String = ResolveNavigationTarget(newFullPath)
+            '    NavigateTo(navTarget, recordHistory:=True)
+            'End If
+
+            Dim isRenamingCurrentFolder =
+            Directory.Exists(oldFullPath) AndAlso
+            String.Equals(oldFullPath, currentFolder, StringComparison.OrdinalIgnoreCase)
+
+            If isRenamingCurrentFolder Then
+                Dim navTarget As String = ResolveNavigationTarget(newFullPath)
+                NavigateTo(navTarget, recordHistory:=True)
+            End If
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
