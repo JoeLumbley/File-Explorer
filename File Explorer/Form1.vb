@@ -1269,10 +1269,13 @@ Public Class Form1
     Private Sub ExecuteCommand(command As String)
 
         ' Use regex to split by spaces but keep quoted substrings together
-        Dim parts As String() = Regex.Matches(command, "[\""].+?[\""]|[^ ]+").
+        'Regex.Matches(command, "(\"".+?\""|[^ ]+)").
+        Dim parts As String() =
+        Regex.Matches(command, "("".+?""|[^ ]+)").
         Cast(Of Match)().
         Select(Function(m) m.Value.Trim(""""c)).
         ToArray()
+
 
         If parts.Length = 0 Then
             ShowStatus(StatusPad & IconDialog & "  No command entered.")
@@ -1289,14 +1292,18 @@ Public Class Form1
                     Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
                     NavigateTo(newPath)
                 Else
-                    ShowStatus(StatusPad & IconDialog & "  Usage: cd [directory]  -  Example: cd C:\")
+                    ShowStatus(StatusPad & IconDialog &
+                           "  Usage: cd [directory]  -  Example: cd C:\")
                 End If
 
                 Return
 
+
             Case "copy", "cp"
 
                 HandleCopyCommand(parts)
+                Return
+
 
             Case "move", "mv"
 
@@ -1630,26 +1637,45 @@ Public Class Form1
     End Sub
 
 
+
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
         Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
         ShowStatus($"{state}: ""{path}""")
     End Sub
 
+    'Private Async Sub HandleCopyCommand(parts As String())
+    '    If parts.Length <= 2 Then
+    '        ShowUsageCopy()
+    '        Return
+    '    End If
+
+    '    Dim source = ParseSource(parts)
+    '    Dim destinationRoot = ParseDestination(parts)
+
+    '    If Not ValidateSourceExists(source) Then Return
+    '    If Not ValidateDestinationExists(destinationRoot) Then Return
+    '    If Not ValidateNotCopyingIntoSelf(source, destinationRoot) Then Return
+
+    '    Await PerformCopy(source, destinationRoot)
+    'End Sub
+
     Private Async Sub HandleCopyCommand(parts As String())
+
         If parts.Length <= 2 Then
             ShowUsageCopy()
             Return
         End If
 
-        Dim source = ParseSource(parts)
-        Dim destinationRoot = ParseDestination(parts)
+        Dim source As String = ParseSource(parts)
+        Dim destinationRoot As String = ParseDestination(parts)
 
         If Not ValidateSourceExists(source) Then Return
         If Not ValidateDestinationExists(destinationRoot) Then Return
         If Not ValidateNotCopyingIntoSelf(source, destinationRoot) Then Return
 
         Await PerformCopy(source, destinationRoot)
+
     End Sub
 
 
@@ -1703,7 +1729,30 @@ Public Class Form1
         Return True
     End Function
 
+    'Private Async Function PerformCopy(source As String, dest As String) As Task
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
+
+    '    If result.Success Then
+    '        'navagate to dest
+    '        ' Refresh the folder view so the user sees the new file
+    '        NavigateTo(dest)
+
+
+    '        ShowStatus(StatusPad & IconCopy &
+    '               $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Copy completed with errors. Some items could not be copied.")
+    '    End If
+    'End Function
+
+
     Private Async Function PerformCopy(source As String, dest As String) As Task
+
         copyCts = New CancellationTokenSource()
         Dim ct = copyCts.Token
 
@@ -1711,15 +1760,58 @@ Public Class Form1
         Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
 
         If result.Success Then
-            'navagate to dest
 
+            ' Navigate to destination so user sees the new file(s)
+            'NavigateTo(dest)
+
+
+            'Dim navTarget As String =
+            'If(Directory.Exists(dest), dest, Path.GetDirectoryName(dest))
+
+            'Dim navTarget As String =
+            'If(Directory.Exists(dest),
+            'dest,
+            'Path.GetDirectoryName(dest) ?? dest)
+
+            Dim navTarget As String = ResolveNavigationTarget(dest)
+            NavigateTo(navTarget)
 
             ShowStatus(StatusPad & IconCopy &
                    $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+
         Else
+
             ShowStatus(StatusPad & IconError &
                    "  Copy completed with errors. Some items could not be copied.")
+
         End If
+
+    End Function
+
+
+
+
+    Private Function ResolveNavigationTarget(path2Resolve As String) As String
+        ' Returns the correct folder to navigate to after an operation.
+        ' If the path is a directory, returns it directly.
+        ' If the path is a file, returns its parent directory.
+        ' If the parent directory is Nothing (e.g., "C:\"), falls back to the original path.
+
+        ' If it's a directory, navigate directly to it
+        If Directory.Exists(path2Resolve) Then
+            Return path2Resolve
+        End If
+
+        ' Otherwise, try to get the parent directory
+        Dim parent As String = Path.GetDirectoryName(path2Resolve)
+
+        ' If parent is Nothing (root drive), fall back to the original path
+        If parent IsNot Nothing Then
+            Return parent
+        End If
+
+        Return path2Resolve
+
     End Function
 
     Private Sub ShowUsageCopy()
@@ -2748,7 +2840,7 @@ Public Class Form1
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
 
-            ShowStatus(StatusPad & lvFiles.Items.Count & "  items")
+            'ShowStatus(StatusPad & lvFiles.Items.Count & "  items")
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
@@ -3092,7 +3184,7 @@ Public Class Form1
 
         Await PopulateFiles(path) ' Await the async method
 
-        ShowStatus(StatusPad & IconNavigate & "  Navigated to: " & path)
+        'ShowStatus(StatusPad & IconNavigate & "  Navigated to: " & path)
 
         If recordHistory Then
             ' Trim forward history if we branch
