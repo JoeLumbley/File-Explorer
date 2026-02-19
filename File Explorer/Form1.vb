@@ -6676,33 +6676,6 @@ Public Class Form1
 
 
 
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "App Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        Dim text As String = BuildAppManualText()
-
-
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Text = text
-    '            RestoreAddressBar()
-
-    '            Return
-    '        End If
-
-    '        HelpTextBox.Text = text
-    '        ShowHelpPanelAnimated()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-
     Private Sub HandleManualCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Manual"
