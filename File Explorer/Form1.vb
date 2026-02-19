@@ -719,6 +719,18 @@ Public Class Form1
 
     Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
+
+        ' ============================================
+        '   ESCAPE — CLOSE HELP PANEL IF OPEN
+        ' ============================================
+        If keyData = Keys.Escape AndAlso HelpPanel.Visible AndAlso Not _isRenaming Then
+            If _escapeDown Then Return True   ' swallow repeat
+            _escapeDown = True
+
+            HelpPanel.Visible = False
+            Return True
+        End If
+
         ' ===========================
         '   FOCUS ADDRESS BAR
         '   (Ctrl+L, Alt+D, F4)
@@ -793,6 +805,35 @@ Public Class Form1
     End Function
 
 
+    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
+
+    '    If keyData <> Keys.Tab Then
+    '        _tabDown = False
+    '        Return False
+    '    End If
+
+    '    If _tabDown Then Return True   ' swallow repeat
+    '    _tabDown = True
+
+    '    If _isRenaming Then Return False
+
+    '    Dim handled As Boolean
+
+    '    If txtAddressBar.Focused Then
+    '        handled = FocusFileList()
+    '    ElseIf lvFiles.Focused Then
+    '        handled = FocusTreeView()
+    '    ElseIf tvFolders.Focused Then
+    '        handled = FocusAddressBar()
+    '    Else
+    '        handled = FocusAddressBar()
+    '    End If
+
+    '    If handled Then UpdateAllUIStates()
+    '    Return handled
+    'End Function
+
+
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
 
         If keyData <> Keys.Tab Then
@@ -809,10 +850,23 @@ Public Class Form1
 
         If txtAddressBar.Focused Then
             handled = FocusFileList()
+
         ElseIf lvFiles.Focused Then
             handled = FocusTreeView()
+
         ElseIf tvFolders.Focused Then
+            ' If help is open, go to HelpTextBox instead of looping back
+            If HelpPanel.Visible Then
+                HelpTextBox.Focus()
+                handled = True
+            Else
+                handled = FocusAddressBar()
+            End If
+
+        ElseIf HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+            ' After HelpTextBox, return to AddressBar
             handled = FocusAddressBar()
+
         Else
             handled = FocusAddressBar()
         End If
@@ -820,6 +874,73 @@ Public Class Form1
         If handled Then UpdateAllUIStates()
         Return handled
     End Function
+
+
+
+    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+
+    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
+    '        _shiftTabDown = False
+    '        Return False
+    '    End If
+
+    '    If _isRenaming Then Return False
+
+    '    If _shiftTabDown Then Return True   ' swallow repeat
+    '    _shiftTabDown = True
+
+    '    ' ===========================
+    '    '   TreeView → File List
+    '    ' ===========================
+    '    If tvFolders.Focused Then
+    '        lvFiles.Focus()
+
+    '        If lvFiles.Items.Count > 0 Then
+    '            If lvFiles.SelectedItems.Count > 0 Then
+    '                Dim sel = lvFiles.SelectedItems(0)
+    '                sel.Focused = True
+    '                sel.EnsureVisible()
+    '            Else
+    '                lvFiles.Items(0).Selected = True
+    '                lvFiles.Items(0).Focused = True
+    '                lvFiles.Items(0).EnsureVisible()
+    '            End If
+    '        End If
+
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   File List → Address Bar
+    '    ' ===========================
+    '    If lvFiles.Focused Then
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   Address Bar → TreeView
+    '    ' ===========================
+    '    If txtAddressBar.Focused Then
+    '        tvFolders.Focus()
+
+    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '        End If
+
+    '        tvFolders.SelectedNode?.EnsureVisible()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   Fallback
+    '    ' ===========================
+    '    txtAddressBar.Focus()
+    '    PlaceCaretAtEndOfAddressBar()
+    '    Return True
+    'End Function
+
 
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
@@ -833,6 +954,20 @@ Public Class Form1
 
         If _shiftTabDown Then Return True   ' swallow repeat
         _shiftTabDown = True
+
+        ' ===========================
+        '   HelpTextBox → TreeView
+        ' ===========================
+        If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+            tvFolders.Focus()
+
+            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                tvFolders.SelectedNode = tvFolders.Nodes(0)
+            End If
+
+            tvFolders.SelectedNode?.EnsureVisible()
+            Return True
+        End If
 
         ' ===========================
         '   TreeView → File List
@@ -865,17 +1000,23 @@ Public Class Form1
         End If
 
         ' ===========================
-        '   Address Bar → TreeView
+        '   Address Bar → HelpTextBox (if visible)
         ' ===========================
         If txtAddressBar.Focused Then
-            tvFolders.Focus()
+            If HelpPanel.Visible Then
+                HelpTextBox.Focus()
+                Return True
+            Else
+                ' Normal reverse cycle: AddressBar → TreeView
+                tvFolders.Focus()
 
-            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                tvFolders.SelectedNode = tvFolders.Nodes(0)
+                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+                    tvFolders.SelectedNode = tvFolders.Nodes(0)
+                End If
+
+                tvFolders.SelectedNode?.EnsureVisible()
+                Return True
             End If
-
-            tvFolders.SelectedNode?.EnsureVisible()
-            Return True
         End If
 
         ' ===========================
@@ -884,7 +1025,29 @@ Public Class Form1
         txtAddressBar.Focus()
         PlaceCaretAtEndOfAddressBar()
         Return True
+
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
@@ -1559,6 +1722,81 @@ Public Class Form1
     End Sub
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
+
+        '' ============================================
+        ''   HELP DRAWER CONTEXT — LET RICHTEXTBOX HANDLE SHORTCUTS
+        '' ============================================
+        'If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+        '    Select Case keyData
+
+        '        Case (Keys.Control Or Keys.C)
+        '            If _ctrlCDown Then Return True
+        '            _ctrlCDown = True
+
+        '            HelpTextBox.Copy()
+        '            Return True
+
+        '        Case (Keys.Control Or Keys.V)
+        '            If _ctrlVDown Then Return True
+        '            _ctrlVDown = True
+
+        '            HelpTextBox.Paste()
+        '            Return True
+
+        '        Case (Keys.Control Or Keys.X)
+        '            If _ctrlXDown Then Return True
+        '            _ctrlXDown = True
+
+        '            HelpTextBox.Cut()
+        '            Return True
+
+        '        Case (Keys.Control Or Keys.A)
+        '            If _ctrlADown Then Return True
+        '            _ctrlADown = True
+
+        '            HelpTextBox.SelectAll()
+        '            Return True
+
+        '    End Select
+
+        '    ' Let other keys fall through normally
+        '    Return False
+        'End If
+
+
+        ' ============================================
+        '   HELP DRAWER CONTEXT — LET RICHTEXTBOX HANDLE SHORTCUTS
+        ' ============================================
+        If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+            Select Case keyData
+
+                Case (Keys.Control Or Keys.C)
+                    _ctrlCDown = False
+                    HelpTextBox.Copy()
+                    Return True
+
+                Case (Keys.Control Or Keys.V)
+                    _ctrlVDown = False
+                    HelpTextBox.Paste()
+                    Return True
+
+                Case (Keys.Control Or Keys.X)
+                    _ctrlXDown = False
+                    HelpTextBox.Cut()
+                    Return True
+
+                Case (Keys.Control Or Keys.A)
+                    _ctrlADown = False
+                    HelpTextBox.SelectAll()
+                    Return True
+
+            End Select
+
+            ' Let other keys fall through normally
+            Return False
+        End If
+
+
         Try
             If Not GlobalShortcutsAllowed() Then
                 Return False
@@ -2766,10 +3004,33 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub RestoreAddressBar()
+    '    txtAddressBar.Text = currentFolder
+    '    txtAddressBar.Focus()
+    '    PlaceCaretAtEndOfAddressBar()
+    'End Sub
+
+
+    Private Sub FocusHelpText()
+        HelpTextBox.Select(0, 0)
+        HelpTextBox.Focus()
+    End Sub
+
+
+
     Private Sub RestoreAddressBar()
+
+        ' If the HelpPanel is open, do NOT steal focus away from it.
+        If HelpPanel.Visible Then
+            txtAddressBar.Text = currentFolder
+            Return
+        End If
+
+        ' Normal behavior when help is not open
         txtAddressBar.Text = currentFolder
         txtAddressBar.Focus()
         PlaceCaretAtEndOfAddressBar()
+
     End Sub
 
     Private Sub OpenFileWithDefaultApp(filePath As String)
@@ -5938,6 +6199,37 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub HandleHelpCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Command Reference"
+    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+
+    '        Dim text As String = BuildHelpText()
+
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Text = text
+    '            RestoreAddressBar()
+
+    '            Return
+    '        End If
+
+    '        'HelpTextBox.Text = text
+    '        'ShowHelpPanelAnimated()
+
+    '        HelpTextBox.Text = text
+    '        ShowHelpPanelAnimated()
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               " Failed to display help information: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    '    'HelpTextBox.Focus()
+
+    'End Sub
+
     Private Sub HandleHelpCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Command Reference"
@@ -5945,23 +6237,33 @@ Public Class Form1
 
             Dim text As String = BuildHelpText()
 
+            ' ============================================
+            '   HELP PANEL ALREADY OPEN → UPDATE + KEEP FOCUS
+            ' ============================================
             If HelpPanel.Visible Then
                 HelpTextBox.Text = text
-                RestoreAddressBar()
-
+                RestoreAddressBar()   ' now safe: it won't steal focus
                 Return
             End If
 
+            ' ============================================
+            '   HELP PANEL CLOSED → OPEN + FOCUS HELP TEXT
+            ' ============================================
             HelpTextBox.Text = text
             ShowHelpPanelAnimated()
+            FocusHelpText()
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
-                   " Failed to display help information: " & ex.Message)
+               " Failed to display help information: " & ex.Message)
         End Try
 
+        ' ============================================
+        '   RESTORE ADDRESS BAR (NO FOCUS STEALING)
+        ' ============================================
         RestoreAddressBar()
     End Sub
+
 
 
     Private Sub HandleDfCommand(parts As String())
@@ -6112,8 +6414,12 @@ Public Class Form1
                 Return
             End If
 
+            'HelpTextBox.Text = text
+            'ShowHelpPanelAnimated()
+
             HelpTextBox.Text = text
             ShowHelpPanelAnimated()
+            FocusHelpText()
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
@@ -6686,8 +6992,12 @@ Public Class Form1
             If HelpPanel.Visible Then
                 HelpTextBox.Text = text
             Else
+                'HelpTextBox.Text = text
+                'ShowHelpPanelAnimated()
+
                 HelpTextBox.Text = text
                 ShowHelpPanelAnimated()
+                FocusHelpText()
             End If
 
         Catch ex As Exception
@@ -7051,7 +7361,12 @@ Public Class Form1
             End If
         Next
 
+        'ShowHelpPanelAnimated()
+
+        'HelpTextBox.Text = Text
         ShowHelpPanelAnimated()
+        FocusHelpText()
+
     End Sub
 
 
