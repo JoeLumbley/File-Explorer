@@ -37,6 +37,9 @@ For users who enjoy the speed and precision of typed commands, the built‑in CL
 - Helpful usage messages and error feedback
 - A built‑in `help` command with full documentation
 
+
+<img width="1266" height="733" alt="114" src="https://github.com/user-attachments/assets/a00cf73a-91b0-43be-a94f-1cee53d79fd3" />
+
 The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
