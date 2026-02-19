@@ -240,8 +240,8 @@ The **Command Line Interface (CLI)** is an integrated text‑based command syste
 
 
 
+<img width="1266" height="733" alt="119" src="https://github.com/user-attachments/assets/bad79464-9688-4502-b511-ba8cef03b0fd" />
 
-<img width="1266" height="733" alt="114" src="https://github.com/user-attachments/assets/b702261f-1aab-426b-a317-6e88864d3f95" />
 
 
 
