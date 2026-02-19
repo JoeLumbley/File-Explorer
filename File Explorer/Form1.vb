@@ -294,7 +294,9 @@ Public Class Form1
         {"ciao", AddressOf HandleExitCommand},
         {"sayonara", AddressOf HandleExitCommand},
         {"goodbye", AddressOf HandleExitCommand},
-        {"later", AddressOf HandleExitCommand}
+        {"later", AddressOf HandleExitCommand},
+        {"shortcuts", AddressOf HandleShortcutsCommand},
+        {"keys", AddressOf HandleShortcutsCommand}
     }
 
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
@@ -453,6 +455,17 @@ Public Class Form1
                     "pin C:\Projects",                     ' Example of pinning a specific folder
                     "pin ""C:\My Documents""",              ' Another example with a different folder
                     "pin"                                   ' Example of using the command without parameters to pin the current folder
+                }
+            )
+        },
+        {"shortcuts",
+            (
+                {"shortcuts", "keys"},
+                "shortcuts",
+                "Show a list of all keyboard shortcuts.",
+                {
+                    "shortcuts",
+                    "keys"
                 }
             )
         }
@@ -2549,14 +2562,14 @@ Public Class Form1
         GoToFolderOrOpenFile(fullPath)
     End Sub
 
-    Private Sub ShowHelpFile()
-        Dim helpFilePath As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
+    'Private Sub ShowHelpFile()
+    '    Dim helpFilePath As String =
+    '    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
 
-        EnsureHelpFileExists(helpFilePath)
-        OpenFileWithDefaultApp(helpFilePath)
-        RestoreAddressBar()
-    End Sub
+    '    EnsureHelpFileExists(helpFilePath)
+    '    OpenFileWithDefaultApp(helpFilePath)
+    '    RestoreAddressBar()
+    'End Sub
 
     Private Sub HandleOpenPath(path As String)
 
@@ -4459,32 +4472,32 @@ Public Class Form1
     '    End Try
     'End Function
 
-    Private Sub EnsureHelpFileExists(helpFilePath As String)
+    'Private Sub EnsureHelpFileExists(helpFilePath As String)
 
-        Try
-            If IO.File.Exists(helpFilePath) Then
-                Exit Sub
-            End If
+    '    Try
+    '        If IO.File.Exists(helpFilePath) Then
+    '            Exit Sub
+    '        End If
 
-            ShowStatus(StatusPad & IconDialog & "  Creating help file.")
+    '        ShowStatus(StatusPad & IconDialog & "  Creating help file.")
 
-            Dim helpText As String = BuildHelpText()
+    '        Dim helpText As String = BuildHelpText()
 
-            Dim dir As String = Path.GetDirectoryName(helpFilePath)
-            If Not Directory.Exists(dir) Then
-                Directory.CreateDirectory(dir)
-            End If
+    '        Dim dir As String = Path.GetDirectoryName(helpFilePath)
+    '        If Not Directory.Exists(dir) Then
+    '            Directory.CreateDirectory(dir)
+    '        End If
 
-            IO.File.WriteAllText(helpFilePath, helpText)
+    '        IO.File.WriteAllText(helpFilePath, helpText)
 
-            ShowStatus(StatusPad & IconSuccess & "  Help file created.")
+    '        ShowStatus(StatusPad & IconSuccess & "  Help file created.")
 
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & "  Unable to create help file: " & ex.Message)
-            Debug.WriteLine("Unable to create help file: " & ex.Message)
-        End Try
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & "  Unable to create help file: " & ex.Message)
+    '        Debug.WriteLine("Unable to create help file: " & ex.Message)
+    '    End Try
 
-    End Sub
+    'End Sub
 
     'Private Function BuildHelpText() As String
     '    Dim sb As New StringBuilder()
@@ -4641,12 +4654,6 @@ Public Class Form1
     Private Function BuildHelpText() As String
         Dim sb As New StringBuilder()
 
-        'sb.AppendLine("=====================================================")
-        'sb.AppendLine("                     File Explorer CLI")
-        'sb.AppendLine("=====================================================")
-        'sb.AppendLine()
-        'sb.AppendLine("Available Commands:")
-        'sb.AppendLine()
 
         For Each entry In CommandHelp
             Dim meta = entry.Value
@@ -5756,7 +5763,7 @@ Public Class Form1
     Private Sub HandleHelpCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Command Reference"
-            HelpTextBox.Font = New Font("Segoe UI", 10, FontStyle.Regular)
+            HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
 
             Dim text As String = BuildHelpText()
 
@@ -5910,6 +5917,140 @@ Public Class Form1
             ShowStatus("Exit cancelled.")
         End If
     End Sub
+
+
+
+    Private Sub HandleShortcutsCommand(parts As String())
+        Try
+            HelpHeaderLabel.Text = "Keyboard Shortcuts"
+            HelpTextBox.Font = New Font("Segoe UI", 10, FontStyle.Regular)
+
+            Dim text As String = BuildShortcutsHelp()
+
+            If HelpPanel.Visible Then
+                HelpTextBox.Text = text
+                RestoreAddressBar()
+
+                Return
+            End If
+
+            HelpTextBox.Text = text
+            ShowHelpPanelAnimated()
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   " Failed to display keyboard shortcuts: " & ex.Message)
+        End Try
+
+        RestoreAddressBar()
+    End Sub
+
+
+
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Alt + ←           Go back")
+    '    sb.AppendLine("  Alt + →           Go forward")
+    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
+    '    sb.AppendLine("  Ctrl + L          Focus address bar")
+    '    sb.AppendLine("  F11               Toggle full screen")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  F2                Rename selected item")
+    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+    '    sb.AppendLine("  Ctrl + C          Copy")
+    '    sb.AppendLine("  Ctrl + V          Paste")
+    '    sb.AppendLine("  Ctrl + X          Cut")
+    '    sb.AppendLine("  Ctrl + A          Select all")
+    '    sb.AppendLine("  Delete            Delete selected item")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Ctrl + F          Search")
+    '    sb.AppendLine("  F3                Find next")
+    '    sb.AppendLine("  Esc               Clear search / reset UI")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("View")
+    '    sb.AppendLine("====")
+    '    sb.AppendLine("  F5                Refresh")
+    '    sb.AppendLine("  Alt + P           Toggle pin panel")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+    Private Function BuildShortcutsHelp() As String
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine("Navigation")
+        sb.AppendLine("==========")
+        sb.AppendLine("  Alt + ←           Go back")
+        sb.AppendLine("  Alt + →           Go forward")
+        sb.AppendLine("  Alt + ↑           Go to parent folder")
+        sb.AppendLine("  Alt + Home        Go to user profile folder")
+        sb.AppendLine("  F11               Toggle full screen")
+        sb.AppendLine()
+
+        sb.AppendLine("Address Bar")
+        sb.AppendLine("===========")
+        sb.AppendLine("  Ctrl + L          Focus address bar")
+        sb.AppendLine("  Alt + D           Focus address bar")
+        sb.AppendLine("  F4                Focus address bar")
+        sb.AppendLine("  Esc               Reset address bar")
+        sb.AppendLine()
+
+        sb.AppendLine("Search")
+        sb.AppendLine("======")
+        sb.AppendLine("  Ctrl + F          Start search")
+        sb.AppendLine("  F3                Find next")
+        sb.AppendLine("  Shift + F3        Find previous")
+        sb.AppendLine()
+
+        sb.AppendLine("Focus Navigation")
+        sb.AppendLine("================")
+        sb.AppendLine("  Tab               Cycle focus forward")
+        sb.AppendLine("  Shift + Tab       Cycle focus backward")
+        sb.AppendLine()
+
+        sb.AppendLine("File Operations")
+        sb.AppendLine("===============")
+        sb.AppendLine("  Enter             Open selected item")
+        sb.AppendLine("  F2                Rename selected item")
+        sb.AppendLine("  Delete            Delete selected item")
+        sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+        sb.AppendLine()
+
+        sb.AppendLine("Pinning")
+        sb.AppendLine("=======")
+        sb.AppendLine("  Alt + P           Pin or unpin current folder")
+        sb.AppendLine()
+
+        sb.AppendLine("Refresh")
+        sb.AppendLine("=======")
+        sb.AppendLine("  F5                Refresh current folder")
+        sb.AppendLine()
+
+        Return sb.ToString()
+    End Function
+
+
+
+
+
+
+
+
+
 
 
     Private Sub ShowDriveOverview()
