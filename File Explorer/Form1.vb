@@ -29,6 +29,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox
 
 Public Class Form1
 
@@ -126,9 +127,10 @@ Public Class Form1
         {".ppt", "Document"}, {".pptx", "Document"}, {".rtf", "Document"},
         {".txt", "Document"}, {".xls", "Document"}, {".xlsx", "Document"},
         {".3gp", "Video"}, {".avi", "Video"}, {".flv", "Video"},
-        {".mkv", "Video"}, {".mov", "Video"}, {".mp4", "Video"},
-        {".mpeg", "Video"}, {".mpg", "Video"}, {".ogv", "Video"},
-        {".vob", "Video"}, {".webm", "Video"}, {".wmv", "Video"},
+        {".m2ts", "Video"}, {".mkv", "Video"}, {".mov", "Video"},
+        {".mp4", "Video"}, {".mpeg", "Video"}, {".mpg", "Video"},
+        {".mts", "Video"}, {".ogv", "Video"}, {".vob", "Video"},
+        {".webm", "Video"}, {".wmv", "Video"},
         {".7z", "Archive"}, {".apk", "Archive"}, {".crx", "Archive"},
         {".dmg", "Archive"}, {".epub", "Archive"}, {".gz", "Archive"},
         {".iso", "Archive"}, {".mobi", "Archive"}, {".rar", "Archive"},
@@ -247,16 +249,230 @@ Public Class Form1
         {"Folder", "Folder"}
     }
 
-    'Public Structure ValidationResult
-    '    Public ReadOnly IsValid As Boolean
-    '    Public ReadOnly ErrorMessage As String
+    Private ReadOnly CommandHandlers As New Dictionary(Of String, Action(Of String())) From {
+        {"cd", AddressOf HandleCdCommand},
+        {"copy", AddressOf HandleCopyCommand},
+        {"cp", AddressOf HandleCopyCommand},
+        {"delete", AddressOf HandleDeleteCommand},
+        {"rm", AddressOf HandleDeleteCommand},
+        {"make", AddressOf HandleMkdirCommand},
+        {"md", AddressOf HandleMkdirCommand},
+        {"mkdir", AddressOf HandleMkdirCommand},
+        {"move", AddressOf HandleMoveCommand},
+        {"mv", AddressOf HandleMoveCommand},
+        {"pin", AddressOf HandlePinCommand},
+        {"rename", AddressOf HandleRenameCommand},
+        {"rn", AddressOf HandleRenameCommand},
+        {"text", AddressOf HandleTextCommand},
+        {"txt", AddressOf HandleTextCommand},
+        {"help", AddressOf HandleHelpCommand},
+        {"man", AddressOf HandleHelpCommand},
+        {"commands", AddressOf HandleHelpCommand},
+        {"df", AddressOf HandleDfCommand},
+        {"drives", AddressOf HandleDrivesCommand},
+        {"open", AddressOf HandleOpenCommand},
+        {"find", AddressOf HandleFindCommand},
+        {"search", AddressOf HandleFindCommand},
+        {"findnext", AddressOf HandleFindNextCommand},
+        {"searchnext", AddressOf HandleFindNextCommand},
+        {"next", AddressOf HandleFindNextCommand},
+        {"exit", AddressOf HandleExitCommand},
+        {"quit", AddressOf HandleExitCommand},
+        {"close", AddressOf HandleExitCommand},
+        {"bye", AddressOf HandleExitCommand},
+        {"shutdown", AddressOf HandleExitCommand},
+        {"logoff", AddressOf HandleExitCommand},
+        {"signout", AddressOf HandleExitCommand},
+        {"poweroff", AddressOf HandleExitCommand},
+        {"halt", AddressOf HandleExitCommand},
+        {"end", AddressOf HandleExitCommand},
+        {"terminate", AddressOf HandleExitCommand},
+        {"stop", AddressOf HandleExitCommand},
+        {"leave", AddressOf HandleExitCommand},
+        {"farewell", AddressOf HandleExitCommand},
+        {"adios", AddressOf HandleExitCommand},
+        {"ciao", AddressOf HandleExitCommand},
+        {"sayonara", AddressOf HandleExitCommand},
+        {"goodbye", AddressOf HandleExitCommand},
+        {"later", AddressOf HandleExitCommand}
+    }
 
-    '    Public Sub New(valid As Boolean, message As String)
-    '        IsValid = valid
-    '        ErrorMessage = message
-    '    End Sub
-    'End Structure
+    Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+        {"cd",
+            (
+                {"cd"},
+                "cd [directory]",
+                "Change directory to the specified path.",
+                {
+                    "cd C:\",
+                    "cd ""C:\My Folder"""
+                }
+            )
+        },
+        {"copy",
+            (
+                {"copy", "cp"},
+                "copy [source] [destination]",
+                "Copy a file or folder to a destination folder.",
+                {
+                    "copy C:\folderA\file.doc C:\folderB",
+                    "copy ""C:\folder A"" ""C:\folder B"""
+                }
+            )
+        },
+        {"delete",
+            (
+                {"delete", "rm"},
+                "delete [file_or_directory]",
+                "Delete a file or folder.",
+                {
+                    "delete C:\file.txt",
+                    "delete ""C:\My Folder"""
+                }
+            )
+        },
+        {"df",
+            (
+                {"df"},
+                "df <drive_letter>:",
+                "Display the available free space on the specified drive.",
+                {
+                    "df C:",                      ' Basic usage with drive letter
+                    "df D:",                      ' Another example with a different drive
+                    "df E:"                       ' Example for a third drive
+                }
+            )
+        },
+        {"drives",
+            (
+                {"drives"},
+                "drives",
+                "Show an overview of all drives, including free space bars.",
+                {
+                    "drives"
+                }
+            )
+        },
+        {"exit",
+            (
+                {
+                    "exit", "quit", "close", "stop", "halt", "end", "signout",
+                    "poweroff", "bye", "terminate"
+                },
+                "exit",
+                "Exit the application.",
+                {}
+            )
+        },
+        {"find",
+            (
+                {"find", "search"},
+                "find [search_term]",
+                "Search for files and folders in the current directory.",
+                {
+                    "find document"
+                }
+            )
+        },
+        {"findnext",
+            (
+                {"findnext", "searchnext", "next"},
+                "findnext",
+                "Show the next search result from the previous search.",
+                {}
+            )
+        },
+        {"help",
+            (
+                {"help", "man", "commands"},
+                "help",
+                "Show this help information.",
+                {}
+            )
+        },
+        {"mkdir",
+            (
+                {"mkdir", "make", "md"},
+                "mkdir [directory_path]",
+                "Create a new folder.",
+                {
+                    "mkdir C:\newfolder",
+                    "make ""C:\My New Folder""",
+                    "md C:\anotherfolder"
+                }
+            )
+        },
+        {"move",
+            (
+                {"move", "mv"},
+                "move [source] [destination]",
+                "Move a file or folder to a new location.",
+                {
+                    "move C:\folderA\file.doc C:\folderB\file.doc",
+                    "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+                }
+            )
+        },
+        {"open",
+            (
+                {"open"},
+                "open [file_or_directory]",
+                "Open a file or navigate into a folder.",
+                {
+                    "open C:\folder\file.txt",
+                    "open ""C:\My Folder"""
+                }
+            )
+        },
+        {"rename",
+            (
+                {"rename", "rn"},
+                "rename [source_path] [new_name]",
+                "Rename a file or directory.",
+                {
+                    "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+                }
+            )
+        },
+        {"text",
+            (
+                {"text", "txt"},
+                "text [file_path]",
+                "Create a new text file.",
+                {
+                    "text ""C:\folder\example.txt"""
+                }
+            )
+        },
+        {"pin",
+            (
+                {"pin"},
+                "pin [folder_path]",
+                "Pin or unpin a folder.",
+                {
+                    "pin C:\Projects",                     ' Example of pinning a specific folder
+                    "pin ""C:\My Documents""",              ' Another example with a different folder
+                    "pin"                                   ' Example of using the command without parameters to pin the current folder
+                }
+            )
+        }
+    }
 
+
+
+
+
+
+
+
+
+
+
+
+    Private HelpHeaderLabel As Label
+    Private scrollPanel As Panel
+    Private HelpTextBox As RichTextBox
+    Private HelpPanel As Panel
 
 
 
@@ -1302,377 +1518,912 @@ Public Class Form1
     End Function
 
 
+    'Private Sub ExecuteCommand(command As String)
+
+    '    ' Use regex to split by spaces but keep quoted substrings together
+    '    'Regex.Matches(command, "(\"".+?\""|[^ ]+)").
+    '    Dim parts As String() =
+    '    Regex.Matches(command, "("".+?""|[^ ]+)").
+    '    Cast(Of Match)().
+    '    Select(Function(m) m.Value.Trim(""""c)).
+    '    ToArray()
+
+
+    '    If parts.Length = 0 Then
+    '        ShowStatus(StatusPad & IconDialog & "  No command entered.")
+    '        Return
+    '    End If
+
+    '    Dim cmd As String = parts(0).ToLower()
+
+    '    Select Case cmd
+
+    '        Case "cd"
+
+    '            If parts.Length > 1 Then
+    '                Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
+    '                NavigateTo(newPath)
+    '            Else
+    '                ShowStatus(StatusPad & IconDialog &
+    '                       "  Usage: cd [directory]  -  Example: cd C:\")
+    '            End If
+
+    '            Return
+
+
+    '        Case "copy", "cp"
+
+    '            HandleCopyCommand(parts)
+    '            Return
+
+
+    '        Case "move", "mv"
+
+    '            If parts.Length > 2 Then
+
+    '                Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+    '                Dim destination As String = parts(parts.Length - 1).Trim()
+
+    '                MoveFileOrDirectory(source, destination)
+
+    '            Else
+    '                ShowStatus(StatusPad & IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
+    '            End If
+
+    '            Return
+
+    '        Case "delete", "rm"
+
+    '            If parts.Length > 1 Then
+
+    '                Dim pathToDelete As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '                DeleteFileOrDirectory(pathToDelete)
+
+    '            Else
+    '                ShowStatus(StatusPad & IconDialog & " Usage: delete [file_or_directory]")
+    '            End If
+
+    '            Return
+
+    '        Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
+
+    '            If parts.Length > 1 Then
+    '                Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '                ' Validate the directory path
+    '                If String.IsNullOrWhiteSpace(directoryPath) Then
+    '                    ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
+    '                    Return
+    '                End If
+
+    '                CreateDirectory(directoryPath)
+
+    '            Else
+    '                ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
+    '            End If
+
+    '            Return
+
+    '        Case "rename"
+    '            ' Rename file or directory
+
+    '            If parts.Length > 2 Then
+
+    '                Dim sourcePath As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '                Dim newName As String = parts(parts.Length - 1).Trim()
+
+    '                RenameFileOrDirectory(sourcePath, newName)
+
+    '            Else
+    '                ShowStatus(StatusPad & IconDialog & " Usage: rename [source_path] [new_name] - Example:, rename C:\folder\oldname.txt newname.txt")
+    '            End If
+
+    '        Case "text", "txt"
+
+    '            If parts.Length > 1 Then
+
+    '                Dim rawPath = String.Join(" ", parts.Skip(1))
+
+    '                Dim filePath = NormalizeTextFilePath(rawPath)
+
+    '                If filePath Is Nothing Then
+
+    '                    ShowStatus(StatusPad & IconDialog & " Usage: text [file_path]  Example:, text C:\example.txt")
+
+    '                    Return
+
+    '                End If
+
+    '                CreateTextFile(filePath)
+
+    '                Return
+
+    '            End If
+
+    '            ' No file path provided
+    '            Dim destDir = currentFolder
+
+    '            ' Validate destination folder
+    '            If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
+
+    '                ShowStatus(StatusPad & IconWarning & " Invalid folder. Cannot create file.")
+
+    '                Return
+
+    '            End If
+
+    '            ' Ensure unique file name
+    '            Dim newFilePath = GetUniqueFilePath(destDir, "New Text File", ".txt")
+
+    '            Try
+
+    '                ' Create the file with initial content
+    '                IO.File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+
+    '                ShowStatus(StatusPad & IconSuccess & " Text file created: " & newFilePath)
+
+    '                ' Refresh the folder view so the user sees the new file
+    '                NavigateTo(destDir)
+
+    '                ' Open the newly created file
+    '                GoToFolderOrOpenFile(newFilePath)
+
+    '            Catch ex As Exception
+    '                ShowStatus(StatusPad & IconError & " Failed to create text file: " & ex.Message)
+    '                Debug.WriteLine("Text Command Error: " & ex.Message)
+    '            End Try
+
+    '        Case "help", "man", "commands"
+
+    '            ShowHelpFile()
+    '            Return
+
+    '        Case "df"   ' Disk Free
+    '            ' df: Show free disk space for a drive.
+    '            ' Usage: df C:
+    '            ' If no drive is provided, show a gentle hint.
+
+    '            If parts.Length < 2 Then
+    '                ShowStatus(StatusPad & IconDialog &
+    '                           "  Usage: df <drive_letter>:   Example: df C:")
+    '                Return
+    '            End If
+
+    '            Dim driveInput As String = parts(1).Trim().ToUpperInvariant()
+
+    '            ' Normalize: allow "C", "C:", or "C:\".
+    '            If driveInput.EndsWith(":") = False Then
+    '                driveInput &= ":"
+    '            End If
+
+    '            Try
+    '                Dim di As New DriveInfo(driveInput)
+
+    '                If Not di.IsReady Then
+    '                    ShowStatus(StatusPad & IconError &
+    '                               "  That drive is not ready or accessible.")
+    '                    Return
+    '                End If
+
+    '                Dim freeText As String = FormatSize(di.AvailableFreeSpace)
+    '                Dim totalText As String = FormatSize(di.TotalSize)
+
+    '                ShowStatus(StatusPad & IconFreeSpace &
+    '                           $"   {di.RootDirectory} - {freeText} free of {totalText}")
+
+    '            Catch ex As Exception
+    '                ShowStatus(StatusPad & IconError &
+    '                           "  Unable to read free space for that drive.")
+    '            End Try
+
+    '            Return
+
+    '        Case "open"
+
+    '            ' --- 1. If the user typed: open "C:\path\to\something"
+    '            If parts.Length > 1 Then
+
+    '                Dim targetPath As String =
+    '                    String.Join(" ", parts.Skip(1)).
+    '                    Trim().
+    '                    Trim(""""c)
+
+    '                HandleOpenPath(targetPath)
+    '                Return
+
+    '            End If
+
+    '            ' --- 2. If no path was typed, use the selected item in the ListView
+    '            If lvFiles.SelectedItems.Count = 0 Then
+    '                ShowStatus(StatusPad & IconDialog &
+    '                           "  Usage: open [file_or_folder]  — or select an item first.")
+    '                Return
+    '            End If
+
+    '            Dim selected As ListViewItem = lvFiles.SelectedItems(0)
+    '            Dim fullPath As String = selected.Tag.ToString()
+
+    '            HandleOpenPath(fullPath)
+    '            Return
+
+    '    ' ---------------------------------------------------------
+    '    ' FIND / SEARCH
+    '    ' ---------------------------------------------------------
+    '        Case "find", "search"
+    '            If parts.Length > 1 Then
+
+    '                Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '                If String.IsNullOrWhiteSpace(searchTerm) Then
+    '                    ShowStatus(
+    '                        StatusPad & IconDialog &
+    '                        "  Usage: find [search_term]   Example: find document"
+    '                    )
+    '                    Return
+    '                End If
+
+    '                ' Announce search
+    '                ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
+
+    '                ' Perform search
+    '                OnlySearchForFilesInCurrentFolder(searchTerm)
+
+    '                ' Reset index for new search
+    '                SearchIndex = 0
+    '                RestoreBackground()
+
+    '                ' If results exist, auto-select the first one
+    '                If SearchResults.Count > 0 Then
+    '                    lvFiles.SelectedItems.Clear()
+    '                    SelectListViewItemByPath(SearchResults(0))
+
+    '                    Dim nextPath As String = SearchResults(SearchIndex)
+    '                    Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+    '                    lvFiles.Focus()
+    '                    HighlightSearchMatches()
+
+    '                    ShowSearchHud()
+
+    '                Else
+    '                    ShowStatus(
+    '                        StatusPad & IconDialog &
+    '                        "  No results found for: " & searchTerm
+    '                    )
+    '                End If
+
+    '            Else
+    '                ShowStatus(
+    '                    StatusPad & IconDialog &
+    '                    "  Usage: find [search_term]   Example: find document"
+    '                )
+    '            End If
+
+    '            Return
+
+    '    ' ---------------------------------------------------------
+    '    ' FIND NEXT
+    '    ' ---------------------------------------------------------
+    '        Case "findnext", "searchnext", "next"
+    '            HandleFindNextCommand()
+    '            Return
+
+    'Case "pin"
+
+    '' If a path was provided
+    'If parts.Length > 1 Then
+    'Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+    'If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
+
+    '                    PinOrUnpin(target)
+    '                    UpdatePinButtonState()
+    '                    RestoreAddressBar()
+
+    '                Else
+    '                    ShowStatus(StatusPad & IconError &
+    '                               $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
+    '                End If
+
+    'Return
+    'End If
+
+    '' No path provided → fall back to contextual target
+    'Dim fallback As String = GetPinnableTarget()
+
+    'If fallback Is Nothing Then
+    'If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '                    fallback = currentFolder
+    '                Else
+    '                    ShowStatus(StatusPad & IconError &
+    '                               "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
+    '                    Return
+    'End If
+    'End If
+
+    '            PinOrUnpin(fallback)
+    '            UpdatePinButtonState()
+    '            RestoreAddressBar()
+
+    '            Return
+
+    '        Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end",
+    '             "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
+
+    '            ' Confirm exit
+    '            If MessageBox.Show("Are you sure you want to exit?",
+    '                               "Confirm Exit",
+    '                               MessageBoxButtons.YesNo,
+    '                               MessageBoxIcon.Question) = DialogResult.Yes Then
+    '                Application.Exit()
+    '            Else
+    '                ShowStatus("Exit cancelled.")
+    '            End If
+
+    '            Return
+
+    '        Case Else
+
+    '            ' Is the input a folder?
+    '            If Directory.Exists(command) Then
+    '                ' Go to that folder.
+    '                NavigateTo(command)
+    '                Return
+    '                ' Is the input a file?
+    '            ElseIf IO.File.Exists(command) Then
+    '                OpenFileWithDefaultApp(command)
+    '                RestoreAddressBar()
+    '                Return
+    '            Else
+    '                ' The input isn't a folder or a file,
+    '                ' at this point, the interpreter treats it as an unknown command.
+    '                ShowStatus(StatusPad & IconQuestion &
+    '                           $"  Unknown command:     ""{cmd}""       Esc to reset.       Type ""help"" for a list of commands.")
+    '                Return
+    '            End If
+
+    '    End Select
+
+    'End Sub
+
+
     Private Sub ExecuteCommand(command As String)
 
-        ' Use regex to split by spaces but keep quoted substrings together
-        'Regex.Matches(command, "(\"".+?\""|[^ ]+)").
-        Dim parts As String() =
-        Regex.Matches(command, "("".+?""|[^ ]+)").
-        Cast(Of Match)().
-        Select(Function(m) m.Value.Trim(""""c)).
-        ToArray()
-
+        Dim parts = ParseCommandLine(command)
 
         If parts.Length = 0 Then
             ShowStatus(StatusPad & IconDialog & "  No command entered.")
-            Return
+            Exit Sub
         End If
 
         Dim cmd As String = parts(0).ToLower()
 
-        Select Case cmd
-
-            Case "cd"
-
-                If parts.Length > 1 Then
-                    Dim newPath As String = String.Join(" ", parts.Skip(1)).Trim()
-                    NavigateTo(newPath)
-                Else
-                    ShowStatus(StatusPad & IconDialog &
-                           "  Usage: cd [directory]  -  Example: cd C:\")
-                End If
-
-                Return
-
-
-            Case "copy", "cp"
-
-                HandleCopyCommand(parts)
-                Return
-
-
-            Case "move", "mv"
-
-                If parts.Length > 2 Then
-
-                    Dim source As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-                    Dim destination As String = parts(parts.Length - 1).Trim()
-
-                    MoveFileOrDirectory(source, destination)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: move [source] [destination] - move C:\folder1\directoryToMove C:\folder2\directoryToMove")
-                End If
-
-                Return
-
-            Case "delete", "rm"
-
-                If parts.Length > 1 Then
-
-                    Dim pathToDelete As String = String.Join(" ", parts.Skip(1)).Trim()
-
-                    DeleteFileOrDirectory(pathToDelete)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: delete [file_or_directory]")
-                End If
-
-                Return
-
-            Case "mkdir", "make", "md" ' You can use "mkdir" or "make" as the command
-
-                If parts.Length > 1 Then
-                    Dim directoryPath As String = String.Join(" ", parts.Skip(1)).Trim()
-
-                    ' Validate the directory path
-                    If String.IsNullOrWhiteSpace(directoryPath) Then
-                        ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
-                        Return
-                    End If
-
-                    CreateDirectory(directoryPath)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: mkdir [directory_path] - Example:, mkdir C:\newfolder")
-                End If
-
-                Return
-
-            Case "rename"
-                ' Rename file or directory
-
-                If parts.Length > 2 Then
-
-                    Dim sourcePath As String = String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
-
-                    Dim newName As String = parts(parts.Length - 1).Trim()
-
-                    RenameFileOrDirectory(sourcePath, newName)
-
-                Else
-                    ShowStatus(StatusPad & IconDialog & " Usage: rename [source_path] [new_name] - Example:, rename C:\folder\oldname.txt newname.txt")
-                End If
-
-            Case "text", "txt"
-
-                If parts.Length > 1 Then
-
-                    Dim rawPath = String.Join(" ", parts.Skip(1))
-
-                    Dim filePath = NormalizeTextFilePath(rawPath)
-
-                    If filePath Is Nothing Then
-
-                        ShowStatus(StatusPad & IconDialog & " Usage: text [file_path]  Example:, text C:\example.txt")
-
-                        Return
-
-                    End If
-
-                    CreateTextFile(filePath)
-
-                    Return
-
-                End If
-
-                ' No file path provided
-                Dim destDir = currentFolder
-
-                ' Validate destination folder
-                If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
-
-                    ShowStatus(StatusPad & IconWarning & " Invalid folder. Cannot create file.")
-
-                    Return
-
-                End If
-
-                ' Ensure unique file name
-                Dim newFilePath = GetUniqueFilePath(destDir, "New Text File", ".txt")
-
-                Try
-
-                    ' Create the file with initial content
-                    IO.File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
-
-                    ShowStatus(StatusPad & IconSuccess & " Text file created: " & newFilePath)
-
-                    ' Refresh the folder view so the user sees the new file
-                    NavigateTo(destDir)
-
-                    ' Open the newly created file
-                    GoToFolderOrOpenFile(newFilePath)
-
-                Catch ex As Exception
-                    ShowStatus(StatusPad & IconError & " Failed to create text file: " & ex.Message)
-                    Debug.WriteLine("Text Command Error: " & ex.Message)
-                End Try
-
-            Case "help", "man", "commands"
-
-                ShowHelpFile()
-                Return
-
-            Case "df"   ' Disk Free
-                ' df: Show free disk space for a drive.
-                ' Usage: df C:
-                ' If no drive is provided, show a gentle hint.
-
-                If parts.Length < 2 Then
-                    ShowStatus(StatusPad & IconDialog &
-                               "  Usage: df <drive_letter>:   Example: df C:")
-                    Return
-                End If
-
-                Dim driveInput As String = parts(1).Trim().ToUpperInvariant()
-
-                ' Normalize: allow "C", "C:", or "C:\".
-                If driveInput.EndsWith(":") = False Then
-                    driveInput &= ":"
-                End If
-
-                Try
-                    Dim di As New DriveInfo(driveInput)
-
-                    If Not di.IsReady Then
-                        ShowStatus(StatusPad & IconError &
-                                   "  That drive is not ready or accessible.")
-                        Return
-                    End If
-
-                    Dim freeText As String = FormatSize(di.AvailableFreeSpace)
-                    Dim totalText As String = FormatSize(di.TotalSize)
-
-                    ShowStatus(StatusPad & IconFreeSpace &
-                               $"   {di.RootDirectory} - {freeText} free of {totalText}")
-
-                Catch ex As Exception
-                    ShowStatus(StatusPad & IconError &
-                               "  Unable to read free space for that drive.")
-                End Try
-
-                Return
-
-            Case "open"
-
-                ' --- 1. If the user typed: open "C:\path\to\something"
-                If parts.Length > 1 Then
-
-                    Dim targetPath As String =
-                        String.Join(" ", parts.Skip(1)).
-                        Trim().
-                        Trim(""""c)
-
-                    HandleOpenPath(targetPath)
-                    Return
-
-                End If
-
-                ' --- 2. If no path was typed, use the selected item in the ListView
-                If lvFiles.SelectedItems.Count = 0 Then
-                    ShowStatus(StatusPad & IconDialog &
-                               "  Usage: open [file_or_folder]  — or select an item first.")
-                    Return
-                End If
-
-                Dim selected As ListViewItem = lvFiles.SelectedItems(0)
-                Dim fullPath As String = selected.Tag.ToString()
-
-                HandleOpenPath(fullPath)
-                Return
-
-        ' ---------------------------------------------------------
-        ' FIND / SEARCH
-        ' ---------------------------------------------------------
-            Case "find", "search"
-                If parts.Length > 1 Then
-
-                    Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-                    If String.IsNullOrWhiteSpace(searchTerm) Then
-                        ShowStatus(
-                            StatusPad & IconDialog &
-                            "  Usage: find [search_term]   Example: find document"
-                        )
-                        Return
-                    End If
-
-                    ' Announce search
-                    ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
-
-                    ' Perform search
-                    OnlySearchForFilesInCurrentFolder(searchTerm)
-
-                    ' Reset index for new search
-                    SearchIndex = 0
-                    RestoreBackground()
-
-                    ' If results exist, auto-select the first one
-                    If SearchResults.Count > 0 Then
-                        lvFiles.SelectedItems.Clear()
-                        SelectListViewItemByPath(SearchResults(0))
-
-                        Dim nextPath As String = SearchResults(SearchIndex)
-                        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
-
-                        lvFiles.Focus()
-                        HighlightSearchMatches()
-
-                        ShowSearchHud()
-
-                    Else
-                        ShowStatus(
-                            StatusPad & IconDialog &
-                            "  No results found for: " & searchTerm
-                        )
-                    End If
-
-                Else
-                    ShowStatus(
-                        StatusPad & IconDialog &
-                        "  Usage: find [search_term]   Example: find document"
-                    )
-                End If
-
-                Return
-
-        ' ---------------------------------------------------------
-        ' FIND NEXT
-        ' ---------------------------------------------------------
-            Case "findnext", "searchnext", "next"
-                HandleFindNextCommand()
-                Return
-
-            Case "pin"
-
-                ' If a path was provided
-                If parts.Length > 1 Then
-                    Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
-
-                    If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
-
-                        PinOrUnpin(target)
-                        UpdatePinButtonState()
-                        RestoreAddressBar()
-
-                    Else
-                        ShowStatus(StatusPad & IconError &
-                                   $"  ""{target}"" can’t be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
-                    End If
-
-                    Return
-                End If
-
-                ' No path provided → fall back to contextual target
-                Dim fallback As String = GetPinnableTarget()
-
-                If fallback Is Nothing Then
-                    If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-                        fallback = currentFolder
-                    Else
-                        ShowStatus(StatusPad & IconError &
-                                   "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
-                        Return
-                    End If
-                End If
-
-                PinOrUnpin(fallback)
-                UpdatePinButtonState()
-                RestoreAddressBar()
-
-                Return
-
-            Case "exit", "quit", "close", "bye", "shutdown", "logoff", "signout", "poweroff", "halt", "end",
-                 "terminate", "stop", "leave", "farewell", "adios", "ciao", "sayonara", "goodbye", "later"
-
-                ' Confirm exit
-                If MessageBox.Show("Are you sure you want to exit?",
-                                   "Confirm Exit",
-                                   MessageBoxButtons.YesNo,
-                                   MessageBoxIcon.Question) = DialogResult.Yes Then
-                    Application.Exit()
-                Else
-                    ShowStatus("Exit cancelled.")
-                End If
-
-                Return
-
-            Case Else
-
-                ' Is the input a folder?
-                If Directory.Exists(command) Then
-                    ' Go to that folder.
-                    NavigateTo(command)
-                    Return
-                    ' Is the input a file?
-                ElseIf IO.File.Exists(command) Then
-                    OpenFileWithDefaultApp(command)
-                    RestoreAddressBar()
-                    Return
-                Else
-                    ' The input isn't a folder or a file,
-                    ' at this point, the interpreter treats it as an unknown command.
-                    ShowStatus(StatusPad & IconQuestion &
-                               $"  Unknown command:     ""{cmd}""       Esc to reset.       Type ""help"" for a list of commands.")
-                    Return
-                End If
-
-        End Select
-
+        ' Direct path navigation (file or folder)
+        If TryHandleDirectPath(command) Then Exit Sub
+
+        ' Command dispatch
+        If CommandHandlers.ContainsKey(cmd) Then
+            CommandHandlers(cmd)(parts)
+            Exit Sub
+        End If
+
+        ' Unknown command
+        ShowStatus(StatusPad & IconQuestion &
+               $"  Unknown command: ""{cmd}""   Esc to reset.   Type ""help"" for a list of commands.")
     End Sub
 
 
+
+
+    Private Function ParseCommandLine(input As String) As String()
+        Dim matches = Regex.Matches(input, "("".+?""|[^ ]+)")
+        Return matches.
+        Cast(Of Match)().
+        Select(Function(m) m.Value.Trim(""""c)).
+        ToArray()
+    End Function
+
+
+
+
+    Private Sub HandleRenameCommand(parts As String())
+        If parts.Length <= 2 Then
+            ShowStatus(StatusPad & IconDialog &
+                   " Usage: rename [source_path] [new_name]  Example: rename ""C:\folder\old.txt"" new.txt")
+            Exit Sub
+        End If
+
+        Dim sourcePath As String =
+        String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+        Dim newName As String =
+        parts(parts.Length - 1).Trim()
+
+        ' ------------------------------------------------------------
+        ' Validate new name
+        ' ------------------------------------------------------------
+        Dim result = ValidateNewName(newName)
+        If Not result.IsValid Then
+            ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Extension protection (files only)
+        ' ------------------------------------------------------------
+        Dim extCheck = ValidateNewNameForFile(sourcePath, newName)
+        If Not extCheck.IsValid Then
+            ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Unified rename engine
+        ' ------------------------------------------------------------
+        Try
+            RenameFileOrDirectory(sourcePath, newName)
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   $" Rename failed: {ex.Message}")
+            Exit Sub
+        End Try
+
+        ' ------------------------------------------------------------
+        ' Restore address bar after CLI rename
+        ' ------------------------------------------------------------
+        RestoreAddressBar()
+    End Sub
+
+    Private Sub HandlePinCommand(parts As String())
+
+        ' If a path was provided
+        If parts.Length > 1 Then
+            Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+            If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
+                PinOrUnpin(target)
+                UpdatePinButtonState()
+                RestoreAddressBar()
+            Else
+                ShowStatus(StatusPad & IconError &
+                       $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
+            End If
+
+            Exit Sub
+        End If
+
+        ' No path provided → fall back to contextual target
+        Dim fallback As String = GetPinnableTarget()
+
+        If fallback Is Nothing Then
+            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+                fallback = currentFolder
+            Else
+                ShowStatus(StatusPad & IconError &
+                       "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
+                Exit Sub
+            End If
+        End If
+
+        PinOrUnpin(fallback)
+        UpdatePinButtonState()
+        RestoreAddressBar()
+    End Sub
+
+
+
+
+    Private Sub HandleCdCommand(parts As String())
+        If parts.Length <= 1 Then
+            ShowStatus(StatusPad & IconDialog &
+                   "  Usage: cd [directory]  -  Example: cd C:\")
+            Exit Sub
+        End If
+
+        Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+        ' Validate existence
+        If Not Directory.Exists(target) Then
+            ShowStatus(StatusPad & IconError &
+                   $"  The directory ""{target}"" does not exist.")
+            Exit Sub
+        End If
+
+        ' Navigate
+        NavigateTo(target)
+
+        ' Restore address bar after CLI navigation
+        RestoreAddressBar()
+    End Sub
+
+
+    Private Async Sub HandleCopyCommand(parts As String())
+        If parts.Length <= 2 Then
+            ShowStatus(StatusPad & IconDialog &
+                   " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+            Exit Sub
+        End If
+
+        Dim source As String =
+        String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+        Dim destinationRoot As String =
+        parts(parts.Length - 1).Trim()
+
+        ' ------------------------------------------------------------
+        ' Validate source
+        ' ------------------------------------------------------------
+        If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+            ShowStatus(StatusPad & IconError &
+                   $" Copy failed: Source ""{source}"" does not exist. " &
+                   "If the path contains spaces, enclose it in quotes.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Validate destination root
+        ' ------------------------------------------------------------
+        If Not Directory.Exists(destinationRoot) Then
+            ShowStatus(StatusPad & IconError &
+                   $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+                   "If the path contains spaces, enclose it in quotes.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Prevent copying a folder into itself or its own subtree
+        ' ------------------------------------------------------------
+        If Directory.Exists(source) Then
+            Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+            Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+            If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+                ShowStatus(StatusPad & IconError &
+                       " Cannot copy a folder into itself or one of its subfolders.")
+                Exit Sub
+            End If
+        End If
+
+        ' ------------------------------------------------------------
+        ' Perform unified copy (always Copy, never Cut)
+        ' ------------------------------------------------------------
+        copyCts = New CancellationTokenSource()
+        Dim ct = copyCts.Token
+
+        Dim result As CopyResult =
+        Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+
+        ' ------------------------------------------------------------
+        ' Report result
+        ' ------------------------------------------------------------
+        If result.Success Then
+            ShowStatus(StatusPad & IconCopy &
+                   $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+        Else
+            ShowStatus(StatusPad & IconError &
+                   " Copy completed with errors. Some items could not be copied.")
+        End If
+
+        ' ------------------------------------------------------------
+        ' Restore address bar after CLI copy
+        ' ------------------------------------------------------------
+        RestoreAddressBar()
+    End Sub
+
+
+
+    Private Async Sub HandleMoveCommand(parts As String())
+        If parts.Length <= 2 Then
+            ShowStatus(StatusPad & IconDialog &
+                   " Usage: move [source] [destination]  Example: move ""C:\A B"" ""C:\C D""")
+            Exit Sub
+        End If
+
+        Dim source As String =
+        String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+        Dim destinationRoot As String =
+        parts(parts.Length - 1).Trim()
+
+        ' ------------------------------------------------------------
+        ' Validate source
+        ' ------------------------------------------------------------
+        If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+            ShowStatus(StatusPad & IconError &
+                   $" Move failed: Source ""{source}"" does not exist. " &
+                   "If the path contains spaces, enclose it in quotes.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Validate destination root
+        ' ------------------------------------------------------------
+        If Not Directory.Exists(destinationRoot) Then
+            ShowStatus(StatusPad & IconError &
+                   $" Move failed: Destination ""{destinationRoot}"" does not exist. " &
+                   "If the path contains spaces, enclose it in quotes.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Prevent moving a folder into itself or its own subtree
+        ' ------------------------------------------------------------
+        If Directory.Exists(source) Then
+            Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+            Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+            If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+                ShowStatus(StatusPad & IconError &
+                       " Cannot move a folder into itself or one of its subfolders.")
+                Exit Sub
+            End If
+        End If
+
+        ' ------------------------------------------------------------
+        ' Perform unified move (Cut)
+        ' ------------------------------------------------------------
+        copyCts = New CancellationTokenSource()
+        Dim ct = copyCts.Token
+
+        Dim result As CopyResult =
+        Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=True, ct)
+
+        ' ------------------------------------------------------------
+        ' Report result
+        ' ------------------------------------------------------------
+        If result.Success Then
+            ShowStatus(StatusPad & IconCut &
+                   $" Moved {result.FilesCopied} item(s).")
+        Else
+            ShowStatus(StatusPad & IconError &
+                   " Move completed with errors. Some items could not be moved.")
+        End If
+
+        ' ------------------------------------------------------------
+        ' Restore address bar after CLI move
+        ' ------------------------------------------------------------
+        RestoreAddressBar()
+    End Sub
+
+
+    Private Sub HandleDeleteCommand(parts As String())
+        If parts.Length <= 1 Then
+            ShowStatus(StatusPad & IconDialog &
+                   " Usage: delete [file_or_directory]")
+            Exit Sub
+        End If
+
+        Dim target As String =
+        String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+        ' ------------------------------------------------------------
+        ' Validate existence
+        ' ------------------------------------------------------------
+        If Not (File.Exists(target) OrElse Directory.Exists(target)) Then
+            ShowStatus(StatusPad & IconError &
+                   $" Delete failed: ""{target}"" does not exist. " &
+                   "Paths with spaces must be enclosed in quotes.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Protected path check
+        ' ------------------------------------------------------------
+        If IsProtectedPathOrFolder(target) Then
+            ShowStatus(StatusPad & IconProtect &
+                   $"  Delete prevented: ""{target}"" is protected.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Permission check
+        ' ------------------------------------------------------------
+        Dim parentDir As String =
+        If(Directory.Exists(target),
+           Path.GetDirectoryName(target.TrimEnd(Path.DirectorySeparatorChar)),
+           Path.GetDirectoryName(target))
+
+        If Not HasWriteAccess(parentDir) Then
+            ShowStatus(StatusPad & IconError &
+                   " You do not have permission to delete this item.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Unified delete engine
+        ' ------------------------------------------------------------
+        DeleteFileOrDirectory(target)
+
+        ' ------------------------------------------------------------
+        ' Restore address bar after CLI delete
+        ' ------------------------------------------------------------
+        RestoreAddressBar()
+    End Sub
+
+
+
+
+
+
+
+    Private Sub HandleMkdirCommand(parts As String())
+        If parts.Length <= 1 Then
+            ShowStatus(StatusPad & IconDialog &
+                   " Usage: mkdir [directory_path]  Example: mkdir C:\NewFolder")
+            Exit Sub
+        End If
+
+        Dim directoryPath As String =
+        String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+        ' ------------------------------------------------------------
+        ' Validate input
+        ' ------------------------------------------------------------
+        If String.IsNullOrWhiteSpace(directoryPath) Then
+            ShowStatus(StatusPad & IconDialog &
+                   " Usage: mkdir [directory_path]  Example: mkdir C:\NewFolder")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Validate parent directory
+        ' ------------------------------------------------------------
+        Dim parentDir As String = Path.GetDirectoryName(directoryPath)
+
+        If String.IsNullOrWhiteSpace(parentDir) OrElse Not Directory.Exists(parentDir) Then
+            ShowStatus(StatusPad & IconError &
+                   $" Cannot create folder. Parent directory ""{parentDir}"" does not exist.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Protected path check (Explorer-accurate)
+        ' ------------------------------------------------------------
+        If IsProtectedPathOrFolder(parentDir) Then
+            ShowStatus(StatusPad & IconProtect &
+                   $" Cannot create folder inside protected location: {parentDir}")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Permission check (actual filesystem capability)
+        ' ------------------------------------------------------------
+        If Not HasWriteAccess(parentDir) Then
+            ShowStatus(StatusPad & IconError &
+                   " You do not have permission to create a folder here.")
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' Create directory
+        ' ------------------------------------------------------------
+        Try
+            CreateDirectory(directoryPath)
+            ShowStatus(StatusPad & IconSuccess &
+                   $" Folder created: {directoryPath}")
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   $" Failed to create folder: {ex.Message}")
+        End Try
+
+        ' ------------------------------------------------------------
+        ' Restore address bar after CLI mkdir
+        ' ------------------------------------------------------------
+        RestoreAddressBar()
+    End Sub
+
+
+    Private Sub HandleTextCommand(parts As String())
+        ' ------------------------------------------------------------
+        ' CASE 1: User provided a file path
+        ' ------------------------------------------------------------
+        If parts.Length > 1 Then
+            Dim rawPath = String.Join(" ", parts.Skip(1))
+            Dim filePath = NormalizeTextFilePath(rawPath)
+
+            If filePath Is Nothing Then
+                ShowStatus(StatusPad & IconDialog &
+                       " Usage: text [file_path]  Example: text C:\example.txt")
+                Exit Sub
+            End If
+
+            Dim parentDir As String = Path.GetDirectoryName(filePath)
+
+            ' Validate parent directory
+            If String.IsNullOrWhiteSpace(parentDir) OrElse Not Directory.Exists(parentDir) Then
+                ShowStatus(StatusPad & IconError &
+                       $" Cannot create file. Parent directory ""{parentDir}"" does not exist.")
+                Exit Sub
+            End If
+
+            ' Protected path check
+            If IsProtectedPathOrFolder(parentDir) Then
+                ShowStatus(StatusPad & IconProtect &
+                       $" Cannot create file inside protected location: {parentDir}")
+                Exit Sub
+            End If
+
+            ' Permission check
+            If Not HasWriteAccess(parentDir) Then
+                ShowStatus(StatusPad & IconError &
+                       " You do not have permission to create a file here.")
+                Exit Sub
+            End If
+
+            ' Create the file
+            Try
+                CreateTextFile(filePath)
+                ShowStatus(StatusPad & IconSuccess &
+                       $" Text file created: {filePath}")
+            Catch ex As Exception
+                ShowStatus(StatusPad & IconError &
+                       $" Failed to create text file: {ex.Message}")
+            End Try
+
+            RestoreAddressBar()
+            Exit Sub
+        End If
+
+        ' ------------------------------------------------------------
+        ' CASE 2: No file path provided → create in current folder
+        ' ------------------------------------------------------------
+        Dim destDir = currentFolder
+
+        If String.IsNullOrWhiteSpace(destDir) OrElse Not Directory.Exists(destDir) Then
+            ShowStatus(StatusPad & IconWarning &
+                   " Invalid folder. Cannot create file.")
+            Exit Sub
+        End If
+
+        ' Protected path check
+        If IsProtectedPathOrFolder(destDir) Then
+            ShowStatus(StatusPad & IconProtect &
+                   $" Cannot create file inside protected location: {destDir}")
+            Exit Sub
+        End If
+
+        ' Permission check
+        If Not HasWriteAccess(destDir) Then
+            ShowStatus(StatusPad & IconError &
+                   " You do not have permission to create a file here.")
+            Exit Sub
+        End If
+
+        ' Generate a unique name like Explorer
+        Dim newFilePath = GetUniqueFilePath(destDir, "New Text File", ".txt")
+
+        Try
+            IO.File.WriteAllText(newFilePath, $"Created on {DateTime.Now:G}")
+            ShowStatus(StatusPad & IconSuccess &
+                   $" Text file created: {newFilePath}")
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   $" Failed to create text file: {ex.Message}")
+        End Try
+
+        RestoreAddressBar()
+    End Sub
+
+
+
+
+
+    Private Function TryHandleDirectPath(input As String) As Boolean
+        If Directory.Exists(input) Then
+            NavigateTo(input)
+            Return True
+        End If
+
+        If File.Exists(input) Then
+            OpenFileWithDefaultApp(input)
+            RestoreAddressBar()
+            Return True
+        End If
+
+        Return False
+    End Function
 
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
@@ -1680,39 +2431,7 @@ Public Class Form1
         ShowStatus($"{state}: ""{path}""")
     End Sub
 
-    'Private Async Sub HandleCopyCommand(parts As String())
-    '    If parts.Length <= 2 Then
-    '        ShowUsageCopy()
-    '        Return
-    '    End If
 
-    '    Dim source = ParseSource(parts)
-    '    Dim destinationRoot = ParseDestination(parts)
-
-    '    If Not ValidateSourceExists(source) Then Return
-    '    If Not ValidateDestinationExists(destinationRoot) Then Return
-    '    If Not ValidateNotCopyingIntoSelf(source, destinationRoot) Then Return
-
-    '    Await PerformCopy(source, destinationRoot)
-    'End Sub
-
-    Private Async Sub HandleCopyCommand(parts As String())
-
-        If parts.Length <= 2 Then
-            ShowUsageCopy()
-            Return
-        End If
-
-        Dim source As String = ParseSource(parts)
-        Dim destinationRoot As String = ParseDestination(parts)
-
-        If Not ValidateSourceExists(source) Then Return
-        If Not ValidateDestinationExists(destinationRoot) Then Return
-        If Not ValidateNotCopyingIntoSelf(source, destinationRoot) Then Return
-
-        Await PerformCopy(source, destinationRoot)
-
-    End Sub
 
 
     Private Function ParseSource(parts As String()) As String
@@ -1765,27 +2484,6 @@ Public Class Form1
         Return True
     End Function
 
-    'Private Async Function PerformCopy(source As String, dest As String) As Task
-    '    copyCts = New CancellationTokenSource()
-    '    Dim ct = copyCts.Token
-
-    '    Dim result As CopyResult =
-    '    Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
-
-    '    If result.Success Then
-    '        'navagate to dest
-    '        ' Refresh the folder view so the user sees the new file
-    '        NavigateTo(dest)
-
-
-    '        ShowStatus(StatusPad & IconCopy &
-    '               $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
-    '    Else
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Copy completed with errors. Some items could not be copied.")
-    '    End If
-    'End Function
-
 
     Private Async Function PerformCopy(source As String, dest As String) As Task
 
@@ -1797,17 +2495,6 @@ Public Class Form1
 
         If result.Success Then
 
-            ' Navigate to destination so user sees the new file(s)
-            'NavigateTo(dest)
-
-
-            'Dim navTarget As String =
-            'If(Directory.Exists(dest), dest, Path.GetDirectoryName(dest))
-
-            'Dim navTarget As String =
-            'If(Directory.Exists(dest),
-            'dest,
-            'Path.GetDirectoryName(dest) ?? dest)
 
             Dim navTarget As String = ResolveNavigationTarget(dest)
             NavigateTo(navTarget)
@@ -2219,67 +2906,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Function ResolveNameCollision(destPath As String) As String
-
-    '    Dim folder As String = Path.GetDirectoryName(destPath)
-    '    Dim baseName As String = Path.GetFileNameWithoutExtension(destPath)
-    '    Dim ext As String = Path.GetExtension(destPath)
-
-    '    Dim candidate As String = destPath
-    '    Dim counter As Integer = 1
-
-    '    While File.Exists(candidate) OrElse Directory.Exists(candidate)
-    '        candidate = Path.Combine(folder, $"{baseName} ({counter}){ext}")
-    '        counter += 1
-    '    End While
-
-    '    Return candidate
-
-    'End Function
-
-    'Private Function PerformPasteOperation(sourcePath As String, destFolder As String) As String
-
-    '    Try
-    '        Dim name As String = Path.GetFileName(sourcePath)
-    '        Dim destPath As String = Path.Combine(destFolder, name)
-
-    '        ' Auto-rename
-    '        destPath = ResolveNameCollision(destPath)
-
-    '        Dim ct As CancellationToken = CancellationToken.None
-
-    '        If File.Exists(sourcePath) Then
-    '            Dim result = CopyFile(sourcePath, destPath, ct)
-    '        ElseIf Directory.Exists(sourcePath) Then
-    '            Dim result = CopyDirectory(sourcePath, destPath, ct)
-    '        Else
-    '            Return Nothing
-    '        End If
-
-    '        Return destPath
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconWarning & " Paste skipped: " & ex.Message)
-    '        Return Nothing
-    '    End Try
-
-    'End Function
-
-    'Private Sub DeleteOriginalsAfterCut(paths As List(Of String))
-
-    '    For Each p In paths
-    '        Try
-    '            If File.Exists(p) Then
-    '                File.Delete(p)
-    '            ElseIf Directory.Exists(p) Then
-    '                Directory.Delete(p, True)
-    '            End If
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconWarning & " Could not delete: " & p)
-    '        End Try
-    '    Next
-
-    'End Sub
 
     Public Async Function CopyFileOrDirectoryUnified(
     source As String,
@@ -2391,62 +3017,6 @@ Public Class Form1
         End Try
     End Function
 
-    'Private Function ValidateNewName(newName As String) As (IsValid As Boolean, ErrorMessage As String)
-
-    '    ' ------------------------------------------------------------
-    '    ' Rule 1: Empty or whitespace-only names are not allowed
-    '    ' ------------------------------------------------------------
-    '    If String.IsNullOrWhiteSpace(newName) Then
-    '        Return (False, "A name cannot be empty.")
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' Rule 2: Names cannot end with a space or a period
-    '    ' ------------------------------------------------------------
-    '    If newName.EndsWith(" ") Then
-    '        Return (False, "A name cannot end with a space.")
-    '    End If
-
-    '    If newName.EndsWith(".") Then
-    '        Return (False, "A name cannot end with a period.")
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' Rule 3: Illegal characters (Explorer rules)
-    '    ' ------------------------------------------------------------
-    '    Dim illegalChars As Char() = Path.GetInvalidFileNameChars()
-
-    '    If newName.IndexOfAny(illegalChars) >= 0 Then
-    '        Return (False, "A name cannot contain any of the following characters: \ / : * ? "" < > |")
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' Rule 4: Reserved Windows device names
-    '    ' ------------------------------------------------------------
-    '    Dim reserved() As String = {
-    '    "CON", "PRN", "AUX", "NUL",
-    '    "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-    '    "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
-    '}
-
-    '    Dim baseName As String = Path.GetFileNameWithoutExtension(newName).ToUpperInvariant()
-
-    '    If reserved.Contains(baseName) Then
-    '        Return (False, $"The name '{newName}' is reserved by Windows.")
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' Rule 5: Name cannot be "." or ".."
-    '    ' ------------------------------------------------------------
-    '    If newName = "." OrElse newName = ".." Then
-    '        Return (False, "This name is not allowed.")
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' All rules passed
-    '    ' ------------------------------------------------------------
-    '    Return (True, "")
-    'End Function
 
     Private Function GetPasteDestination() As String
         If Directory.Exists(currentFolder) Then
@@ -2547,8 +3117,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub CopyFilePath_Click(sender As Object, e As EventArgs)
         ' Copy selected file path to clipboard - Mouse right-click context menu for lvFiles
 
@@ -2569,14 +3137,6 @@ Public Class Form1
         UpdateTreeRoots()
     End Sub
 
-    'Private Sub NavigateToParent()
-    '    Dim parent = Directory.GetParent(currentFolder)
-    '    If parent IsNot Nothing Then
-    '        NavigateTo(parent.FullName, recordHistory:=True)
-    '    End If
-    'End Sub
-
-
 
     Private Sub NavigateToParent()
         Dim parentPath As String = Path.GetDirectoryName(currentFolder)
@@ -2589,17 +3149,6 @@ Public Class Form1
         Dim navTarget As String = ResolveNavigationTarget(parentPath)
         NavigateTo(navTarget, recordHistory:=True)
     End Sub
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub SelectAllItems()
@@ -2797,124 +3346,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Async Function PopulateFiles(path As String) As Task
-    '    lvFiles.BeginUpdate()
-    '    lvFiles.Items.Clear()
-
-    '    Try
-
-    '        ' -------------------------------
-    '        ' Load directories asynchronously
-    '        ' -------------------------------
-    '        Dim directories = Await Task.Run(Function()
-
-    '                                             Dim dirList As New List(Of String)()
-    '                                             Try
-
-    '                                                 dirList.AddRange(
-    '                                                 Directory.GetDirectories(path).
-    '                                                 Where(Function(d) _
-    '                                                 ShowHiddenFiles OrElse
-    '                                                 Not (New DirectoryInfo(d).Attributes And (FileAttributes.Hidden Or FileAttributes.System) <> 0)))
-
-    '                                             Catch ex As UnauthorizedAccessException
-    '                                                 ShowStatus(StatusPad & IconWarning & " Access denied to some directories in: " & path)
-    '                                                 Debug.WriteLine($"PopulateFiles - {path} - Directories - UnauthorizedAccessException - {ex.Message}") ' Log exception details
-    '                                             Catch ex As Exception
-    '                                                 ShowStatus(StatusPad & IconError & " An error occurred: " & ex.Message)
-    '                                                 Debug.WriteLine($"PopulateFiles - {path} - Directories - Error - {ex.Message}")
-    '                                             End Try
-
-    '                                             Return dirList ' Ensure that an empty list is returned if an exception occurs
-    '                                         End Function)
-
-    '        Dim itemsToAdd As New List(Of ListViewItem)
-
-    '        For Each mDir In directories
-    '            Dim di As New DirectoryInfo(mDir)
-    '            Dim item As New ListViewItem(di.Name)
-
-    '            item.SubItems.Add("Folder")
-    '            item.SubItems.Add("") ' No size for folders
-    '            item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '            item.Tag = di.FullName
-    '            item.ImageKey = "Folder"
-
-    '            itemsToAdd.Add(item)
-    '        Next
-
-    '        ' ---------------------------
-    '        ' Load files asynchronously
-    '        ' ---------------------------
-    '        Dim files = Await Task.Run(Function()
-
-    '                                       Dim fileList As New List(Of String)
-    '                                       Try
-
-    '                                           fileList.AddRange(
-    '                                           Directory.GetFiles(path).
-    '                                           Where(Function(f) _
-    '                                           ShowHiddenFiles OrElse
-    '                                           (New FileInfo(f).Attributes And
-    '                                           (FileAttributes.Hidden Or FileAttributes.System)) = 0))
-
-    '                                       Catch ex As UnauthorizedAccessException
-    '                                           ShowStatus(StatusPad & IconError & " Access denied to some files in: " & path)
-    '                                           Debug.WriteLine($"PopulateFiles - {path} - Files - UnauthorizedAccessException - {ex.Message}")
-    '                                       Catch ex As Exception
-    '                                           ShowStatus(StatusPad & IconError & " An error occurred: " & ex.Message)
-    '                                           Debug.WriteLine($"PopulateFiles - {path} - Files - Error - {ex.Message}")
-
-    '                                       End Try
-
-    '                                       Return fileList
-    '                                   End Function)
-
-    '        For Each file In files
-    '            Dim fi As New FileInfo(file)
-    '            Dim item As New ListViewItem(fi.Name)
-
-    '            Dim ext = fi.Extension.ToLowerInvariant()
-    '            Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-    '            ' Category column
-    '            item.SubItems.Add(category)
-
-    '            ' Size + date
-    '            item.SubItems.Add(FormatSize(fi.Length))
-    '            item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '            item.Tag = fi.FullName
-
-    '            ' Image assignment
-    '            Select Case category
-    '                Case "Audio" : item.ImageKey = "Music"
-    '                Case "Image" : item.ImageKey = "Pictures"
-    '                Case "Document" : item.ImageKey = "Documents"
-    '                Case "Video" : item.ImageKey = "Videos"
-    '                Case "Archive" : item.ImageKey = "Downloads"
-    '                Case "Executable" : item.ImageKey = "Executable"
-    '                Case "Shortcut" : item.ImageKey = "Shortcut"
-    '                Case Else : item.ImageKey = "Documents"
-    '            End Select
-
-    '            itemsToAdd.Add(item)
-    '        Next
-
-    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
-
-    '        'ShowStatus(StatusPad & lvFiles.Items.Count & "  items")
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
-    '        Debug.WriteLine($"General Error: {ex.Message}")
-
-    '    Finally
-    '        lvFiles.EndUpdate()
-    '    End Try
-
-    'End Function
-
-
 
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
@@ -2953,56 +3384,71 @@ Public Class Form1
         End Try
     End Function
 
-    ' ============================================================
-    ' SAFE ENUMERATION HELPERS
-    ' ============================================================
 
-    Private Function GetDirectoriesSafe(path As String) As List(Of String)
-        Dim list As New List(Of String)
 
-        Try
-            list.AddRange(
-            Directory.GetDirectories(path).
-            Where(Function(d)
-                      If ShowHiddenFiles Then Return True
-                      Dim attr = New DirectoryInfo(d).Attributes
-                      Return (attr And (FileAttributes.Hidden Or FileAttributes.System)) = 0
-                  End Function))
-        Catch ex As UnauthorizedAccessException
-            ShowStatus(StatusPad & IconWarning & " Access denied to some directories.")
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Error loading directories.")
-        End Try
-
-        Return list
-    End Function
-
-    Private Function GetFilesSafe(path As String) As List(Of String)
-        Dim list As New List(Of String)
-
-        Try
-            list.AddRange(
-            Directory.GetFiles(path).
-            Where(Function(f)
-                      If ShowHiddenFiles Then Return True
-                      Dim attr = New FileInfo(f).Attributes
-                      Return (attr And (FileAttributes.Hidden Or FileAttributes.System)) = 0
-                  End Function))
-        Catch ex As UnauthorizedAccessException
-            ShowStatus(StatusPad & IconWarning & " Access denied to some files.")
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Error loading files.")
-        End Try
-
-        Return list
+    Private Function IsAccessTestFile(name As String) As Boolean
+        Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
     End Function
 
 
 
 
+    Private Function GetDirectoriesSafe(path2Get As String) As List(Of String)
+        Dim results As New List(Of String)
+
+        Try
+            For Each d In Directory.GetDirectories(path2Get)
+                Dim name = Path.GetFileName(d)
+
+                ' Skip our own temp directories
+                If IsAccessTestFile(name) Then Continue For
+
+                Dim di As New DirectoryInfo(d)
+
+                ' Skip hidden/system unless ShowHiddenFiles = True
+                If Not ShowHiddenFiles Then
+                    If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+                End If
+
+                results.Add(d)
+            Next
+        Catch
+            ' swallow — safe enumeration
+        End Try
+
+        Return results
+    End Function
 
 
+    Private Function GetFilesSafe(path2Get As String) As List(Of String)
+        Dim results As New List(Of String)
 
+        Try
+            For Each f In Directory.GetFiles(path2Get)
+                Dim name = Path.GetFileName(f)
+
+                ' Skip our own temp files
+                If IsAccessTestFile(name) Then Continue For
+
+                Dim fi As New FileInfo(f)
+
+                ' Skip hidden/system unless ShowHiddenFiles = True
+                If Not ShowHiddenFiles Then
+                    If (fi.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+                        Continue For
+                    End If
+                End If
+
+                results.Add(f)
+            Next
+        Catch
+            ' swallow — safe enumeration
+        End Try
+
+        Return results
+    End Function
 
 
 
@@ -3041,16 +3487,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
     ' ============================================================
     ' VALIDATION HELPERS
     ' ============================================================
@@ -3084,27 +3520,6 @@ Public Class Form1
         Return New ValidationResult(True, "")
     End Function
 
-    'Private Function ValidateNewNameForFile(oldFullPath As String, newName As String) As ValidationResult
-    '    If Not File.Exists(oldFullPath) Then
-    '        Return New ValidationResult(True, "") ' Not a file → no extension rules
-    '    End If
-
-    '    Dim oldExt = Path.GetExtension(oldFullPath)
-    '    Dim newExt = Path.GetExtension(newName)
-
-    '    If Not String.Equals(oldExt, newExt, StringComparison.OrdinalIgnoreCase) Then
-    '        Return New ValidationResult(False, "File extension cannot be changed.")
-    '    End If
-
-    '    Return New ValidationResult(True, "")
-    'End Function
-
-
-
-
-
-
-
 
 
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
@@ -3122,44 +3537,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    'Handles lvFiles.AfterLabelEdit
-
-    '    _isRenaming = False
-
-    '    If e.Label Is Nothing Then Exit Sub
-
-    '    Dim item = lvFiles.Items(e.Item)
-    '    Dim oldPath = CStr(item.Tag)
-
-    '    ' First: general validation
-    '    Dim result = ValidateNewName(e.Label)
-    '    If Not result.IsValid Then
-    '        e.CancelEdit = True
-    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
-    '        Exit Sub
-    '    End If
-
-    '    ' Second: extension protection (files only)
-    '    Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
-    '    If Not extCheck.IsValid Then
-    '        e.CancelEdit = True
-    '        ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
-    '        Exit Sub
-    '    End If
-
-    '    ' If valid → rename using your unified engine
-    '    PerformRename(oldPath, e.Label)
-    'End Sub
-
-
-
-
-
-
-
-
-
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
     Handles lvFiles.AfterLabelEdit
 
@@ -3170,7 +3547,7 @@ Public Class Form1
         Dim item = lvFiles.Items(e.Item)
         Dim oldPath = CStr(item.Tag)
 
-        ' First: general validation
+        ' General validation
         Dim result = ValidateNewName(e.Label)
         If Not result.IsValid Then
             e.CancelEdit = True
@@ -3178,7 +3555,7 @@ Public Class Form1
             Exit Sub
         End If
 
-        ' Second: extension protection (files only)
+        ' Extension protection
         Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
         If Not extCheck.IsValid Then
             e.CancelEdit = True
@@ -3186,68 +3563,13 @@ Public Class Form1
             Exit Sub
         End If
 
-        ' If valid → rename using your unified engine
+        ' Unified rename engine handles:
+        ' - filesystem rename
+        ' - ListView update
+        ' - selection
+        ' - navigation (if renaming current folder)
         PerformRename(oldPath, e.Label)
-
-        ' Explorer-style: keep the renamed item selected and visible
-        item.Selected = True
-        item.EnsureVisible()
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Sub PerformRename(oldFullPath As String, newName As String)
-    '    Try
-    '        Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
-    '        Dim newFullPath As String = Path.Combine(parentDir, newName)
-
-    '        ' ============================================================
-    '        '   Rule 0: No change (case-sensitive)
-    '        ' ============================================================
-    '        If String.Equals(oldFullPath, newFullPath, StringComparison.Ordinal) Then
-    '            Exit Sub
-    '        End If
-
-    '        ' File → rename file
-    '        If File.Exists(oldFullPath) Then
-    '            File.Move(oldFullPath, newFullPath)
-
-    '        ElseIf Directory.Exists(oldFullPath) Then
-    '            Directory.Move(oldFullPath, newFullPath)
-
-    '        Else
-    '            ShowStatus(StatusPad & IconError & " The item no longer exists.")
-    '            Exit Sub
-    '        End If
-
-    '        ' Update ListView item
-    '        Dim item = lvFiles.Items.Cast(Of ListViewItem)().
-    '               FirstOrDefault(Function(i) CStr(i.Tag) = oldFullPath)
-
-    '        If item IsNot Nothing Then
-    '            item.Tag = newFullPath
-    '            item.Text = newName
-    '        End If
-
-    '        ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
-    '    End Try
-    'End Sub
-
-
-
 
 
     Private Sub PerformRename(oldFullPath As String, newName As String)
@@ -3255,52 +3577,35 @@ Public Class Form1
             Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
             Dim newFullPath As String = Path.Combine(parentDir, newName)
 
-            ' ============================================================
-            '   Rule 0: No change (case-sensitive)
-            ' ============================================================
+            ' ------------------------------------------------------------
+            ' Rule 0: No change (case‑sensitive)
+            ' ------------------------------------------------------------
             If String.Equals(oldFullPath, newFullPath, StringComparison.Ordinal) Then
                 Exit Sub
             End If
 
-            ' File → rename file
-            If File.Exists(oldFullPath) Then
-                File.Move(oldFullPath, newFullPath)
-
-            ElseIf Directory.Exists(oldFullPath) Then
-                Directory.Move(oldFullPath, newFullPath)
-
-            Else
+            ' ------------------------------------------------------------
+            ' Filesystem rename
+            ' ------------------------------------------------------------
+            If Not TryRenameItem(oldFullPath, newFullPath) Then
                 ShowStatus(StatusPad & IconError & " The item no longer exists.")
                 Exit Sub
             End If
 
-            ' Update ListView item (canonical path + display name)
-            Dim item = lvFiles.Items.Cast(Of ListViewItem)().
-                   FirstOrDefault(Function(i) CStr(i.Tag) = oldFullPath)
+            ' ------------------------------------------------------------
+            ' UI update (ListView)
+            ' ------------------------------------------------------------
+            UpdateListViewItemPath(oldFullPath, newFullPath, newName)
 
-            If item IsNot Nothing Then
-                item.Tag = newFullPath
-                item.Text = newName
-            End If
+            ' Select renamed item if visible
+            SelectListViewItemIfVisible(newFullPath)
 
             ShowStatus(StatusPad & IconSuccess & " Renamed successfully.")
 
-            ' (Optional future-proofing)
-            'Dim navTarget As String = ResolveNavigationTarget(newFullPath)
-            'NavigateTo(navTarget)
-            'If String.Equals(oldFullPath, currentFolder, StringComparison.OrdinalIgnoreCase) Then
-            '    Dim navTarget As String = ResolveNavigationTarget(newFullPath)
-            '    NavigateTo(navTarget, recordHistory:=True)
-            'End If
-
-            Dim isRenamingCurrentFolder =
-            Directory.Exists(oldFullPath) AndAlso
-            String.Equals(oldFullPath, currentFolder, StringComparison.OrdinalIgnoreCase)
-
-            If isRenamingCurrentFolder Then
-                Dim navTarget As String = ResolveNavigationTarget(newFullPath)
-                NavigateTo(navTarget, recordHistory:=True)
-            End If
+            ' ------------------------------------------------------------
+            ' Navigation (Explorer‑accurate)
+            ' ------------------------------------------------------------
+            HandleRenameOfCurrentFolder(oldFullPath, newFullPath)
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
@@ -3310,6 +3615,52 @@ Public Class Form1
 
 
 
+    Private Function TryRenameItem(oldPath As String, newPath As String) As Boolean
+        If File.Exists(oldPath) Then
+            File.Move(oldPath, newPath)
+            Return True
+        End If
+
+        If Directory.Exists(oldPath) Then
+            Directory.Move(oldPath, newPath)
+            Return True
+        End If
+
+        Return False
+    End Function
+
+
+
+    Private Sub UpdateListViewItemPath(oldPath As String, newPath As String, newName As String)
+        Dim item = lvFiles.Items.Cast(Of ListViewItem)().
+               FirstOrDefault(Function(i) CStr(i.Tag) = oldPath)
+
+        If item IsNot Nothing Then
+            item.Tag = newPath
+            item.Text = newName
+        End If
+    End Sub
+
+
+
+
+    Private Sub SelectListViewItemIfVisible(newPath As String)
+        Dim item = lvFiles.Items.Cast(Of ListViewItem)().
+               FirstOrDefault(Function(i) CStr(i.Tag) = newPath)
+
+        If item IsNot Nothing Then
+            item.Selected = True
+            item.EnsureVisible()
+        End If
+    End Sub
+
+
+    Private Sub HandleRenameOfCurrentFolder(oldPath As String, newPath As String)
+        If String.Equals(oldPath, currentFolder, StringComparison.OrdinalIgnoreCase) Then
+            Dim navTarget As String = ResolveNavigationTarget(newPath)
+            NavigateTo(navTarget, recordHistory:=True)
+        End If
+    End Sub
 
 
 
@@ -3334,34 +3685,6 @@ Public Class Form1
 
         Return (True, "")
     End Function
-
-    'Private Function GetRequiredSpace(path As String) As Long
-    '    ' ------------------------------------------------------------
-    '    ' Helper: compute required space for file or directory
-    '    ' ------------------------------------------------------------
-
-    '    If IO.File.Exists(path) Then
-    '        Dim fi As New FileInfo(path)
-    '        Return fi.Length
-    '    End If
-
-    '    If Directory.Exists(path) Then
-    '        Return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).
-    '        Sum(Function(f) New FileInfo(f).Length)
-    '    End If
-
-    '    Return 0
-    'End Function
-
-    'Private Function HasEnoughSpace(requiredBytes As Long, destinationPath As String) As Boolean
-    '    ' ------------------------------------------------------------
-    '    ' Helper: free‑space check by bytes + destination drive
-    '    ' ------------------------------------------------------------
-
-    '    Dim root = Path.GetPathRoot(destinationPath)
-    '    Dim drive As New DriveInfo(root)
-    '    Return requiredBytes <= drive.AvailableFreeSpace
-    'End Function
 
 
     Private Function ResolveDestinationPathWithAutoRename(initialPath As String, isDir As Boolean) As String
@@ -3836,75 +4159,103 @@ Public Class Form1
         End Try
     End Sub
 
+    'Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
+
+    '    Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
+
+    '    ' Rule 1: Path must be absolute (start with C:\ or similar).
+    '    ' Reject relative paths outright
+    '    If Not Path.IsPathRooted(sourcePath) Then
+    '        ShowStatus(StatusPad & IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
+    '        Exit Sub
+    '    End If
+
+    '    ' Rule 2: Protected paths are never renamed.
+    '    ' Check if the path is in the protected list
+    '    If IsProtectedPathOrFolder(sourcePath) Then
+    '        ' The path is protected; prevent rename
+
+    '        ' Show user the directory so they can see it wasn't renamed.
+    '        NavigateTo(sourcePath)
+
+    '        ' Notify the user of the prevention so the user knows why it didn't rename.
+    '        ShowStatus(StatusPad & IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
+
+    '        Exit Sub
+
+    '    End If
+
+    '    Try
+
+    '        ' Rule 3: If it’s a folder, rename the folder and show the new folder.
+    '        ' If source is a directory
+    '        If Directory.Exists(sourcePath) Then
+
+    '            ' Rename directory >>>>>>>>>>
+    '            Directory.Move(sourcePath, newPath)
+
+    '            ' Navigate to the renamed directory
+    '            NavigateTo(newPath)
+
+    '            ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
+
+    '            ' Rule 4: If it’s a file, rename the file and show its folder.
+    '            ' If source is a file
+    '        ElseIf IO.File.Exists(sourcePath) Then
+
+    '            ' Rename file >>>>>>>>>>
+    '            IO.File.Move(sourcePath, newPath)
+
+    '            ' Navigate to the directory of the renamed file
+    '            NavigateTo(Path.GetDirectoryName(sourcePath))
+
+
+
+    '            ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
+
+    '            ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
+    '        Else
+    '            ' Path does not exist
+    '            'ShowStatus(StatusPad & IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" Example:, rename ""C:\folder\old name.txt"" ""new name.txt""")
+    '            ShowStatus(
+    '                StatusPad & IconError &
+    '                "  Rename failed: No path provided. Paths containing spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]""   Example: rename ""C:\folder\old name.txt"" ""new name.txt"""
+    '            )
+    '        End If
+
+    '    Catch ex As Exception
+    '        ' Rule 6: If anything goes wrong,show a status message.
+    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
+    '        Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
+    '    End Try
+
+    'End Sub
+
+
+
+
+
+
+
+
+
+    'Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
+    '    PerformRename(sourcePath, newName)
+    'End Sub
+
+
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
-
-        Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
-
-        ' Rule 1: Path must be absolute (start with C:\ or similar).
-        ' Reject relative paths outright
-        If Not Path.IsPathRooted(sourcePath) Then
-            ShowStatus(StatusPad & IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
-            Exit Sub
-        End If
-
-        ' Rule 2: Protected paths are never renamed.
-        ' Check if the path is in the protected list
-        If IsProtectedPathOrFolder(sourcePath) Then
-            ' The path is protected; prevent rename
-
-            ' Show user the directory so they can see it wasn't renamed.
-            NavigateTo(sourcePath)
-
-            ' Notify the user of the prevention so the user knows why it didn't rename.
-            ShowStatus(StatusPad & IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
-
-            Exit Sub
-
-        End If
-
-        Try
-
-            ' Rule 3: If it’s a folder, rename the folder and show the new folder.
-            ' If source is a directory
-            If Directory.Exists(sourcePath) Then
-
-                ' Rename directory
-                Directory.Move(sourcePath, newPath)
-
-                ' Navigate to the renamed directory
-                NavigateTo(newPath)
-
-                ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
-
-                ' Rule 4: If it’s a file, rename the file and show its folder.
-                ' If source is a file
-            ElseIf IO.File.Exists(sourcePath) Then
-
-                ' Rename file
-                IO.File.Move(sourcePath, newPath)
-
-                ' Navigate to the directory of the renamed file
-                NavigateTo(Path.GetDirectoryName(sourcePath))
-
-                ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
-
-                ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
-            Else
-                ' Path does not exist
-                'ShowStatus(StatusPad & IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" Example:, rename ""C:\folder\old name.txt"" ""new name.txt""")
-                ShowStatus(
-                    StatusPad & IconError &
-                    "  Rename failed: No path provided. Paths containing spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]""   Example: rename ""C:\folder\old name.txt"" ""new name.txt"""
-                )
-            End If
-
-        Catch ex As Exception
-            ' Rule 6: If anything goes wrong,show a status message.
-            ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
-            Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
-        End Try
-
+        PerformRename(sourcePath, newName)
     End Sub
+
+
+
+
+
+
+
+
+
 
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
         ' =============================================================
@@ -4135,152 +4486,190 @@ Public Class Form1
 
     End Sub
 
+    'Private Function BuildHelpText() As String
+    '    Dim sb As New StringBuilder()
+
+    '    ' ---------------------------------------------------------
+    '    ' HEADER
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("========================================")
+    '    sb.AppendLine("            File Explorer CLI")
+    '    sb.AppendLine("========================================")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Available Commands:")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' NAVIGATION
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("cd")
+    '    sb.AppendLine("cd [directory]")
+    '    sb.AppendLine("  Change directory to the specified path.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    cd C:\")
+    '    sb.AppendLine("    cd ""C:\My Folder""")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' DIRECTORY CREATION
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("mkdir, make, md")
+    '    sb.AppendLine("mkdir [directory_path]")
+    '    sb.AppendLine("  Create a new folder.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    mkdir C:\newfolder")
+    '    sb.AppendLine("    make ""C:\My New Folder""")
+    '    sb.AppendLine("    md C:\anotherfolder")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' COPY
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("copy, cp")
+    '    sb.AppendLine("copy [source] [destination]")
+    '    sb.AppendLine("  Copy a file or folder to a destination folder.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
+    '    sb.AppendLine("    copy ""C:\folder A"" ""C:\folder B""")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' MOVE
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("move, mv")
+    '    sb.AppendLine("move [source] [destination]")
+    '    sb.AppendLine("  Move a file or folder to a new location.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
+    '    sb.AppendLine("    move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc""")
+    '    sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
+    '    sb.AppendLine("    move ""C:\folder A"" ""C:\folder B\New Name""")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' DELETE
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("delete, rm")
+    '    sb.AppendLine("delete [file_or_directory]")
+    '    sb.AppendLine("  Delete a file or folder.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    delete C:\file.txt")
+    '    sb.AppendLine("    delete ""C:\My Folder""")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' RENAME
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("rename")
+    '    sb.AppendLine("rename [source_path] [new_name]")
+    '    sb.AppendLine("  Rename a file or directory.")
+    '    sb.AppendLine("  Paths with spaces must be enclosed in quotes.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    rename ""C:\folder\oldname.txt"" ""newname.txt""")
+    '    sb.AppendLine("    rename ""C:\folder\old name.txt"" ""new name.txt""")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' OPEN
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("open")
+    '    sb.AppendLine("open [file_or_directory]")
+    '    sb.AppendLine("  Open a file with the default application, or navigate into a folder.")
+    '    sb.AppendLine("  Examples:")
+    '    sb.AppendLine("    open C:\folder\file.txt")
+    '    sb.AppendLine("    open ""C:\My Folder""")
+    '    sb.AppendLine("    open")
+    '    sb.AppendLine("      (opens the selected file or folder)")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' TEXT FILE CREATION
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("text, txt")
+    '    sb.AppendLine("text [file_path]")
+    '    sb.AppendLine("  Create a new text file at the specified path.")
+    '    sb.AppendLine("  Example:")
+    '    sb.AppendLine("    text ""C:\folder\example.txt""")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' SEARCH
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("find, search")
+    '    sb.AppendLine("find [search_term]")
+    '    sb.AppendLine("  Search for files and folders in the current directory.")
+    '    sb.AppendLine("  Example:")
+    '    sb.AppendLine("    find document")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("findnext, searchnext, next")
+    '    sb.AppendLine("findnext")
+    '    sb.AppendLine("  Show the next search result from the previous search.")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' DISK FREE SPACE
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("df")
+    '    sb.AppendLine("df <drive_letter>:")
+    '    sb.AppendLine("  Show available free space on a drive.")
+    '    sb.AppendLine("  Example:")
+    '    sb.AppendLine("    df C:")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' EXIT
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("exit, quit, close, bye, shutdown, logoff, signout,")
+    '    sb.AppendLine("poweroff, halt, end, terminate, stop, leave,")
+    '    sb.AppendLine("farewell, adios, ciao, sayonara, goodbye, later")
+    '    sb.AppendLine("  Exit the application.")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' HELP
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("help, man, commands")
+    '    sb.AppendLine("  Opens this help file.")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
     Private Function BuildHelpText() As String
         Dim sb As New StringBuilder()
 
-        ' ---------------------------------------------------------
-        ' HEADER
-        ' ---------------------------------------------------------
-        sb.AppendLine("========================================")
-        sb.AppendLine("            File Explorer CLI")
-        sb.AppendLine("========================================")
-        sb.AppendLine()
-        sb.AppendLine("Available Commands:")
-        sb.AppendLine()
+        'sb.AppendLine("=====================================================")
+        'sb.AppendLine("                     File Explorer CLI")
+        'sb.AppendLine("=====================================================")
+        'sb.AppendLine()
+        'sb.AppendLine("Available Commands:")
+        'sb.AppendLine()
 
-        ' ---------------------------------------------------------
-        ' NAVIGATION
-        ' ---------------------------------------------------------
-        sb.AppendLine("cd")
-        sb.AppendLine("cd [directory]")
-        sb.AppendLine("  Change directory to the specified path.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    cd C:\")
-        sb.AppendLine("    cd ""C:\My Folder""")
-        sb.AppendLine()
+        For Each entry In CommandHelp
+            Dim meta = entry.Value
 
-        ' ---------------------------------------------------------
-        ' DIRECTORY CREATION
-        ' ---------------------------------------------------------
-        sb.AppendLine("mkdir, make, md")
-        sb.AppendLine("mkdir [directory_path]")
-        sb.AppendLine("  Create a new folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    mkdir C:\newfolder")
-        sb.AppendLine("    make ""C:\My New Folder""")
-        sb.AppendLine("    md C:\anotherfolder")
-        sb.AppendLine()
+            ' Aliases
+            sb.AppendLine(String.Join(", ", meta.Aliases))
 
-        ' ---------------------------------------------------------
-        ' COPY
-        ' ---------------------------------------------------------
-        sb.AppendLine("copy, cp")
-        sb.AppendLine("copy [source] [destination]")
-        sb.AppendLine("  Copy a file or folder to a destination folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
-        sb.AppendLine("    copy ""C:\folder A"" ""C:\folder B""")
-        sb.AppendLine()
+            ' Usage
+            sb.AppendLine(meta.Usage)
 
-        ' ---------------------------------------------------------
-        ' MOVE
-        ' ---------------------------------------------------------
-        sb.AppendLine("move, mv")
-        sb.AppendLine("move [source] [destination]")
-        sb.AppendLine("  Move a file or folder to a new location.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
-        sb.AppendLine("    move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc""")
-        sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
-        sb.AppendLine("    move ""C:\folder A"" ""C:\folder B\New Name""")
-        sb.AppendLine()
+            ' Description
+            sb.AppendLine("  " & meta.Description)
 
-        ' ---------------------------------------------------------
-        ' DELETE
-        ' ---------------------------------------------------------
-        sb.AppendLine("delete, rm")
-        sb.AppendLine("delete [file_or_directory]")
-        sb.AppendLine("  Delete a file or folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    delete C:\file.txt")
-        sb.AppendLine("    delete ""C:\My Folder""")
-        sb.AppendLine()
+            ' Examples
+            If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+                sb.AppendLine("  Examples:")
+                For Each ex In meta.Examples
+                    sb.AppendLine("    " & ex)
+                Next
+            End If
 
-        ' ---------------------------------------------------------
-        ' RENAME
-        ' ---------------------------------------------------------
-        sb.AppendLine("rename")
-        sb.AppendLine("rename [source_path] [new_name]")
-        sb.AppendLine("  Rename a file or directory.")
-        sb.AppendLine("  Paths with spaces must be enclosed in quotes.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    rename ""C:\folder\oldname.txt"" ""newname.txt""")
-        sb.AppendLine("    rename ""C:\folder\old name.txt"" ""new name.txt""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' OPEN
-        ' ---------------------------------------------------------
-        sb.AppendLine("open")
-        sb.AppendLine("open [file_or_directory]")
-        sb.AppendLine("  Open a file with the default application, or navigate into a folder.")
-        sb.AppendLine("  Examples:")
-        sb.AppendLine("    open C:\folder\file.txt")
-        sb.AppendLine("    open ""C:\My Folder""")
-        sb.AppendLine("    open")
-        sb.AppendLine("      (opens the selected file or folder)")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' TEXT FILE CREATION
-        ' ---------------------------------------------------------
-        sb.AppendLine("text, txt")
-        sb.AppendLine("text [file_path]")
-        sb.AppendLine("  Create a new text file at the specified path.")
-        sb.AppendLine("  Example:")
-        sb.AppendLine("    text ""C:\folder\example.txt""")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' SEARCH
-        ' ---------------------------------------------------------
-        sb.AppendLine("find, search")
-        sb.AppendLine("find [search_term]")
-        sb.AppendLine("  Search for files and folders in the current directory.")
-        sb.AppendLine("  Example:")
-        sb.AppendLine("    find document")
-        sb.AppendLine()
-
-        sb.AppendLine("findnext, searchnext, next")
-        sb.AppendLine("findnext")
-        sb.AppendLine("  Show the next search result from the previous search.")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' DISK FREE SPACE
-        ' ---------------------------------------------------------
-        sb.AppendLine("df")
-        sb.AppendLine("df <drive_letter>:")
-        sb.AppendLine("  Show available free space on a drive.")
-        sb.AppendLine("  Example:")
-        sb.AppendLine("    df C:")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' EXIT
-        ' ---------------------------------------------------------
-        sb.AppendLine("exit, quit, close, bye, shutdown, logoff, signout,")
-        sb.AppendLine("poweroff, halt, end, terminate, stop, leave,")
-        sb.AppendLine("farewell, adios, ciao, sayonara, goodbye, later")
-        sb.AppendLine("  Exit the application.")
-        sb.AppendLine()
-
-        ' ---------------------------------------------------------
-        ' HELP
-        ' ---------------------------------------------------------
-        sb.AppendLine("help, man, commands")
-        sb.AppendLine("  Opens this help file.")
-        sb.AppendLine()
+            sb.AppendLine()
+        Next
 
         Return sb.ToString()
     End Function
@@ -4426,6 +4815,78 @@ Public Class Form1
         End Try
     End Function
 
+    'Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
+
+    '    If String.IsNullOrWhiteSpace(path2Check) Then Return False
+
+    '    ' Reject relative paths outright
+    '    If Not Path.IsPathRooted(path2Check) Then Return False
+
+    '    ' Normalize input
+    '    Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
+
+    '    ' ------------------------------------------------------------
+    '    ' 1. Drive roots (C:, D:, E:) are ALWAYS protected
+    '    ' ------------------------------------------------------------
+    '    If normalizedInput.Length = 2 AndAlso normalizedInput(1) = ":"c Then
+    '        Return True
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' 2. System-level protected folders (exact or subpaths)
+    '    ' ------------------------------------------------------------
+    '    Dim protectedPaths As String() = {
+    '    "C:\Windows",
+    '    "C:\Program Files",
+    '    "C:\Program Files (x86)",
+    '    "C:\ProgramData"
+    '}
+
+    '    For Each protectedPath In protectedPaths
+    '        Dim normProt As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
+
+    '        ' Exact match
+    '        If normalizedInput.Equals(normProt, StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+
+    '        ' Subdirectory match
+    '        If normalizedInput.StartsWith(normProt & "\", StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+    '    Next
+
+    '    ' ------------------------------------------------------------
+    '    ' 3. User-profile protected folders (exact match only)
+    '    ' ------------------------------------------------------------
+    '    Dim userRoot As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+
+    '    Dim protectedUserFolders As String() = {
+    '    "C:\Users",
+    '    userRoot,
+    '    Path.Combine(userRoot, "Documents"),
+    '    Path.Combine(userRoot, "Desktop"),
+    '    Path.Combine(userRoot, "Downloads"),
+    '    Path.Combine(userRoot, "Pictures"),
+    '    Path.Combine(userRoot, "Music"),
+    '    Path.Combine(userRoot, "Videos"),
+    '    Path.Combine(userRoot, "AppData\Local"),
+    '    Path.Combine(userRoot, "AppData\Roaming")
+    '}
+
+    '    For Each protectedFolder In protectedUserFolders
+    '        Dim normProt As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
+
+    '        If normalizedInput.Equals(normProt, StringComparison.OrdinalIgnoreCase) Then
+    '            Return True
+    '        End If
+    '    Next
+
+    '    Return False
+    'End Function
+
+
+
     Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
 
         If String.IsNullOrWhiteSpace(path2Check) Then Return False
@@ -4468,19 +4929,13 @@ Public Class Form1
         Next
 
         ' ------------------------------------------------------------
-        ' 3. User-profile protected folders (exact match only)
+        ' 3. User-profile protected folders (EXACT MATCH ONLY)
+        '    Explorer allows creation in Desktop, Documents, etc.
         ' ------------------------------------------------------------
         Dim userRoot As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
 
         Dim protectedUserFolders As String() = {
-        "C:\Users",
-        userRoot,
-        Path.Combine(userRoot, "Documents"),
-        Path.Combine(userRoot, "Desktop"),
-        Path.Combine(userRoot, "Downloads"),
-        Path.Combine(userRoot, "Pictures"),
-        Path.Combine(userRoot, "Music"),
-        Path.Combine(userRoot, "Videos"),
+        "C:\Users",                                 ' parent container
         Path.Combine(userRoot, "AppData\Local"),
         Path.Combine(userRoot, "AppData\Roaming")
     }
@@ -4495,6 +4950,13 @@ Public Class Form1
 
         Return False
     End Function
+
+
+
+
+
+
+
 
     ' ============================================================
     '  CONTEXTUAL TARGET RESOLVER FOR DESTRUCTIVE ACTIONS
@@ -4806,8 +5268,13 @@ Public Class Form1
                     Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
                     Dim totalSpace As String = FormatBytes(di.TotalSize)
 
-                    Dim displayText As String =
-                $"{di.Name} - {di.VolumeLabel} ({freeSpace} free of {totalSpace})"
+
+                    Dim used = di.TotalSize - di.AvailableFreeSpace
+                    Dim bar = BuildUsageBar(used, di.TotalSize, 4)
+
+
+
+                    Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} ({freeSpace} free Of {totalSpace})"
 
                     Dim rootNode As New TreeNode(displayText) With {
                 .Tag = di.RootDirectory.FullName
@@ -5273,6 +5740,8 @@ Public Class Form1
 
         InitTreeView()
 
+        InitializeHelpPanel()
+
         '  Start in User Profile folder
         NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
 
@@ -5283,6 +5752,361 @@ Public Class Form1
         ShowStatus(StatusPad & IconSuccess & "  Ready")
 
     End Sub
+
+    Private Sub HandleHelpCommand(parts As String())
+        Try
+            HelpHeaderLabel.Text = "Command Reference"
+            HelpTextBox.Font = New Font("Segoe UI", 10, FontStyle.Regular)
+
+            Dim text As String = BuildHelpText()
+
+            If HelpPanel.Visible Then
+                HelpTextBox.Text = text
+                RestoreAddressBar()
+
+                Return
+            End If
+
+            HelpTextBox.Text = text
+            ShowHelpPanelAnimated()
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   " Failed to display help information: " & ex.Message)
+        End Try
+
+        RestoreAddressBar()
+    End Sub
+
+
+    Private Sub HandleDfCommand(parts As String())
+        Try
+            ' --- 1. Validate input ---
+            If parts.Length < 2 Then
+                ShowStatus(StatusPad & IconDialog &
+                       "  Usage: df <drive_letter>:   Example: df C:")
+                RestoreAddressBar()
+                Return
+            End If
+
+            ' --- 2. Normalize input ---
+            Dim driveInput As String = parts(1).Trim().ToUpperInvariant()
+
+            ' Allow: "C", "C:", "C:\"
+            If Not driveInput.EndsWith(":") Then
+                driveInput &= ":"
+            End If
+
+            ' --- 3. Read drive info ---
+            Dim di As New DriveInfo(driveInput)
+
+            If Not di.IsReady Then
+                ShowStatus(StatusPad & IconError &
+                       "  That drive is not ready or accessible.")
+                RestoreAddressBar()
+                Return
+            End If
+
+            ' --- 4. Format output ---
+            Dim freeText As String = FormatSize(di.AvailableFreeSpace)
+            Dim totalText As String = FormatSize(di.TotalSize)
+
+            'ShowStatus(StatusPad & IconFreeSpace &
+            '       $"   {di.RootDirectory} — {freeText} free of {totalText}")
+
+
+
+            Dim used = di.TotalSize - di.AvailableFreeSpace
+            Dim bar = BuildUsageBar(used, di.TotalSize, 8)
+
+            ShowStatus(StatusPad &
+                       $"{di.RootDirectory}  {bar}  - {freeText} free of {totalText}")
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   "  Unable to read free space for that drive.")
+        End Try
+
+        RestoreAddressBar()
+    End Sub
+
+
+
+
+    Private Sub HandleDrivesCommand(parts As String())
+        Try
+            ShowDriveOverview()
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   " Failed to display drive overview: " & ex.Message)
+        End Try
+
+        RestoreAddressBar()
+    End Sub
+
+
+    Private Sub HandleFindCommand(parts As String())
+        Try
+            ' --- 1. Require a search term
+            If parts.Length < 2 Then
+                ShowStatus(StatusPad & IconDialog &
+                       "  Usage: find [search_term]   Example: find document")
+                Return
+            End If
+
+            ' Extract the search term (supports quotes + multi‑word)
+            Dim searchTerm As String =
+            String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+
+            If String.IsNullOrWhiteSpace(searchTerm) Then
+                ShowStatus(StatusPad & IconDialog &
+                       "  Usage: find [search_term]   Example: find document")
+                Return
+            End If
+
+            ' --- 2. Announce search
+            ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
+
+            ' --- 3. Perform search
+            OnlySearchForFilesInCurrentFolder(searchTerm)
+
+            ' Reset index for new search
+            SearchIndex = 0
+            RestoreBackground()
+
+            ' --- 4. If results exist, auto‑select the first one
+            If SearchResults.Count > 0 Then
+
+                lvFiles.SelectedItems.Clear()
+                SelectListViewItemByPath(SearchResults(0))
+
+                lvFiles.Focus()
+                HighlightSearchMatches()
+
+                ShowSearchHud()
+                Return
+            End If
+
+            ' --- 5. No results
+            ShowStatus(StatusPad & IconDialog &
+                   "  No results found for: " & searchTerm)
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   "  Search failed: " & ex.Message)
+        End Try
+    End Sub
+
+
+    Private Sub HandleExitCommand(parts As String())
+        ' Confirm exit
+        If MessageBox.Show("Are you sure you want to exit?",
+                       "Confirm Exit",
+                       MessageBoxButtons.YesNo,
+                       MessageBoxIcon.Question) = DialogResult.Yes Then
+            Application.Exit() ' Exit the application
+        Else
+            ShowStatus("Exit cancelled.")
+        End If
+    End Sub
+
+
+    Private Sub ShowDriveOverview()
+        HelpHeaderLabel.Text = "Drive Overview"
+
+        HelpTextBox.Clear()
+        HelpTextBox.Font = New Font("Segoe UI", 12, FontStyle.Regular)
+        HelpTextBox.AppendText(Environment.NewLine)
+
+
+        For Each di In DriveInfo.GetDrives()
+            If di.IsReady Then
+
+                Dim used = di.TotalSize - di.AvailableFreeSpace
+                Dim bar = BuildUsageBar(used, di.TotalSize, 20)
+
+                HelpTextBox.AppendText(
+                $"  {di.Name} - {di.VolumeLabel}" & Environment.NewLine &
+                $"  {FormatSize(di.AvailableFreeSpace)} free of {FormatSize(di.TotalSize)}" & Environment.NewLine &
+                $"  {bar}" & Environment.NewLine & Environment.NewLine
+            )
+
+            End If
+        Next
+
+        ShowHelpPanelAnimated()
+    End Sub
+
+
+    Private Sub HandleOpenCommand(parts As String())
+        Try
+            ' --- 1. If the user typed: open "C:\path\to\something"
+            If parts.Length > 1 Then
+                Dim targetPath As String =
+                String.Join(" ", parts.Skip(1)).
+                Trim().
+                Trim(""""c)
+
+                HandleOpenPath(targetPath)
+                RestoreAddressBar()
+                Return
+            End If
+
+            ' --- 2. If no path was typed, require a selection
+            If lvFiles.SelectedItems.Count = 0 Then
+                ShowStatus(StatusPad & IconDialog &
+                       "  Usage: open [file_or_folder]  — or select an item first.")
+                Return
+            End If
+
+            ' --- 3. Open the selected item
+            Dim selected As ListViewItem = lvFiles.SelectedItems(0)
+            Dim fullPath As String = selected.Tag.ToString()
+
+            HandleOpenPath(fullPath)
+            RestoreAddressBar()
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   "  Failed to open item: " & ex.Message)
+        End Try
+    End Sub
+
+
+
+
+    Private Sub DrawPieChart(g As Graphics, rect As Rectangle, used As Long, total As Long)
+        g.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+
+        Dim usedAngle As Single = CSng((used / total) * 360.0F)
+
+        Using usedBrush As New SolidBrush(Color.FromArgb(255, 120, 120))
+            g.FillPie(usedBrush, rect, 0, usedAngle)
+        End Using
+
+        Using freeBrush As New SolidBrush(Color.FromArgb(120, 200, 120))
+            g.FillPie(freeBrush, rect, usedAngle, 360 - usedAngle)
+        End Using
+
+        Using borderPen As New Pen(Color.Black, 1)
+            g.DrawEllipse(borderPen, rect)
+        End Using
+    End Sub
+
+
+
+
+    Private Function BuildUsageBar(used As Long, total As Long, Optional width As Integer = 10) As String
+        If total <= 0 Then Return ""
+
+        Dim ratio As Double = used / total
+        Dim filled As Integer = CInt(ratio * width)
+        Dim empty As Integer = width - filled
+
+        Return New String("⏹"c, filled) & New String("⬜"c, empty)
+    End Function
+
+
+    Private Sub InitializeHelpPanel()
+
+        ' --- Main Help Drawer Panel ---
+        HelpPanel = New Panel() With {
+        .Dock = DockStyle.Right,
+        .Width = 475,
+        .Visible = False,
+        .BackColor = Color.FromArgb(245, 245, 245),
+        .Padding = New Padding(10),
+        .BorderStyle = BorderStyle.FixedSingle
+    }
+
+        ' --- Header Bar ---
+        Dim headerPanel As New Panel() With {
+        .Dock = DockStyle.Top,
+        .Height = 32,
+        .BackColor = Color.FromArgb(245, 245, 245)
+    }
+
+        HelpHeaderLabel = New Label() With {
+        .Text = "Command Reference",
+        .Dock = DockStyle.Left,
+        .Width = 300,
+        .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+        .ForeColor = Color.Black,
+        .TextAlign = ContentAlignment.MiddleLeft
+    }
+
+        Dim closeBtn As New Button() With {
+        .Text = "✕",
+        .Dock = DockStyle.Right,
+        .Width = 32,
+        .FlatStyle = FlatStyle.Flat,
+        .BackColor = Color.FromArgb(245, 245, 245),
+        .ForeColor = Color.Black
+    }
+        AddHandler closeBtn.Click, Sub() HelpPanel.Visible = False
+
+        headerPanel.Controls.Add(closeBtn)
+        headerPanel.Controls.Add(HelpHeaderLabel)
+
+        ' --- Scrollable Container ---
+        scrollPanel = New Panel() With {
+        .Dock = DockStyle.Fill,
+        .AutoScroll = True,
+        .BackColor = Color.FromArgb(245, 245, 245)
+    }
+
+        ' --- Help Text Area ---
+        HelpTextBox = New RichTextBox() With {
+        .Dock = DockStyle.Fill,
+        .ReadOnly = True,
+        .BorderStyle = BorderStyle.None,
+        .Font = New Font("Segoe UI", 10),
+        .BackColor = Color.White,
+        .ScrollBars = RichTextBoxScrollBars.Vertical,
+        .Height = 300
+    }
+
+        scrollPanel.Controls.Add(HelpTextBox)
+        HelpPanel.Controls.Add(scrollPanel)
+        HelpPanel.Controls.Add(headerPanel)
+
+        SplitContainer1.Panel2.Controls.Add(HelpPanel)
+
+    End Sub
+
+
+
+    Private Sub ShowHelpPanelAnimated()
+
+        ' Do NOT re‑animate if already open
+        If HelpPanel.Visible AndAlso HelpPanel.Width > 0 Then
+            Return
+        End If
+
+        HelpPanel.Visible = True
+        HelpPanel.Width = 0
+
+        Dim targetWidth As Integer = 500
+        Dim t As New System.Windows.Forms.Timer() With {.Interval = 10}
+
+        AddHandler t.Tick,
+    Sub()
+        Dim remaining = targetWidth - HelpPanel.Width
+        Dim stepSize = Math.Max(4, remaining \ 5) ' easing
+
+        HelpPanel.Width += stepSize
+
+        If HelpPanel.Width >= targetWidth Then
+            HelpPanel.Width = targetWidth
+            t.Stop()
+        End If
+    End Sub
+
+        t.Start()
+    End Sub
+
+
 
     Private Sub ConfigureTooltips()
 
@@ -5347,6 +6171,9 @@ Public Class Form1
         tvFolders.ShowPlusMinus = False
         tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
 
+        'tvFolders.Font = New Font("Segoe s", 15.0F, FontStyle.Regular)
+        tvFolders.Font = New Font("Segoe UI Symbol", 12.0F, FontStyle.Regular)
+
     End Sub
 
     Private Sub InitStatusBar()
@@ -5354,7 +6181,7 @@ Public Class Form1
         Dim statusStrip As New StatusStrip()
 
         ' Set font to Segoe UI Symbol, 9pt
-        statusStrip.Font = New Font("Segoe UI Symbol", 9.0F, FontStyle.Regular)
+        statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
 
         ' If lblStatus should also use this font, set it explicitly
         lblStatus.Font = statusStrip.Font
@@ -5545,6 +6372,32 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub TestIsProtectedPath_ExactMode()
+
+    '    Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Exact Mode)")
+
+    '    Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+
+    '    ' === Positive Tests (Exact Matches, expected True) ===
+    '    AssertTrue(IsProtectedPathOrFolder(userProfile), "User profile should be protected")
+    '    AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")), "Documents should be protected")
+    '    AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")), "Desktop should be protected")
+    '    AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")), "Downloads should be protected")
+
+    '    ' === Negative Tests (Subdirectories should fail in exact-only mode) ===
+    '    AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents\MyProject")), "Subfolder under Documents should NOT be protected in exact mode")
+    '    AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop\TestFolder")), "Subfolder under Desktop should NOT be protected in exact mode")
+
+    '    ' === Edge Cases ===
+    '    AssertFalse(IsProtectedPathOrFolder(""), "Empty string should not be protected")
+    '    AssertFalse(IsProtectedPathOrFolder(Nothing), "Nothing should not be protected")
+
+    '    Debug.WriteLine("✓ Exact-mode tests passed")
+
+    'End Sub
+
+
+
     Private Sub TestIsProtectedPath_ExactMode()
 
         Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Exact Mode)")
@@ -5552,14 +6405,19 @@ Public Class Form1
         Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
 
         ' === Positive Tests (Exact Matches, expected True) ===
-        AssertTrue(IsProtectedPathOrFolder(userProfile), "User profile should be protected")
-        AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")), "Documents should be protected")
-        AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")), "Desktop should be protected")
-        AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")), "Downloads should be protected")
+        AssertTrue(IsProtectedPathOrFolder("C:\Users"), "C:\Users should be protected")
+        AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "AppData\Local")), "AppData\Local should be protected")
+        AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "AppData\Roaming")), "AppData\Roaming should be protected")
 
-        ' === Negative Tests (Subdirectories should fail in exact-only mode) ===
-        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents\MyProject")), "Subfolder under Documents should NOT be protected in exact mode")
-        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop\TestFolder")), "Subfolder under Desktop should NOT be protected in exact mode")
+        ' === Negative Tests (User working folders are NOT protected) ===
+        AssertFalse(IsProtectedPathOrFolder(userProfile), "User profile root should NOT be protected")
+        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")), "Documents should NOT be protected")
+        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")), "Desktop should NOT be protected")
+        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")), "Downloads should NOT be protected")
+
+        ' === Subdirectories under user folders should NOT be protected ===
+        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents\MyProject")), "Subfolder under Documents should NOT be protected")
+        AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop\TestFolder")), "Subfolder under Desktop should NOT be protected")
 
         ' === Edge Cases ===
         AssertFalse(IsProtectedPathOrFolder(""), "Empty string should not be protected")
@@ -5568,6 +6426,32 @@ Public Class Form1
         Debug.WriteLine("✓ Exact-mode tests passed")
 
     End Sub
+
+    'Private Sub TestIsProtectedPath_SubdirMode()
+
+    '    Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Subdirectory Mode)")
+
+    '    ' === Positive Tests (Exact Matches, expected True) ===
+    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows"), "Windows root should be protected")
+    '    AssertTrue(IsProtectedPathOrFolder("C:\Program Files"), "Program Files root should be protected")
+
+    '    ' === Positive Tests (Subdirectories now succeed) ===
+    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows\System32"), "System32 should be protected as a subdirectory")
+    '    AssertTrue(IsProtectedPathOrFolder("C:\Program Files\MyApp"), "Subfolder under Program Files should be protected")
+    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0"),
+    '           "Deep Windows subdirectory should be protected")
+
+    '    ' === Negative Tests (Unrelated paths still fail) ===
+    '    AssertFalse(IsProtectedPathOrFolder("C:\Temp"), "Temp should NOT be protected")
+    '    AssertFalse(IsProtectedPathOrFolder("D:\Games"), "Unrelated drive should NOT be protected")
+
+    '    ' === Edge Cases ===
+    '    AssertTrue(IsProtectedPathOrFolder("c:\windows"), "Case-insensitive match should be protected")
+    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows\"), "Trailing slash should still match protected path")
+
+    '    Debug.WriteLine("✓ Subdirectory-inclusive tests passed")
+
+    'End Sub
 
     Private Sub TestIsProtectedPath_SubdirMode()
 
@@ -5594,6 +6478,14 @@ Public Class Form1
         Debug.WriteLine("✓ Subdirectory-inclusive tests passed")
 
     End Sub
+
+
+
+
+
+
+
+
 
     Private Sub TestFormatSize()
 

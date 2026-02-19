@@ -27,6 +27,7 @@ Partial Class Form1
         TableLayoutPanel1 = New TableLayoutPanel()
         lvFiles = New ListView()
         Panel1 = New Panel()
+        btnPin = New Button()
         btnNewTextFile = New Button()
         btnPaste = New Button()
         btnCut = New Button()
@@ -40,7 +41,6 @@ Partial Class Form1
         btnForward = New Button()
         btnBack = New Button()
         btnGo = New Button()
-        btnPin = New Button()
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -62,7 +62,7 @@ Partial Class Form1
         ' SplitContainer1.Panel2
         ' 
         SplitContainer1.Panel2.Controls.Add(TableLayoutPanel1)
-        SplitContainer1.Size = New Size(1264, 681)
+        SplitContainer1.Size = New Size(1264, 701)
         SplitContainer1.SplitterDistance = 238
         SplitContainer1.TabIndex = 16
         SplitContainer1.TabStop = False
@@ -74,7 +74,7 @@ Partial Class Form1
         tvFolders.Location = New Point(0, 0)
         tvFolders.Name = "tvFolders"
         tvFolders.ShowLines = False
-        tvFolders.Size = New Size(238, 681)
+        tvFolders.Size = New Size(238, 701)
         tvFolders.TabIndex = 2
         tvFolders.TabStop = False
         ' 
@@ -91,7 +91,7 @@ Partial Class Form1
         TableLayoutPanel1.RowCount = 2
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.Size = New Size(1022, 681)
+        TableLayoutPanel1.Size = New Size(1022, 701)
         TableLayoutPanel1.TabIndex = 20
         ' 
         ' lvFiles
@@ -101,7 +101,7 @@ Partial Class Form1
         lvFiles.LabelEdit = True
         lvFiles.Location = New Point(3, 37)
         lvFiles.Name = "lvFiles"
-        lvFiles.Size = New Size(1016, 641)
+        lvFiles.Size = New Size(1016, 661)
         lvFiles.TabIndex = 2
         lvFiles.TabStop = False
         lvFiles.UseCompatibleStateImageBehavior = False
@@ -127,6 +127,18 @@ Partial Class Form1
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(1016, 28)
         Panel1.TabIndex = 19
+        ' 
+        ' btnPin
+        ' 
+        btnPin.Anchor = AnchorStyles.Right
+        btnPin.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnPin.Location = New Point(765, 0)
+        btnPin.Name = "btnPin"
+        btnPin.Size = New Size(30, 28)
+        btnPin.TabIndex = 16
+        btnPin.TabStop = False
+        btnPin.Text = ""
+        btnPin.UseVisualStyleBackColor = True
         ' 
         ' btnNewTextFile
         ' 
@@ -284,23 +296,11 @@ Partial Class Form1
         btnGo.Text = "Go"
         btnGo.UseVisualStyleBackColor = True
         ' 
-        ' btnPin
-        ' 
-        btnPin.Anchor = AnchorStyles.Right
-        btnPin.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        btnPin.Location = New Point(765, 0)
-        btnPin.Name = "btnPin"
-        btnPin.Size = New Size(30, 28)
-        btnPin.TabIndex = 16
-        btnPin.TabStop = False
-        btnPin.Text = ""
-        btnPin.UseVisualStyleBackColor = True
-        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1264, 681)
+        ClientSize = New Size(1264, 701)
         Controls.Add(SplitContainer1)
         Name = "Form1"
         Text = "Form1"
