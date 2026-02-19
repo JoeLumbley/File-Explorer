@@ -2903,16 +2903,11 @@ Public Class Form1
         End Try
     End Sub
 
-
-
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
         Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
         ShowStatus($"{state}: ""{path}""")
     End Sub
-
-
-
 
     Private Function ParseSource(parts As String()) As String
         Return String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
