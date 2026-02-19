@@ -266,7 +266,10 @@ Public Class Form1
         {"text", AddressOf HandleTextCommand},
         {"txt", AddressOf HandleTextCommand},
         {"help", AddressOf HandleHelpCommand},
-        {"man", AddressOf HandleHelpCommand},
+        {"?", AddressOf HandleHelpCommand},
+        {"man", AddressOf HandleManualCommand},
+        {"manual", AddressOf HandleManualCommand},
+        {"appmanual", AddressOf HandleManualCommand},
         {"commands", AddressOf HandleHelpCommand},
         {"df", AddressOf HandleDfCommand},
         {"drives", AddressOf HandleDrivesCommand},
@@ -298,6 +301,189 @@ Public Class Form1
         {"shortcuts", AddressOf HandleShortcutsCommand},
         {"keys", AddressOf HandleShortcutsCommand}
     }
+
+    'Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    {"cd",
+    '        (
+    '            {"cd"},
+    '            "cd [directory]",
+    '            "Change directory to the specified path.",
+    '            {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"copy",
+    '        (
+    '            {"copy", "cp"},
+    '            "copy [source] [destination]",
+    '            "Copy a file or folder to a destination folder.",
+    '            {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            }
+    '        )
+    '    },
+    '    {"delete",
+    '        (
+    '            {"delete", "rm"},
+    '            "delete [file_or_directory]",
+    '            "Delete a file or folder.",
+    '            {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"df",
+    '        (
+    '            {"df"},
+    '            "df <drive_letter>:",
+    '            "Display the available free space on the specified drive.",
+    '            {
+    '                "df C:",                      ' Basic usage with drive letter
+    '                "df D:",                      ' Another example with a different drive
+    '                "df E:"                       ' Example for a third drive
+    '            }
+    '        )
+    '    },
+    '    {"drives",
+    '        (
+    '            {"drives"},
+    '            "drives",
+    '            "Show an overview of all drives, including free space bars.",
+    '            {
+    '                "drives"
+    '            }
+    '        )
+    '    },
+    '    {"exit",
+    '        (
+    '            {
+    '                "exit", "quit", "close", "stop", "halt", "end", "signout",
+    '                "poweroff", "bye", "terminate"
+    '            },
+    '            "exit",
+    '            "Exit the application.",
+    '            {}
+    '        )
+    '    },
+    '    {"find",
+    '        (
+    '            {"find", "search"},
+    '            "find [search_term]",
+    '            "Search for files and folders in the current directory.",
+    '            {
+    '                "find document"
+    '            }
+    '        )
+    '    },
+    '    {"findnext",
+    '        (
+    '            {"findnext", "searchnext", "next"},
+    '            "findnext",
+    '            "Show the next search result from the previous search.",
+    '            {}
+    '        )
+    '    },
+    '    {"help",
+    '        (
+    '            {"help", "commands", "?"},
+    '            "help",
+    '            "Show this help information.",
+    '            {}
+    '        )
+    '    },
+    '    {"mkdir",
+    '        (
+    '            {"mkdir", "make", "md"},
+    '            "mkdir [directory_path]",
+    '            "Create a new folder.",
+    '            {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            }
+    '        )
+    '    },
+    '    {"move",
+    '        (
+    '            {"move", "mv"},
+    '            "move [source] [destination]",
+    '            "Move a file or folder to a new location.",
+    '            {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            }
+    '        )
+    '    },
+    '    {"open",
+    '        (
+    '            {"open"},
+    '            "open [file_or_directory]",
+    '            "Open a file or navigate into a folder.",
+    '            {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"rename",
+    '        (
+    '            {"rename", "rn"},
+    '            "rename [source_path] [new_name]",
+    '            "Rename a file or directory.",
+    '            {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            }
+    '        )
+    '    },
+    '    {"text",
+    '        (
+    '            {"text", "txt"},
+    '            "text [file_path]",
+    '            "Create a new text file.",
+    '            {
+    '                "text ""C:\folder\example.txt"""
+    '            }
+    '        )
+    '    },
+    '    {"pin",
+    '        (
+    '            {"pin"},
+    '            "pin [folder_path]",
+    '            "Pin or unpin a folder.",
+    '            {
+    '                "pin C:\Projects",                     ' Example of pinning a specific folder
+    '                "pin ""C:\My Documents""",              ' Another example with a different folder
+    '                "pin"                                   ' Example of using the command without parameters to pin the current folder
+    '            }
+    '        )
+    '    },
+    '    {"shortcuts",
+    '        (
+    '            {"shortcuts", "keys"},
+    '            "shortcuts",
+    '            "Show a list of all keyboard shortcuts.",
+    '            {
+    '                "shortcuts",
+    '                "keys"
+    '            }
+    '        )
+    '    },
+    '    {"man",
+    '        (
+    '            {"man", "manual", "appmanual"},
+    '            "manual",
+    '            "Show the full application manual.",
+    '            {
+    '                "manual",
+    '                "appmanual"
+    '            }
+    '        )
+    '    }
+    '}
 
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
         {"cd",
@@ -339,9 +525,9 @@ Public Class Form1
                 "df <drive_letter>:",
                 "Display the available free space on the specified drive.",
                 {
-                    "df C:",                      ' Basic usage with drive letter
-                    "df D:",                      ' Another example with a different drive
-                    "df E:"                       ' Example for a third drive
+                    "df C:",
+                    "df D:",
+                    "df E:"
                 }
             )
         },
@@ -386,10 +572,21 @@ Public Class Form1
         },
         {"help",
             (
-                {"help", "man", "commands"},
+                {"help", "commands", "?"},
                 "help",
                 "Show this help information.",
                 {}
+            )
+        },
+        {"man",
+            (
+                {"man", "manual", "appmanual"},
+                "manual",
+                "Show the full application manual.",
+                {
+                    "manual",
+                    "appmanual"
+                }
             )
         },
         {"mkdir",
@@ -426,6 +623,18 @@ Public Class Form1
                 }
             )
         },
+        {"pin",
+            (
+                {"pin"},
+                "pin [folder_path]",
+                "Pin or unpin a folder.",
+                {
+                    "pin C:\Projects",
+                    "pin ""C:\My Documents""",
+                    "pin"
+                }
+            )
+        },
         {"rename",
             (
                 {"rename", "rn"},
@@ -433,28 +642,6 @@ Public Class Form1
                 "Rename a file or directory.",
                 {
                     "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-                }
-            )
-        },
-        {"text",
-            (
-                {"text", "txt"},
-                "text [file_path]",
-                "Create a new text file.",
-                {
-                    "text ""C:\folder\example.txt"""
-                }
-            )
-        },
-        {"pin",
-            (
-                {"pin"},
-                "pin [folder_path]",
-                "Pin or unpin a folder.",
-                {
-                    "pin C:\Projects",                     ' Example of pinning a specific folder
-                    "pin ""C:\My Documents""",              ' Another example with a different folder
-                    "pin"                                   ' Example of using the command without parameters to pin the current folder
                 }
             )
         },
@@ -468,10 +655,18 @@ Public Class Form1
                     "keys"
                 }
             )
+        },
+        {"text",
+            (
+                {"text", "txt"},
+                "text [file_path]",
+                "Create a new text file.",
+                {
+                    "text ""C:\folder\example.txt"""
+                }
+            )
         }
     }
-
-
 
     Private HelpHeaderLabel As Label
     Private scrollPanel As Panel
@@ -5927,6 +6122,830 @@ Public Class Form1
 
         RestoreAddressBar()
     End Sub
+
+
+    '' Helper to append normal text
+    'Sub Add(text As String)
+    '    rtb.AppendText(text & Environment.NewLine)
+    'End Sub
+
+    '' Helper to insert a clickable link
+    'Sub AddLink(label As String, tag As String)
+    '    Dim start = rtb.TextLength
+    '    rtb.AppendText(label)
+    '    rtb.Select(start, label.Length)
+    '    rtb.SetSelectionLink(True)
+    '    rtb.SelectionColor = Color.Blue
+    '    rtb.SelectionUnderline = True
+    '    rtb.Select(rtb.TextLength, 0)
+    '    rtb.AppendText("   [" & tag & "]" & Environment.NewLine)
+    'End Sub
+
+
+    'Private Sub AddLine(rtb As RichTextBox, text As String)
+    '    rtb.AppendText(text & Environment.NewLine)
+    'End Sub
+
+    'Private Sub AddLink(rtb As RichTextBox, label As String, tag As String)
+    '    Dim start = rtb.TextLength
+
+    '    rtb.AppendText(label)
+    '    rtb.Select(start, label.Length)
+
+    '    rtb.SetSelectionLink(True)
+    '    rtb.SelectionColor = Color.Blue
+    '    rtb.SelectionFont = New Font(rtb.Font, FontStyle.Underline)
+
+    '    ' Reset selection
+    '    rtb.Select(rtb.TextLength, 0)
+
+    '    ' Add the anchor tag
+    '    rtb.AppendText("   [" & tag & "]" & Environment.NewLine)
+    'End Sub
+
+
+    '    Private Sub BuildAppManualTextWithLinks(rtb As RichTextBox)
+    '        rtb.Clear()
+    '        rtb.DetectUrls = False
+
+
+    '        ' ============================================================
+    '        '   HEADER
+    '        ' ============================================================
+    '        Add("File Explorer — Application Manual")
+    '    Add("=================================")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   TABLE OF CONTENTS (hyperlinked)
+    '    ' ============================================================
+    '    Add("Table of Contents")
+    '    Add("-----------------")
+
+    '    AddLink("  • Introduction ...........................................", "intro")
+    '    AddLink("  • Getting Started ........................................", "start")
+    '    AddLink("  • Features ...............................................", "features")
+    '    AddLink("  • Using the App ..........................................", "using")
+    '    AddLink("  • File Operations ........................................", "fileops")
+    '    AddLink("  • Search .................................................", "search")
+    '    AddLink("  • Keyboard Shortcuts .....................................", "shortcuts")
+    '    AddLink("  • Command Line Interface .................................", "cli")
+    '    AddLink("  • Drive Tools ............................................", "drives")
+    '    AddLink("  • Pinning System .........................................", "pinning")
+    '    AddLink("  • Manual & Help System ...................................", "manual")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   INTRODUCTION
+    '    ' ============================================================
+    '    Add("Introduction [intro]")
+    '    Add("--------------------")
+    '    Add("File Explorer is an open‑source file management application designed for clarity,")
+    '    Add("speed, and emotional safety. It blends a familiar Windows‑style interface with a")
+    '    Add("powerful command line, keyboard‑driven navigation, and a polished help drawer.")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   GETTING STARTED
+    '    ' ============================================================
+    '    Add("Getting Started [start]")
+    '    Add("-----------------------")
+    '    Add("Installation:")
+    '    Add("")
+    '    Add("  1. Clone the repository:")
+    '    Add("       git clone https://github.com/JoeLumbley/File-Explorer.git")
+    '    Add("")
+    '    Add("  2. Navigate to the project directory:")
+    '    Add("       cd File-Explorer")
+    '    Add("")
+    '    Add("  3. Build and run the application:")
+    '    Add("       dotnet build")
+    '    Add("       dotnet run")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   FEATURES
+    '    ' ============================================================
+    '    Add("Features [features]")
+    '    Add("-------------------")
+    '    Add("  • File Organization: Create, rename, and delete folders.")
+    '    Add("  • File Operations: Move, copy, delete, and rename files.")
+    '    Add("  • Search System: Fast in‑folder search with highlighting and HUD.")
+    '    Add("  • Keyboard Navigation: Explorer‑accurate shortcuts with repeat suppression.")
+    '    Add("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
+    '    Add("  • Drive Tools: df and drives commands for free‑space and usage bars.")
+    '    Add("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   USING THE APP
+    '    ' ============================================================
+    '    Add("Using the App [using]")
+    '    Add("---------------------")
+    '    Add("Main Interface:")
+    '    Add("")
+    '    Add("  • Navigation Pane — browse folders quickly.")
+    '    Add("  • File List — shows files and folders in the current directory.")
+    '    Add("  • Address Bar — displays and accepts paths.")
+    '    Add("  • Toolbar — quick access to common operations.")
+    '    Add("  • Help Drawer — slides in from the right for documentation.")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   FILE OPERATIONS
+    '    ' ============================================================
+    '    Add("File Operations [fileops]")
+    '    Add("-------------------------")
+    '    Add("Creating a Folder:")
+    '    Add("  • Click ""New Folder""")
+    '    Add("  • Press Ctrl+Shift+N")
+    '    Add("  • Or run:  mkdir <folder>")
+    '    Add("")
+    '    Add("Renaming:")
+    '    Add("  • Select an item and press F2")
+    '    Add("  • Or run:  rename <old> <new>")
+    '    Add("")
+    '    Add("Copying Files:")
+    '    Add("  • Ctrl+C → Ctrl+V")
+    '    Add("  • Or run:  copy <source> <destination>")
+    '    Add("")
+    '    Add("Moving Files:")
+    '    Add("  • Drag and drop")
+    '    Add("  • Or run:  move <source> <destination>")
+    '    Add("")
+    '    Add("Deleting Files:")
+    '    Add("  • Press Delete")
+    '    Add("  • Or run:  delete <path>")
+    '    Add("")
+    '    Add("Opening Files:")
+    '    Add("  • Press Enter")
+    '    Add("  • Or run:  open <path>")
+    '    Add("")
+    '    Add("Open With:")
+    '    Add("  • openwith notepad file.txt")
+    '    Add("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   SEARCH
+    '    ' ============================================================
+    '    Add("Search [search]")
+    '    Add("---------------")
+    '    Add("Starting a Search:")
+    '    Add("  • Press Ctrl+F")
+    '    Add("  • Or run:  find <term>")
+    '    Add("")
+    '    Add("Navigating Results:")
+    '    Add("  • F3 — next result")
+    '    Add("  • Shift+F3 — previous result")
+    '    Add("")
+    '    Add("Resetting Search:")
+    '    Add("  • Press Esc")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   KEYBOARD SHORTCUTS
+    '    ' ============================================================
+    '    Add("Keyboard Shortcuts [shortcuts]")
+    '    Add("------------------------------")
+    '    Add("Navigation:")
+    '    Add("  Alt+Left       Back")
+    '    Add("  Alt+Right      Forward")
+    '    Add("  Alt+Up         Parent folder")
+    '    Add("  Alt+Home       User folder")
+    '    Add("  F11            Full screen")
+    '    Add("")
+    '    Add("Address Bar:")
+    '    Add("  Ctrl+L         Focus")
+    '    Add("  Alt+D          Focus")
+    '    Add("  F4             Focus")
+    '    Add("  Esc            Reset")
+    '    Add("")
+    '    Add("Search:")
+    '    Add("  Ctrl+F         Find")
+    '    Add("  F3             Next")
+    '    Add("  Shift+F3       Previous")
+    '    Add("")
+    '    Add("Focus Navigation:")
+    '    Add("  Tab            Cycle forward")
+    '    Add("  Shift+Tab      Cycle backward")
+    '    Add("")
+    '    Add("File Operations:")
+    '    Add("  Enter          Open")
+    '    Add("  F2             Rename")
+    '    Add("  Delete         Delete")
+    '    Add("  Ctrl+Shift+N   New folder")
+    '    Add("")
+    '    Add("Pinning:")
+    '    Add("  Alt+P          Pin/unpin")
+    '    Add("")
+    '    Add("Refresh:")
+    '    Add("  F5             Refresh current folder")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   CLI
+    '    ' ============================================================
+    '    Add("Command Line Interface (CLI) [cli]")
+    '    Add("----------------------------------")
+    '    Add("File Explorer includes a built‑in command line with:")
+    '    Add("")
+    '    Add("  • Aliases (cp, mv, rm, etc.)")
+    '    Add("  • Direct path navigation")
+    '    Add("  • Manual pages (man <command>)")
+    '    Add("  • Auto‑generated help (help, help <command>)")
+    '    Add("")
+    '    Add("Examples:")
+    '    Add("  cd C:\Projects")
+    '    Add("  copy file.txt D:\Backup")
+    '    Add("  openwith notepad notes.txt")
+    '    Add("  find report")
+    '    Add("  findnext")
+    '    Add("  pin")
+    '    Add("  drives")
+    '    Add("  df C:")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   DRIVE TOOLS
+    '    ' ============================================================
+    '    Add("Drive Tools [drives]")
+    '    Add("--------------------")
+    '    Add("df:")
+    '    Add("  Shows free space for a specific drive.")
+    '    Add("    df C:")
+    '    Add("")
+    '    Add("drives:")
+    '    Add("  Shows all drives with graphical usage bars.")
+    '    Add("    drives")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   PINNING SYSTEM
+    '    ' ============================================================
+    '    Add("Pinning System [pinning]")
+    '    Add("------------------------")
+    '    Add("Pin any folder:")
+    '    Add("  pin C:\Projects")
+    '    Add("  pin")
+    '    Add("")
+    '    Add("Pinned folders appear in the sidebar and persist across sessions.")
+    '    Add("")
+
+    '    ' ============================================================
+    '    '   MANUAL SYSTEM
+    '    ' ============================================================
+    '    Add("Manual & Help System [manual]")
+    '    Add("-----------------------------")
+    '    Add("Help:")
+    '    Add("  help")
+    '    Add("  help open")
+    '    Add("  help copy")
+    '    Add("")
+    '    Add("Manual Pages:")
+    '    Add("  man open")
+    '    Add("  man find")
+    '    Add("  man df")
+    '    Add("")
+    '    Add("Manual pages include:")
+    '    Add("  NAME")
+    '    Add("  SYNOPSIS")
+    '    Add("  DESCRIPTION")
+    '    Add("  ALIASES")
+    '    Add("  EXAMPLES")
+    '    Add("  SEE ALSO")
+    '    Add("")
+    'End Sub
+
+
+
+    'Private Function BuildAppManualText() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' ============================================================
+    '    '   HEADER
+    '    ' ============================================================
+    '    sb.AppendLine("File Explorer — Application Manual")
+    '    sb.AppendLine("=================================")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   TABLE OF CONTENTS (with link tags)
+    '    ' ============================================================
+    '    sb.AppendLine("Table of Contents")
+    '    sb.AppendLine("-----------------")
+    '    sb.AppendLine("  • Introduction ........................................... [intro]")
+    '    sb.AppendLine("  • Getting Started ........................................ [start]")
+    '    sb.AppendLine("  • Features ............................................... [features]")
+    '    sb.AppendLine("  • Using the App .......................................... [using]")
+    '    sb.AppendLine("  • File Operations ........................................ [fileops]")
+    '    sb.AppendLine("  • Search ................................................. [search]")
+    '    sb.AppendLine("  • Keyboard Shortcuts ..................................... [shortcuts]")
+    '    sb.AppendLine("  • Command Line Interface ................................. [cli]")
+    '    sb.AppendLine("  • Drive Tools ............................................ [drives]")
+    '    sb.AppendLine("  • Pinning System ......................................... [pinning]")
+    '    sb.AppendLine("  • Manual & Help System ................................... [manual]")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   INTRODUCTION
+    '    ' ============================================================
+    '    sb.AppendLine("Introduction [intro]")
+    '    sb.AppendLine("--------------------")
+    '    sb.AppendLine("File Explorer is an open‑source file management application designed for clarity,")
+    '    sb.AppendLine("speed, and emotional safety. It blends a familiar Windows‑style interface with a")
+    '    sb.AppendLine("powerful command line, keyboard‑driven navigation, and a polished help drawer.")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   GETTING STARTED
+    '    ' ============================================================
+    '    sb.AppendLine("Getting Started [start]")
+    '    sb.AppendLine("-----------------------")
+    '    sb.AppendLine("Installation:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  1. Clone the repository:")
+    '    sb.AppendLine("       git clone https://github.com/JoeLumbley/File-Explorer.git")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  2. Navigate to the project directory:")
+    '    sb.AppendLine("       cd File-Explorer")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  3. Build and run the application:")
+    '    sb.AppendLine("       dotnet build")
+    '    sb.AppendLine("       dotnet run")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   FEATURES
+    '    ' ============================================================
+    '    sb.AppendLine("Features [features]")
+    '    sb.AppendLine("-------------------")
+    '    sb.AppendLine("  • File Organization: Create, rename, and delete folders.")
+    '    sb.AppendLine("  • File Operations: Move, copy, delete, and rename files.")
+    '    sb.AppendLine("  • Search System: Fast in‑folder search with highlighting and HUD.")
+    '    sb.AppendLine("  • Keyboard Navigation: Explorer‑accurate shortcuts with repeat suppression.")
+    '    sb.AppendLine("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
+    '    sb.AppendLine("  • Drive Tools: df and drives commands for free‑space and usage bars.")
+    '    sb.AppendLine("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   USING THE APP
+    '    ' ============================================================
+    '    sb.AppendLine("Using the App [using]")
+    '    sb.AppendLine("---------------------")
+    '    sb.AppendLine("Main Interface:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  • Navigation Pane — browse folders quickly.")
+    '    sb.AppendLine("  • File List — shows files and folders in the current directory.")
+    '    sb.AppendLine("  • Address Bar — displays and accepts paths.")
+    '    sb.AppendLine("  • Toolbar — quick access to common operations.")
+    '    sb.AppendLine("  • Help Drawer — slides in from the right for documentation.")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   FILE OPERATIONS
+    '    ' ============================================================
+    '    sb.AppendLine("File Operations [fileops]")
+    '    sb.AppendLine("-------------------------")
+    '    sb.AppendLine("Creating a Folder:")
+    '    sb.AppendLine("  • Click ""New Folder""")
+    '    sb.AppendLine("  • Press Ctrl+Shift+N")
+    '    sb.AppendLine("  • Or run:  mkdir <folder>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Renaming:")
+    '    sb.AppendLine("  • Select an item and press F2")
+    '    sb.AppendLine("  • Or run:  rename <old> <new>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Copying Files:")
+    '    sb.AppendLine("  • Ctrl+C → Ctrl+V")
+    '    sb.AppendLine("  • Or run:  copy <source> <destination>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Moving Files:")
+    '    sb.AppendLine("  • Drag and drop")
+    '    sb.AppendLine("  • Or run:  move <source> <destination>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Deleting Files:")
+    '    sb.AppendLine("  • Press Delete")
+    '    sb.AppendLine("  • Or run:  delete <path>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Opening Files:")
+    '    sb.AppendLine("  • Press Enter")
+    '    sb.AppendLine("  • Or run:  open <path>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Open With:")
+    '    sb.AppendLine("  • openwith notepad file.txt")
+    '    sb.AppendLine("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   SEARCH
+    '    ' ============================================================
+    '    sb.AppendLine("Search [search]")
+    '    sb.AppendLine("---------------")
+    '    sb.AppendLine("Starting a Search:")
+    '    sb.AppendLine("  • Press Ctrl+F")
+    '    sb.AppendLine("  • Or run:  find <term>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Navigating Results:")
+    '    sb.AppendLine("  • F3 — next result")
+    '    sb.AppendLine("  • Shift+F3 — previous result")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Resetting Search:")
+    '    sb.AppendLine("  • Press Esc")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   KEYBOARD SHORTCUTS
+    '    ' ============================================================
+    '    sb.AppendLine("Keyboard Shortcuts [shortcuts]")
+    '    sb.AppendLine("------------------------------")
+    '    sb.AppendLine("Navigation:")
+    '    sb.AppendLine("  Alt+Left       Back")
+    '    sb.AppendLine("  Alt+Right      Forward")
+    '    sb.AppendLine("  Alt+Up         Parent folder")
+    '    sb.AppendLine("  Alt+Home       User folder")
+    '    sb.AppendLine("  F11            Full screen")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Address Bar:")
+    '    sb.AppendLine("  Ctrl+L         Focus")
+    '    sb.AppendLine("  Alt+D          Focus")
+    '    sb.AppendLine("  F4             Focus")
+    '    sb.AppendLine("  Esc            Reset")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Search:")
+    '    sb.AppendLine("  Ctrl+F         Find")
+    '    sb.AppendLine("  F3             Next")
+    '    sb.AppendLine("  Shift+F3       Previous")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Focus Navigation:")
+    '    sb.AppendLine("  Tab            Cycle forward")
+    '    sb.AppendLine("  Shift+Tab      Cycle backward")
+    '    sb.AppendLine()
+    '    sb.AppendLine("File Operations:")
+    '    sb.AppendLine("  Enter          Open")
+    '    sb.AppendLine("  F2             Rename")
+    '    sb.AppendLine("  Delete         Delete")
+    '    sb.AppendLine("  Ctrl+Shift+N   New folder")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Pinning:")
+    '    sb.AppendLine("  Alt+P          Pin/unpin")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Refresh:")
+    '    sb.AppendLine("  F5             Refresh current folder")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   CLI
+    '    ' ============================================================
+    '    sb.AppendLine("Command Line Interface (CLI) [cli]")
+    '    sb.AppendLine("----------------------------------")
+    '    sb.AppendLine("File Explorer includes a built‑in command line with:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  • Aliases (cp, mv, rm, etc.)")
+    '    sb.AppendLine("  • Direct path navigation")
+    '    sb.AppendLine("  • Manual pages (man <command>)")
+    '    sb.AppendLine("  • Auto‑generated help (help, help <command>)")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Examples:")
+    '    sb.AppendLine("  cd C:\Projects")
+    '    sb.AppendLine("  copy file.txt D:\Backup")
+    '    sb.AppendLine("  openwith notepad notes.txt")
+    '    sb.AppendLine("  find report")
+    '    sb.AppendLine("  findnext")
+    '    sb.AppendLine("  pin")
+    '    sb.AppendLine("  drives")
+    '    sb.AppendLine("  df C:")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   DRIVE TOOLS
+    '    ' ============================================================
+    '    sb.AppendLine("Drive Tools [drives]")
+    '    sb.AppendLine("--------------------")
+    '    sb.AppendLine("df:")
+    '    sb.AppendLine("  Shows free space for a specific drive.")
+    '    sb.AppendLine("    df C:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("drives:")
+    '    sb.AppendLine("  Shows all drives with graphical usage bars.")
+    '    sb.AppendLine("    drives")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   PINNING SYSTEM
+    '    ' ============================================================
+    '    sb.AppendLine("Pinning System [pinning]")
+    '    sb.AppendLine("------------------------")
+    '    sb.AppendLine("Pin any folder:")
+    '    sb.AppendLine("  pin C:\Projects")
+    '    sb.AppendLine("  pin")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Pinned folders appear in the sidebar and persist across sessions.")
+    '    sb.AppendLine()
+
+    '    ' ============================================================
+    '    '   MANUAL SYSTEM
+    '    ' ============================================================
+    '    sb.AppendLine("Manual & Help System [manual]")
+    '    sb.AppendLine("-----------------------------")
+    '    sb.AppendLine("Help:")
+    '    sb.AppendLine("  help")
+    '    sb.AppendLine("  help open")
+    '    sb.AppendLine("  help copy")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Manual Pages:")
+    '    sb.AppendLine("  man open")
+    '    sb.AppendLine("  man find")
+    '    sb.AppendLine("  man df")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Manual pages include:")
+    '    sb.AppendLine("  NAME")
+    '    sb.AppendLine("  SYNOPSIS")
+    '    sb.AppendLine("  DESCRIPTION")
+    '    sb.AppendLine("  ALIASES")
+    '    sb.AppendLine("  EXAMPLES")
+    '    sb.AppendLine("  SEE ALSO")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "App Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim text As String = BuildAppManualText()
+
+
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Text = text
+    '            RestoreAddressBar()
+
+    '            Return
+    '        End If
+
+    '        HelpTextBox.Text = text
+    '        ShowHelpPanelAnimated()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+
+    Private Sub HandleManualCommand(parts As String())
+        Try
+            HelpHeaderLabel.Text = "Manual"
+            HelpTextBox.Font = New Font("Segoe UI", 10)
+
+            Dim text As String = BuildAppManualText()
+
+            If HelpPanel.Visible Then
+                HelpTextBox.Text = text
+            Else
+                HelpTextBox.Text = text
+                ShowHelpPanelAnimated()
+            End If
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError &
+                   "  Failed to display manual: " & ex.Message)
+        End Try
+
+        RestoreAddressBar()
+    End Sub
+
+
+
+    Private Function BuildAppManualText() As String
+        Dim sb As New Text.StringBuilder()
+
+        'sb.AppendLine("File Explorer — Application Manual")
+        'sb.AppendLine("=================================")
+        'sb.AppendLine()
+
+        sb.AppendLine("Table of Contents")
+        'sb.AppendLine("-----------------")
+        sb.AppendLine("  • Introduction")
+        sb.AppendLine("  • Getting Started")
+        sb.AppendLine("  • Features")
+        sb.AppendLine("  • Using the App")
+        sb.AppendLine("  • File Operations")
+        sb.AppendLine("  • Search")
+        sb.AppendLine("  • Keyboard Shortcuts")
+        sb.AppendLine("  • Command Line Interface")
+        sb.AppendLine("  • Drive Tools")
+        sb.AppendLine("  • Pinning System")
+        sb.AppendLine("  • Manual & Help System")
+        sb.AppendLine()
+
+        sb.AppendLine("Introduction")
+        'sb.AppendLine("--------------------")
+        sb.AppendLine("File Explorer is an open‑source file management application")
+        sb.AppendLine("designed for clarity, speed, and emotional safety. It blends")
+        sb.AppendLine("a familiar Windows‑style interface with a powerful command line,")
+        sb.AppendLine("keyboard‑driven navigation, and a polished help drawer.")
+        sb.AppendLine()
+
+        sb.AppendLine("Getting Started")
+        'sb.AppendLine("-----------------------")
+        sb.AppendLine("Installation:")
+        sb.AppendLine()
+        sb.AppendLine("  1. Clone the repository:")
+        sb.AppendLine("       git clone https://github.com/JoeLumbley/File-Explorer.git")
+        sb.AppendLine()
+        sb.AppendLine("  2. Navigate to the project directory:")
+        sb.AppendLine("       cd File-Explorer")
+        sb.AppendLine()
+        sb.AppendLine("  3. Build and run the application:")
+        sb.AppendLine("       dotnet build")
+        sb.AppendLine("       dotnet run")
+        sb.AppendLine()
+
+        sb.AppendLine("Features")
+        'sb.AppendLine("-------------------")
+        sb.AppendLine("  • File Organization: Create, rename, and delete folders.")
+        sb.AppendLine("  • File Operations: Move, copy, delete, and rename files.")
+        sb.AppendLine("  • Search System: Fast in‑folder search with highlighting and HUD.")
+        sb.AppendLine("  • Keyboard Navigation: Shortcuts with repeat suppression.")
+        sb.AppendLine("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
+        sb.AppendLine("  • Drive Tools: df and drives commands for free‑space bars.")
+        sb.AppendLine("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
+        sb.AppendLine()
+
+        sb.AppendLine("Using the App")
+        'sb.AppendLine("---------------------")
+        sb.AppendLine("Main Interface:")
+        sb.AppendLine()
+        sb.AppendLine("  • Navigation Pane — browse folders quickly.")
+        sb.AppendLine("  • File List — shows files and folders in the current directory.")
+        sb.AppendLine("  • Address Bar — displays and accepts paths.")
+        sb.AppendLine("  • Toolbar — quick access to common operations.")
+        sb.AppendLine("  • Help Drawer — slides in from the right for documentation.")
+        sb.AppendLine()
+
+        sb.AppendLine("File Operations")
+        'sb.AppendLine("-------------------------")
+        sb.AppendLine("Creating a Folder:")
+        sb.AppendLine("  • Click ""New Folder""")
+        sb.AppendLine("  • Press Ctrl+Shift+N")
+        sb.AppendLine("  • Or run:  mkdir <folder>")
+        sb.AppendLine()
+        sb.AppendLine("Renaming:")
+        sb.AppendLine("  • Select an item and press F2")
+        sb.AppendLine("  • Or run:  rename <old> <new>")
+        sb.AppendLine()
+        sb.AppendLine("Copying Files:")
+        sb.AppendLine("  • Ctrl+C → Ctrl+V")
+        sb.AppendLine("  • Or run:  copy <source> <destination>")
+        sb.AppendLine()
+        sb.AppendLine("Moving Files:")
+        sb.AppendLine("  • Drag and drop")
+        sb.AppendLine("  • Or run:  move <source> <destination>")
+        sb.AppendLine()
+        sb.AppendLine("Deleting Files:")
+        sb.AppendLine("  • Press Delete")
+        sb.AppendLine("  • Or run:  delete <path>")
+        sb.AppendLine()
+        sb.AppendLine("Opening Files:")
+        sb.AppendLine("  • Press Enter")
+        sb.AppendLine("  • Or run:  open <path>")
+        sb.AppendLine()
+        sb.AppendLine("Open With:")
+        sb.AppendLine("  • openwith notepad file.txt")
+        sb.AppendLine("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
+        sb.AppendLine()
+
+        sb.AppendLine("Search")
+        'sb.AppendLine("---------------")
+        sb.AppendLine("Starting a Search:")
+        sb.AppendLine("  • Press Ctrl+F")
+        sb.AppendLine("  • Or run:  find <term>")
+        sb.AppendLine()
+        sb.AppendLine("Navigating Results:")
+        sb.AppendLine("  • F3 — next result")
+        sb.AppendLine("  • Shift+F3 — previous result")
+        sb.AppendLine()
+        sb.AppendLine("Resetting Search:")
+        sb.AppendLine("  • Press Esc")
+        sb.AppendLine()
+
+        sb.AppendLine("Keyboard Shortcuts")
+        'sb.AppendLine("------------------------------")
+        sb.AppendLine("Navigation:")
+        sb.AppendLine("  Alt+Left       Back")
+        sb.AppendLine("  Alt+Right      Forward")
+        sb.AppendLine("  Alt+Up         Parent folder")
+        sb.AppendLine("  Alt+Home       User folder")
+        sb.AppendLine("  F11            Full screen")
+        sb.AppendLine()
+        sb.AppendLine("Address Bar:")
+        sb.AppendLine("  Ctrl+L         Focus")
+        sb.AppendLine("  Alt+D          Focus")
+        sb.AppendLine("  F4             Focus")
+        sb.AppendLine("  Esc            Reset")
+        sb.AppendLine()
+        sb.AppendLine("Search:")
+        sb.AppendLine("  Ctrl+F         Find")
+        sb.AppendLine("  F3             Next")
+        sb.AppendLine("  Shift+F3       Previous")
+        sb.AppendLine()
+        sb.AppendLine("Focus Navigation:")
+        sb.AppendLine("  Tab            Cycle forward")
+        sb.AppendLine("  Shift+Tab      Cycle backward")
+        sb.AppendLine()
+        sb.AppendLine("File Operations:")
+        sb.AppendLine("  Enter          Open")
+        sb.AppendLine("  F2             Rename")
+        sb.AppendLine("  Delete         Delete")
+        sb.AppendLine("  Ctrl+Shift+N   New folder")
+        sb.AppendLine()
+        sb.AppendLine("Pinning:")
+        sb.AppendLine("  Alt+P          Pin/unpin")
+        sb.AppendLine()
+        sb.AppendLine("Refresh:")
+        sb.AppendLine("  F5             Refresh current folder")
+        sb.AppendLine()
+
+        sb.AppendLine("Command Line Interface (CLI)")
+        'sb.AppendLine("----------------------------------")
+        sb.AppendLine("File Explorer includes a built‑in command line with:")
+        sb.AppendLine()
+        sb.AppendLine("  • Aliases (cp, mv, rm, etc.)")
+        sb.AppendLine("  • Direct path navigation")
+        sb.AppendLine("  • Manual pages (man <command>)")
+        sb.AppendLine("  • Auto‑generated help (help, help <command>)")
+        sb.AppendLine()
+        sb.AppendLine("Examples:")
+        sb.AppendLine("  cd C:\Projects")
+        sb.AppendLine("  copy file.txt D:\Backup")
+        sb.AppendLine("  openwith notepad notes.txt")
+        sb.AppendLine("  find report")
+        sb.AppendLine("  findnext")
+        sb.AppendLine("  pin")
+        sb.AppendLine("  drives")
+        sb.AppendLine("  df C:")
+        sb.AppendLine()
+
+        sb.AppendLine("Drive Tools")
+        'sb.AppendLine("--------------------")
+        sb.AppendLine("df:")
+        sb.AppendLine("  Shows free space for a specific drive.")
+        sb.AppendLine("    df C:")
+        sb.AppendLine()
+        sb.AppendLine("drives:")
+        sb.AppendLine("  Shows all drives with graphical usage bars.")
+        sb.AppendLine("    drives")
+        sb.AppendLine()
+
+        sb.AppendLine("Pinning System")
+        'sb.AppendLine("------------------------")
+        sb.AppendLine("Pin any folder:")
+        sb.AppendLine("  pin C:\Projects")
+        sb.AppendLine("  pin")
+        sb.AppendLine()
+        sb.AppendLine("Pinned folders appear in the sidebar and persist across sessions.")
+        sb.AppendLine()
+
+        sb.AppendLine("Manual & Help System")
+        'sb.AppendLine("-----------------------------")
+        sb.AppendLine("Help:")
+        sb.AppendLine("  help")
+        sb.AppendLine("  commands")
+        sb.AppendLine("  ?")
+        sb.AppendLine()
+
+
+        sb.AppendLine("The 'man' Command")
+        sb.AppendLine("Man displays a detailed manual.")
+        'sb.AppendLine("Each manual page includes:")
+        'sb.AppendLine("  • NAME        — The command name and a short description")
+        'sb.AppendLine("  • SYNOPSIS    — Usage and supported parameters")
+        'sb.AppendLine("  • DESCRIPTION — A detailed explanation of what the command does")
+        'sb.AppendLine("  • ALIASES     — Any alternate names for the command")
+        'sb.AppendLine("  • EXAMPLES    — Practical usage examples")
+        'sb.AppendLine("  • SEE ALSO    — Related commands")
+        sb.AppendLine()
+        sb.AppendLine("Examples:")
+        sb.AppendLine("  man")
+        sb.AppendLine("  manual")
+        sb.AppendLine("  appmanual")
+        sb.AppendLine()
+
+        Return sb.ToString()
+    End Function
+
+
 
 
 
