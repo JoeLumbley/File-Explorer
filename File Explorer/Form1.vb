@@ -2839,12 +2839,38 @@ Public Class Form1
 
 
 
+    'Private Function TryHandleDirectPath(input As String) As Boolean
+    '    If Directory.Exists(input) Then
+    '        NavigateTo(input)
+    '        Return True
+    '    End If
+
+    '    If File.Exists(input) Then
+    '        OpenFileWithDefaultApp(input)
+    '        RestoreAddressBar()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
     Private Function TryHandleDirectPath(input As String) As Boolean
+
+        ' --- URL detection ---
+        If IsLikelyUrl(input) Then
+            OpenUrlInDefaultBrowser(input)
+            RestoreAddressBar()
+            Return True
+        End If
+
+        ' --- Folder path ---
         If Directory.Exists(input) Then
             NavigateTo(input)
             Return True
         End If
 
+        ' --- File path ---
         If File.Exists(input) Then
             OpenFileWithDefaultApp(input)
             RestoreAddressBar()
@@ -2853,6 +2879,31 @@ Public Class Form1
 
         Return False
     End Function
+
+
+    Private Function IsLikelyUrl(text As String) As Boolean
+        If String.IsNullOrWhiteSpace(text) Then Return False
+
+        Return text.StartsWith("http://", StringComparison.OrdinalIgnoreCase) _
+        OrElse text.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+    End Function
+
+
+    Private Sub OpenUrlInDefaultBrowser(url As String)
+        Try
+            Dim psi As New ProcessStartInfo(url) With {
+            .UseShellExecute = True
+        }
+
+            Process.Start(psi)
+            ShowStatus(StatusPad & IconOpen & $"  Opening URL: {url}")
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Cannot open URL: " & ex.Message)
+        End Try
+    End Sub
+
+
 
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
@@ -5711,8 +5762,10 @@ Public Class Form1
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-                    Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
-                    Dim totalSpace As String = FormatBytes(di.TotalSize)
+                    'Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
+                    Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
+
+                    Dim totalSpace As String = FormatSize(di.TotalSize)
 
 
                     Dim used = di.TotalSize - di.AvailableFreeSpace
@@ -5720,7 +5773,7 @@ Public Class Form1
 
 
 
-                    Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} ({freeSpace} free Of {totalSpace})"
+                    Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
 
                     Dim rootNode As New TreeNode(displayText) With {
                 .Tag = di.RootDirectory.FullName
@@ -6243,6 +6296,8 @@ Public Class Form1
             If HelpPanel.Visible Then
                 HelpTextBox.Text = text
                 RestoreAddressBar()   ' now safe: it won't steal focus
+                FocusHelpText()
+
                 Return
             End If
 
@@ -6307,7 +6362,7 @@ Public Class Form1
             Dim bar = BuildUsageBar(used, di.TotalSize, 8)
 
             ShowStatus(StatusPad &
-                       $"{di.RootDirectory}  {bar}  - {freeText} free of {totalText}")
+                       $"{di.RootDirectory}  {bar}  {freeText} free of {totalText}")
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
@@ -6409,6 +6464,8 @@ Public Class Form1
 
             If HelpPanel.Visible Then
                 HelpTextBox.Text = text
+                FocusHelpText()
+
                 RestoreAddressBar()
 
                 Return
@@ -6991,6 +7048,8 @@ Public Class Form1
 
             If HelpPanel.Visible Then
                 HelpTextBox.Text = text
+                FocusHelpText()
+
             Else
                 'HelpTextBox.Text = text
                 'ShowHelpPanelAnimated()
