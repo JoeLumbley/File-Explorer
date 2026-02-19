@@ -473,27 +473,10 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
     Private HelpHeaderLabel As Label
     Private scrollPanel As Panel
     Private HelpTextBox As RichTextBox
     Private HelpPanel As Panel
-
-
-
-
-
-
-
-
 
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
