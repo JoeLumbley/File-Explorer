@@ -6,8 +6,8 @@
 
 
 
-<img width="1266" height="733" alt="115" src="https://github.com/user-attachments/assets/b8838294-3d4d-4456-b58b-602fd4659e8b" />
 
+<img width="1266" height="733" alt="117" src="https://github.com/user-attachments/assets/a9b93ed3-1add-4b34-bba2-a46c4f7a5011" />
 
 
 ## Features
