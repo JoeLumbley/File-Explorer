@@ -29,7 +29,6 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox
 
 Public Class Form1
 
@@ -302,189 +301,6 @@ Public Class Form1
         {"keys", AddressOf HandleShortcutsCommand}
     }
 
-    'Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
-    '    {"cd",
-    '        (
-    '            {"cd"},
-    '            "cd [directory]",
-    '            "Change directory to the specified path.",
-    '            {
-    '                "cd C:\",
-    '                "cd ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"copy",
-    '        (
-    '            {"copy", "cp"},
-    '            "copy [source] [destination]",
-    '            "Copy a file or folder to a destination folder.",
-    '            {
-    '                "copy C:\folderA\file.doc C:\folderB",
-    '                "copy ""C:\folder A"" ""C:\folder B"""
-    '            }
-    '        )
-    '    },
-    '    {"delete",
-    '        (
-    '            {"delete", "rm"},
-    '            "delete [file_or_directory]",
-    '            "Delete a file or folder.",
-    '            {
-    '                "delete C:\file.txt",
-    '                "delete ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"df",
-    '        (
-    '            {"df"},
-    '            "df <drive_letter>:",
-    '            "Display the available free space on the specified drive.",
-    '            {
-    '                "df C:",                      ' Basic usage with drive letter
-    '                "df D:",                      ' Another example with a different drive
-    '                "df E:"                       ' Example for a third drive
-    '            }
-    '        )
-    '    },
-    '    {"drives",
-    '        (
-    '            {"drives"},
-    '            "drives",
-    '            "Show an overview of all drives, including free space bars.",
-    '            {
-    '                "drives"
-    '            }
-    '        )
-    '    },
-    '    {"exit",
-    '        (
-    '            {
-    '                "exit", "quit", "close", "stop", "halt", "end", "signout",
-    '                "poweroff", "bye", "terminate"
-    '            },
-    '            "exit",
-    '            "Exit the application.",
-    '            {}
-    '        )
-    '    },
-    '    {"find",
-    '        (
-    '            {"find", "search"},
-    '            "find [search_term]",
-    '            "Search for files and folders in the current directory.",
-    '            {
-    '                "find document"
-    '            }
-    '        )
-    '    },
-    '    {"findnext",
-    '        (
-    '            {"findnext", "searchnext", "next"},
-    '            "findnext",
-    '            "Show the next search result from the previous search.",
-    '            {}
-    '        )
-    '    },
-    '    {"help",
-    '        (
-    '            {"help", "commands", "?"},
-    '            "help",
-    '            "Show this help information.",
-    '            {}
-    '        )
-    '    },
-    '    {"mkdir",
-    '        (
-    '            {"mkdir", "make", "md"},
-    '            "mkdir [directory_path]",
-    '            "Create a new folder.",
-    '            {
-    '                "mkdir C:\newfolder",
-    '                "make ""C:\My New Folder""",
-    '                "md C:\anotherfolder"
-    '            }
-    '        )
-    '    },
-    '    {"move",
-    '        (
-    '            {"move", "mv"},
-    '            "move [source] [destination]",
-    '            "Move a file or folder to a new location.",
-    '            {
-    '                "move C:\folderA\file.doc C:\folderB\file.doc",
-    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-    '            }
-    '        )
-    '    },
-    '    {"open",
-    '        (
-    '            {"open"},
-    '            "open [file_or_directory]",
-    '            "Open a file or navigate into a folder.",
-    '            {
-    '                "open C:\folder\file.txt",
-    '                "open ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"rename",
-    '        (
-    '            {"rename", "rn"},
-    '            "rename [source_path] [new_name]",
-    '            "Rename a file or directory.",
-    '            {
-    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-    '            }
-    '        )
-    '    },
-    '    {"text",
-    '        (
-    '            {"text", "txt"},
-    '            "text [file_path]",
-    '            "Create a new text file.",
-    '            {
-    '                "text ""C:\folder\example.txt"""
-    '            }
-    '        )
-    '    },
-    '    {"pin",
-    '        (
-    '            {"pin"},
-    '            "pin [folder_path]",
-    '            "Pin or unpin a folder.",
-    '            {
-    '                "pin C:\Projects",                     ' Example of pinning a specific folder
-    '                "pin ""C:\My Documents""",              ' Another example with a different folder
-    '                "pin"                                   ' Example of using the command without parameters to pin the current folder
-    '            }
-    '        )
-    '    },
-    '    {"shortcuts",
-    '        (
-    '            {"shortcuts", "keys"},
-    '            "shortcuts",
-    '            "Show a list of all keyboard shortcuts.",
-    '            {
-    '                "shortcuts",
-    '                "keys"
-    '            }
-    '        )
-    '    },
-    '    {"man",
-    '        (
-    '            {"man", "manual", "appmanual"},
-    '            "manual",
-    '            "Show the full application manual.",
-    '            {
-    '                "manual",
-    '                "appmanual"
-    '            }
-    '        )
-    '    }
-    '}
-
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
         {"cd",
             (
@@ -696,12 +512,27 @@ Public Class Form1
 
     End Sub
 
+    Private Sub Control_Enter(sender As Object, e As EventArgs) _
+    Handles lvFiles.Enter, tvFolders.Enter, txtAddressBar.Enter
+        ' Centralized focus tracking: this handler runs whenever any primary navigation
+        ' control (FileList, TreeView, AddressBar) receives focus. By recording which
+        ' control the user last interacted with, the keyboard engine can resolve all
+        ' context‑sensitive actions (Escape, Enter, Tab/Shift+Tab, navigation shortcuts,
+        ' status updates, etc.) in a predictable way.
+
+        _lastFocusedControl = DirectCast(sender, Control)
+
+        UpdateAllUIStates()
+
+    End Sub
 
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
 
         ' Highest‑priority, context‑sensitive actions
+        If HandleEscape(keyData) Then Return True
         If HandleEnterKey(keyData) Then Return True
-        If HandleAddressBarShortcuts(keyData) Then Return True
+        'If HandleAddressBarShortcuts(keyData) Then Return True
+        If HandleAddressBarFocusShortcuts(keyData) Then Return True
 
         ' Focus navigation (Shift+Tab before Tab)
         If HandleShiftTabNavigation(keyData) Then Return True
@@ -717,93 +548,155 @@ Public Class Form1
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
 
-    Private Function HandleAddressBarShortcuts(keyData As Keys) As Boolean
 
+    Private Function HandleAddressBarFocusShortcuts(keyData As Keys) As Boolean
 
-        ' ============================================
-        '   ESCAPE — CLOSE HELP PANEL IF OPEN
-        ' ============================================
-        If keyData = Keys.Escape AndAlso HelpPanel.Visible AndAlso Not _isRenaming Then
-            If _escapeDown Then Return True   ' swallow repeat
-            _escapeDown = True
+        ' ============================================================
+        '  FOCUS ADDRESS BAR (Ctrl+L, Alt+D, F4)
+        '
+        '  These shortcuts immediately shift focus to the AddressBar and
+        '  select its entire contents. This gives the user a fast,
+        '  predictable way to type a path, run a command, or begin a
+        '  search. Repeat suppression prevents accidental re-triggering
+        '  when the key is held down.
+        ' ============================================================
 
-            HelpPanel.Visible = False
-            Return True
-        End If
+        If keyData = (Keys.Control Or Keys.L) _ ' Ctrl+L
+    OrElse keyData = (Keys.Alt Or Keys.D) _     ' Alt+D
+    OrElse keyData = Keys.F4 Then               ' F4
 
-        ' ===========================
-        '   FOCUS ADDRESS BAR
-        '   (Ctrl+L, Alt+D, F4)
-        ' ===========================
-        If keyData = (Keys.Control Or Keys.L) _
-        OrElse keyData = (Keys.Alt Or Keys.D) _
-        OrElse keyData = Keys.F4 Then
-
-            If _addressBarFocusDown Then Return True   ' swallow repeat
+            ' Repeat suppressor — prevents rapid re-focusing when key is held
+            If _addressBarFocusDown Then Return True ' swallow repeat
             _addressBarFocusDown = True
 
             txtAddressBar.Focus()
             txtAddressBar.SelectAll()
+
             Return True
         End If
 
-        ' ===========================
-        '   ESCAPE (Reset Address Bar)
-        ' ===========================
-        If keyData = Keys.Escape AndAlso Not _isRenaming Then
+        Return False
+    End Function
 
-            If _escapeDown Then Return True   ' swallow repeat
-            _escapeDown = True
 
+    Private Function HandleEscape(keyData As Keys) As Boolean
+
+        ' Only handle Escape here
+        If keyData <> Keys.Escape Then
+            Return False
+        End If
+
+        If _escapeDown Then Return True   ' swallow repeat
+        _escapeDown = True
+
+        ' ============================================
+        ' 1. Cancel rename mode (let ESC pass through)
+        ' ============================================
+        If _isRenaming Then
+            ' Do NOT swallow ESC — let the ListView's edit box receive it
+            Return False
+        End If
+
+        ' ============================================
+        ' 2. Close HelpPanel
+        ' ============================================
+        If HelpPanel.Visible Then
+            HelpPanel.Visible = False
+            Return True
+        End If
+
+        ' ============================================
+        ' 3. Reset search mode
+        ' ============================================
+        If SearchIsActive() Then
             txtAddressBar.Text = currentFolder
             ResetSearchState()
             PlaceCaretAtEndOfAddressBar()
             Return True
         End If
 
-        Return False
+        ' ============================================
+        ' 4. Reset address bar if focused
+        ' ============================================
+        If txtAddressBar.Focused Then
+            txtAddressBar.Text = currentFolder
+            ResetSearchState()
+            PlaceCaretAtEndOfAddressBar()
+            Return True
+        End If
+
+        ' ============================================
+        ' 5. Optional: clear file selection
+        ' ============================================
+        If lvFiles.SelectedItems.Count > 0 Then
+            lvFiles.SelectedItems.Clear()
+            Return True
+        End If
+
+        ' ============================================
+        ' 6. Nothing to do — swallow ESC
+        ' ============================================
+        Return True
+
+    End Function
+
+
+    Private Function SearchIsActive() As Boolean
+        Return SearchResults.Count > 0 _
+        OrElse Not String.Equals(txtAddressBar.Text.Trim(), currentFolder, StringComparison.OrdinalIgnoreCase)
     End Function
 
 
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
+        ' Only handle Enter here
         If keyData <> Keys.Enter Then
             _enterDown = False
             Return False
         End If
 
-        If _enterDown Then Return True   ' swallow repeat
+        ' Swallow key repeat
+        If _enterDown Then Return True
         _enterDown = True
 
-        If _isRenaming Then Return False
+        ' ============================================
+        ' 1. Commit rename (let Enter pass through)
+        ' ============================================
+        If _isRenaming Then
+            ' Let the ListView's edit box receive Enter
+            Return False
+        End If
 
-        ' ===========================
-        '   ENTER (Address Bar execute)
-        ' ===========================
+        ' ============================================
+        ' 2. Address Bar execution
+        ' ============================================
         If txtAddressBar.Focused Then
             ExecuteCommand(txtAddressBar.Text.Trim())
             Return True
         End If
 
-        ' ===========================
-        '   ENTER (TreeView toggle)
-        ' ===========================
+        ' ============================================
+        ' 3. TreeView toggle expand/collapse
+        ' ============================================
         If tvFolders.Focused Then
             ToggleExpandCollapse()
             Return True
         End If
 
-        ' ===========================
-        '   ENTER (File List open)
-        ' ===========================
+        ' ============================================
+        ' 4. File List open
+        ' ============================================
         If lvFiles.Focused Then
             OpenSelectedItem()
             Return True
         End If
 
+        ' ============================================
+        ' 5. Nothing to do
+        ' ============================================
         Return False
-    End Function
 
+    End Function
 
     'Private Function HandleTabNavigation(keyData As Keys) As Boolean
 
@@ -821,10 +714,23 @@ Public Class Form1
 
     '    If txtAddressBar.Focused Then
     '        handled = FocusFileList()
+
     '    ElseIf lvFiles.Focused Then
     '        handled = FocusTreeView()
+
     '    ElseIf tvFolders.Focused Then
+    '        ' If help is open, go to HelpTextBox instead of looping back
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Focus()
+    '            handled = True
+    '        Else
+    '            handled = FocusAddressBar()
+    '        End If
+
+    '    ElseIf HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+    '        ' After HelpTextBox, return to AddressBar
     '        handled = FocusAddressBar()
+
     '    Else
     '        handled = FocusAddressBar()
     '    End If
@@ -834,28 +740,44 @@ Public Class Form1
     'End Function
 
 
+
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
 
+        ' Only handle Tab here
         If keyData <> Keys.Tab Then
             _tabDown = False
             Return False
         End If
 
-        If _tabDown Then Return True   ' swallow repeat
+        ' Swallow repeat
+        If _tabDown Then Return True
         _tabDown = True
 
-        If _isRenaming Then Return False
+        ' ============================================
+        ' 1. Block during rename (let Tab pass through)
+        ' ============================================
+        If _isRenaming Then
+            Return False
+        End If
 
-        Dim handled As Boolean
+        Dim handled As Boolean = False
 
+        ' ============================================
+        ' 2. AddressBar → FileList
+        ' ============================================
         If txtAddressBar.Focused Then
             handled = FocusFileList()
 
+            ' ============================================
+            ' 3. FileList → TreeView
+            ' ============================================
         ElseIf lvFiles.Focused Then
             handled = FocusTreeView()
 
+            ' ============================================
+            ' 4. TreeView → HelpTextBox (if open) or AddressBar
+            ' ============================================
         ElseIf tvFolders.Focused Then
-            ' If help is open, go to HelpTextBox instead of looping back
             If HelpPanel.Visible Then
                 HelpTextBox.Focus()
                 handled = True
@@ -863,18 +785,23 @@ Public Class Form1
                 handled = FocusAddressBar()
             End If
 
+            ' ============================================
+            ' 5. HelpTextBox → AddressBar
+            ' ============================================
         ElseIf HelpPanel.Visible AndAlso HelpTextBox.Focused Then
-            ' After HelpTextBox, return to AddressBar
             handled = FocusAddressBar()
 
+            ' ============================================
+            ' 6. Fallback → AddressBar
+            ' ============================================
         Else
             handled = FocusAddressBar()
         End If
 
         If handled Then UpdateAllUIStates()
         Return handled
-    End Function
 
+    End Function
 
 
     'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
@@ -943,96 +870,156 @@ Public Class Form1
 
 
 
+    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
+
+    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
+    '        _shiftTabDown = False
+    '        Return False
+    '    End If
+
+    '    If _isRenaming Then Return False
+
+    '    If _shiftTabDown Then Return True   ' swallow repeat
+    '    _shiftTabDown = True
+
+    '    ' ===========================
+    '    '   HelpTextBox → TreeView
+    '    ' ===========================
+    '    If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+    '        tvFolders.Focus()
+
+    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '        End If
+
+    '        tvFolders.SelectedNode?.EnsureVisible()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   TreeView → File List
+    '    ' ===========================
+    '    If tvFolders.Focused Then
+    '        lvFiles.Focus()
+
+    '        If lvFiles.Items.Count > 0 Then
+    '            If lvFiles.SelectedItems.Count > 0 Then
+    '                Dim sel = lvFiles.SelectedItems(0)
+    '                sel.Focused = True
+    '                sel.EnsureVisible()
+    '            Else
+    '                lvFiles.Items(0).Selected = True
+    '                lvFiles.Items(0).Focused = True
+    '                lvFiles.Items(0).EnsureVisible()
+    '            End If
+    '        End If
+
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   File List → Address Bar
+    '    ' ===========================
+    '    If lvFiles.Focused Then
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    '   Address Bar → HelpTextBox (if visible)
+    '    ' ===========================
+    '    If txtAddressBar.Focused Then
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Focus()
+    '            Return True
+    '        Else
+    '            ' Normal reverse cycle: AddressBar → TreeView
+    '            tvFolders.Focus()
+
+    '            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
+    '                tvFolders.SelectedNode = tvFolders.Nodes(0)
+    '            End If
+
+    '            tvFolders.SelectedNode?.EnsureVisible()
+    '            Return True
+    '        End If
+    '    End If
+
+    '    ' ===========================
+    '    '   Fallback
+    '    ' ===========================
+    '    txtAddressBar.Focus()
+    '    PlaceCaretAtEndOfAddressBar()
+    '    Return True
+
+    'End Function
+
+
+
+
+
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
+        ' Only handle Shift+Tab here
         If keyData <> (Keys.Shift Or Keys.Tab) Then
             _shiftTabDown = False
             Return False
         End If
 
-        If _isRenaming Then Return False
-
-        If _shiftTabDown Then Return True   ' swallow repeat
+        ' Swallow repeat
+        If _shiftTabDown Then Return True
         _shiftTabDown = True
 
-        ' ===========================
-        '   HelpTextBox → TreeView
-        ' ===========================
+        ' ============================================
+        ' 1. Block during rename (let Shift+Tab pass through)
+        ' ============================================
+        If _isRenaming Then
+            Return False
+        End If
+
+        Dim handled As Boolean = False
+
+        ' ============================================
+        ' 2. HelpTextBox → TreeView
+        ' ============================================
         If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
-            tvFolders.Focus()
+            handled = FocusTreeView()
 
-            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                tvFolders.SelectedNode = tvFolders.Nodes(0)
-            End If
+            ' ============================================
+            ' 3. TreeView → FileList
+            ' ============================================
+        ElseIf tvFolders.Focused Then
+            handled = FocusFileList()
 
-            tvFolders.SelectedNode?.EnsureVisible()
-            Return True
-        End If
+            ' ============================================
+            ' 4. FileList → AddressBar
+            ' ============================================
+        ElseIf lvFiles.Focused Then
+            handled = FocusAddressBar()
 
-        ' ===========================
-        '   TreeView → File List
-        ' ===========================
-        If tvFolders.Focused Then
-            lvFiles.Focus()
-
-            If lvFiles.Items.Count > 0 Then
-                If lvFiles.SelectedItems.Count > 0 Then
-                    Dim sel = lvFiles.SelectedItems(0)
-                    sel.Focused = True
-                    sel.EnsureVisible()
-                Else
-                    lvFiles.Items(0).Selected = True
-                    lvFiles.Items(0).Focused = True
-                    lvFiles.Items(0).EnsureVisible()
-                End If
-            End If
-
-            Return True
-        End If
-
-        ' ===========================
-        '   File List → Address Bar
-        ' ===========================
-        If lvFiles.Focused Then
-            txtAddressBar.Focus()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
-
-        ' ===========================
-        '   Address Bar → HelpTextBox (if visible)
-        ' ===========================
-        If txtAddressBar.Focused Then
+            ' ============================================
+            ' 5. AddressBar → HelpTextBox (if open) or TreeView
+            ' ============================================
+        ElseIf txtAddressBar.Focused Then
             If HelpPanel.Visible Then
                 HelpTextBox.Focus()
-                Return True
+                handled = True
             Else
-                ' Normal reverse cycle: AddressBar → TreeView
-                tvFolders.Focus()
-
-                If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-                    tvFolders.SelectedNode = tvFolders.Nodes(0)
-                End If
-
-                tvFolders.SelectedNode?.EnsureVisible()
-                Return True
+                handled = FocusTreeView()
             End If
+
+            ' ============================================
+            ' 6. Fallback → AddressBar
+            ' ============================================
+        Else
+            handled = FocusAddressBar()
         End If
 
-        ' ===========================
-        '   Fallback
-        ' ===========================
-        txtAddressBar.Focus()
-        PlaceCaretAtEndOfAddressBar()
-        Return True
+        If handled Then UpdateAllUIStates()
+        Return handled
 
     End Function
-
-
-
-
-
-
 
 
 
@@ -1188,15 +1175,6 @@ Public Class Form1
         Return False
     End Function
 
-
-    Private Sub Control_Enter(sender As Object, e As EventArgs) _
-    Handles lvFiles.Enter, tvFolders.Enter, txtAddressBar.Enter
-
-        _lastFocusedControl = DirectCast(sender, Control)
-
-        UpdateAllUIStates()
-
-    End Sub
 
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
@@ -4035,39 +4013,106 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.AfterLabelEdit
+
+    '    _isRenaming = False
+
+    '    If e.Label Is Nothing Then Exit Sub
+
+    '    Dim item = lvFiles.Items(e.Item)
+    '    Dim oldPath = CStr(item.Tag)
+
+    '    ' Canceled with esc key
+    '    If escCancelRename Then
+    '        e.CancelEdit = True
+    '    End If
+
+    '    ' General validation
+    '    Dim result = ValidateNewName(e.Label)
+    '    If Not result.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
+    '        Exit Sub
+    '    End If
+
+    '    ' Extension protection
+    '    Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
+    '    If Not extCheck.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
+    '        Exit Sub
+    '    End If
+
+    '    ' Unified rename engine handles:
+    '    ' - filesystem rename
+    '    ' - ListView update
+    '    ' - selection
+    '    ' - navigation (if renaming current folder)
+    '    PerformRename(oldPath, e.Label)
+    'End Sub
+
+
+
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
     Handles lvFiles.AfterLabelEdit
 
         _isRenaming = False
 
-        If e.Label Is Nothing Then Exit Sub
+        '' ============================================
+        '' 1. Cancel rename triggered by Escape
+        '' ============================================
+        'If escCancelRename Then
+        '    e.CancelEdit = True
+        '    escCancelRename = False
+        '    Return
+        'End If
+
+        ' ============================================
+        ' 2. User pressed Escape manually
+        ' ============================================
+        If e.Label Is Nothing Then
+            ' User canceled rename with ESC
+            e.CancelEdit = True
+            Return
+        End If
 
         Dim item = lvFiles.Items(e.Item)
         Dim oldPath = CStr(item.Tag)
 
-        ' General validation
+        ' ============================================
+        ' 3. General validation
+        ' ============================================
         Dim result = ValidateNewName(e.Label)
         If Not result.IsValid Then
             e.CancelEdit = True
             ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
-            Exit Sub
+            Return
         End If
 
-        ' Extension protection
+        ' ============================================
+        ' 4. Extension protection
+        ' ============================================
         Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
         If Not extCheck.IsValid Then
             e.CancelEdit = True
             ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
-            Exit Sub
+            Return
         End If
 
-        ' Unified rename engine handles:
-        ' - filesystem rename
-        ' - ListView update
-        ' - selection
-        ' - navigation (if renaming current folder)
+        ' ============================================
+        ' 5. Commit rename
+        ' ============================================
         PerformRename(oldPath, e.Label)
+
     End Sub
+
+
+
+
+
+
+
 
 
     Private Sub PerformRename(oldFullPath As String, newName As String)
