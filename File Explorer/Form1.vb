@@ -1202,24 +1202,155 @@ Public Class Form1
 
 
 
+    'Private Function HandleAltP() As Boolean
+    '    If _altPDown Then Return True
+    '    _altPDown = True
+
+    '    Dim target As String = GetPinnableTarget()
+
+    '    If target Is Nothing Then
+    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '            target = currentFolder
+    '        Else
+    '            Return False
+    '        End If
+    '    End If
+
+    '    PinOrUnpin(target)
+    '    UpdatePinButtonState()
+    '    Return True
+    'End Function
+
+
+
+
+
+
+
+
+
+    'Private Function HandleAltP() As Boolean
+    '    If _altPDown Then Return True
+    '    _altPDown = True
+
+    '    Dim target = ResolvePinnableTarget()
+    '    If target Is Nothing Then Return False
+
+    '    Return TryPinOrUnpin(target)
+    'End Function
+
+
+
     Private Function HandleAltP() As Boolean
         If _altPDown Then Return True
         _altPDown = True
 
-        Dim target As String = GetPinnableTarget()
+        Dim target = ResolvePinnableTarget()
+        If target Is Nothing Then Return False
 
-        If target Is Nothing Then
-            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-                target = currentFolder
-            Else
-                Return False
+        Return TryPinOrUnpin(target)
+    End Function
+
+
+
+
+
+
+
+
+
+    'Private Function TryPinOrUnpin(target As String, Optional showErrors As Boolean = False) As Boolean
+
+    '    ' Validate folder
+    '    If String.IsNullOrWhiteSpace(target) _
+    'OrElse Not Directory.Exists(target) _
+    'OrElse IsSpecialFolder(target) Then
+
+    '        If showErrors Then
+    '            ShowStatus(StatusPad & IconError &
+    '            $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
+    '        End If
+
+    '        Return False
+    '    End If
+
+    '    PinOrUnpin(target)
+    '    UpdatePinButtonState()
+    '    Return True
+    'End Function
+
+
+
+
+
+
+    ' ============================================================
+    '  PIN ENGINE — the single source of truth for pin/unpin logic
+    ' ============================================================
+
+    Private Function TryPinOrUnpin(path As String, Optional showErrors As Boolean = False) As Boolean
+        Dim normalized = NormalizePath(path)
+
+        If String.IsNullOrWhiteSpace(normalized) _
+    OrElse Not Directory.Exists(normalized) _
+    OrElse IsSpecialFolder(normalized) Then
+
+            If showErrors Then
+                ShowStatus(StatusPad & IconError &
+                $"  ""{path}"" can't be pinned. Make sure it exists and isn’t a special folder.")
             End If
+
+            Return False
         End If
 
-        PinOrUnpin(target)
-        UpdatePinButtonState()
+        If IsPinned(normalized) Then
+            RemoveFromEasyAccess(normalized)
+        Else
+            Dim name = GetFolderDisplayName(normalized)
+            AddToEasyAccess(name, normalized)
+        End If
+
+        RefreshPinUI()
         Return True
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Function ResolvePinnableTarget() As String
+    '    Dim target = GetPinnableTarget()
+
+    '    If target IsNot Nothing Then Return target
+
+    '    If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '        Return currentFolder
+    '    End If
+
+    '    Return Nothing
+    'End Function
+
+    Private Function ResolvePinnableTarget() As String
+        Dim target = GetPinnableTarget()
+        If target IsNot Nothing Then Return target
+
+        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+            Return currentFolder
+        End If
+
+        Return Nothing
+    End Function
+
+
+
+
 
 
 
@@ -1555,25 +1686,46 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    '    Handles btnPin.Click
+
+    '    Dim target As String = GetPinnableTarget()
+
+    '    ' If no contextual target, fall back to currentFolder
+    '    If target Is Nothing Then
+    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '            target = currentFolder
+    '        Else
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    PinOrUnpin(target)
+
+    '    UpdatePinButtonState()
+
+    'End Sub
+
+
+    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    'Handles btnPin.Click
+
+    '    Dim target = ResolvePinnableTarget()
+    '    If target Is Nothing Then Exit Sub
+
+    '    TryPinOrUnpin(target)
+    'End Sub
+
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
-        Handles btnPin.Click
+    Handles btnPin.Click
 
-        Dim target As String = GetPinnableTarget()
+        Dim target = ResolvePinnableTarget()
+        If target Is Nothing Then Exit Sub
 
-        ' If no contextual target, fall back to currentFolder
-        If target Is Nothing Then
-            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-                target = currentFolder
-            Else
-                Exit Sub
-            End If
-        End If
-
-        PinOrUnpin(target)
-
-        UpdatePinButtonState()
-
+        TryPinOrUnpin(target)
     End Sub
+
+
 
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
@@ -2542,41 +2694,107 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
+    'Private Sub HandlePinCommand(parts As String())
+
+    '    ' If a path was provided
+    '    If parts.Length > 1 Then
+    '        Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+    '        If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
+    '            PinOrUnpin(target)
+    '            UpdatePinButtonState()
+    '            RestoreAddressBar()
+    '        Else
+    '            ShowStatus(StatusPad & IconError &
+    '                   $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
+    '        End If
+
+    '        Exit Sub
+    '    End If
+
+    '    ' No path provided → fall back to contextual target
+    '    Dim fallback As String = GetPinnableTarget()
+
+    '    If fallback Is Nothing Then
+    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '            fallback = currentFolder
+    '        Else
+    '            ShowStatus(StatusPad & IconError &
+    '                   "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    PinOrUnpin(fallback)
+    '    UpdatePinButtonState()
+    '    RestoreAddressBar()
+    'End Sub
+
+    'Private Sub HandlePinCommand(parts As String())
+
+    '    ' Explicit path provided
+    '    If parts.Length > 1 Then
+    '        Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+
+    '        If TryPinOrUnpin(target, showErrors:=True) Then
+    '            RestoreAddressBar()
+    '        End If
+
+    '        Exit Sub
+    '    End If
+
+    '    ' No path → fallback
+    '    Dim fallback = ResolvePinnableTarget()
+
+    '    If fallback Is Nothing Then
+    '        ShowStatus(StatusPad & IconError &
+    '        "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
+    '        Exit Sub
+    '    End If
+
+    '    If TryPinOrUnpin(fallback, showErrors:=True) Then
+    '        RestoreAddressBar()
+    '    End If
+    'End Sub
+
     Private Sub HandlePinCommand(parts As String())
 
-        ' If a path was provided
+        ' Explicit path
         If parts.Length > 1 Then
-            Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
+            Dim target = String.Join(" ", parts.Skip(1)).Trim(""""c)
 
-            If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
-                PinOrUnpin(target)
-                UpdatePinButtonState()
+            If TryPinOrUnpin(target, showErrors:=True) Then
                 RestoreAddressBar()
-            Else
-                ShowStatus(StatusPad & IconError &
-                       $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
             End If
 
             Exit Sub
         End If
 
-        ' No path provided → fall back to contextual target
-        Dim fallback As String = GetPinnableTarget()
+        ' Fallback
+        Dim fallback = ResolvePinnableTarget()
 
         If fallback Is Nothing Then
-            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-                fallback = currentFolder
-            Else
-                ShowStatus(StatusPad & IconError &
-                       "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
-                Exit Sub
-            End If
+            ShowStatus(StatusPad & IconError &
+            "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
+            Exit Sub
         End If
 
-        PinOrUnpin(fallback)
-        UpdatePinButtonState()
-        RestoreAddressBar()
+        If TryPinOrUnpin(fallback, showErrors:=True) Then
+            RestoreAddressBar()
+        End If
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -6324,29 +6542,61 @@ Public Class Form1
     '  Pin / Unpin Actions
     ' ------------------------------------------------------------
 
+    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+    'Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    '    TogglePin(path)
+    'End Sub
+
+    'Private Sub Pin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+    '    TogglePin(TryCast(node.Tag, String))
+    'End Sub
+
+    'Private Sub Unpin_Click(sender As Object, e As EventArgs)
+    '    Dim node = tvFolders.SelectedNode
+    '    If node Is Nothing Then Exit Sub
+    '    TogglePin(TryCast(node.Tag, String))
+    'End Sub
+
+
+
+
     Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        TogglePin(path)
+        TryPinOrUnpin(TryCast(lvFiles.SelectedItems(0).Tag, String))
     End Sub
 
     Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-        TogglePin(path)
+        TryPinOrUnpin(TryCast(lvFiles.SelectedItems(0).Tag, String))
     End Sub
 
     Private Sub Pin_Click(sender As Object, e As EventArgs)
-        Dim node = tvFolders.SelectedNode
-        If node Is Nothing Then Exit Sub
-        TogglePin(TryCast(node.Tag, String))
+        TryPinOrUnpin(TryCast(tvFolders.SelectedNode?.Tag, String))
     End Sub
 
     Private Sub Unpin_Click(sender As Object, e As EventArgs)
-        Dim node = tvFolders.SelectedNode
-        If node Is Nothing Then Exit Sub
-        TogglePin(TryCast(node.Tag, String))
+        TryPinOrUnpin(TryCast(tvFolders.SelectedNode?.Tag, String))
     End Sub
+
+
+
+
+
+
+
+
+
+
+
 
     ' ------------------------------------------------------------
     '  Toggle Pin
