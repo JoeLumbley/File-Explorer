@@ -1427,43 +1427,134 @@ Public Class Form1
 
 
 
+    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    ' CTRL + F (Find)
+    '    ' ===========================
+    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
+    '        If _ctrlFDown Then Return True
+    '        _ctrlFDown = True
+
+    '        InitiateSearch()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' F3 (Find Next)
+    '    ' ===========================
+    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
+    '        If _f3Down Then Return True
+    '        _f3Down = True
+
+    '        HandleFindNextCommand()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' SHIFT + F3 (Find Previous)
+    '    ' ===========================
+    '    If keyData = (Keys.Shift Or Keys.F3) AndAlso GlobalShortcutsAllowed() Then
+    '        If _shiftF3Down Then Return True
+    '        _shiftF3Down = True
+
+    '        HandleFindPreviousCommand()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
+
+
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
 
-        ' ===========================
-        ' CTRL + F (Find)
-        ' ===========================
-        If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
-            If _ctrlFDown Then Return True
-            _ctrlFDown = True
+        ' ============================================================
+        '  SEARCH SHORTCUT ROUTING TABLE
+        '
+        '  Explorer‑style search commands:
+        '   • Ctrl+F     → Start search
+        '   • F3         → Find next
+        '   • Shift+F3   → Find previous
+        '
+        '  All shortcuts:
+        '   • Blocked during rename mode
+        '   • Repeat‑suppressed for emotionally safe input handling
+        '   • F3 / Shift+F3 require global shortcuts to be allowed
+        ' ============================================================
 
-            InitiateSearch()
-            Return True
-        End If
+        If _isRenaming Then Return False
 
-        ' ===========================
-        ' F3 (Find Next)
-        ' ===========================
-        If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
-            If _f3Down Then Return True
-            _f3Down = True
+        Select Case keyData
 
-            HandleFindNextCommand()
-            Return True
-        End If
+            Case (Keys.Control Or Keys.F)
+                Return HandleCtrlF()
 
-        ' ===========================
-        ' SHIFT + F3 (Find Previous)
-        ' ===========================
-        If keyData = (Keys.Shift Or Keys.F3) AndAlso GlobalShortcutsAllowed() Then
-            If _shiftF3Down Then Return True
-            _shiftF3Down = True
+            Case Keys.F3
+                If GlobalShortcutsAllowed() Then
+                    Return HandleF3Next()
+                End If
 
-            HandleFindPreviousCommand()
-            Return True
-        End If
+            Case (Keys.Shift Or Keys.F3)
+                If GlobalShortcutsAllowed() Then
+                    Return HandleF3Previous()
+                End If
+
+        End Select
 
         Return False
     End Function
+
+    Private Function HandleCtrlF() As Boolean
+        If _ctrlFDown Then Return True
+        _ctrlFDown = True
+
+        InitiateSearch()
+        Return True
+    End Function
+
+    Private Function HandleF3Next() As Boolean
+        If _f3Down Then Return True
+        _f3Down = True
+
+        HandleFindNextCommand()
+        Return True
+    End Function
+
+
+    Private Function HandleF3Previous() As Boolean
+        If _shiftF3Down Then Return True
+        _shiftF3Down = True
+
+        HandleFindPreviousCommand()
+        Return True
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5170,7 +5261,20 @@ Public Class Form1
 
 
 
+    Private Function SearchHelp(term As String) As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+        term = term.Trim().ToLowerInvariant()
+        If term = "" Then Return CommandHelp.ToList()
 
+        Return CommandHelp.
+        Where(Function(entry)
+                  Dim meta = entry.Value
+                  Return entry.Key.ToLower().Contains(term) _
+                      OrElse meta.Aliases.Any(Function(a) a.ToLower().Contains(term)) _
+                      OrElse meta.Usage.ToLower().Contains(term) _
+                      OrElse meta.Description.ToLower().Contains(term)
+              End Function).
+        ToList()
+    End Function
 
 
 
@@ -5558,23 +5662,48 @@ Public Class Form1
 
 
 
-    Private Function BuildHelpText() As String
+    'Private Function BuildHelpText() As String
+    '    Dim sb As New StringBuilder()
+
+
+    '    For Each entry In CommandHelp
+    '        Dim meta = entry.Value
+
+    '        ' Aliases
+    '        sb.AppendLine(String.Join(", ", meta.Aliases))
+
+    '        ' Usage
+    '        sb.AppendLine(meta.Usage)
+
+    '        ' Description
+    '        sb.AppendLine("  " & meta.Description)
+
+    '        ' Examples
+    '        If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+    '            sb.AppendLine("  Examples:")
+    '            For Each ex In meta.Examples
+    '                sb.AppendLine("    " & ex)
+    '            Next
+    '        End If
+
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+    Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
         Dim sb As New StringBuilder()
 
+        Dim list = If(entries, CommandHelp)
 
-        For Each entry In CommandHelp
+        For Each entry In list
             Dim meta = entry.Value
 
-            ' Aliases
             sb.AppendLine(String.Join(", ", meta.Aliases))
-
-            ' Usage
             sb.AppendLine(meta.Usage)
-
-            ' Description
             sb.AppendLine("  " & meta.Description)
 
-            ' Examples
             If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
                 sb.AppendLine("  Examples:")
                 For Each ex In meta.Examples
@@ -5587,6 +5716,40 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function PathExists(path As String) As Boolean
         Return IO.File.Exists(path) OrElse Directory.Exists(path)
@@ -6732,41 +6895,227 @@ Public Class Form1
 
     'End Sub
 
+    'Private Sub HandleHelpCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Command Reference"
+    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+
+    '        Dim text As String = BuildHelpText()
+
+    '        ' ============================================
+    '        '   HELP PANEL ALREADY OPEN → UPDATE + KEEP FOCUS
+    '        ' ============================================
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Text = text
+    '            RestoreAddressBar()   ' now safe: it won't steal focus
+    '            FocusHelpText()
+
+    '            Return
+    '        End If
+
+    '        ' ============================================
+    '        '   HELP PANEL CLOSED → OPEN + FOCUS HELP TEXT
+    '        ' ============================================
+    '        HelpTextBox.Text = text
+    '        ShowHelpPanelAnimated()
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '           " Failed to display help information: " & ex.Message)
+    '    End Try
+
+    '    ' ============================================
+    '    '   RESTORE ADDRESS BAR (NO FOCUS STEALING)
+    '    ' ============================================
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
+
+
+
+
+    'Private Sub HandleHelpCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Command Reference"
+    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+
+    '        Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
+
+    '        ' ============================================================
+    '        '  help → full help
+    '        '  help cd → filtered help
+    '        '  help copy move → multi-term search
+    '        ' ============================================================
+    '        If parts.Length > 1 Then
+    '            Dim terms = parts.Skip(1).Select(Function(t) t.Trim()).Where(Function(t) t <> "").ToList()
+
+    '            Dim filtered = CommandHelp.ToList()
+
+    '            For Each term In terms
+    '                filtered = SearchHelp(term)
+    '            Next
+
+    '            If filtered.Count = 0 Then
+    '                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
+    '                HelpTextBox.Text = "No matching commands were found."
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            entries = filtered
+    '        End If
+
+
+
+
+    '        Dim text As String = BuildHelpText(entries)
+
+    '        ' ============================================================
+    '        '  HELP PANEL ALREADY OPEN → UPDATE + KEEP FOCUS
+    '        ' ============================================================
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Text = text
+    '            RestoreAddressBar()
+    '            FocusHelpText()
+    '            Return
+    '        End If
+
+    '        ' ============================================================
+    '        '  HELP PANEL CLOSED → OPEN + FOCUS HELP TEXT
+    '        ' ============================================================
+    '        HelpTextBox.Text = text
+    '        ShowHelpPanelAnimated()
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '       " Failed to display help information: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
+
     Private Sub HandleHelpCommand(parts As String())
         Try
-            HelpHeaderLabel.Text = "Command Reference"
             HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
 
-            Dim text As String = BuildHelpText()
+            Dim terms = parts.Skip(1).
+                          Select(Function(t) t.Trim()).
+                          Where(Function(t) t <> "").
+                          ToList()
 
-            ' ============================================
-            '   HELP PANEL ALREADY OPEN → UPDATE + KEEP FOCUS
-            ' ============================================
-            If HelpPanel.Visible Then
-                HelpTextBox.Text = text
-                RestoreAddressBar()   ' now safe: it won't steal focus
+            ' ------------------------------------------------------------
+            ' Special case: help keys → show keyboard shortcuts
+            ' ------------------------------------------------------------
+            If terms.Count = 1 AndAlso terms(0).ToLower() = "keys" Then
+                HelpHeaderLabel.Text = "Keyboard Shortcuts"
+                HelpTextBox.Text = BuildShortcutHelpText()
+                ShowHelpPanelAnimated()
                 FocusHelpText()
-
+                RestoreAddressBar()
                 Return
             End If
 
-            ' ============================================
-            '   HELP PANEL CLOSED → OPEN + FOCUS HELP TEXT
-            ' ============================================
+            Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
+
+            If terms.Count > 0 Then
+                Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+                For Each term In terms
+                    filtered = filtered.
+                    Union(SearchHelp(term)).
+                    Union(PrefixSearch(term)).
+                    Union(FuzzySearch(term)).
+                    ToList()
+                Next
+
+                If filtered.Count = 0 Then
+                    HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
+                    HelpTextBox.Text = "No matching commands were found."
+                    ShowHelpPanelAnimated()
+                    FocusHelpText()
+                    RestoreAddressBar()
+                    Return
+                End If
+
+                entries = filtered
+                HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
+            Else
+                HelpHeaderLabel.Text = "Command Reference"
+            End If
+
+            Dim text As String = BuildHelpText(entries)
+            'If terms.Count > 0 Then text = HighlightTerms(text, terms)
+
             HelpTextBox.Text = text
+
+            If HelpPanel.Visible Then
+                RestoreAddressBar()
+                FocusHelpText()
+                AutoScrollToFirstMatch()
+                Return
+            End If
+
             ShowHelpPanelAnimated()
             FocusHelpText()
+            AutoScrollToFirstMatch()
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
-               " Failed to display help information: " & ex.Message)
+           " Failed to display help information: " & ex.Message)
         End Try
 
-        ' ============================================
-        '   RESTORE ADDRESS BAR (NO FOCUS STEALING)
-        ' ============================================
         RestoreAddressBar()
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Function HighlightTerms(text As String, terms As IEnumerable(Of String)) As String
+    '    Dim result = text
+    '    For Each term In terms
+    '        If String.IsNullOrWhiteSpace(term) Then Continue For
+    '        Dim t = Regex.Escape(term.Trim())
+    '        result = Regex.Replace(result, t, Function(m) $">>{m.Value}<<", RegexOptions.IgnoreCase)
+    '    Next
+    '    Return result
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7782,9 +8131,272 @@ Public Class Form1
 
 
 
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Alt + ←           Go back")
+    '    sb.AppendLine("  Alt + →           Go forward")
+    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
+    '    sb.AppendLine("  Alt + Home        Go to user profile folder")
+    '    sb.AppendLine("  F11               Toggle full screen")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Address Bar")
+    '    sb.AppendLine("===========")
+    '    sb.AppendLine("  Ctrl + L          Focus address bar")
+    '    sb.AppendLine("  Alt + D           Focus address bar")
+    '    sb.AppendLine("  F4                Focus address bar")
+    '    sb.AppendLine("  Esc               Reset address bar")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Ctrl + F          Start search")
+    '    sb.AppendLine("  F3                Find next")
+    '    sb.AppendLine("  Shift + F3        Find previous")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Focus Navigation")
+    '    sb.AppendLine("================")
+    '    sb.AppendLine("  Tab               Cycle focus forward")
+    '    sb.AppendLine("  Shift + Tab       Cycle focus backward")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Enter             Open selected item")
+    '    sb.AppendLine("  F2                Rename selected item")
+    '    sb.AppendLine("  Delete            Delete selected item")
+    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Pinning")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Alt + P           Pin or unpin current folder")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Refresh")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  F5                Refresh current folder")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+    'Private Function PrefixSearch(term As String) _
+    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '    term = term.ToLowerInvariant()
+
+    '    Return CommandHelp.
+    '    Where(Function(entry)
+    '              entry.Key.ToLower().StartsWith(term) OrElse
+    '              entry.Value.Aliases.Any(Function(a) a.ToLower().StartsWith(term))
+    '          End Function).
+    '    ToList()
+    'End Function
+
+    '    Private Function PrefixSearch(term As String) _
+    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '        ' Normalize the search term to lowercase
+    '        term = term.ToLowerInvariant()
+
+    '        ' Perform the search using LINQ
+    '        Return CommandHelp.
+    '    Where(Function(entry)
+    '              ' Check if the key or any aliases start with the search term
+    '              entry.Key.ToLower().StartsWith(term) OrElse
+    '              entry.Value.Aliases.Any(Function(a) a.ToLower().StartsWith(term))
+    '          End Function).
+    '    ToList() ' Convert the result to a list
+    '    End Function
+
+    Private Function PrefixSearch(term As String) _
+As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+        ' Normalize the search term to lowercase
+        term = term.ToLowerInvariant()
+
+        ' Perform the search using LINQ
+        Return CommandHelp.
+    Where(Function(entry)
+              ' Check if the key or any aliases start with the search term
+              Return entry.Key.ToLower().StartsWith(term) OrElse
+                     entry.Value.Aliases.Any(Function(a) a.ToLower().StartsWith(term))
+          End Function).
+    ToList() ' Convert the result to a list
+    End Function
+
+
+
+    'Private Function FuzzySearch(term As String) _
+    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '    term = term.ToLowerInvariant()
+
+    '    Return CommandHelp.
+    '    Where(Function(entry)
+    '              Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
+    '              entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
+    '          End Function).
+    '    ToList()
+    'End Function
+
+
+    'Private Function FuzzySearch(term As String) _
+    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '    term = term.ToLowerInvariant()
+
+    '    Return CommandHelp.
+    '    Where(Function(entry)
+    '              Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
+    '              entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
+    '          End Function).
+    '    ToList()
+
+
+
+    'End Function
+
+
+    Private Function FuzzySearch(term As String) _
+As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+        ' Normalize the search term to lowercase
+        term = term.ToLowerInvariant()
+
+        ' Perform the fuzzy search using LINQ
+        Return CommandHelp.
+    Where(Function(entry)
+              ' Check if the Levenshtein distance is within the allowed threshold
+              Return Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
+                     entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
+          End Function).
+    ToList() ' Convert the result to a list
+    End Function
+
+    '    Private Function FuzzySearch(term As String) _
+    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '        term = term.ToLowerInvariant()
+
+    '        Return CommandHelp.
+    '        Where(Function(entry)
+    '                  Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
+    '                  entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
+    '              End Function).
+    '        ToList()
+    '    End Function
+
+
+
+
+
+
+    Private Function Levenshtein(a As String, b As String) As Integer
+        Dim n = a.Length, m = b.Length
+        Dim d(n, m) As Integer
+
+        For i = 0 To n : d(i, 0) = i : Next
+        For j = 0 To m : d(0, j) = j : Next
+
+        For i = 1 To n
+            For j = 1 To m
+                Dim cost = If(a(i - 1) = b(j - 1), 0, 1)
+                d(i, j) = Math.Min(Math.Min(
+                d(i - 1, j) + 1,
+                d(i, j - 1) + 1),
+                d(i - 1, j - 1) + cost)
+            Next
+        Next
+
+        Return d(n, m)
+    End Function
+
+
+
+
+
+
+    'Private Function HighlightTerms(text As String, terms As IEnumerable(Of String)) As String
+    '    Dim result = text
+    '    For Each term In terms
+    '        If String.IsNullOrWhiteSpace(term) Then Continue For
+    '        Dim pattern = Regex.Escape(term)
+    '        result = Regex.Replace(result, pattern,
+    '                           Function(m) $">>{m.Value}<<",
+    '                           RegexOptions.IgnoreCase)
+    '    Next
+    '    Return result
+    'End Function
+
+
+
+    Private Function HighlightTerms(text As String, terms As IEnumerable(Of String)) As String
+        Dim result = text
+        For Each term In terms
+            If String.IsNullOrWhiteSpace(term) Then Continue For
+            Dim pattern = Regex.Escape(term)
+            result = Regex.Replace(result, pattern,
+                               Function(m) $">>{m.Value}<<",
+                               RegexOptions.IgnoreCase)
+        Next
+        Return result
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+    Private Sub AutoScrollToFirstMatch()
+        Dim idx = HelpTextBox.Text.IndexOf(">>", StringComparison.OrdinalIgnoreCase)
+        If idx >= 0 Then
+            HelpTextBox.SelectionStart = idx
+            HelpTextBox.ScrollToCaret()
+        End If
+    End Sub
+
+
+
+
+
+
+
+    Private Function BuildShortcutHelpText() As String
+        Dim sb As New StringBuilder()
+        sb.AppendLine("Keyboard Shortcuts")
+        sb.AppendLine()
+        sb.AppendLine("Ctrl+F     Start search")
+        sb.AppendLine("F3         Find next")
+        sb.AppendLine("Shift+F3   Find previous")
+        sb.AppendLine("Ctrl+L     Focus address bar")
+        sb.AppendLine("Alt+Up     Parent folder")
+        sb.AppendLine("Alt+Left   Back")
+        sb.AppendLine("Alt+Right  Forward")
+        sb.AppendLine("F5         Refresh")
+        sb.AppendLine("F11        Full screen")
+        Return sb.ToString()
+    End Function
+
     Private Function BuildShortcutsHelp() As String
         Dim sb As New Text.StringBuilder()
 
+        ' ------------------------------------------------------------
+        ' Navigation
+        ' ------------------------------------------------------------
         sb.AppendLine("Navigation")
         sb.AppendLine("==========")
         sb.AppendLine("  Alt + ←           Go back")
@@ -7794,6 +8406,9 @@ Public Class Form1
         sb.AppendLine("  F11               Toggle full screen")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' Address Bar
+        ' ------------------------------------------------------------
         sb.AppendLine("Address Bar")
         sb.AppendLine("===========")
         sb.AppendLine("  Ctrl + L          Focus address bar")
@@ -7802,6 +8417,9 @@ Public Class Form1
         sb.AppendLine("  Esc               Reset address bar")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' Search
+        ' ------------------------------------------------------------
         sb.AppendLine("Search")
         sb.AppendLine("======")
         sb.AppendLine("  Ctrl + F          Start search")
@@ -7809,12 +8427,18 @@ Public Class Form1
         sb.AppendLine("  Shift + F3        Find previous")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' Focus Navigation
+        ' ------------------------------------------------------------
         sb.AppendLine("Focus Navigation")
         sb.AppendLine("================")
         sb.AppendLine("  Tab               Cycle focus forward")
         sb.AppendLine("  Shift + Tab       Cycle focus backward")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' File Operations
+        ' ------------------------------------------------------------
         sb.AppendLine("File Operations")
         sb.AppendLine("===============")
         sb.AppendLine("  Enter             Open selected item")
@@ -7823,11 +8447,17 @@ Public Class Form1
         sb.AppendLine("  Ctrl + Shift + N  Create new folder")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' Pinning
+        ' ------------------------------------------------------------
         sb.AppendLine("Pinning")
         sb.AppendLine("=======")
         sb.AppendLine("  Alt + P           Pin or unpin current folder")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' Refresh
+        ' ------------------------------------------------------------
         sb.AppendLine("Refresh")
         sb.AppendLine("=======")
         sb.AppendLine("  F5                Refresh current folder")
@@ -7835,9 +8465,6 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
-
-
-
 
 
 
