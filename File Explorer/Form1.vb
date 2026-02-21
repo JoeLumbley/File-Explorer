@@ -1037,104 +1037,263 @@ Public Class Form1
 
 
 
+    'Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
+
+    '    ' ===========================
+    '    ' ALT + HOME (User Folder)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
+    '        If _altHomeDown Then Return True
+    '        _altHomeDown = True
+
+    '        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + P (Pin/Unpin)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
+    '        If _altPDown Then Return True
+    '        _altPDown = True
+
+    '        Dim target As String = GetPinnableTarget()
+
+    '        If target Is Nothing Then
+    '            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+    '                target = currentFolder
+    '            Else
+    '                Return False
+    '            End If
+    '        End If
+
+    '        PinOrUnpin(target)
+    '        UpdatePinButtonState()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + LEFT (Back)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
+    '        If _altLeftDown Then Return True
+    '        _altLeftDown = True
+
+    '        NavigateBackward_Click()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + RIGHT (Forward)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Right) AndAlso Not _isRenaming Then
+    '        If _altRightDown Then Return True
+    '        _altRightDown = True
+
+    '        NavigateForward_Click()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' ALT + UP (Parent)
+    '    ' ===========================
+    '    If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
+    '        If _altUpDown Then Return True
+    '        _altUpDown = True
+
+    '        NavigateToParent()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' F5 (Refresh)
+    '    ' ===========================
+    '    If keyData = Keys.F5 AndAlso Not _isRenaming Then
+    '        If _f5Down Then Return True
+    '        _f5Down = True
+
+    '        RefreshCurrentFolder()
+    '        txtAddressBar.Focus()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ===========================
+    '    ' F11 (Full Screen)
+    '    ' ===========================
+    '    If keyData = Keys.F11 AndAlso Not _isRenaming Then
+    '        If _f11Down Then Return True
+    '        _f11Down = True
+
+    '        ToggleFullScreen()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
+
+
+
+
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
-        ' ===========================
-        ' ALT + HOME (User Folder)
-        ' ===========================
-        If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
-            If _altHomeDown Then Return True
-            _altHomeDown = True
+        ' ============================================================
+        '  NAVIGATION SHORTCUT ROUTING TABLE
+        '
+        '  Explorer‑style navigation commands:
+        '   • Alt+Home  → User profile folder
+        '   • Alt+P     → Pin/Unpin folder
+        '   • Alt+Left  → Back
+        '   • Alt+Right → Forward
+        '   • Alt+Up    → Parent folder
+        '   • F5        → Refresh
+        '   • F11       → Full screen
+        '
+        '  All shortcuts:
+        '   • Blocked during rename mode
+        '   • Repeat‑suppressed for emotionally safe input handling
+        ' ============================================================
 
-            GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
+        If _isRenaming Then Return False
 
-        ' ===========================
-        ' ALT + P (Pin/Unpin)
-        ' ===========================
-        If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
-            If _altPDown Then Return True
-            _altPDown = True
+        Select Case keyData
 
-            Dim target As String = GetPinnableTarget()
+            Case (Keys.Alt Or Keys.Home)
+                Return HandleAltHome()
 
-            If target Is Nothing Then
-                If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-                    target = currentFolder
-                Else
-                    Return False
-                End If
-            End If
+            Case (Keys.Alt Or Keys.P)
+                Return HandleAltP()
 
-            PinOrUnpin(target)
-            UpdatePinButtonState()
-            Return True
-        End If
+            Case (Keys.Alt Or Keys.Left)
+                Return HandleAltLeft()
 
-        ' ===========================
-        ' ALT + LEFT (Back)
-        ' ===========================
-        If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
-            If _altLeftDown Then Return True
-            _altLeftDown = True
+            Case (Keys.Alt Or Keys.Right)
+                Return HandleAltRight()
 
-            NavigateBackward_Click()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
+            Case (Keys.Alt Or Keys.Up)
+                Return HandleAltUp()
 
-        ' ===========================
-        ' ALT + RIGHT (Forward)
-        ' ===========================
-        If keyData = (Keys.Alt Or Keys.Right) AndAlso Not _isRenaming Then
-            If _altRightDown Then Return True
-            _altRightDown = True
+            Case Keys.F5
+                Return HandleF5Refresh()
 
-            NavigateForward_Click()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
+            Case Keys.F11
+                Return HandleF11FullScreen()
 
-        ' ===========================
-        ' ALT + UP (Parent)
-        ' ===========================
-        If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
-            If _altUpDown Then Return True
-            _altUpDown = True
-
-            NavigateToParent()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
-
-        ' ===========================
-        ' F5 (Refresh)
-        ' ===========================
-        If keyData = Keys.F5 AndAlso Not _isRenaming Then
-            If _f5Down Then Return True
-            _f5Down = True
-
-            RefreshCurrentFolder()
-            txtAddressBar.Focus()
-            PlaceCaretAtEndOfAddressBar()
-            Return True
-        End If
-
-        ' ===========================
-        ' F11 (Full Screen)
-        ' ===========================
-        If keyData = Keys.F11 AndAlso Not _isRenaming Then
-            If _f11Down Then Return True
-            _f11Down = True
-
-            ToggleFullScreen()
-            Return True
-        End If
+        End Select
 
         Return False
     End Function
+
+    Private Function HandleAltHome() As Boolean
+        If _altHomeDown Then Return True
+        _altHomeDown = True
+
+        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+        PlaceCaretAtEndOfAddressBar()
+        Return True
+    End Function
+
+
+
+
+    Private Function HandleAltP() As Boolean
+        If _altPDown Then Return True
+        _altPDown = True
+
+        Dim target As String = GetPinnableTarget()
+
+        If target Is Nothing Then
+            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
+                target = currentFolder
+            Else
+                Return False
+            End If
+        End If
+
+        PinOrUnpin(target)
+        UpdatePinButtonState()
+        Return True
+    End Function
+
+
+
+
+
+    Private Function HandleAltLeft() As Boolean
+        If _altLeftDown Then Return True
+        _altLeftDown = True
+
+        NavigateBackward_Click()
+        PlaceCaretAtEndOfAddressBar()
+        Return True
+    End Function
+
+
+
+
+
+    Private Function HandleAltRight() As Boolean
+        If _altRightDown Then Return True
+        _altRightDown = True
+
+        NavigateForward_Click()
+        PlaceCaretAtEndOfAddressBar()
+        Return True
+    End Function
+
+
+
+
+
+    Private Function HandleAltUp() As Boolean
+        If _altUpDown Then Return True
+        _altUpDown = True
+
+        NavigateToParent()
+        PlaceCaretAtEndOfAddressBar()
+        Return True
+    End Function
+
+    Private Function HandleF5Refresh() As Boolean
+        If _f5Down Then Return True
+        _f5Down = True
+
+        RefreshCurrentFolder()
+        txtAddressBar.Focus()
+        PlaceCaretAtEndOfAddressBar()
+        Return True
+    End Function
+
+
+
+    Private Function HandleF11FullScreen() As Boolean
+        If _f11Down Then Return True
+        _f11Down = True
+
+        ToggleFullScreen()
+        Return True
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
