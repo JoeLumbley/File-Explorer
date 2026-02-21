@@ -256,7 +256,7 @@ Partial Class Form1
         txtAddressBar.Font = New Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         txtAddressBar.Location = New Point(129, 1)
         txtAddressBar.Name = "txtAddressBar"
-        txtAddressBar.Size = New Size(601, 27)
+        txtAddressBar.Size = New Size(603, 27)
         txtAddressBar.TabIndex = 1
         txtAddressBar.TabStop = False
         ' 

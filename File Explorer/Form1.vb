@@ -4522,25 +4522,69 @@ Public Class Form1
 
 
 
+    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
+    'Handles lvFiles.AfterLabelEdit
+
+    '    _isRenaming = False
+
+    '    '' ============================================
+    '    '' 1. Cancel rename triggered by Escape
+    '    '' ============================================
+    '    'If escCancelRename Then
+    '    '    e.CancelEdit = True
+    '    '    escCancelRename = False
+    '    '    Return
+    '    'End If
+
+    '    ' ============================================
+    '    ' 2. User pressed Escape manually
+    '    ' ============================================
+    '    If e.Label Is Nothing Then
+    '        ' User canceled rename with ESC
+    '        e.CancelEdit = True
+    '        Return
+    '    End If
+
+    '    Dim item = lvFiles.Items(e.Item)
+    '    Dim oldPath = CStr(item.Tag)
+
+    '    ' ============================================
+    '    ' 3. General validation
+    '    ' ============================================
+    '    Dim result = ValidateNewName(e.Label)
+    '    If Not result.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
+    '        Return
+    '    End If
+
+    '    ' ============================================
+    '    ' 4. Extension protection
+    '    ' ============================================
+    '    Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
+    '    If Not extCheck.IsValid Then
+    '        e.CancelEdit = True
+    '        ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
+    '        Return
+    '    End If
+
+    '    ' ============================================
+    '    ' 5. Commit rename
+    '    ' ============================================
+    '    PerformRename(oldPath, e.Label)
+
+    'End Sub
+
+
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
     Handles lvFiles.AfterLabelEdit
 
         _isRenaming = False
 
-        '' ============================================
-        '' 1. Cancel rename triggered by Escape
-        '' ============================================
-        'If escCancelRename Then
-        '    e.CancelEdit = True
-        '    escCancelRename = False
-        '    Return
-        'End If
-
         ' ============================================
-        ' 2. User pressed Escape manually
+        ' 1. User pressed Escape → cancel rename
         ' ============================================
         If e.Label Is Nothing Then
-            ' User canceled rename with ESC
             e.CancelEdit = True
             Return
         End If
@@ -4549,9 +4593,20 @@ Public Class Form1
         Dim oldPath = CStr(item.Tag)
 
         ' ============================================
+        ' 2. No-op rename (same name) → cancel
+        ' ============================================
+        Dim newName = e.Label.Trim()
+        Dim oldName = Path.GetFileName(oldPath)
+
+        If String.Equals(newName, oldName, StringComparison.OrdinalIgnoreCase) Then
+            e.CancelEdit = True
+            Return
+        End If
+
+        ' ============================================
         ' 3. General validation
         ' ============================================
-        Dim result = ValidateNewName(e.Label)
+        Dim result = ValidateNewName(newName)
         If Not result.IsValid Then
             e.CancelEdit = True
             ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
@@ -4561,7 +4616,7 @@ Public Class Form1
         ' ============================================
         ' 4. Extension protection
         ' ============================================
-        Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
+        Dim extCheck = ValidateNewNameForFile(oldPath, newName)
         If Not extCheck.IsValid Then
             e.CancelEdit = True
             ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
@@ -4571,12 +4626,9 @@ Public Class Form1
         ' ============================================
         ' 5. Commit rename
         ' ============================================
-        PerformRename(oldPath, e.Label)
+        PerformRename(oldPath, newName)
 
     End Sub
-
-
-
 
 
 
@@ -5170,95 +5222,10 @@ Public Class Form1
         End Try
     End Sub
 
-    'Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
-
-    '    Dim newPath As String = Path.Combine(Path.GetDirectoryName(sourcePath), newName)
-
-    '    ' Rule 1: Path must be absolute (start with C:\ or similar).
-    '    ' Reject relative paths outright
-    '    If Not Path.IsPathRooted(sourcePath) Then
-    '        ShowStatus(StatusPad & IconDialog & " Rename failed: Path must be absolute. Example: C:\folder")
-    '        Exit Sub
-    '    End If
-
-    '    ' Rule 2: Protected paths are never renamed.
-    '    ' Check if the path is in the protected list
-    '    If IsProtectedPathOrFolder(sourcePath) Then
-    '        ' The path is protected; prevent rename
-
-    '        ' Show user the directory so they can see it wasn't renamed.
-    '        NavigateTo(sourcePath)
-
-    '        ' Notify the user of the prevention so the user knows why it didn't rename.
-    '        ShowStatus(StatusPad & IconProtect & "  Rename prevented for protected path or folder: " & sourcePath)
-
-    '        Exit Sub
-
-    '    End If
-
-    '    Try
-
-    '        ' Rule 3: If it’s a folder, rename the folder and show the new folder.
-    '        ' If source is a directory
-    '        If Directory.Exists(sourcePath) Then
-
-    '            ' Rename directory >>>>>>>>>>
-    '            Directory.Move(sourcePath, newPath)
-
-    '            ' Navigate to the renamed directory
-    '            NavigateTo(newPath)
-
-    '            ShowStatus(StatusPad & IconSuccess & " Renamed Folder to: " & newName)
-
-    '            ' Rule 4: If it’s a file, rename the file and show its folder.
-    '            ' If source is a file
-    '        ElseIf IO.File.Exists(sourcePath) Then
-
-    '            ' Rename file >>>>>>>>>>
-    '            IO.File.Move(sourcePath, newPath)
-
-    '            ' Navigate to the directory of the renamed file
-    '            NavigateTo(Path.GetDirectoryName(sourcePath))
-
-
-
-    '            ShowStatus(StatusPad & IconSuccess & " Renamed File to: " & newName)
-
-    '            ' Rule 5: If nothing exists at that path, explain the quoting rule for spaces.
-    '        Else
-    '            ' Path does not exist
-    '            'ShowStatus(StatusPad & IconError & " Renamed failed: No path. Paths with spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]"" Example:, rename ""C:\folder\old name.txt"" ""new name.txt""")
-    '            ShowStatus(
-    '                StatusPad & IconError &
-    '                "  Rename failed: No path provided. Paths containing spaces must be enclosed in quotes. Example: rename ""[source_path]"" ""[new_name]""   Example: rename ""C:\folder\old name.txt"" ""new name.txt"""
-    '            )
-    '        End If
-
-    '    Catch ex As Exception
-    '        ' Rule 6: If anything goes wrong,show a status message.
-    '        ShowStatus(StatusPad & IconError & " Rename failed: " & ex.Message)
-    '        Debug.WriteLine("RenameFileOrDirectory Error: " & ex.Message)
-    '    End Try
-
-    'End Sub
-
-
-
-
-
-
-
-
-
-    'Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
-    '    PerformRename(sourcePath, newName)
-    'End Sub
-
 
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
         PerformRename(sourcePath, newName)
     End Sub
-
 
 
     Private Function SearchHelp(term As String) As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
@@ -5275,10 +5242,6 @@ Public Class Form1
               End Function).
         ToList()
     End Function
-
-
-
-
 
 
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
@@ -5402,8 +5365,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub ShowSearchHud()
         Dim ResultPath As String = SearchResults(SearchIndex)
         Dim fileName As String = Path.GetFileNameWithoutExtension(ResultPath)
@@ -5472,225 +5433,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Function HasEnoughSpace(sourceFile As FileInfo, destinationPath As String) As Boolean
-    '    Try
-    '        Dim root = Path.GetPathRoot(destinationPath)
-    '        Dim drive As New DriveInfo(root)
-    '        Return sourceFile.Length <= drive.AvailableFreeSpace
-    '    Catch
-    '        ' If free space cannot be determined, allow the copy attempt
-    '        Return True
-    '    End Try
-    'End Function
-
-    'Private Sub EnsureHelpFileExists(helpFilePath As String)
-
-    '    Try
-    '        If IO.File.Exists(helpFilePath) Then
-    '            Exit Sub
-    '        End If
-
-    '        ShowStatus(StatusPad & IconDialog & "  Creating help file.")
-
-    '        Dim helpText As String = BuildHelpText()
-
-    '        Dim dir As String = Path.GetDirectoryName(helpFilePath)
-    '        If Not Directory.Exists(dir) Then
-    '            Directory.CreateDirectory(dir)
-    '        End If
-
-    '        IO.File.WriteAllText(helpFilePath, helpText)
-
-    '        ShowStatus(StatusPad & IconSuccess & "  Help file created.")
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & "  Unable to create help file: " & ex.Message)
-    '        Debug.WriteLine("Unable to create help file: " & ex.Message)
-    '    End Try
-
-    'End Sub
-
-    'Private Function BuildHelpText() As String
-    '    Dim sb As New StringBuilder()
-
-    '    ' ---------------------------------------------------------
-    '    ' HEADER
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("========================================")
-    '    sb.AppendLine("            File Explorer CLI")
-    '    sb.AppendLine("========================================")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Available Commands:")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' NAVIGATION
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("cd")
-    '    sb.AppendLine("cd [directory]")
-    '    sb.AppendLine("  Change directory to the specified path.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    cd C:\")
-    '    sb.AppendLine("    cd ""C:\My Folder""")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' DIRECTORY CREATION
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("mkdir, make, md")
-    '    sb.AppendLine("mkdir [directory_path]")
-    '    sb.AppendLine("  Create a new folder.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    mkdir C:\newfolder")
-    '    sb.AppendLine("    make ""C:\My New Folder""")
-    '    sb.AppendLine("    md C:\anotherfolder")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' COPY
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("copy, cp")
-    '    sb.AppendLine("copy [source] [destination]")
-    '    sb.AppendLine("  Copy a file or folder to a destination folder.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    copy C:\folderA\file.doc C:\folderB")
-    '    sb.AppendLine("    copy ""C:\folder A"" ""C:\folder B""")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' MOVE
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("move, mv")
-    '    sb.AppendLine("move [source] [destination]")
-    '    sb.AppendLine("  Move a file or folder to a new location.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    move C:\folderA\file.doc C:\folderB\file.doc")
-    '    sb.AppendLine("    move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc""")
-    '    sb.AppendLine("    move C:\folderA\folder C:\folderB\folder")
-    '    sb.AppendLine("    move ""C:\folder A"" ""C:\folder B\New Name""")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' DELETE
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("delete, rm")
-    '    sb.AppendLine("delete [file_or_directory]")
-    '    sb.AppendLine("  Delete a file or folder.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    delete C:\file.txt")
-    '    sb.AppendLine("    delete ""C:\My Folder""")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' RENAME
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("rename")
-    '    sb.AppendLine("rename [source_path] [new_name]")
-    '    sb.AppendLine("  Rename a file or directory.")
-    '    sb.AppendLine("  Paths with spaces must be enclosed in quotes.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    rename ""C:\folder\oldname.txt"" ""newname.txt""")
-    '    sb.AppendLine("    rename ""C:\folder\old name.txt"" ""new name.txt""")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' OPEN
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("open")
-    '    sb.AppendLine("open [file_or_directory]")
-    '    sb.AppendLine("  Open a file with the default application, or navigate into a folder.")
-    '    sb.AppendLine("  Examples:")
-    '    sb.AppendLine("    open C:\folder\file.txt")
-    '    sb.AppendLine("    open ""C:\My Folder""")
-    '    sb.AppendLine("    open")
-    '    sb.AppendLine("      (opens the selected file or folder)")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' TEXT FILE CREATION
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("text, txt")
-    '    sb.AppendLine("text [file_path]")
-    '    sb.AppendLine("  Create a new text file at the specified path.")
-    '    sb.AppendLine("  Example:")
-    '    sb.AppendLine("    text ""C:\folder\example.txt""")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' SEARCH
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("find, search")
-    '    sb.AppendLine("find [search_term]")
-    '    sb.AppendLine("  Search for files and folders in the current directory.")
-    '    sb.AppendLine("  Example:")
-    '    sb.AppendLine("    find document")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("findnext, searchnext, next")
-    '    sb.AppendLine("findnext")
-    '    sb.AppendLine("  Show the next search result from the previous search.")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' DISK FREE SPACE
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("df")
-    '    sb.AppendLine("df <drive_letter>:")
-    '    sb.AppendLine("  Show available free space on a drive.")
-    '    sb.AppendLine("  Example:")
-    '    sb.AppendLine("    df C:")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' EXIT
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("exit, quit, close, bye, shutdown, logoff, signout,")
-    '    sb.AppendLine("poweroff, halt, end, terminate, stop, leave,")
-    '    sb.AppendLine("farewell, adios, ciao, sayonara, goodbye, later")
-    '    sb.AppendLine("  Exit the application.")
-    '    sb.AppendLine()
-
-    '    ' ---------------------------------------------------------
-    '    ' HELP
-    '    ' ---------------------------------------------------------
-    '    sb.AppendLine("help, man, commands")
-    '    sb.AppendLine("  Opens this help file.")
-    '    sb.AppendLine()
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-    'Private Function BuildHelpText() As String
-    '    Dim sb As New StringBuilder()
-
-
-    '    For Each entry In CommandHelp
-    '        Dim meta = entry.Value
-
-    '        ' Aliases
-    '        sb.AppendLine(String.Join(", ", meta.Aliases))
-
-    '        ' Usage
-    '        sb.AppendLine(meta.Usage)
-
-    '        ' Description
-    '        sb.AppendLine("  " & meta.Description)
-
-    '        ' Examples
-    '        If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
-    '            sb.AppendLine("  Examples:")
-    '            For Each ex In meta.Examples
-    '                sb.AppendLine("    " & ex)
-    '            Next
-    '        End If
-
-    '        sb.AppendLine()
-    '    Next
-
-    '    Return sb.ToString()
-    'End Function
 
     Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
         Dim sb As New StringBuilder()
@@ -5716,38 +5458,6 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -6027,13 +5737,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
-
-
-
-
-
 
     ' ============================================================
     '  CONTEXTUAL TARGET RESOLVER FOR DESTRUCTIVE ACTIONS
@@ -6356,8 +6059,8 @@ Public Class Form1
                     Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
 
                     Dim rootNode As New TreeNode(displayText) With {
-                .Tag = di.RootDirectory.FullName
-            }
+                        .Tag = di.RootDirectory.FullName
+                    }
 
                     If di.DriveType = DriveType.CDRom Then
                         rootNode.ImageKey = "Optical"
@@ -6705,33 +6408,6 @@ Public Class Form1
     '  Pin / Unpin Actions
     ' ------------------------------------------------------------
 
-    'Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-    '    TogglePin(path)
-    'End Sub
-
-    'Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-    '    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
-    '    TogglePin(path)
-    'End Sub
-
-    'Private Sub Pin_Click(sender As Object, e As EventArgs)
-    '    Dim node = tvFolders.SelectedNode
-    '    If node Is Nothing Then Exit Sub
-    '    TogglePin(TryCast(node.Tag, String))
-    'End Sub
-
-    'Private Sub Unpin_Click(sender As Object, e As EventArgs)
-    '    Dim node = tvFolders.SelectedNode
-    '    If node Is Nothing Then Exit Sub
-    '    TogglePin(TryCast(node.Tag, String))
-    'End Sub
-
-
-
-
     Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
         TryPinOrUnpin(TryCast(lvFiles.SelectedItems(0).Tag, String))
@@ -6749,17 +6425,6 @@ Public Class Form1
     Private Sub Unpin_Click(sender As Object, e As EventArgs)
         TryPinOrUnpin(TryCast(tvFolders.SelectedNode?.Tag, String))
     End Sub
-
-
-
-
-
-
-
-
-
-
-
 
     ' ------------------------------------------------------------
     '  Toggle Pin
@@ -6864,145 +6529,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub HandleHelpCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Command Reference"
-    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-
-    '        Dim text As String = BuildHelpText()
-
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Text = text
-    '            RestoreAddressBar()
-
-    '            Return
-    '        End If
-
-    '        'HelpTextBox.Text = text
-    '        'ShowHelpPanelAnimated()
-
-    '        HelpTextBox.Text = text
-    '        ShowHelpPanelAnimated()
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               " Failed to display help information: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    '    'HelpTextBox.Focus()
-
-    'End Sub
-
-    'Private Sub HandleHelpCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Command Reference"
-    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-
-    '        Dim text As String = BuildHelpText()
-
-    '        ' ============================================
-    '        '   HELP PANEL ALREADY OPEN → UPDATE + KEEP FOCUS
-    '        ' ============================================
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Text = text
-    '            RestoreAddressBar()   ' now safe: it won't steal focus
-    '            FocusHelpText()
-
-    '            Return
-    '        End If
-
-    '        ' ============================================
-    '        '   HELP PANEL CLOSED → OPEN + FOCUS HELP TEXT
-    '        ' ============================================
-    '        HelpTextBox.Text = text
-    '        ShowHelpPanelAnimated()
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '           " Failed to display help information: " & ex.Message)
-    '    End Try
-
-    '    ' ============================================
-    '    '   RESTORE ADDRESS BAR (NO FOCUS STEALING)
-    '    ' ============================================
-    '    RestoreAddressBar()
-    'End Sub
-
-
-
-
-
-
-
-    'Private Sub HandleHelpCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Command Reference"
-    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-
-    '        Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
-
-    '        ' ============================================================
-    '        '  help → full help
-    '        '  help cd → filtered help
-    '        '  help copy move → multi-term search
-    '        ' ============================================================
-    '        If parts.Length > 1 Then
-    '            Dim terms = parts.Skip(1).Select(Function(t) t.Trim()).Where(Function(t) t <> "").ToList()
-
-    '            Dim filtered = CommandHelp.ToList()
-
-    '            For Each term In terms
-    '                filtered = SearchHelp(term)
-    '            Next
-
-    '            If filtered.Count = 0 Then
-    '                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
-    '                HelpTextBox.Text = "No matching commands were found."
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-
-    '            entries = filtered
-    '        End If
-
-
-
-
-    '        Dim text As String = BuildHelpText(entries)
-
-    '        ' ============================================================
-    '        '  HELP PANEL ALREADY OPEN → UPDATE + KEEP FOCUS
-    '        ' ============================================================
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Text = text
-    '            RestoreAddressBar()
-    '            FocusHelpText()
-    '            Return
-    '        End If
-
-    '        ' ============================================================
-    '        '  HELP PANEL CLOSED → OPEN + FOCUS HELP TEXT
-    '        ' ============================================================
-    '        HelpTextBox.Text = text
-    '        ShowHelpPanelAnimated()
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '       " Failed to display help information: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-
-
-
     Private Sub HandleHelpCommand(parts As String())
         Try
             HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
@@ -7013,15 +6539,19 @@ Public Class Form1
                           ToList()
 
             ' ------------------------------------------------------------
-            ' Special case: help keys → show keyboard shortcuts
+            ' Special case: help keys / help shortcuts → show keyboard shortcuts
             ' ------------------------------------------------------------
-            If terms.Count = 1 AndAlso terms(0).ToLower() = "keys" Then
-                HelpHeaderLabel.Text = "Keyboard Shortcuts"
-                HelpTextBox.Text = BuildShortcutHelpText()
-                ShowHelpPanelAnimated()
-                FocusHelpText()
-                RestoreAddressBar()
-                Return
+            If terms.Count = 1 Then
+                Dim t = terms(0).ToLowerInvariant()
+
+                If t = "keys" OrElse t = "shortcuts" Then
+                    HelpHeaderLabel.Text = "Keyboard Shortcuts"
+                    HelpTextBox.Text = BuildShortcutsHelp()
+                    ShowHelpPanelAnimated()
+                    FocusHelpText()
+                    RestoreAddressBar()
+                    Return
+                End If
             End If
 
             Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
@@ -7032,8 +6562,6 @@ Public Class Form1
                 For Each term In terms
                     filtered = filtered.
                     Union(SearchHelp(term)).
-                    Union(PrefixSearch(term)).
-                    Union(FuzzySearch(term)).
                     ToList()
                 Next
 
@@ -7053,20 +6581,17 @@ Public Class Form1
             End If
 
             Dim text As String = BuildHelpText(entries)
-            'If terms.Count > 0 Then text = HighlightTerms(text, terms)
 
             HelpTextBox.Text = text
 
             If HelpPanel.Visible Then
                 RestoreAddressBar()
                 FocusHelpText()
-                AutoScrollToFirstMatch()
                 Return
             End If
 
             ShowHelpPanelAnimated()
             FocusHelpText()
-            AutoScrollToFirstMatch()
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
@@ -7075,49 +6600,6 @@ Public Class Form1
 
         RestoreAddressBar()
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function HighlightTerms(text As String, terms As IEnumerable(Of String)) As String
-    '    Dim result = text
-    '    For Each term In terms
-    '        If String.IsNullOrWhiteSpace(term) Then Continue For
-    '        Dim t = Regex.Escape(term.Trim())
-    '        result = Regex.Replace(result, t, Function(m) $">>{m.Value}<<", RegexOptions.IgnoreCase)
-    '    Next
-    '    Return result
-    'End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub HandleDfCommand(parts As String())
         Try
@@ -7169,8 +6651,6 @@ Public Class Form1
 
         RestoreAddressBar()
     End Sub
-
-
 
 
     Private Sub HandleDrivesCommand(parts As String())
@@ -7269,8 +6749,6 @@ Public Class Form1
                 Return
             End If
 
-            'HelpTextBox.Text = text
-            'ShowHelpPanelAnimated()
 
             HelpTextBox.Text = text
             ShowHelpPanelAnimated()
@@ -7283,558 +6761,6 @@ Public Class Form1
 
         RestoreAddressBar()
     End Sub
-
-
-    '' Helper to append normal text
-    'Sub Add(text As String)
-    '    rtb.AppendText(text & Environment.NewLine)
-    'End Sub
-
-    '' Helper to insert a clickable link
-    'Sub AddLink(label As String, tag As String)
-    '    Dim start = rtb.TextLength
-    '    rtb.AppendText(label)
-    '    rtb.Select(start, label.Length)
-    '    rtb.SetSelectionLink(True)
-    '    rtb.SelectionColor = Color.Blue
-    '    rtb.SelectionUnderline = True
-    '    rtb.Select(rtb.TextLength, 0)
-    '    rtb.AppendText("   [" & tag & "]" & Environment.NewLine)
-    'End Sub
-
-
-    'Private Sub AddLine(rtb As RichTextBox, text As String)
-    '    rtb.AppendText(text & Environment.NewLine)
-    'End Sub
-
-    'Private Sub AddLink(rtb As RichTextBox, label As String, tag As String)
-    '    Dim start = rtb.TextLength
-
-    '    rtb.AppendText(label)
-    '    rtb.Select(start, label.Length)
-
-    '    rtb.SetSelectionLink(True)
-    '    rtb.SelectionColor = Color.Blue
-    '    rtb.SelectionFont = New Font(rtb.Font, FontStyle.Underline)
-
-    '    ' Reset selection
-    '    rtb.Select(rtb.TextLength, 0)
-
-    '    ' Add the anchor tag
-    '    rtb.AppendText("   [" & tag & "]" & Environment.NewLine)
-    'End Sub
-
-
-    '    Private Sub BuildAppManualTextWithLinks(rtb As RichTextBox)
-    '        rtb.Clear()
-    '        rtb.DetectUrls = False
-
-
-    '        ' ============================================================
-    '        '   HEADER
-    '        ' ============================================================
-    '        Add("File Explorer — Application Manual")
-    '    Add("=================================")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   TABLE OF CONTENTS (hyperlinked)
-    '    ' ============================================================
-    '    Add("Table of Contents")
-    '    Add("-----------------")
-
-    '    AddLink("  • Introduction ...........................................", "intro")
-    '    AddLink("  • Getting Started ........................................", "start")
-    '    AddLink("  • Features ...............................................", "features")
-    '    AddLink("  • Using the App ..........................................", "using")
-    '    AddLink("  • File Operations ........................................", "fileops")
-    '    AddLink("  • Search .................................................", "search")
-    '    AddLink("  • Keyboard Shortcuts .....................................", "shortcuts")
-    '    AddLink("  • Command Line Interface .................................", "cli")
-    '    AddLink("  • Drive Tools ............................................", "drives")
-    '    AddLink("  • Pinning System .........................................", "pinning")
-    '    AddLink("  • Manual & Help System ...................................", "manual")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   INTRODUCTION
-    '    ' ============================================================
-    '    Add("Introduction [intro]")
-    '    Add("--------------------")
-    '    Add("File Explorer is an open‑source file management application designed for clarity,")
-    '    Add("speed, and emotional safety. It blends a familiar Windows‑style interface with a")
-    '    Add("powerful command line, keyboard‑driven navigation, and a polished help drawer.")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   GETTING STARTED
-    '    ' ============================================================
-    '    Add("Getting Started [start]")
-    '    Add("-----------------------")
-    '    Add("Installation:")
-    '    Add("")
-    '    Add("  1. Clone the repository:")
-    '    Add("       git clone https://github.com/JoeLumbley/File-Explorer.git")
-    '    Add("")
-    '    Add("  2. Navigate to the project directory:")
-    '    Add("       cd File-Explorer")
-    '    Add("")
-    '    Add("  3. Build and run the application:")
-    '    Add("       dotnet build")
-    '    Add("       dotnet run")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   FEATURES
-    '    ' ============================================================
-    '    Add("Features [features]")
-    '    Add("-------------------")
-    '    Add("  • File Organization: Create, rename, and delete folders.")
-    '    Add("  • File Operations: Move, copy, delete, and rename files.")
-    '    Add("  • Search System: Fast in‑folder search with highlighting and HUD.")
-    '    Add("  • Keyboard Navigation: Explorer‑accurate shortcuts with repeat suppression.")
-    '    Add("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
-    '    Add("  • Drive Tools: df and drives commands for free‑space and usage bars.")
-    '    Add("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   USING THE APP
-    '    ' ============================================================
-    '    Add("Using the App [using]")
-    '    Add("---------------------")
-    '    Add("Main Interface:")
-    '    Add("")
-    '    Add("  • Navigation Pane — browse folders quickly.")
-    '    Add("  • File List — shows files and folders in the current directory.")
-    '    Add("  • Address Bar — displays and accepts paths.")
-    '    Add("  • Toolbar — quick access to common operations.")
-    '    Add("  • Help Drawer — slides in from the right for documentation.")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   FILE OPERATIONS
-    '    ' ============================================================
-    '    Add("File Operations [fileops]")
-    '    Add("-------------------------")
-    '    Add("Creating a Folder:")
-    '    Add("  • Click ""New Folder""")
-    '    Add("  • Press Ctrl+Shift+N")
-    '    Add("  • Or run:  mkdir <folder>")
-    '    Add("")
-    '    Add("Renaming:")
-    '    Add("  • Select an item and press F2")
-    '    Add("  • Or run:  rename <old> <new>")
-    '    Add("")
-    '    Add("Copying Files:")
-    '    Add("  • Ctrl+C → Ctrl+V")
-    '    Add("  • Or run:  copy <source> <destination>")
-    '    Add("")
-    '    Add("Moving Files:")
-    '    Add("  • Drag and drop")
-    '    Add("  • Or run:  move <source> <destination>")
-    '    Add("")
-    '    Add("Deleting Files:")
-    '    Add("  • Press Delete")
-    '    Add("  • Or run:  delete <path>")
-    '    Add("")
-    '    Add("Opening Files:")
-    '    Add("  • Press Enter")
-    '    Add("  • Or run:  open <path>")
-    '    Add("")
-    '    Add("Open With:")
-    '    Add("  • openwith notepad file.txt")
-    '    Add("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   SEARCH
-    '    ' ============================================================
-    '    Add("Search [search]")
-    '    Add("---------------")
-    '    Add("Starting a Search:")
-    '    Add("  • Press Ctrl+F")
-    '    Add("  • Or run:  find <term>")
-    '    Add("")
-    '    Add("Navigating Results:")
-    '    Add("  • F3 — next result")
-    '    Add("  • Shift+F3 — previous result")
-    '    Add("")
-    '    Add("Resetting Search:")
-    '    Add("  • Press Esc")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   KEYBOARD SHORTCUTS
-    '    ' ============================================================
-    '    Add("Keyboard Shortcuts [shortcuts]")
-    '    Add("------------------------------")
-    '    Add("Navigation:")
-    '    Add("  Alt+Left       Back")
-    '    Add("  Alt+Right      Forward")
-    '    Add("  Alt+Up         Parent folder")
-    '    Add("  Alt+Home       User folder")
-    '    Add("  F11            Full screen")
-    '    Add("")
-    '    Add("Address Bar:")
-    '    Add("  Ctrl+L         Focus")
-    '    Add("  Alt+D          Focus")
-    '    Add("  F4             Focus")
-    '    Add("  Esc            Reset")
-    '    Add("")
-    '    Add("Search:")
-    '    Add("  Ctrl+F         Find")
-    '    Add("  F3             Next")
-    '    Add("  Shift+F3       Previous")
-    '    Add("")
-    '    Add("Focus Navigation:")
-    '    Add("  Tab            Cycle forward")
-    '    Add("  Shift+Tab      Cycle backward")
-    '    Add("")
-    '    Add("File Operations:")
-    '    Add("  Enter          Open")
-    '    Add("  F2             Rename")
-    '    Add("  Delete         Delete")
-    '    Add("  Ctrl+Shift+N   New folder")
-    '    Add("")
-    '    Add("Pinning:")
-    '    Add("  Alt+P          Pin/unpin")
-    '    Add("")
-    '    Add("Refresh:")
-    '    Add("  F5             Refresh current folder")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   CLI
-    '    ' ============================================================
-    '    Add("Command Line Interface (CLI) [cli]")
-    '    Add("----------------------------------")
-    '    Add("File Explorer includes a built‑in command line with:")
-    '    Add("")
-    '    Add("  • Aliases (cp, mv, rm, etc.)")
-    '    Add("  • Direct path navigation")
-    '    Add("  • Manual pages (man <command>)")
-    '    Add("  • Auto‑generated help (help, help <command>)")
-    '    Add("")
-    '    Add("Examples:")
-    '    Add("  cd C:\Projects")
-    '    Add("  copy file.txt D:\Backup")
-    '    Add("  openwith notepad notes.txt")
-    '    Add("  find report")
-    '    Add("  findnext")
-    '    Add("  pin")
-    '    Add("  drives")
-    '    Add("  df C:")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   DRIVE TOOLS
-    '    ' ============================================================
-    '    Add("Drive Tools [drives]")
-    '    Add("--------------------")
-    '    Add("df:")
-    '    Add("  Shows free space for a specific drive.")
-    '    Add("    df C:")
-    '    Add("")
-    '    Add("drives:")
-    '    Add("  Shows all drives with graphical usage bars.")
-    '    Add("    drives")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   PINNING SYSTEM
-    '    ' ============================================================
-    '    Add("Pinning System [pinning]")
-    '    Add("------------------------")
-    '    Add("Pin any folder:")
-    '    Add("  pin C:\Projects")
-    '    Add("  pin")
-    '    Add("")
-    '    Add("Pinned folders appear in the sidebar and persist across sessions.")
-    '    Add("")
-
-    '    ' ============================================================
-    '    '   MANUAL SYSTEM
-    '    ' ============================================================
-    '    Add("Manual & Help System [manual]")
-    '    Add("-----------------------------")
-    '    Add("Help:")
-    '    Add("  help")
-    '    Add("  help open")
-    '    Add("  help copy")
-    '    Add("")
-    '    Add("Manual Pages:")
-    '    Add("  man open")
-    '    Add("  man find")
-    '    Add("  man df")
-    '    Add("")
-    '    Add("Manual pages include:")
-    '    Add("  NAME")
-    '    Add("  SYNOPSIS")
-    '    Add("  DESCRIPTION")
-    '    Add("  ALIASES")
-    '    Add("  EXAMPLES")
-    '    Add("  SEE ALSO")
-    '    Add("")
-    'End Sub
-
-
-
-    'Private Function BuildAppManualText() As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    ' ============================================================
-    '    '   HEADER
-    '    ' ============================================================
-    '    sb.AppendLine("File Explorer — Application Manual")
-    '    sb.AppendLine("=================================")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   TABLE OF CONTENTS (with link tags)
-    '    ' ============================================================
-    '    sb.AppendLine("Table of Contents")
-    '    sb.AppendLine("-----------------")
-    '    sb.AppendLine("  • Introduction ........................................... [intro]")
-    '    sb.AppendLine("  • Getting Started ........................................ [start]")
-    '    sb.AppendLine("  • Features ............................................... [features]")
-    '    sb.AppendLine("  • Using the App .......................................... [using]")
-    '    sb.AppendLine("  • File Operations ........................................ [fileops]")
-    '    sb.AppendLine("  • Search ................................................. [search]")
-    '    sb.AppendLine("  • Keyboard Shortcuts ..................................... [shortcuts]")
-    '    sb.AppendLine("  • Command Line Interface ................................. [cli]")
-    '    sb.AppendLine("  • Drive Tools ............................................ [drives]")
-    '    sb.AppendLine("  • Pinning System ......................................... [pinning]")
-    '    sb.AppendLine("  • Manual & Help System ................................... [manual]")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   INTRODUCTION
-    '    ' ============================================================
-    '    sb.AppendLine("Introduction [intro]")
-    '    sb.AppendLine("--------------------")
-    '    sb.AppendLine("File Explorer is an open‑source file management application designed for clarity,")
-    '    sb.AppendLine("speed, and emotional safety. It blends a familiar Windows‑style interface with a")
-    '    sb.AppendLine("powerful command line, keyboard‑driven navigation, and a polished help drawer.")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   GETTING STARTED
-    '    ' ============================================================
-    '    sb.AppendLine("Getting Started [start]")
-    '    sb.AppendLine("-----------------------")
-    '    sb.AppendLine("Installation:")
-    '    sb.AppendLine()
-    '    sb.AppendLine("  1. Clone the repository:")
-    '    sb.AppendLine("       git clone https://github.com/JoeLumbley/File-Explorer.git")
-    '    sb.AppendLine()
-    '    sb.AppendLine("  2. Navigate to the project directory:")
-    '    sb.AppendLine("       cd File-Explorer")
-    '    sb.AppendLine()
-    '    sb.AppendLine("  3. Build and run the application:")
-    '    sb.AppendLine("       dotnet build")
-    '    sb.AppendLine("       dotnet run")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   FEATURES
-    '    ' ============================================================
-    '    sb.AppendLine("Features [features]")
-    '    sb.AppendLine("-------------------")
-    '    sb.AppendLine("  • File Organization: Create, rename, and delete folders.")
-    '    sb.AppendLine("  • File Operations: Move, copy, delete, and rename files.")
-    '    sb.AppendLine("  • Search System: Fast in‑folder search with highlighting and HUD.")
-    '    sb.AppendLine("  • Keyboard Navigation: Explorer‑accurate shortcuts with repeat suppression.")
-    '    sb.AppendLine("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
-    '    sb.AppendLine("  • Drive Tools: df and drives commands for free‑space and usage bars.")
-    '    sb.AppendLine("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   USING THE APP
-    '    ' ============================================================
-    '    sb.AppendLine("Using the App [using]")
-    '    sb.AppendLine("---------------------")
-    '    sb.AppendLine("Main Interface:")
-    '    sb.AppendLine()
-    '    sb.AppendLine("  • Navigation Pane — browse folders quickly.")
-    '    sb.AppendLine("  • File List — shows files and folders in the current directory.")
-    '    sb.AppendLine("  • Address Bar — displays and accepts paths.")
-    '    sb.AppendLine("  • Toolbar — quick access to common operations.")
-    '    sb.AppendLine("  • Help Drawer — slides in from the right for documentation.")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   FILE OPERATIONS
-    '    ' ============================================================
-    '    sb.AppendLine("File Operations [fileops]")
-    '    sb.AppendLine("-------------------------")
-    '    sb.AppendLine("Creating a Folder:")
-    '    sb.AppendLine("  • Click ""New Folder""")
-    '    sb.AppendLine("  • Press Ctrl+Shift+N")
-    '    sb.AppendLine("  • Or run:  mkdir <folder>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Renaming:")
-    '    sb.AppendLine("  • Select an item and press F2")
-    '    sb.AppendLine("  • Or run:  rename <old> <new>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Copying Files:")
-    '    sb.AppendLine("  • Ctrl+C → Ctrl+V")
-    '    sb.AppendLine("  • Or run:  copy <source> <destination>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Moving Files:")
-    '    sb.AppendLine("  • Drag and drop")
-    '    sb.AppendLine("  • Or run:  move <source> <destination>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Deleting Files:")
-    '    sb.AppendLine("  • Press Delete")
-    '    sb.AppendLine("  • Or run:  delete <path>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Opening Files:")
-    '    sb.AppendLine("  • Press Enter")
-    '    sb.AppendLine("  • Or run:  open <path>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Open With:")
-    '    sb.AppendLine("  • openwith notepad file.txt")
-    '    sb.AppendLine("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   SEARCH
-    '    ' ============================================================
-    '    sb.AppendLine("Search [search]")
-    '    sb.AppendLine("---------------")
-    '    sb.AppendLine("Starting a Search:")
-    '    sb.AppendLine("  • Press Ctrl+F")
-    '    sb.AppendLine("  • Or run:  find <term>")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Navigating Results:")
-    '    sb.AppendLine("  • F3 — next result")
-    '    sb.AppendLine("  • Shift+F3 — previous result")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Resetting Search:")
-    '    sb.AppendLine("  • Press Esc")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   KEYBOARD SHORTCUTS
-    '    ' ============================================================
-    '    sb.AppendLine("Keyboard Shortcuts [shortcuts]")
-    '    sb.AppendLine("------------------------------")
-    '    sb.AppendLine("Navigation:")
-    '    sb.AppendLine("  Alt+Left       Back")
-    '    sb.AppendLine("  Alt+Right      Forward")
-    '    sb.AppendLine("  Alt+Up         Parent folder")
-    '    sb.AppendLine("  Alt+Home       User folder")
-    '    sb.AppendLine("  F11            Full screen")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Address Bar:")
-    '    sb.AppendLine("  Ctrl+L         Focus")
-    '    sb.AppendLine("  Alt+D          Focus")
-    '    sb.AppendLine("  F4             Focus")
-    '    sb.AppendLine("  Esc            Reset")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Search:")
-    '    sb.AppendLine("  Ctrl+F         Find")
-    '    sb.AppendLine("  F3             Next")
-    '    sb.AppendLine("  Shift+F3       Previous")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Focus Navigation:")
-    '    sb.AppendLine("  Tab            Cycle forward")
-    '    sb.AppendLine("  Shift+Tab      Cycle backward")
-    '    sb.AppendLine()
-    '    sb.AppendLine("File Operations:")
-    '    sb.AppendLine("  Enter          Open")
-    '    sb.AppendLine("  F2             Rename")
-    '    sb.AppendLine("  Delete         Delete")
-    '    sb.AppendLine("  Ctrl+Shift+N   New folder")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Pinning:")
-    '    sb.AppendLine("  Alt+P          Pin/unpin")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Refresh:")
-    '    sb.AppendLine("  F5             Refresh current folder")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   CLI
-    '    ' ============================================================
-    '    sb.AppendLine("Command Line Interface (CLI) [cli]")
-    '    sb.AppendLine("----------------------------------")
-    '    sb.AppendLine("File Explorer includes a built‑in command line with:")
-    '    sb.AppendLine()
-    '    sb.AppendLine("  • Aliases (cp, mv, rm, etc.)")
-    '    sb.AppendLine("  • Direct path navigation")
-    '    sb.AppendLine("  • Manual pages (man <command>)")
-    '    sb.AppendLine("  • Auto‑generated help (help, help <command>)")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Examples:")
-    '    sb.AppendLine("  cd C:\Projects")
-    '    sb.AppendLine("  copy file.txt D:\Backup")
-    '    sb.AppendLine("  openwith notepad notes.txt")
-    '    sb.AppendLine("  find report")
-    '    sb.AppendLine("  findnext")
-    '    sb.AppendLine("  pin")
-    '    sb.AppendLine("  drives")
-    '    sb.AppendLine("  df C:")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   DRIVE TOOLS
-    '    ' ============================================================
-    '    sb.AppendLine("Drive Tools [drives]")
-    '    sb.AppendLine("--------------------")
-    '    sb.AppendLine("df:")
-    '    sb.AppendLine("  Shows free space for a specific drive.")
-    '    sb.AppendLine("    df C:")
-    '    sb.AppendLine()
-    '    sb.AppendLine("drives:")
-    '    sb.AppendLine("  Shows all drives with graphical usage bars.")
-    '    sb.AppendLine("    drives")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   PINNING SYSTEM
-    '    ' ============================================================
-    '    sb.AppendLine("Pinning System [pinning]")
-    '    sb.AppendLine("------------------------")
-    '    sb.AppendLine("Pin any folder:")
-    '    sb.AppendLine("  pin C:\Projects")
-    '    sb.AppendLine("  pin")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Pinned folders appear in the sidebar and persist across sessions.")
-    '    sb.AppendLine()
-
-    '    ' ============================================================
-    '    '   MANUAL SYSTEM
-    '    ' ============================================================
-    '    sb.AppendLine("Manual & Help System [manual]")
-    '    sb.AppendLine("-----------------------------")
-    '    sb.AppendLine("Help:")
-    '    sb.AppendLine("  help")
-    '    sb.AppendLine("  help open")
-    '    sb.AppendLine("  help copy")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Manual Pages:")
-    '    sb.AppendLine("  man open")
-    '    sb.AppendLine("  man find")
-    '    sb.AppendLine("  man df")
-    '    sb.AppendLine()
-    '    sb.AppendLine("Manual pages include:")
-    '    sb.AppendLine("  NAME")
-    '    sb.AppendLine("  SYNOPSIS")
-    '    sb.AppendLine("  DESCRIPTION")
-    '    sb.AppendLine("  ALIASES")
-    '    sb.AppendLine("  EXAMPLES")
-    '    sb.AppendLine("  SEE ALSO")
-    '    sb.AppendLine()
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-
 
 
     Private Sub HandleManualCommand(parts As String())
@@ -8087,310 +7013,6 @@ Public Class Form1
 
 
 
-
-
-    'Private Function BuildShortcutsHelp() As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    sb.AppendLine("Navigation")
-    '    sb.AppendLine("==========")
-    '    sb.AppendLine("  Alt + ←           Go back")
-    '    sb.AppendLine("  Alt + →           Go forward")
-    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
-    '    sb.AppendLine("  Ctrl + L          Focus address bar")
-    '    sb.AppendLine("  F11               Toggle full screen")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("File Operations")
-    '    sb.AppendLine("===============")
-    '    sb.AppendLine("  F2                Rename selected item")
-    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
-    '    sb.AppendLine("  Ctrl + C          Copy")
-    '    sb.AppendLine("  Ctrl + V          Paste")
-    '    sb.AppendLine("  Ctrl + X          Cut")
-    '    sb.AppendLine("  Ctrl + A          Select all")
-    '    sb.AppendLine("  Delete            Delete selected item")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("Search")
-    '    sb.AppendLine("======")
-    '    sb.AppendLine("  Ctrl + F          Search")
-    '    sb.AppendLine("  F3                Find next")
-    '    sb.AppendLine("  Esc               Clear search / reset UI")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("View")
-    '    sb.AppendLine("====")
-    '    sb.AppendLine("  F5                Refresh")
-    '    sb.AppendLine("  Alt + P           Toggle pin panel")
-    '    sb.AppendLine()
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-
-    'Private Function BuildShortcutsHelp() As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    sb.AppendLine("Navigation")
-    '    sb.AppendLine("==========")
-    '    sb.AppendLine("  Alt + ←           Go back")
-    '    sb.AppendLine("  Alt + →           Go forward")
-    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
-    '    sb.AppendLine("  Alt + Home        Go to user profile folder")
-    '    sb.AppendLine("  F11               Toggle full screen")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("Address Bar")
-    '    sb.AppendLine("===========")
-    '    sb.AppendLine("  Ctrl + L          Focus address bar")
-    '    sb.AppendLine("  Alt + D           Focus address bar")
-    '    sb.AppendLine("  F4                Focus address bar")
-    '    sb.AppendLine("  Esc               Reset address bar")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("Search")
-    '    sb.AppendLine("======")
-    '    sb.AppendLine("  Ctrl + F          Start search")
-    '    sb.AppendLine("  F3                Find next")
-    '    sb.AppendLine("  Shift + F3        Find previous")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("Focus Navigation")
-    '    sb.AppendLine("================")
-    '    sb.AppendLine("  Tab               Cycle focus forward")
-    '    sb.AppendLine("  Shift + Tab       Cycle focus backward")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("File Operations")
-    '    sb.AppendLine("===============")
-    '    sb.AppendLine("  Enter             Open selected item")
-    '    sb.AppendLine("  F2                Rename selected item")
-    '    sb.AppendLine("  Delete            Delete selected item")
-    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("Pinning")
-    '    sb.AppendLine("=======")
-    '    sb.AppendLine("  Alt + P           Pin or unpin current folder")
-    '    sb.AppendLine()
-
-    '    sb.AppendLine("Refresh")
-    '    sb.AppendLine("=======")
-    '    sb.AppendLine("  F5                Refresh current folder")
-    '    sb.AppendLine()
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-
-    'Private Function PrefixSearch(term As String) _
-    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '    term = term.ToLowerInvariant()
-
-    '    Return CommandHelp.
-    '    Where(Function(entry)
-    '              entry.Key.ToLower().StartsWith(term) OrElse
-    '              entry.Value.Aliases.Any(Function(a) a.ToLower().StartsWith(term))
-    '          End Function).
-    '    ToList()
-    'End Function
-
-    '    Private Function PrefixSearch(term As String) _
-    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '        ' Normalize the search term to lowercase
-    '        term = term.ToLowerInvariant()
-
-    '        ' Perform the search using LINQ
-    '        Return CommandHelp.
-    '    Where(Function(entry)
-    '              ' Check if the key or any aliases start with the search term
-    '              entry.Key.ToLower().StartsWith(term) OrElse
-    '              entry.Value.Aliases.Any(Function(a) a.ToLower().StartsWith(term))
-    '          End Function).
-    '    ToList() ' Convert the result to a list
-    '    End Function
-
-    Private Function PrefixSearch(term As String) _
-As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-        ' Normalize the search term to lowercase
-        term = term.ToLowerInvariant()
-
-        ' Perform the search using LINQ
-        Return CommandHelp.
-    Where(Function(entry)
-              ' Check if the key or any aliases start with the search term
-              Return entry.Key.ToLower().StartsWith(term) OrElse
-                     entry.Value.Aliases.Any(Function(a) a.ToLower().StartsWith(term))
-          End Function).
-    ToList() ' Convert the result to a list
-    End Function
-
-
-
-    'Private Function FuzzySearch(term As String) _
-    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '    term = term.ToLowerInvariant()
-
-    '    Return CommandHelp.
-    '    Where(Function(entry)
-    '              Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
-    '              entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
-    '          End Function).
-    '    ToList()
-    'End Function
-
-
-    'Private Function FuzzySearch(term As String) _
-    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '    term = term.ToLowerInvariant()
-
-    '    Return CommandHelp.
-    '    Where(Function(entry)
-    '              Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
-    '              entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
-    '          End Function).
-    '    ToList()
-
-
-
-    'End Function
-
-
-    Private Function FuzzySearch(term As String) _
-As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-        ' Normalize the search term to lowercase
-        term = term.ToLowerInvariant()
-
-        ' Perform the fuzzy search using LINQ
-        Return CommandHelp.
-    Where(Function(entry)
-              ' Check if the Levenshtein distance is within the allowed threshold
-              Return Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
-                     entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
-          End Function).
-    ToList() ' Convert the result to a list
-    End Function
-
-    '    Private Function FuzzySearch(term As String) _
-    'As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '        term = term.ToLowerInvariant()
-
-    '        Return CommandHelp.
-    '        Where(Function(entry)
-    '                  Levenshtein(entry.Key.ToLower(), term) <= 2 OrElse
-    '                  entry.Value.Aliases.Any(Function(a) Levenshtein(a.ToLower(), term) <= 2)
-    '              End Function).
-    '        ToList()
-    '    End Function
-
-
-
-
-
-
-    Private Function Levenshtein(a As String, b As String) As Integer
-        Dim n = a.Length, m = b.Length
-        Dim d(n, m) As Integer
-
-        For i = 0 To n : d(i, 0) = i : Next
-        For j = 0 To m : d(0, j) = j : Next
-
-        For i = 1 To n
-            For j = 1 To m
-                Dim cost = If(a(i - 1) = b(j - 1), 0, 1)
-                d(i, j) = Math.Min(Math.Min(
-                d(i - 1, j) + 1,
-                d(i, j - 1) + 1),
-                d(i - 1, j - 1) + cost)
-            Next
-        Next
-
-        Return d(n, m)
-    End Function
-
-
-
-
-
-
-    'Private Function HighlightTerms(text As String, terms As IEnumerable(Of String)) As String
-    '    Dim result = text
-    '    For Each term In terms
-    '        If String.IsNullOrWhiteSpace(term) Then Continue For
-    '        Dim pattern = Regex.Escape(term)
-    '        result = Regex.Replace(result, pattern,
-    '                           Function(m) $">>{m.Value}<<",
-    '                           RegexOptions.IgnoreCase)
-    '    Next
-    '    Return result
-    'End Function
-
-
-
-    Private Function HighlightTerms(text As String, terms As IEnumerable(Of String)) As String
-        Dim result = text
-        For Each term In terms
-            If String.IsNullOrWhiteSpace(term) Then Continue For
-            Dim pattern = Regex.Escape(term)
-            result = Regex.Replace(result, pattern,
-                               Function(m) $">>{m.Value}<<",
-                               RegexOptions.IgnoreCase)
-        Next
-        Return result
-    End Function
-
-
-
-
-
-
-
-
-
-
-
-    Private Sub AutoScrollToFirstMatch()
-        Dim idx = HelpTextBox.Text.IndexOf(">>", StringComparison.OrdinalIgnoreCase)
-        If idx >= 0 Then
-            HelpTextBox.SelectionStart = idx
-            HelpTextBox.ScrollToCaret()
-        End If
-    End Sub
-
-
-
-
-
-
-
-    Private Function BuildShortcutHelpText() As String
-        Dim sb As New StringBuilder()
-        sb.AppendLine("Keyboard Shortcuts")
-        sb.AppendLine()
-        sb.AppendLine("Ctrl+F     Start search")
-        sb.AppendLine("F3         Find next")
-        sb.AppendLine("Shift+F3   Find previous")
-        sb.AppendLine("Ctrl+L     Focus address bar")
-        sb.AppendLine("Alt+Up     Parent folder")
-        sb.AppendLine("Alt+Left   Back")
-        sb.AppendLine("Alt+Right  Forward")
-        sb.AppendLine("F5         Refresh")
-        sb.AppendLine("F11        Full screen")
-        Return sb.ToString()
-    End Function
-
     Private Function BuildShortcutsHelp() As String
         Dim sb As New Text.StringBuilder()
 
@@ -8467,12 +7089,6 @@ As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Descri
     End Function
 
 
-
-
-
-
-
-
     Private Sub ShowDriveOverview()
         HelpHeaderLabel.Text = "Drive Overview"
 
@@ -8496,9 +7112,6 @@ As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Descri
             End If
         Next
 
-        'ShowHelpPanelAnimated()
-
-        'HelpTextBox.Text = Text
         ShowHelpPanelAnimated()
         FocusHelpText()
 
@@ -8539,30 +7152,6 @@ As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Descri
         End Try
     End Sub
 
-
-
-
-    Private Sub DrawPieChart(g As Graphics, rect As Rectangle, used As Long, total As Long)
-        g.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
-
-        Dim usedAngle As Single = CSng((used / total) * 360.0F)
-
-        Using usedBrush As New SolidBrush(Color.FromArgb(255, 120, 120))
-            g.FillPie(usedBrush, rect, 0, usedAngle)
-        End Using
-
-        Using freeBrush As New SolidBrush(Color.FromArgb(120, 200, 120))
-            g.FillPie(freeBrush, rect, usedAngle, 360 - usedAngle)
-        End Using
-
-        Using borderPen As New Pen(Color.Black, 1)
-            g.DrawEllipse(borderPen, rect)
-        End Using
-    End Sub
-
-
-
-
     Private Function BuildUsageBar(used As Long, total As Long, Optional width As Integer = 10) As String
         If total <= 0 Then Return ""
 
@@ -8572,7 +7161,6 @@ As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Descri
 
         Return New String("⏹"c, filled) & New String("⬜"c, empty)
     End Function
-
 
     Private Sub InitializeHelpPanel()
 
@@ -8640,7 +7228,6 @@ As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Descri
         SplitContainer1.Panel2.Controls.Add(HelpPanel)
 
     End Sub
-
 
 
     Private Sub ShowHelpPanelAnimated()
