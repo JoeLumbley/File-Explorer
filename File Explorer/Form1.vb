@@ -301,188 +301,389 @@ Public Class Form1
         {"keys", AddressOf HandleShortcutsCommand}
     }
 
+    'Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    {"cd",
+    '        (
+    '            {"cd"},
+    '            "cd [directory]",
+    '            "Change directory to the specified path.",
+    '            {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"copy",
+    '        (
+    '            {"copy", "cp"},
+    '            "copy [source] [destination]",
+    '            "Copy a file or folder to a destination folder.",
+    '            {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            }
+    '        )
+    '    },
+    '    {"delete",
+    '        (
+    '            {"delete", "rm"},
+    '            "delete [file_or_directory]",
+    '            "Delete a file or folder.",
+    '            {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"df",
+    '        (
+    '            {"df"},
+    '            "df <drive_letter>:",
+    '            "Display the available free space on the specified drive.",
+    '            {
+    '                "df C:",
+    '                "df D:",
+    '                "df E:"
+    '            }
+    '        )
+    '    },
+    '    {"drives",
+    '        (
+    '            {"drives"},
+    '            "drives",
+    '            "Show an overview of all drives, including free space bars.",
+    '            {
+    '                "drives"
+    '            }
+    '        )
+    '    },
+    '    {"exit",
+    '        (
+    '            {
+    '                "exit", "quit", "close", "stop", "halt", "end", "signout",
+    '                "poweroff", "bye", "terminate"
+    '            },
+    '            "exit",
+    '            "Exit the application.",
+    '            {}
+    '        )
+    '    },
+    '    {"find",
+    '        (
+    '            {"find", "search"},
+    '            "find [search_term]",
+    '            "Search for files and folders in the current directory.",
+    '            {
+    '                "find document"
+    '            }
+    '        )
+    '    },
+    '    {"findnext",
+    '        (
+    '            {"findnext", "searchnext", "next"},
+    '            "findnext",
+    '            "Show the next search result from the previous search.",
+    '            {}
+    '        )
+    '    },
+    '    {"help",
+    '        (
+    '            {"help", "commands", "?"},
+    '            "help",
+    '            "Show this help information.",
+    '            {}
+    '        )
+    '    },
+    '    {"man",
+    '        (
+    '            {"man", "manual", "appmanual"},
+    '            "manual",
+    '            "Show the full application manual.",
+    '            {
+    '                "manual",
+    '                "appmanual"
+    '            }
+    '        )
+    '    },
+    '    {"mkdir",
+    '        (
+    '            {"mkdir", "make", "md"},
+    '            "mkdir [directory_path]",
+    '            "Create a new folder.",
+    '            {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            }
+    '        )
+    '    },
+    '    {"move",
+    '        (
+    '            {"move", "mv"},
+    '            "move [source] [destination]",
+    '            "Move a file or folder to a new location.",
+    '            {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            }
+    '        )
+    '    },
+    '    {"open",
+    '        (
+    '            {"open"},
+    '            "open [file_or_directory]",
+    '            "Open a file or navigate into a folder.",
+    '            {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"pin",
+    '        (
+    '            {"pin"},
+    '            "pin [folder_path]",
+    '            "Pin or unpin a folder.",
+    '            {
+    '                "pin C:\Projects",
+    '                "pin ""C:\My Documents""",
+    '                "pin"
+    '            }
+    '        )
+    '    },
+    '    {"rename",
+    '        (
+    '            {"rename", "rn"},
+    '            "rename [source_path] [new_name]",
+    '            "Rename a file or directory.",
+    '            {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            }
+    '        )
+    '    },
+    '    {"shortcuts",
+    '        (
+    '            {"shortcuts", "keys"},
+    '            "shortcuts",
+    '            "Show a list of all keyboard shortcuts.",
+    '            {
+    '                "shortcuts",
+    '                "keys"
+    '            }
+    '        )
+    '    },
+    '    {"text",
+    '        (
+    '            {"text", "txt"},
+    '            "text [file_path]",
+    '            "Create a new text file.",
+    '            {
+    '                "text ""C:\folder\example.txt"""
+    '            }
+    '        )
+    '    }
+    '}
+
+
+
+
+
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
-        {"cd",
-            (
-                {"cd"},
-                "cd [directory]",
-                "Change directory to the specified path.",
-                {
-                    "cd C:\",
-                    "cd ""C:\My Folder"""
-                }
-            )
-        },
-        {"copy",
-            (
-                {"copy", "cp"},
-                "copy [source] [destination]",
-                "Copy a file or folder to a destination folder.",
-                {
-                    "copy C:\folderA\file.doc C:\folderB",
-                    "copy ""C:\folder A"" ""C:\folder B"""
-                }
-            )
-        },
-        {"delete",
-            (
-                {"delete", "rm"},
-                "delete [file_or_directory]",
-                "Delete a file or folder.",
-                {
-                    "delete C:\file.txt",
-                    "delete ""C:\My Folder"""
-                }
-            )
-        },
-        {"df",
-            (
-                {"df"},
-                "df <drive_letter>:",
-                "Display the available free space on the specified drive.",
-                {
-                    "df C:",
-                    "df D:",
-                    "df E:"
-                }
-            )
-        },
-        {"drives",
-            (
-                {"drives"},
-                "drives",
-                "Show an overview of all drives, including free space bars.",
-                {
-                    "drives"
-                }
-            )
-        },
-        {"exit",
-            (
-                {
-                    "exit", "quit", "close", "stop", "halt", "end", "signout",
-                    "poweroff", "bye", "terminate"
-                },
-                "exit",
-                "Exit the application.",
-                {}
-            )
-        },
-        {"find",
-            (
-                {"find", "search"},
-                "find [search_term]",
-                "Search for files and folders in the current directory.",
-                {
-                    "find document"
-                }
-            )
-        },
-        {"findnext",
-            (
-                {"findnext", "searchnext", "next"},
-                "findnext",
-                "Show the next search result from the previous search.",
-                {}
-            )
-        },
-        {"help",
-            (
-                {"help", "commands", "?"},
+    {"cd",
+        (
+            {"cd"},
+            "cd [directory]",
+            "Change directory to the specified path.",
+            {
+                "cd C:\",
+                "cd ""C:\My Folder"""
+            }
+        )
+    },
+    {"copy",
+        (
+            {"copy", "cp"},
+            "copy [source] [destination]",
+            "Copy a file or folder to a destination folder.",
+            {
+                "copy C:\folderA\file.doc C:\folderB",
+                "copy ""C:\folder A"" ""C:\folder B"""
+            }
+        )
+    },
+    {"delete",
+        (
+            {"delete", "rm"},
+            "delete [file_or_directory]",
+            "Delete a file or folder.",
+            {
+                "delete C:\file.txt",
+                "delete ""C:\My Folder"""
+            }
+        )
+    },
+    {"df",
+        (
+            {"df"},
+            "df <drive_letter>:",
+            "Display the available free space on the specified drive.",
+            {
+                "df C:",
+                "df D:",
+                "df E:"
+            }
+        )
+    },
+    {"drives",
+        (
+            {"drives"},
+            "drives",
+            "Show an overview of all drives, including free space bars.",
+            {
+                "drives"
+            }
+        )
+    },
+    {"exit",
+        (
+            {
+                "exit", "quit", "close", "stop", "halt", "end", "signout",
+                "poweroff", "bye", "terminate"
+            },
+            "exit",
+            "Exit the application.",
+            {}
+        )
+    },
+    {"find",
+        (
+            {"find", "search"},
+            "find [search_term]",
+            "Search for files and folders in the current directory.",
+            {
+                "find document"
+            }
+        )
+    },
+    {"findnext",
+        (
+            {"findnext", "searchnext", "next"},
+            "findnext",
+            "Show the next search result from the previous search.",
+            {}
+        )
+    },
+    {"help",
+        (
+            {"help", "commands", "?"},
+            "help [search_term]",
+            "Show help information for commands. Use 'help [command]' to get specific assistance.",
+            {
                 "help",
-                "Show this help information.",
-                {}
-            )
-        },
-        {"man",
-            (
-                {"man", "manual", "appmanual"},
+                "help cd",
+                "help copy"
+            }
+        )
+    },
+    {"man",
+        (
+            {"man", "manual", "appmanual"},
+            "manual",
+            "Show the full application manual.",
+            {
                 "manual",
-                "Show the full application manual.",
-                {
-                    "manual",
-                    "appmanual"
-                }
-            )
-        },
-        {"mkdir",
-            (
-                {"mkdir", "make", "md"},
-                "mkdir [directory_path]",
-                "Create a new folder.",
-                {
-                    "mkdir C:\newfolder",
-                    "make ""C:\My New Folder""",
-                    "md C:\anotherfolder"
-                }
-            )
-        },
-        {"move",
-            (
-                {"move", "mv"},
-                "move [source] [destination]",
-                "Move a file or folder to a new location.",
-                {
-                    "move C:\folderA\file.doc C:\folderB\file.doc",
-                    "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-                }
-            )
-        },
-        {"open",
-            (
-                {"open"},
-                "open [file_or_directory]",
-                "Open a file or navigate into a folder.",
-                {
-                    "open C:\folder\file.txt",
-                    "open ""C:\My Folder"""
-                }
-            )
-        },
-        {"pin",
-            (
-                {"pin"},
-                "pin [folder_path]",
-                "Pin or unpin a folder.",
-                {
-                    "pin C:\Projects",
-                    "pin ""C:\My Documents""",
-                    "pin"
-                }
-            )
-        },
-        {"rename",
-            (
-                {"rename", "rn"},
-                "rename [source_path] [new_name]",
-                "Rename a file or directory.",
-                {
-                    "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-                }
-            )
-        },
-        {"shortcuts",
-            (
-                {"shortcuts", "keys"},
+                "appmanual"
+            }
+        )
+    },
+    {"mkdir",
+        (
+            {"mkdir", "make", "md"},
+            "mkdir [directory_path]",
+            "Create a new folder.",
+            {
+                "mkdir C:\newfolder",
+                "make ""C:\My New Folder""",
+                "md C:\anotherfolder"
+            }
+        )
+    },
+    {"move",
+        (
+            {"move", "mv"},
+            "move [source] [destination]",
+            "Move a file or folder to a new location.",
+            {
+                "move C:\folderA\file.doc C:\folderB\file.doc",
+                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+            }
+        )
+    },
+    {"open",
+        (
+            {"open"},
+            "open [file_or_directory]",
+            "Open a file or navigate into a folder.",
+            {
+                "open C:\folder\file.txt",
+                "open ""C:\My Folder"""
+            }
+        )
+    },
+    {"pin",
+        (
+            {"pin"},
+            "pin [folder_path]",
+            "Pin or unpin a folder.",
+            {
+                "pin C:\Projects",
+                "pin ""C:\My Documents""",
+                "pin"
+            }
+        )
+    },
+    {"rename",
+        (
+            {"rename", "rn"},
+            "rename [source_path] [new_name]",
+            "Rename a file or directory.",
+            {
+                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+            }
+        )
+    },
+    {"shortcuts",
+        (
+            {"shortcuts", "keys"},
+            "shortcuts",
+            "Show a list of all keyboard shortcuts.",
+            {
                 "shortcuts",
-                "Show a list of all keyboard shortcuts.",
-                {
-                    "shortcuts",
-                    "keys"
-                }
-            )
-        },
-        {"text",
-            (
-                {"text", "txt"},
-                "text [file_path]",
-                "Create a new text file.",
-                {
-                    "text ""C:\folder\example.txt"""
-                }
-            )
-        }
+                "keys"
+            }
+        )
+    },
+    {"text",
+        (
+            {"text", "txt"},
+            "text [file_path]",
+            "Create a new text file.",
+            {
+                "text ""C:\folder\example.txt"""
+            }
+        )
     }
+}
+
+
+
+
+
+
+
+
+
+
 
     Private HelpHeaderLabel As Label
     Private scrollPanel As Panel
@@ -6529,21 +6730,102 @@ Public Class Form1
 
     End Sub
 
+
+
+
+
+
+    'Private Sub HandleHelpCommand(parts As String())
+    '    Try
+    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+
+    '        Dim terms = parts.Skip(1).
+    '                      Select(Function(t) t.Trim()).
+    '                      Where(Function(t) t <> "").
+    '                      ToList()
+
+    '        ' ------------------------------------------------------------
+    '        ' Special case: help keys / help shortcuts → show keyboard shortcuts
+    '        ' ------------------------------------------------------------
+    '        If terms.Count = 1 Then
+    '            Dim t = terms(0).ToLowerInvariant()
+
+    '            If t = "keys" OrElse t = "shortcuts" Then
+    '                HelpHeaderLabel.Text = "Keyboard Shortcuts"
+    '                HelpTextBox.Text = BuildShortcutsHelp()
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+    '        End If
+
+    '        Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
+
+    '        If terms.Count > 0 Then
+    '            Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '            For Each term In terms
+    '                filtered = filtered.
+    '                Union(SearchHelp(term)).
+    '                ToList()
+    '            Next
+
+    '            If filtered.Count = 0 Then
+    '                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
+    '                HelpTextBox.Text = "No matching commands were found."
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            entries = filtered
+    '            HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
+    '        Else
+    '            HelpHeaderLabel.Text = "Command Reference"
+    '        End If
+
+    '        Dim text As String = BuildHelpText(entries)
+
+    '        HelpTextBox.Text = text
+
+    '        If HelpPanel.Visible Then
+    '            RestoreAddressBar()
+    '            FocusHelpText()
+    '            Return
+    '        End If
+
+    '        ShowHelpPanelAnimated()
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '       " Failed to display help information: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
+
+
+
     Private Sub HandleHelpCommand(parts As String())
         Try
+            ' Set font for help text box
             HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
 
+            ' Extract and clean up the terms from the command
             Dim terms = parts.Skip(1).
                           Select(Function(t) t.Trim()).
                           Where(Function(t) t <> "").
                           ToList()
 
-            ' ------------------------------------------------------------
-            ' Special case: help keys / help shortcuts → show keyboard shortcuts
-            ' ------------------------------------------------------------
+            ' Handle special case for keyboard shortcuts
             If terms.Count = 1 Then
                 Dim t = terms(0).ToLowerInvariant()
-
                 If t = "keys" OrElse t = "shortcuts" Then
                     HelpHeaderLabel.Text = "Keyboard Shortcuts"
                     HelpTextBox.Text = BuildShortcutsHelp()
@@ -6554,17 +6836,18 @@ Public Class Form1
                 End If
             End If
 
+            ' Prepare to search for help entries
             Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
 
             If terms.Count > 0 Then
                 Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
 
+                ' Search for each term and aggregate results
                 For Each term In terms
-                    filtered = filtered.
-                    Union(SearchHelp(term)).
-                    ToList()
+                    filtered = filtered.Union(SearchHelp(term)).ToList()
                 Next
 
+                ' Check if any results were found
                 If filtered.Count = 0 Then
                     HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
                     HelpTextBox.Text = "No matching commands were found."
@@ -6580,26 +6863,48 @@ Public Class Form1
                 HelpHeaderLabel.Text = "Command Reference"
             End If
 
+            ' Build and display the help text
             Dim text As String = BuildHelpText(entries)
-
             HelpTextBox.Text = text
 
-            If HelpPanel.Visible Then
-                RestoreAddressBar()
-                FocusHelpText()
-                Return
+            ' Show help panel if not already visible
+            If Not HelpPanel.Visible Then
+                ShowHelpPanelAnimated()
             End If
-
-            ShowHelpPanelAnimated()
             FocusHelpText()
 
         Catch ex As Exception
-            ShowStatus(StatusPad & IconError &
-           " Failed to display help information: " & ex.Message)
+            ' Display error message if an exception occurs
+            ShowStatus(StatusPad & IconError & " Failed to display help information: " & ex.Message)
+        Finally
+            RestoreAddressBar()
         End Try
-
-        RestoreAddressBar()
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub HandleDfCommand(parts As String())
         Try
@@ -6763,25 +7068,293 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim text As String = BuildAppManualText()
+
+    '        If HelpPanel.Visible Then
+    '            HelpTextBox.Text = text
+    '            FocusHelpText()
+
+    '        Else
+    '            'HelpTextBox.Text = text
+    '            'ShowHelpPanelAnimated()
+
+    '            HelpTextBox.Text = text
+    '            ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        ' Extract search term if provided
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        ' Build the manual text
+    '        Dim manualText As String = BuildAppManualText()
+
+    '        If Not String.IsNullOrEmpty(searchTerm) Then
+    '            ' Search for the term in the manual text
+    '            Dim searchResults As String = SearchManual(manualText, searchTerm)
+    '            If String.IsNullOrEmpty(searchResults) Then
+    '                HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+    '            Else
+    '                HelpTextBox.Text = searchResults
+    '            End If
+    '        Else
+    '            ' No search term provided, display the full manual
+    '            HelpTextBox.Text = manualText
+    '        End If
+
+    '        ' Show help panel if not already visible
+    '        If Not HelpPanel.Visible Then
+    '            ShowHelpPanelAnimated()
+    '        End If
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+    'Private Function SearchManual(manualText As String, searchTerm As String) As String
+    '    Dim sb As New Text.StringBuilder()
+    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
+    '    Dim found As Boolean = False
+
+    '    For Each line As String In lines
+    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '            sb.AppendLine(line)
+    '            found = True
+    '        End If
+    '    Next
+
+    '    ' Optionally, you can add a message if no results were found
+    '    If Not found Then
+    '        Return String.Empty
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        ' Extract search term if provided
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        ' Build the manual text
+    '        Dim manualText As String = BuildAppManualText()
+
+    '        If Not String.IsNullOrEmpty(searchTerm) Then
+    '            ' Search for the term in the manual text
+    '            Dim searchResults As String = SearchManual(manualText, searchTerm)
+    '            If String.IsNullOrEmpty(searchResults) Then
+    '                HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+    '            Else
+    '                HelpTextBox.Text = searchResults
+    '            End If
+    '        Else
+    '            ' No search term provided, display the full manual
+    '            HelpTextBox.Text = manualText
+    '        End If
+
+    '        ' Show help panel if not already visible
+    '        If Not HelpPanel.Visible Then
+    '            ShowHelpPanelAnimated()
+    '        End If
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
+
+
+
+
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        'If Not String.IsNullOrEmpty(searchTerm) Then
+    '        '    Dim searchResults As String = SearchManualDict(searchTerm)
+
+    '        '    If String.IsNullOrEmpty(searchResults) Then
+    '        '        HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+    '        '    Else
+    '        '        HelpTextBox.Text = searchResults
+    '        '    End If
+    '        'Else
+    '        '    HelpTextBox.Text = BuildAppManualText()   ' Render full manual from dictionary
+    '        'End If
+
+    '        'If Not HelpPanel.Visible Then
+    '        '    ShowHelpPanelAnimated()
+    '        'End If
+
+    '        If Not String.IsNullOrEmpty(searchTerm) Then
+    '            Dim dict = BuildManualDictionary()
+
+    '            ' 1. Exact section match (case-insensitive)
+    '            Dim section = dict.Keys.
+    '    FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '            If section IsNot Nothing Then
+    '                ' Show the entire section
+    '                HelpTextBox.Text = section & Environment.NewLine &
+    '                       New String("-"c, section.Length) & Environment.NewLine &
+    '                       String.Join(Environment.NewLine, dict(section))
+    '            Else
+    '                ' 2. Fallback to keyword search
+    '                Dim searchResults As String = SearchManualDict(searchTerm)
+
+    '                If String.IsNullOrEmpty(searchResults) Then
+    '                    HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+    '                Else
+    '                    HelpTextBox.Text = searchResults
+    '                End If
+    '            End If
+    '        Else
+    '            HelpTextBox.Text = BuildAppManualText()
+    '        End If
+
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
+
     Private Sub HandleManualCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Manual"
             HelpTextBox.Font = New Font("Segoe UI", 10)
 
-            Dim text As String = BuildAppManualText()
+            Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
-            If HelpPanel.Visible Then
-                HelpTextBox.Text = text
-                FocusHelpText()
+            If Not String.IsNullOrEmpty(searchTerm) Then
+                'Dim dict = BuildManualDictionary()
 
+                '' 1. Exact section match (case-insensitive)
+                'Dim section = dict.Keys.
+                'FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+                'If Not String.IsNullOrEmpty(section) Then
+                '    ' Show the entire section
+                '    HelpTextBox.Text =
+                '    section & Environment.NewLine &
+                '    New String("-"c, section.Length) & Environment.NewLine &
+                '    String.Join(Environment.NewLine, dict(section))
+
+                'Else
+                '    ' 2. Fallback to keyword search
+                '    Dim searchResults As String = SearchManualDict(searchTerm)
+
+                '    If String.IsNullOrEmpty(searchResults) Then
+                '        HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+                '    Else
+                '        HelpTextBox.Text = searchResults
+                '    End If
+                'End If
+                Dim dict = BuildManualDictionary()
+                Dim aliases = ManualSectionAliases()
+
+                ' 1. Alias match (keyboard → Keyboard Shortcuts)
+                If aliases.ContainsKey(searchTerm) Then
+                    Dim realSection = aliases(searchTerm)
+                    HelpTextBox.Text =
+                    realSection & Environment.NewLine &
+                    New String("-"c, realSection.Length) & Environment.NewLine &
+                    String.Join(Environment.NewLine, dict(realSection))
+                    GoTo Done
+                End If
+
+                ' 2. Exact section match
+                Dim exact = dict.Keys.
+                FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+                If Not String.IsNullOrEmpty(exact) Then
+                    HelpTextBox.Text =
+                    exact & Environment.NewLine &
+                    New String("-"c, exact.Length) & Environment.NewLine &
+                    String.Join(Environment.NewLine, dict(exact))
+                    GoTo Done
+                End If
+
+                ' 3. Prefix match (man key → Keyboard Shortcuts)
+                Dim prefix = dict.Keys.
+                FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+                If Not String.IsNullOrEmpty(prefix) Then
+                    HelpTextBox.Text =
+                    prefix & Environment.NewLine &
+                    New String("-"c, prefix.Length) & Environment.NewLine &
+                    String.Join(Environment.NewLine, dict(prefix))
+                    GoTo Done
+                End If
+
+                ' 4. Fallback keyword search
+                Dim searchResults As String = SearchManualDict(searchTerm)
+                If String.IsNullOrEmpty(searchResults) Then
+                    HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+                Else
+                    HelpTextBox.Text = searchResults
+                End If
+
+Done:
             Else
-                'HelpTextBox.Text = text
-                'ShowHelpPanelAnimated()
-
-                HelpTextBox.Text = text
-                ShowHelpPanelAnimated()
-                FocusHelpText()
+                HelpTextBox.Text = BuildAppManualText()
             End If
+
+
+
+            FocusHelpText()
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
@@ -6793,223 +7366,969 @@ Public Class Form1
 
 
 
-    Private Function BuildAppManualText() As String
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Function SearchManual(manualText As String, searchTerm As String) As String
+    '    Dim sb As New Text.StringBuilder()
+    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
+    '    Dim found As Boolean = False
+
+    '    Dim currentSection As String = String.Empty
+    '    Dim sectionContent As New Text.StringBuilder()
+
+    '    For Each line As String In lines
+    '        ' Check for section headers (assuming they are capitalized)
+    '        If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
+    '            ' If we are in a section and we found a new section, output the previous section
+    '            If currentSection <> String.Empty Then
+    '                sb.AppendLine(currentSection)
+    '                sb.AppendLine(sectionContent.ToString())
+    '                sb.AppendLine()
+    '                sectionContent.Clear()
+    '            End If
+    '            currentSection = line.Trim()
+    '        End If
+
+    '        ' Check if the line contains the search term
+    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '            If sectionContent.Length = 0 Then
+    '                ' Only add the section header if we haven't added content yet
+    '                sectionContent.AppendLine(currentSection)
+    '            End If
+    '            sectionContent.AppendLine(line)
+    '            found = True
+    '        End If
+    '    Next
+
+    '    ' Output the last section if it exists
+    '    If currentSection <> String.Empty Then
+    '        sb.AppendLine(currentSection)
+    '        sb.AppendLine(sectionContent.ToString())
+    '    End If
+
+    '    ' Optionally, you can add a message if no results were found
+    '    If Not found Then
+    '        Return String.Empty
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+    'Private Function SearchManual(manualText As String, searchTerm As String) As String
+    '    Dim sb As New Text.StringBuilder()
+    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
+    '    Dim found As Boolean = False
+
+    '    Dim currentSection As String = String.Empty
+    '    Dim sectionContent As New List(Of String)() ' To hold lines of the current section
+
+    '    For Each line As String In lines
+    '        ' Check for section headers (assuming they are capitalized)
+    '        If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
+    '            ' If we are in a section and we found a new section, output the previous section if it has content
+    '            If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
+    '                sb.AppendLine(currentSection)
+    '                sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
+    '                sb.AppendLine() ' Add an empty line for separation
+    '                sectionContent.Clear() ' Clear for the next section
+    '            End If
+    '            currentSection = line.Trim() ' Update the current section header
+    '        End If
+
+    '        ' Check if the line contains the search term
+    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '            If sectionContent.Count = 0 Then
+    '                ' Only add the section header if we haven't added content yet
+    '                sectionContent.Add(currentSection)
+    '            End If
+    '            sectionContent.Add(line) ' Add the matching line
+    '            found = True
+    '        End If
+    '    Next
+
+    '    ' Output the last section if it exists and has content
+    '    If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
+    '        sb.AppendLine(currentSection)
+    '        sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
+    '    End If
+
+    '    ' Optionally, you can add a message if no results were found
+    '    If Not found Then
+    '        Return String.Empty
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+    'Private Function SearchManual(manualText As String, searchTerm As String) As String
+    '    Dim sb As New Text.StringBuilder()
+    '    Dim lines = manualText.Split({Environment.NewLine}, StringSplitOptions.None)
+
+    '    Dim currentHeader As String = ""
+    '    Dim currentSection As New List(Of String)
+    '    Dim results As New List(Of (Header As String, Lines As List(Of String)))
+
+    '    Dim headerPattern As New Regex("^[A-Z][A-Za-z0-9 &\-]+$") ' Clean header lines
+
+    '    For Each line In lines
+    '        Dim trimmed = line.Trim()
+
+    '        ' Detect section header
+    '        If headerPattern.IsMatch(trimmed) Then
+    '            ' Commit previous section
+    '            If currentHeader <> "" AndAlso currentSection.Count > 0 Then
+    '                results.Add((currentHeader, New List(Of String)(currentSection)))
+    '            End If
+
+    '            currentHeader = trimmed
+    '            currentSection.Clear()
+    '        Else
+    '            currentSection.Add(line)
+    '        End If
+    '    Next
+
+    '    ' Commit last section
+    '    If currentHeader <> "" AndAlso currentSection.Count > 0 Then
+    '        results.Add((currentHeader, currentSection))
+    '    End If
+
+    '    ' Filter for matches
+    '    Dim matches = results.
+    '    Where(Function(sec) sec.Lines.Any(Function(l) l.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)).
+    '    ToList()
+
+    '    If matches.Count = 0 Then
+    '        Return ""
+    '    End If
+
+    '    ' Build output
+    '    For Each sec In matches
+    '        sb.AppendLine(sec.Header)
+    '        sb.AppendLine(New String("-"c, sec.Header.Length))
+
+    '        For Each line In sec.Lines
+    '            If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '                sb.AppendLine(Highlight(line, searchTerm))
+    '            End If
+    '        Next
+
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+    'Private Function SearchManual(manualText As String, searchTerm As String) As String
+    '    Dim sb As New Text.StringBuilder()
+    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
+    '    Dim found As Boolean = False
+
+    '    Dim currentSection As String = String.Empty
+    '    Dim sectionContent As New List(Of String)() ' To hold lines of the current section
+
+    '    For Each line As String In lines
+    '        ' Check for section headers (assuming they are capitalized)
+    '        If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
+    '            ' If we are in a section and we found a new section, output the previous section if it has content
+    '            If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
+    '                sb.AppendLine(currentSection)
+    '                sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
+    '                sb.AppendLine() ' Add an empty line for separation
+    '                sectionContent.Clear() ' Clear for the next section
+    '            End If
+    '            currentSection = line.Trim() ' Update the current section header
+    '        End If
+
+    '        ' Check if the line contains the search term
+    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+    '            If sectionContent.Count = 0 Then
+    '                ' Only add the section header if we haven't added content yet
+    '                sectionContent.Add(currentSection)
+    '            End If
+    '            ' Highlight the search term in brackets
+    '            Dim highlightedLine As String = line.Replace(searchTerm, "[" & searchTerm & "]")
+    '            sectionContent.Add(highlightedLine) ' Add the matching line
+    '            found = True
+    '        End If
+    '    Next
+
+    '    ' Output the last section if it exists and has content
+    '    If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
+    '        sb.AppendLine(currentSection)
+    '        sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
+    '    End If
+
+    '    ' Optionally, you can add a message if no results were found
+    '    If Not found Then
+    '        Return String.Empty
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+    Private Function SearchManual(manualText As String, searchTerm As String) As String
         Dim sb As New Text.StringBuilder()
+        Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
+        Dim found As Boolean = False
 
-        'sb.AppendLine("File Explorer — Application Manual")
-        'sb.AppendLine("=================================")
-        'sb.AppendLine()
+        Dim currentSection As String = String.Empty
+        Dim sectionContent As New List(Of String)() ' To hold lines of the current section
 
-        sb.AppendLine("Table of Contents")
-        'sb.AppendLine("-----------------")
-        sb.AppendLine("  • Introduction")
-        sb.AppendLine("  • Getting Started")
-        sb.AppendLine("  • Features")
-        sb.AppendLine("  • Using the App")
-        sb.AppendLine("  • File Operations")
-        sb.AppendLine("  • Search")
-        sb.AppendLine("  • Keyboard Shortcuts")
-        sb.AppendLine("  • Command Line Interface")
-        sb.AppendLine("  • Drive Tools")
-        sb.AppendLine("  • Pinning System")
-        sb.AppendLine("  • Manual & Help System")
-        sb.AppendLine()
+        For Each line As String In lines
+            ' Check for section headers (assuming they are capitalized)
+            If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
+                ' If we are in a section and we found a new section, output the previous section if it has content
+                If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
+                    ' Add the current section and its content to the output
+                    sb.AppendLine(currentSection)
+                    sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
+                    sb.AppendLine() ' Add an empty line for separation
+                    sectionContent.Clear() ' Clear for the next section
+                End If
+                currentSection = line.Trim() ' Update the current section header
+            End If
 
-        sb.AppendLine("Introduction")
-        'sb.AppendLine("--------------------")
-        sb.AppendLine("File Explorer is an open‑source file management application")
-        sb.AppendLine("designed for clarity, speed, and emotional safety. It blends")
-        sb.AppendLine("a familiar Windows‑style interface with a powerful command line,")
-        sb.AppendLine("keyboard‑driven navigation, and a polished help drawer.")
-        sb.AppendLine()
+            ' Check if the line contains the search term
+            If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
+                If sectionContent.Count = 0 Then
+                    ' Only add the section header if we haven't added content yet
+                    sectionContent.Add(currentSection)
+                End If
+                ' Highlight the search term in brackets
+                Dim highlightedLine As String = line.Replace(searchTerm, "[" & searchTerm & "]")
+                sectionContent.Add(highlightedLine) ' Add the matching line
+                found = True
+            End If
+        Next
 
-        sb.AppendLine("Getting Started")
-        'sb.AppendLine("-----------------------")
-        sb.AppendLine("Installation:")
-        sb.AppendLine()
-        sb.AppendLine("  1. Clone the repository:")
-        sb.AppendLine("       git clone https://github.com/JoeLumbley/File-Explorer.git")
-        sb.AppendLine()
-        sb.AppendLine("  2. Navigate to the project directory:")
-        sb.AppendLine("       cd File-Explorer")
-        sb.AppendLine()
-        sb.AppendLine("  3. Build and run the application:")
-        sb.AppendLine("       dotnet build")
-        sb.AppendLine("       dotnet run")
-        sb.AppendLine()
+        ' Output the last section if it exists and has content
+        If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
+            sb.AppendLine(currentSection)
+            sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
+        End If
 
-        sb.AppendLine("Features")
-        'sb.AppendLine("-------------------")
-        sb.AppendLine("  • File Organization: Create, rename, and delete folders.")
-        sb.AppendLine("  • File Operations: Move, copy, delete, and rename files.")
-        sb.AppendLine("  • Search System: Fast in‑folder search with highlighting and HUD.")
-        sb.AppendLine("  • Keyboard Navigation: Shortcuts with repeat suppression.")
-        sb.AppendLine("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
-        sb.AppendLine("  • Drive Tools: df and drives commands for free‑space bars.")
-        sb.AppendLine("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
-        sb.AppendLine()
-
-        sb.AppendLine("Using the App")
-        'sb.AppendLine("---------------------")
-        sb.AppendLine("Main Interface:")
-        sb.AppendLine()
-        sb.AppendLine("  • Navigation Pane — browse folders quickly.")
-        sb.AppendLine("  • File List — shows files and folders in the current directory.")
-        sb.AppendLine("  • Address Bar — displays and accepts paths.")
-        sb.AppendLine("  • Toolbar — quick access to common operations.")
-        sb.AppendLine("  • Help Drawer — slides in from the right for documentation.")
-        sb.AppendLine()
-
-        sb.AppendLine("File Operations")
-        'sb.AppendLine("-------------------------")
-        sb.AppendLine("Creating a Folder:")
-        sb.AppendLine("  • Click ""New Folder""")
-        sb.AppendLine("  • Press Ctrl+Shift+N")
-        sb.AppendLine("  • Or run:  mkdir <folder>")
-        sb.AppendLine()
-        sb.AppendLine("Renaming:")
-        sb.AppendLine("  • Select an item and press F2")
-        sb.AppendLine("  • Or run:  rename <old> <new>")
-        sb.AppendLine()
-        sb.AppendLine("Copying Files:")
-        sb.AppendLine("  • Ctrl+C → Ctrl+V")
-        sb.AppendLine("  • Or run:  copy <source> <destination>")
-        sb.AppendLine()
-        sb.AppendLine("Moving Files:")
-        sb.AppendLine("  • Drag and drop")
-        sb.AppendLine("  • Or run:  move <source> <destination>")
-        sb.AppendLine()
-        sb.AppendLine("Deleting Files:")
-        sb.AppendLine("  • Press Delete")
-        sb.AppendLine("  • Or run:  delete <path>")
-        sb.AppendLine()
-        sb.AppendLine("Opening Files:")
-        sb.AppendLine("  • Press Enter")
-        sb.AppendLine("  • Or run:  open <path>")
-        sb.AppendLine()
-        sb.AppendLine("Open With:")
-        sb.AppendLine("  • openwith notepad file.txt")
-        sb.AppendLine("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
-        sb.AppendLine()
-
-        sb.AppendLine("Search")
-        'sb.AppendLine("---------------")
-        sb.AppendLine("Starting a Search:")
-        sb.AppendLine("  • Press Ctrl+F")
-        sb.AppendLine("  • Or run:  find <term>")
-        sb.AppendLine()
-        sb.AppendLine("Navigating Results:")
-        sb.AppendLine("  • F3 — next result")
-        sb.AppendLine("  • Shift+F3 — previous result")
-        sb.AppendLine()
-        sb.AppendLine("Resetting Search:")
-        sb.AppendLine("  • Press Esc")
-        sb.AppendLine()
-
-        sb.AppendLine("Keyboard Shortcuts")
-        'sb.AppendLine("------------------------------")
-        sb.AppendLine("Navigation:")
-        sb.AppendLine("  Alt+Left       Back")
-        sb.AppendLine("  Alt+Right      Forward")
-        sb.AppendLine("  Alt+Up         Parent folder")
-        sb.AppendLine("  Alt+Home       User folder")
-        sb.AppendLine("  F11            Full screen")
-        sb.AppendLine()
-        sb.AppendLine("Address Bar:")
-        sb.AppendLine("  Ctrl+L         Focus")
-        sb.AppendLine("  Alt+D          Focus")
-        sb.AppendLine("  F4             Focus")
-        sb.AppendLine("  Esc            Reset")
-        sb.AppendLine()
-        sb.AppendLine("Search:")
-        sb.AppendLine("  Ctrl+F         Find")
-        sb.AppendLine("  F3             Next")
-        sb.AppendLine("  Shift+F3       Previous")
-        sb.AppendLine()
-        sb.AppendLine("Focus Navigation:")
-        sb.AppendLine("  Tab            Cycle forward")
-        sb.AppendLine("  Shift+Tab      Cycle backward")
-        sb.AppendLine()
-        sb.AppendLine("File Operations:")
-        sb.AppendLine("  Enter          Open")
-        sb.AppendLine("  F2             Rename")
-        sb.AppendLine("  Delete         Delete")
-        sb.AppendLine("  Ctrl+Shift+N   New folder")
-        sb.AppendLine()
-        sb.AppendLine("Pinning:")
-        sb.AppendLine("  Alt+P          Pin/unpin")
-        sb.AppendLine()
-        sb.AppendLine("Refresh:")
-        sb.AppendLine("  F5             Refresh current folder")
-        sb.AppendLine()
-
-        sb.AppendLine("Command Line Interface (CLI)")
-        'sb.AppendLine("----------------------------------")
-        sb.AppendLine("File Explorer includes a built‑in command line with:")
-        sb.AppendLine()
-        sb.AppendLine("  • Aliases (cp, mv, rm, etc.)")
-        sb.AppendLine("  • Direct path navigation")
-        sb.AppendLine("  • Manual pages (man <command>)")
-        sb.AppendLine("  • Auto‑generated help (help, help <command>)")
-        sb.AppendLine()
-        sb.AppendLine("Examples:")
-        sb.AppendLine("  cd C:\Projects")
-        sb.AppendLine("  copy file.txt D:\Backup")
-        sb.AppendLine("  openwith notepad notes.txt")
-        sb.AppendLine("  find report")
-        sb.AppendLine("  findnext")
-        sb.AppendLine("  pin")
-        sb.AppendLine("  drives")
-        sb.AppendLine("  df C:")
-        sb.AppendLine()
-
-        sb.AppendLine("Drive Tools")
-        'sb.AppendLine("--------------------")
-        sb.AppendLine("df:")
-        sb.AppendLine("  Shows free space for a specific drive.")
-        sb.AppendLine("    df C:")
-        sb.AppendLine()
-        sb.AppendLine("drives:")
-        sb.AppendLine("  Shows all drives with graphical usage bars.")
-        sb.AppendLine("    drives")
-        sb.AppendLine()
-
-        sb.AppendLine("Pinning System")
-        'sb.AppendLine("------------------------")
-        sb.AppendLine("Pin any folder:")
-        sb.AppendLine("  pin C:\Projects")
-        sb.AppendLine("  pin")
-        sb.AppendLine()
-        sb.AppendLine("Pinned folders appear in the sidebar and persist across sessions.")
-        sb.AppendLine()
-
-        sb.AppendLine("Manual & Help System")
-        'sb.AppendLine("-----------------------------")
-        sb.AppendLine("Help:")
-        sb.AppendLine("  help")
-        sb.AppendLine("  commands")
-        sb.AppendLine("  ?")
-        sb.AppendLine()
-
-
-        sb.AppendLine("The 'man' Command")
-        sb.AppendLine("Man displays a detailed manual.")
-        'sb.AppendLine("Each manual page includes:")
-        'sb.AppendLine("  • NAME        — The command name and a short description")
-        'sb.AppendLine("  • SYNOPSIS    — Usage and supported parameters")
-        'sb.AppendLine("  • DESCRIPTION — A detailed explanation of what the command does")
-        'sb.AppendLine("  • ALIASES     — Any alternate names for the command")
-        'sb.AppendLine("  • EXAMPLES    — Practical usage examples")
-        'sb.AppendLine("  • SEE ALSO    — Related commands")
-        sb.AppendLine()
-        sb.AppendLine("Examples:")
-        sb.AppendLine("  man")
-        sb.AppendLine("  manual")
-        sb.AppendLine("  appmanual")
-        sb.AppendLine()
+        ' Optionally, you can add a message if no results were found
+        If Not found Then
+            Return String.Empty
+        End If
 
         Return sb.ToString()
     End Function
+
+    Private Function Highlight(line As String, term As String) As String
+        Return Regex.Replace(line,
+                         Regex.Escape(term),
+                         Function(m) $"[{m.Value}]",
+                         RegexOptions.IgnoreCase)
+    End Function
+
+
+
+
+    'Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
+    '    Dim manual As New New Dictionary(Of String, List(Of String))()
+
+    'manual("Introduction") = New List(Of String) From {
+    '    "File Explorer is an open‑source file management application",
+    '    "designed for clarity, speed, and emotional safety. It blends",
+    '    "a familiar Windows‑style interface with a powerful command line,",
+    '    "keyboard‑driven navigation, and a polished help drawer."
+    '}
+
+    '    manual("Getting Started") = New List(Of String) From {
+    '    "Installation:",
+    '    "",
+    '    "  1. Clone the repository:",
+    '    "       git clone https://github.com/JoeLumbley/File-Explorer.git",
+    '    "",
+    '    "  2. Navigate to the project directory:",
+    '    "       cd File-Explorer",
+    '    "",
+    '    "  3. Build and run the application:",
+    '    "       dotnet build",
+    '    "       dotnet run"
+    '}
+
+    '    manual("Features") = New List(Of String) From {
+    '    "  • File Organization: Create, rename, and delete folders.",
+    '    "  • File Operations: Move, copy, delete, and rename files.",
+    '    "  • Search System: Fast in‑folder search with highlighting and HUD.",
+    '    "  • Keyboard Navigation: Shortcuts with repeat suppression.",
+    '    "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
+    '    "  • Drive Tools: df and drives commands for free‑space bars.",
+    '    "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+    '}
+
+    '    manual("Using the App") = New List(Of String) From {
+    '    "Main Interface:",
+    '    "",
+    '    "  • Navigation Pane — browse folders quickly.",
+    '    "  • File List — shows files and folders in the current directory.",
+    '    "  • Address Bar — displays and accepts paths.",
+    '    "  • Toolbar — quick access to common operations.",
+    '    "  • Help Drawer — slides in from the right for documentation."
+    '}
+
+    '    manual("File Operations") = New List(Of String) From {
+    '    "Creating a Folder:",
+    '    "  • Click ""New Folder""",
+    '    "  • Press Ctrl+Shift+N",
+    '    "  • Or run:  mkdir <folder>",
+    '    "",
+    '    "Renaming:",
+    '    "  • Select an item and press F2",
+    '    "  • Or run:  rename <old> <new>",
+    '    "",
+    '    "Copying Files:",
+    '    "  • Ctrl+C → Ctrl+V",
+    '    "  • Or run:  copy <source> <destination>",
+    '    "",
+    '    "Moving Files:",
+    '    "  • Drag and drop",
+    '    "  • Or run:  move <source> <destination>",
+    '    "",
+    '    "Deleting Files:",
+    '    "  • Press Delete",
+    '    "  • Or run:  delete <path>",
+    '    "",
+    '    "Opening Files:",
+    '    "  • Press Enter",
+    '    "  • Or run:  open <path>",
+    '    "",
+    '    "Open With:",
+    '    "  • openwith notepad file.txt",
+    '    "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+    '}
+
+    '    manual("Search") = New List(Of String) From {
+    '    "Starting a Search:",
+    '    "  • Press Ctrl+F",
+    '    "  • Or run:  find <term>",
+    '    "",
+    '    "Navigating Results:",
+    '    "  • F3 — next result",
+    '    "  • Shift+F3 — previous result",
+    '    "",
+    '    "Resetting Search:",
+    '    "  • Press Esc"
+    '}
+
+    '    manual("Keyboard Shortcuts") = New List(Of String) From {
+    '    "Navigation:",
+    '    "  Alt+Left       Back",
+    '    "  Alt+Right      Forward",
+    '    "  Alt+Up         Parent folder",
+    '    "  Alt+Home       User folder",
+    '    "  F11            Full screen",
+    '    "",
+    '    "Address Bar:",
+    '    "  Ctrl+L         Focus",
+    '    "  Alt+D          Focus",
+    '    "  F4             Focus",
+    '    "  Esc            Reset",
+    '    "",
+    '    "Search:",
+    '    "  Ctrl+F         Find",
+    '    "  F3             Next",
+    '    "  Shift+F3       Previous",
+    '    "",
+    '    "Focus Navigation:",
+    '    "  Tab            Cycle forward",
+    '    "  Shift+Tab      Cycle backward",
+    '    "",
+    '    "File Operations:",
+    '    "  Enter          Open",
+    '    "  F2             Rename",
+    '    "  Delete         Delete",
+    '    "  Ctrl+Shift+N   New folder",
+    '    "",
+    '    "Pinning:",
+    '    "  Alt+P          Pin/unpin",
+    '    "",
+    '    "Refresh:",
+    '    "  F5             Refresh current folder"
+    '}
+
+    '    manual("Command Line Interface (CLI)") = New List(Of String) From {
+    '    "File Explorer includes a built‑in command line with:",
+    '    "",
+    '    "  • Aliases (cp, mv, rm, etc.)",
+    '    "  • Direct path navigation",
+    '    "  • Manual pages (man <command>)",
+    '    "  • Auto‑generated help (help, help <command>)",
+    '    "",
+    '    "Examples:",
+    '    "  cd C:\Projects",
+    '    "  copy file.txt D:\Backup",
+    '    "  openwith notepad notes.txt",
+    '    "  find report",
+    '    "  findnext",
+    '    "  pin",
+    '    "  drives",
+    '    "  df C:"
+    '}
+
+    '    manual("Drive Tools") = New List(Of String) From {
+    '    "df:",
+    '    "  Shows free space for a specific drive.",
+    '    "    df C:",
+    '    "",
+    '    "drives:",
+    '    "  Shows all drives with graphical usage bars.",
+    '    "    drives"
+    '}
+
+    '    manual("Pinning System") = New List(Of String) From {
+    '    "Pin any folder:",
+    '    "  pin C:\Projects",
+    '    "  pin",
+    '    "",
+    '    "Pinned folders appear in the sidebar and persist across sessions."
+    '}
+
+    '    manual("Manual & Help System") = New List(Of String) From {
+    '    "Help:",
+    '    "  help",
+    '    "  commands",
+    '    "  ?",
+    '    "",
+    '    "The 'man' Command",
+    '    "Man displays a detailed manual.",
+    '    "",
+    '    "Examples:",
+    '    "  man",
+    '    "  manual",
+    '    "  appmanual"
+    '}
+
+    '    Return manual
+    'End Function
+
+
+
+
+
+    Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
+        Dim manual As New Dictionary(Of String, List(Of String))()
+
+        manual("Introduction") = New List(Of String) From {
+        "File Explorer is an open‑source file management application",
+        "designed for clarity, speed, and emotional safety.",
+        "It blends a familiar Windows‑style interface with a powerful command line,",
+        "keyboard‑driven navigation, and a polished help drawer."
+    }
+
+        manual("Getting Started") = New List(Of String) From {
+        "Installation:",
+        "",
+        "  1. Clone the repository:",
+        "       git clone https://github.com/JoeLumbley/File-Explorer.git",
+        "",
+        "  2. Navigate to the project directory:",
+        "       cd File-Explorer",
+        "",
+        "  3. Build and run the application:",
+        "       dotnet build",
+        "       dotnet run"
+    }
+
+        ' …and so on for each section…
+
+
+        manual("Features") = New List(Of String) From {
+        "  • File Organization: Create, rename, and delete folders.",
+        "  • File Operations: Move, copy, delete, and rename files.",
+        "  • Search System: Fast in‑folder search with highlighting and HUD.",
+        "  • Keyboard Navigation: Shortcuts with repeat suppression.",
+        "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
+        "  • Drive Tools: df and drives commands for free‑space bars.",
+        "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+    }
+
+        manual("Using the App") = New List(Of String) From {
+        "Main Interface:",
+        "",
+        "  • Navigation Pane — browse folders quickly.",
+        "  • File List — shows files and folders in the current directory.",
+        "  • Address Bar — displays and accepts paths.",
+        "  • Toolbar — quick access to common operations.",
+        "  • Help Drawer — slides in from the right for documentation."
+    }
+
+        manual("File Operations") = New List(Of String) From {
+        "Creating a Folder:",
+        "  • Click ""New Folder""",
+        "  • Press Ctrl+Shift+N",
+        "  • Or run:  mkdir <folder>",
+        "",
+        "Renaming:",
+        "  • Select an item and press F2",
+        "  • Or run:  rename <old> <new>",
+        "",
+        "Copying Files:",
+        "  • Ctrl+C → Ctrl+V",
+        "  • Or run:  copy <source> <destination>",
+        "",
+        "Moving Files:",
+        "  • Drag and drop",
+        "  • Or run:  move <source> <destination>",
+        "",
+        "Deleting Files:",
+        "  • Press Delete",
+        "  • Or run:  delete <path>",
+        "",
+        "Opening Files:",
+        "  • Press Enter",
+        "  • Or run:  open <path>",
+        "",
+        "Open With:",
+        "  • openwith notepad file.txt",
+        "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+    }
+
+        manual("Search") = New List(Of String) From {
+        "Starting a Search:",
+        "  • Press Ctrl+F",
+        "  • Or run:  find <term>",
+        "",
+        "Navigating Results:",
+        "  • F3 — next result",
+        "  • Shift+F3 — previous result",
+        "",
+        "Resetting Search:",
+        "  • Press Esc"
+    }
+
+        manual("Keyboard Shortcuts") = New List(Of String) From {
+        "Navigation:",
+        "  Alt+Left       Back",
+        "  Alt+Right      Forward",
+        "  Alt+Up         Parent folder",
+        "  Alt+Home       User folder",
+        "  F11            Full screen",
+        "",
+        "Address Bar:",
+        "  Ctrl+L         Focus",
+        "  Alt+D          Focus",
+        "  F4             Focus",
+        "  Esc            Reset",
+        "",
+        "Search:",
+        "  Ctrl+F         Find",
+        "  F3             Next",
+        "  Shift+F3       Previous",
+        "",
+        "Focus Navigation:",
+        "  Tab            Cycle forward",
+        "  Shift+Tab      Cycle backward",
+        "",
+        "File Operations:",
+        "  Enter          Open",
+        "  F2             Rename",
+        "  Delete         Delete",
+        "  Ctrl+Shift+N   New folder",
+        "",
+        "Pinning:",
+        "  Alt+P          Pin/unpin",
+        "",
+        "Refresh:",
+        "  F5             Refresh current folder"
+    }
+
+        manual("Command Line Interface (CLI)") = New List(Of String) From {
+        "File Explorer includes a built‑in command line with:",
+        "",
+        "  • Aliases (cp, mv, rm, etc.)",
+        "  • Direct path navigation",
+        "  • Manual pages (man <command>)",
+        "  • Auto‑generated help (help, help <command>)",
+        "",
+        "Examples:",
+        "  cd C:\Projects",
+        "  copy file.txt D:\Backup",
+        "  openwith notepad notes.txt",
+        "  find report",
+        "  findnext",
+        "  pin",
+        "  drives",
+        "  df C:"
+    }
+
+        manual("Drive Tools") = New List(Of String) From {
+        "df:",
+        "  Shows free space for a specific drive.",
+        "    df C:",
+        "",
+        "drives:",
+        "  Shows all drives with graphical usage bars.",
+        "    drives"
+    }
+
+        manual("Pinning System") = New List(Of String) From {
+        "Pin any folder:",
+        "  pin C:\Projects",
+        "  pin",
+        "",
+        "Pinned folders appear in the sidebar and persist across sessions."
+    }
+
+        manual("Manual & Help System") = New List(Of String) From {
+        "Help:",
+        "  help",
+        "  commands",
+        "  ?",
+        "",
+        "The 'man' Command",
+        "Man displays a detailed manual.",
+        "",
+        "Examples:",
+        "  man",
+        "  manual",
+        "  appmanual"
+    }
+
+        Return manual
+    End Function
+
+
+    Private Function ManualSectionAliases() As Dictionary(Of String, String)
+        Return New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
+        {"key", "Keyboard Shortcuts"},
+        {"keys", "Keyboard Shortcuts"},
+        {"keyboard", "Keyboard Shortcuts"},
+        {"shortcut", "Keyboard Shortcuts"},
+        {"shortcuts", "Keyboard Shortcuts"},
+        {"hotkeys", "Keyboard Shortcuts"},
+        {"kb", "Keyboard Shortcuts"}
+    }
+    End Function
+
+
+
+
+
+
+
+
+    'Private Function BuildAppManualText() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    'sb.AppendLine("File Explorer — Application Manual")
+    '    'sb.AppendLine("=================================")
+    '    'sb.AppendLine()
+
+    '    sb.AppendLine("Table of Contents")
+    '    'sb.AppendLine("-----------------")
+    '    sb.AppendLine("  • Introduction")
+    '    sb.AppendLine("  • Getting Started")
+    '    sb.AppendLine("  • Features")
+    '    sb.AppendLine("  • Using the App")
+    '    sb.AppendLine("  • File Operations")
+    '    sb.AppendLine("  • Search")
+    '    sb.AppendLine("  • Keyboard Shortcuts")
+    '    sb.AppendLine("  • Command Line Interface")
+    '    sb.AppendLine("  • Drive Tools")
+    '    sb.AppendLine("  • Pinning System")
+    '    sb.AppendLine("  • Manual & Help System")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Introduction")
+    '    'sb.AppendLine("--------------------")
+    '    sb.AppendLine("File Explorer is an open‑source file management application")
+    '    sb.AppendLine("designed for clarity, speed, and emotional safety. It blends")
+    '    sb.AppendLine("a familiar Windows‑style interface with a powerful command line,")
+    '    sb.AppendLine("keyboard‑driven navigation, and a polished help drawer.")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Getting Started")
+    '    'sb.AppendLine("-----------------------")
+    '    sb.AppendLine("Installation:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  1. Clone the repository:")
+    '    sb.AppendLine("       git clone https://github.com/JoeLumbley/File-Explorer.git")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  2. Navigate to the project directory:")
+    '    sb.AppendLine("       cd File-Explorer")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  3. Build and run the application:")
+    '    sb.AppendLine("       dotnet build")
+    '    sb.AppendLine("       dotnet run")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Features")
+    '    'sb.AppendLine("-------------------")
+    '    sb.AppendLine("  • File Organization: Create, rename, and delete folders.")
+    '    sb.AppendLine("  • File Operations: Move, copy, delete, and rename files.")
+    '    sb.AppendLine("  • Search System: Fast in‑folder search with highlighting and HUD.")
+    '    sb.AppendLine("  • Keyboard Navigation: Shortcuts with repeat suppression.")
+    '    sb.AppendLine("  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.")
+    '    sb.AppendLine("  • Drive Tools: df and drives commands for free‑space bars.")
+    '    sb.AppendLine("  • Pinning System: Pin/unpin folders with Alt+P or the pin command.")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Using the App")
+    '    'sb.AppendLine("---------------------")
+    '    sb.AppendLine("Main Interface:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  • Navigation Pane — browse folders quickly.")
+    '    sb.AppendLine("  • File List — shows files and folders in the current directory.")
+    '    sb.AppendLine("  • Address Bar — displays and accepts paths.")
+    '    sb.AppendLine("  • Toolbar — quick access to common operations.")
+    '    sb.AppendLine("  • Help Drawer — slides in from the right for documentation.")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("File Operations")
+    '    'sb.AppendLine("-------------------------")
+    '    sb.AppendLine("Creating a Folder:")
+    '    sb.AppendLine("  • Click ""New Folder""")
+    '    sb.AppendLine("  • Press Ctrl+Shift+N")
+    '    sb.AppendLine("  • Or run:  mkdir <folder>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Renaming:")
+    '    sb.AppendLine("  • Select an item and press F2")
+    '    sb.AppendLine("  • Or run:  rename <old> <new>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Copying Files:")
+    '    sb.AppendLine("  • Ctrl+C → Ctrl+V")
+    '    sb.AppendLine("  • Or run:  copy <source> <destination>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Moving Files:")
+    '    sb.AppendLine("  • Drag and drop")
+    '    sb.AppendLine("  • Or run:  move <source> <destination>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Deleting Files:")
+    '    sb.AppendLine("  • Press Delete")
+    '    sb.AppendLine("  • Or run:  delete <path>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Opening Files:")
+    '    sb.AppendLine("  • Press Enter")
+    '    sb.AppendLine("  • Or run:  open <path>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Open With:")
+    '    sb.AppendLine("  • openwith notepad file.txt")
+    '    sb.AppendLine("  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt""")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Search")
+    '    'sb.AppendLine("---------------")
+    '    sb.AppendLine("Starting a Search:")
+    '    sb.AppendLine("  • Press Ctrl+F")
+    '    sb.AppendLine("  • Or run:  find <term>")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Navigating Results:")
+    '    sb.AppendLine("  • F3 — next result")
+    '    sb.AppendLine("  • Shift+F3 — previous result")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Resetting Search:")
+    '    sb.AppendLine("  • Press Esc")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Keyboard Shortcuts")
+    '    'sb.AppendLine("------------------------------")
+    '    sb.AppendLine("Navigation:")
+    '    sb.AppendLine("  Alt+Left       Back")
+    '    sb.AppendLine("  Alt+Right      Forward")
+    '    sb.AppendLine("  Alt+Up         Parent folder")
+    '    sb.AppendLine("  Alt+Home       User folder")
+    '    sb.AppendLine("  F11            Full screen")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Address Bar:")
+    '    sb.AppendLine("  Ctrl+L         Focus")
+    '    sb.AppendLine("  Alt+D          Focus")
+    '    sb.AppendLine("  F4             Focus")
+    '    sb.AppendLine("  Esc            Reset")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Search:")
+    '    sb.AppendLine("  Ctrl+F         Find")
+    '    sb.AppendLine("  F3             Next")
+    '    sb.AppendLine("  Shift+F3       Previous")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Focus Navigation:")
+    '    sb.AppendLine("  Tab            Cycle forward")
+    '    sb.AppendLine("  Shift+Tab      Cycle backward")
+    '    sb.AppendLine()
+    '    sb.AppendLine("File Operations:")
+    '    sb.AppendLine("  Enter          Open")
+    '    sb.AppendLine("  F2             Rename")
+    '    sb.AppendLine("  Delete         Delete")
+    '    sb.AppendLine("  Ctrl+Shift+N   New folder")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Pinning:")
+    '    sb.AppendLine("  Alt+P          Pin/unpin")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Refresh:")
+    '    sb.AppendLine("  F5             Refresh current folder")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Command Line Interface (CLI)")
+    '    'sb.AppendLine("----------------------------------")
+    '    sb.AppendLine("File Explorer includes a built‑in command line with:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("  • Aliases (cp, mv, rm, etc.)")
+    '    sb.AppendLine("  • Direct path navigation")
+    '    sb.AppendLine("  • Manual pages (man <command>)")
+    '    sb.AppendLine("  • Auto‑generated help (help, help <command>)")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Examples:")
+    '    sb.AppendLine("  cd C:\Projects")
+    '    sb.AppendLine("  copy file.txt D:\Backup")
+    '    sb.AppendLine("  openwith notepad notes.txt")
+    '    sb.AppendLine("  find report")
+    '    sb.AppendLine("  findnext")
+    '    sb.AppendLine("  pin")
+    '    sb.AppendLine("  drives")
+    '    sb.AppendLine("  df C:")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Drive Tools")
+    '    'sb.AppendLine("--------------------")
+    '    sb.AppendLine("df:")
+    '    sb.AppendLine("  Shows free space for a specific drive.")
+    '    sb.AppendLine("    df C:")
+    '    sb.AppendLine()
+    '    sb.AppendLine("drives:")
+    '    sb.AppendLine("  Shows all drives with graphical usage bars.")
+    '    sb.AppendLine("    drives")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Pinning System")
+    '    'sb.AppendLine("------------------------")
+    '    sb.AppendLine("Pin any folder:")
+    '    sb.AppendLine("  pin C:\Projects")
+    '    sb.AppendLine("  pin")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Pinned folders appear in the sidebar and persist across sessions.")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Manual & Help System")
+    '    'sb.AppendLine("-----------------------------")
+    '    sb.AppendLine("Help:")
+    '    sb.AppendLine("  help")
+    '    sb.AppendLine("  commands")
+    '    sb.AppendLine("  ?")
+    '    sb.AppendLine()
+
+
+    '    sb.AppendLine("The 'man' Command")
+    '    sb.AppendLine("Man displays a detailed manual.")
+    '    'sb.AppendLine("Each manual page includes:")
+    '    'sb.AppendLine("  • NAME        — The command name and a short description")
+    '    'sb.AppendLine("  • SYNOPSIS    — Usage and supported parameters")
+    '    'sb.AppendLine("  • DESCRIPTION — A detailed explanation of what the command does")
+    '    'sb.AppendLine("  • ALIASES     — Any alternate names for the command")
+    '    'sb.AppendLine("  • EXAMPLES    — Practical usage examples")
+    '    'sb.AppendLine("  • SEE ALSO    — Related commands")
+    '    sb.AppendLine()
+    '    sb.AppendLine("Examples:")
+    '    sb.AppendLine("  man")
+    '    sb.AppendLine("  manual")
+    '    sb.AppendLine("  appmanual")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+
+
+
+    Private Function BuildAppManualText() As String
+        Dim dict = BuildManualDictionary()
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine("Table of Contents")
+        For Each key In dict.Keys
+            sb.AppendLine("  • " & key)
+        Next
+        sb.AppendLine()
+
+        For Each key In dict.Keys
+            sb.AppendLine(key)
+            For Each line In dict(key)
+                sb.AppendLine(line)
+            Next
+            sb.AppendLine()
+        Next
+
+        Return sb.ToString()
+    End Function
+
+
+    Private Function SearchManualDict(searchTerm As String) As String
+        Dim dict = BuildManualDictionary()
+        Dim sb As New Text.StringBuilder()
+        Dim found As Boolean = False
+
+        For Each section In dict
+            Dim matches = section.Value.
+            Where(Function(line) line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0).
+            ToList()
+
+            If matches.Count > 0 Then
+                found = True
+                sb.AppendLine(section.Key)
+                sb.AppendLine(New String("-"c, section.Key.Length))
+
+                For Each line In matches
+                    sb.AppendLine(line)
+                Next
+
+                sb.AppendLine()
+            End If
+        Next
+
+        If Not found Then Return ""
+        Return sb.ToString()
+    End Function
+
+    'Private Function SearchManualDict(searchTerm As String) As String
+    '    Dim dict = BuildManualDictionary()
+    '    Dim sb As New Text.StringBuilder()
+    '    Dim found As Boolean = False
+
+    '    For Each section In dict
+    '        Dim matches = section.Value.
+    '        Where(Function(line) line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0).
+    '        ToList()
+
+    '        If matches.Count > 0 Then
+    '            found = True
+
+    '            sb.AppendLine(section.Key)
+    '            sb.AppendLine(New String("-"c, section.Key.Length))
+
+    '            For Each line In matches
+    '                sb.AppendLine(line)
+    '            Next
+
+    '            sb.AppendLine()
+    '        End If
+    '    Next
+
+    '    If Not found Then Return ""
+    '    Return sb.ToString()
+    'End Function
+
+
+
 
 
 
