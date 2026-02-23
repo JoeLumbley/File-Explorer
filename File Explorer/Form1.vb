@@ -7444,6 +7444,85 @@ Public Class Form1
     '    RestoreAddressBar()
     'End Sub
 
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        ' No argument → show full manual
+    '        If String.IsNullOrEmpty(searchTerm) Then
+    '            HelpTextBox.Text = BuildAppManualText()
+    '            EnsureHelpPanelVisible()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        Dim dict = BuildManualDictionary()
+    '        Dim aliases = ManualSectionAliases()
+
+    '        ' -----------------------------
+    '        ' 1. Alias match
+    '        ' -----------------------------
+    '        Dim realSection As String = Nothing
+    '        If aliases.TryGetValue(searchTerm, realSection) Then
+    '            HelpTextBox.Text = RenderSection(realSection, dict(realSection))
+    '            EnsureHelpPanelVisible()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' -----------------------------
+    '        ' 2. Exact match
+    '        ' -----------------------------
+    '        Dim exact = dict.Keys.
+    '        FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If exact IsNot Nothing Then
+    '            HelpTextBox.Text = RenderSection(exact, dict(exact))
+    '            EnsureHelpPanelVisible()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' -----------------------------
+    '        ' 3. Prefix match
+    '        ' -----------------------------
+    '        Dim prefix = dict.Keys.
+    '        FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If prefix IsNot Nothing Then
+    '            HelpTextBox.Text = RenderSection(prefix, dict(prefix))
+    '            EnsureHelpPanelVisible()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' -----------------------------
+    '        ' 4. Keyword search fallback
+    '        ' -----------------------------
+    '        Dim results = SearchManualDict(searchTerm)
+    '        HelpTextBox.Text =
+    '        If(String.IsNullOrEmpty(results),
+    '           $"No results found for ""{searchTerm}"".",
+    '           results)
+
+    '        EnsureHelpPanelVisible()
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
     Private Sub HandleManualCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Manual"
@@ -7451,12 +7530,11 @@ Public Class Form1
 
             Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
-            ' No argument → show full manual
+            ' -----------------------------
+            ' 0. No argument → full manual
+            ' -----------------------------
             If String.IsNullOrEmpty(searchTerm) Then
-                HelpTextBox.Text = BuildAppManualText()
-                EnsureHelpPanelVisible()
-                FocusHelpText()
-                RestoreAddressBar()
+                ShowManualContent(BuildAppManualText())
                 Return
             End If
 
@@ -7468,10 +7546,7 @@ Public Class Form1
             ' -----------------------------
             Dim realSection As String = Nothing
             If aliases.TryGetValue(searchTerm, realSection) Then
-                HelpTextBox.Text = RenderSection(realSection, dict(realSection))
-                EnsureHelpPanelVisible()
-                FocusHelpText()
-                RestoreAddressBar()
+                ShowManualContent(RenderSection(realSection, dict(realSection)))
                 Return
             End If
 
@@ -7482,10 +7557,7 @@ Public Class Form1
             FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
 
             If exact IsNot Nothing Then
-                HelpTextBox.Text = RenderSection(exact, dict(exact))
-                EnsureHelpPanelVisible()
-                FocusHelpText()
-                RestoreAddressBar()
+                ShowManualContent(RenderSection(exact, dict(exact)))
                 Return
             End If
 
@@ -7496,10 +7568,7 @@ Public Class Form1
             FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
 
             If prefix IsNot Nothing Then
-                HelpTextBox.Text = RenderSection(prefix, dict(prefix))
-                EnsureHelpPanelVisible()
-                FocusHelpText()
-                RestoreAddressBar()
+                ShowManualContent(RenderSection(prefix, dict(prefix)))
                 Return
             End If
 
@@ -7507,21 +7576,39 @@ Public Class Form1
             ' 4. Keyword search fallback
             ' -----------------------------
             Dim results = SearchManualDict(searchTerm)
-            HelpTextBox.Text =
-            If(String.IsNullOrEmpty(results),
-               $"No results found for ""{searchTerm}"".",
-               results)
-
-            EnsureHelpPanelVisible()
-            FocusHelpText()
+            ShowSearchResults(searchTerm, results)
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError &
                    "  Failed to display manual: " & ex.Message)
+        Finally
+            RestoreAddressBar()
         End Try
-
-        RestoreAddressBar()
     End Sub
+
+    Private Sub ShowManualContent(text As String)
+        HelpTextBox.Text = text
+        EnsureHelpPanelVisible()
+        FocusHelpText()
+    End Sub
+
+
+    Private Sub ShowSearchResults(term As String, results As String)
+        If String.IsNullOrEmpty(results) Then
+            HelpTextBox.Text = $"No results found for ""{term}""."
+        Else
+            HelpTextBox.Text = results
+        End If
+
+        EnsureHelpPanelVisible()
+        FocusHelpText()
+    End Sub
+
+
+
+
+
+
 
     Private Sub EnsureHelpPanelVisible()
         If Not HelpPanel.Visible Then
@@ -7825,266 +7912,553 @@ Public Class Form1
 
 
 
+    'Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
+    '    Dim manual As New Dictionary(Of String, List(Of String))()
+
+    '    manual("Introduction") = New List(Of String) From {
+    '    "File Explorer is an open‑source file management application",
+    '    "designed for clarity, speed, and emotional safety.",
+    '    "It blends a familiar Windows‑style interface with a powerful command line,",
+    '    "keyboard‑driven navigation, and a polished help drawer."
+    '}
+
+    '    manual("Getting Started") = New List(Of String) From {
+    '    "Installation:",
+    '    "",
+    '    "  1. Clone the repository:",
+    '    "       git clone https://github.com/JoeLumbley/File-Explorer.git",
+    '    "",
+    '    "  2. Navigate to the project directory:",
+    '    "       cd File-Explorer",
+    '    "",
+    '    "  3. Build and run the application:",
+    '    "       dotnet build",
+    '    "       dotnet run"
+    '}
+
+    '    manual("Features") = New List(Of String) From {
+    '    "  • File Organization: Create, rename, and delete folders.",
+    '    "  • File Operations: Move, copy, delete, and rename files.",
+    '    "  • Search System: Fast in‑folder search with highlighting and HUD.",
+    '    "  • Keyboard Navigation: Shortcuts with repeat suppression.",
+    '    "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
+    '    "  • Drive Tools: df and drives commands for free‑space bars.",
+    '    "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+    '}
+
+    '    manual("Using the App") = New List(Of String) From {
+    '    "Main Interface:",
+    '    "",
+    '    "  • Navigation Pane — browse folders quickly.",
+    '    "  • File List — shows files and folders in the current directory.",
+    '    "  • Address Bar — displays and accepts paths.",
+    '    "  • Toolbar — quick access to common operations.",
+    '    "  • Help Drawer — slides in from the right for documentation."
+    '}
+
+    '    manual("File Operations") = New List(Of String) From {
+    '    "Creating a Folder:",
+    '    "  • Click ""New Folder""",
+    '    "  • Press Ctrl+Shift+N",
+    '    "  • Or run:  mkdir <folder>",
+    '    "",
+    '    "Renaming:",
+    '    "  • Select an item and press F2",
+    '    "  • Or run:  rename <old> <new>",
+    '    "",
+    '    "Copying Files:",
+    '    "  • Ctrl+C → Ctrl+V",
+    '    "  • Or run:  copy <source> <destination>",
+    '    "",
+    '    "Moving Files:",
+    '    "  • Drag and drop",
+    '    "  • Or run:  move <source> <destination>",
+    '    "",
+    '    "Deleting Files:",
+    '    "  • Press Delete",
+    '    "  • Or run:  delete <path>",
+    '    "",
+    '    "Opening Files:",
+    '    "  • Press Enter",
+    '    "  • Or run:  open <path>",
+    '    "",
+    '    "Open With:",
+    '    "  • openwith notepad file.txt",
+    '    "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+    '}
+
+    '    manual("Search") = New List(Of String) From {
+    '    "Starting a Search:",
+    '    "  • Press Ctrl+F",
+    '    "  • Or run:  find <term>",
+    '    "",
+    '    "Navigating Results:",
+    '    "  • F3 — next result",
+    '    "  • Shift+F3 — previous result",
+    '    "",
+    '    "Resetting Search:",
+    '    "  • Press Esc"
+    '}
+
+    '    manual("Keyboard Shortcuts") = New List(Of String) From {
+    '    "Navigation:",
+    '    "  Alt+Left       Back",
+    '    "  Alt+Right      Forward",
+    '    "  Alt+Up         Parent folder",
+    '    "  Alt+Home       User folder",
+    '    "  F11            Full screen",
+    '    "",
+    '    "Address Bar:",
+    '    "  Ctrl+L         Focus",
+    '    "  Alt+D          Focus",
+    '    "  F4             Focus",
+    '    "  Esc            Reset",
+    '    "",
+    '    "Search:",
+    '    "  Ctrl+F         Find",
+    '    "  F3             Next",
+    '    "  Shift+F3       Previous",
+    '    "",
+    '    "Focus Navigation:",
+    '    "  Tab            Cycle forward",
+    '    "  Shift+Tab      Cycle backward",
+    '    "",
+    '    "File Operations:",
+    '    "  Enter          Open",
+    '    "  F2             Rename",
+    '    "  Delete         Delete",
+    '    "  Ctrl+Shift+N   New folder",
+    '    "",
+    '    "Pinning:",
+    '    "  Alt+P          Pin/unpin",
+    '    "",
+    '    "Refresh:",
+    '    "  F5             Refresh current folder"
+    '}
+
+    '    manual("Command Line Interface (CLI)") = New List(Of String) From {
+    '    "File Explorer includes a built‑in command line with:",
+    '    "",
+    '    "  • Aliases (cp, mv, rm, etc.)",
+    '    "  • Direct path navigation",
+    '    "  • Manual pages (man <command>)",
+    '    "  • Auto‑generated help (help, help <command>)",
+    '    "",
+    '    "Examples:",
+    '    "  cd C:\Projects",
+    '    "  copy file.txt D:\Backup",
+    '    "  openwith notepad notes.txt",
+    '    "  find report",
+    '    "  findnext",
+    '    "  pin",
+    '    "  drives",
+    '    "  df C:"
+    '}
+
+
+    '    manual("Commands") = New List(Of String) From {
+    '        "Available Commands:",
+    '        "",
+    '        "cd:",
+    '        "  Change the current directory.",
+    '        "    cd C:\Projects",
+    '        "    cd ""C:\My Folder""",
+    '        "",
+    '        "copy (cp):",
+    '        "  Copy a file or folder to a destination.",
+    '        "    copy C:\file.txt D:\Backup",
+    '        "    cp ""C:\Folder A"" ""C:\Folder B""",
+    '        "",
+    '        "delete (rm):",
+    '        "  Delete a file or folder.",
+    '        "    delete C:\file.txt",
+    '        "    rm ""C:\My Folder""",
+    '        "",
+    '        "df:",
+    '        "  Show free space for a specific drive.",
+    '        "    df C:",
+    '        "",
+    '        "drives:",
+    '        "  Show all drives with graphical usage bars.",
+    '        "    drives",
+    '        "",
+    '        "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+    '        "  Exit the application.",
+    '        "    exit",
+    '        "",
+    '        "find (search):",
+    '        "  Search for files and folders in the current directory.",
+    '        "    find report",
+    '        "",
+    '        "findnext (searchnext, next):",
+    '        "  Show the next search result.",
+    '        "    findnext",
+    '        "",
+    '        "help (commands, ?):",
+    '        "  Show help for commands.",
+    '        "    help",
+    '        "    help cd",
+    '        "",
+    '        "man (manual, appmanual):",
+    '        "  Show the full application manual.",
+    '        "    man",
+    '        "    manual",
+    '        "",
+    '        "mkdir (make, md):",
+    '        "  Create a new folder.",
+    '        "    mkdir C:\NewFolder",
+    '        "    md ""C:\Another Folder""",
+    '        "",
+    '        "move (mv):",
+    '        "  Move a file or folder.",
+    '        "    move C:\file.txt D:\Archive",
+    '        "",
+    '        "open:",
+    '        "  Open a file or navigate into a folder.",
+    '        "    open C:\folder\file.txt",
+    '        "",
+    '        "pin:",
+    '        "  Pin or unpin a folder.",
+    '        "    pin C:\Projects",
+    '        "    pin",
+    '        "",
+    '        "rename (rn):",
+    '        "  Rename a file or folder.",
+    '        "    rename ""C:\old.txt"" ""new.txt""",
+    '        "",
+    '        "shortcuts (keys):",
+    '        "  Show all keyboard shortcuts.",
+    '        "    shortcuts",
+    '        "",
+    '        "text (txt):",
+    '        "  Create a new text file.",
+    '        "    text ""C:\folder\example.txt"""
+    '    }
+
+
+    '    manual("Drive Tools") = New List(Of String) From {
+    '    "df:",
+    '    "  Shows free space for a specific drive.",
+    '    "    df C:",
+    '    "",
+    '    "drives:",
+    '    "  Shows all drives with graphical usage bars.",
+    '    "    drives"
+    '}
+
+    '    manual("Pinning System") = New List(Of String) From {
+    '    "Pin any folder:",
+    '    "  pin C:\Projects",
+    '    "  pin",
+    '    "",
+    '    "Pinned folders appear in the sidebar and persist across sessions."
+    '}
+
+    '    manual("Manual & Help System") = New List(Of String) From {
+    '        "Help:",
+    '        "  help",
+    '        "  commands",
+    '        "  ?",
+    '        "",
+    '        "The 'man' Command",
+    '        "Man displays a detailed manual.",
+    '        "",
+    '        "Examples:",
+    '        "  man",
+    '        "  manual",
+    '        "  appmanual"
+    '    }
+
+    '    Return manual
+    'End Function
     Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
-        Dim manual As New Dictionary(Of String, List(Of String))()
 
-        manual("Introduction") = New List(Of String) From {
-        "File Explorer is an open‑source file management application",
-        "designed for clarity, speed, and emotional safety.",
-        "It blends a familiar Windows‑style interface with a powerful command line,",
-        "keyboard‑driven navigation, and a polished help drawer."
-    }
-
-        manual("Getting Started") = New List(Of String) From {
-        "Installation:",
-        "",
-        "  1. Clone the repository:",
-        "       git clone https://github.com/JoeLumbley/File-Explorer.git",
-        "",
-        "  2. Navigate to the project directory:",
-        "       cd File-Explorer",
-        "",
-        "  3. Build and run the application:",
-        "       dotnet build",
-        "       dotnet run"
-    }
-
-        manual("Features") = New List(Of String) From {
-        "  • File Organization: Create, rename, and delete folders.",
-        "  • File Operations: Move, copy, delete, and rename files.",
-        "  • Search System: Fast in‑folder search with highlighting and HUD.",
-        "  • Keyboard Navigation: Shortcuts with repeat suppression.",
-        "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
-        "  • Drive Tools: df and drives commands for free‑space bars.",
-        "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
-    }
-
-        manual("Using the App") = New List(Of String) From {
-        "Main Interface:",
-        "",
-        "  • Navigation Pane — browse folders quickly.",
-        "  • File List — shows files and folders in the current directory.",
-        "  • Address Bar — displays and accepts paths.",
-        "  • Toolbar — quick access to common operations.",
-        "  • Help Drawer — slides in from the right for documentation."
-    }
-
-        manual("File Operations") = New List(Of String) From {
-        "Creating a Folder:",
-        "  • Click ""New Folder""",
-        "  • Press Ctrl+Shift+N",
-        "  • Or run:  mkdir <folder>",
-        "",
-        "Renaming:",
-        "  • Select an item and press F2",
-        "  • Or run:  rename <old> <new>",
-        "",
-        "Copying Files:",
-        "  • Ctrl+C → Ctrl+V",
-        "  • Or run:  copy <source> <destination>",
-        "",
-        "Moving Files:",
-        "  • Drag and drop",
-        "  • Or run:  move <source> <destination>",
-        "",
-        "Deleting Files:",
-        "  • Press Delete",
-        "  • Or run:  delete <path>",
-        "",
-        "Opening Files:",
-        "  • Press Enter",
-        "  • Or run:  open <path>",
-        "",
-        "Open With:",
-        "  • openwith notepad file.txt",
-        "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
-    }
-
-        manual("Search") = New List(Of String) From {
-        "Starting a Search:",
-        "  • Press Ctrl+F",
-        "  • Or run:  find <term>",
-        "",
-        "Navigating Results:",
-        "  • F3 — next result",
-        "  • Shift+F3 — previous result",
-        "",
-        "Resetting Search:",
-        "  • Press Esc"
-    }
-
-        manual("Keyboard Shortcuts") = New List(Of String) From {
-        "Navigation:",
-        "  Alt+Left       Back",
-        "  Alt+Right      Forward",
-        "  Alt+Up         Parent folder",
-        "  Alt+Home       User folder",
-        "  F11            Full screen",
-        "",
-        "Address Bar:",
-        "  Ctrl+L         Focus",
-        "  Alt+D          Focus",
-        "  F4             Focus",
-        "  Esc            Reset",
-        "",
-        "Search:",
-        "  Ctrl+F         Find",
-        "  F3             Next",
-        "  Shift+F3       Previous",
-        "",
-        "Focus Navigation:",
-        "  Tab            Cycle forward",
-        "  Shift+Tab      Cycle backward",
-        "",
-        "File Operations:",
-        "  Enter          Open",
-        "  F2             Rename",
-        "  Delete         Delete",
-        "  Ctrl+Shift+N   New folder",
-        "",
-        "Pinning:",
-        "  Alt+P          Pin/unpin",
-        "",
-        "Refresh:",
-        "  F5             Refresh current folder"
-    }
-
-        manual("Command Line Interface (CLI)") = New List(Of String) From {
-        "File Explorer includes a built‑in command line with:",
-        "",
-        "  • Aliases (cp, mv, rm, etc.)",
-        "  • Direct path navigation",
-        "  • Manual pages (man <command>)",
-        "  • Auto‑generated help (help, help <command>)",
-        "",
-        "Examples:",
-        "  cd C:\Projects",
-        "  copy file.txt D:\Backup",
-        "  openwith notepad notes.txt",
-        "  find report",
-        "  findnext",
-        "  pin",
-        "  drives",
-        "  df C:"
-    }
-
-
-        manual("Commands") = New List(Of String) From {
-            "Available Commands:",
-            "",
-            "cd:",
-            "  Change the current directory.",
-            "    cd C:\Projects",
-            "    cd ""C:\My Folder""",
-            "",
-            "copy (cp):",
-            "  Copy a file or folder to a destination.",
-            "    copy C:\file.txt D:\Backup",
-            "    cp ""C:\Folder A"" ""C:\Folder B""",
-            "",
-            "delete (rm):",
-            "  Delete a file or folder.",
-            "    delete C:\file.txt",
-            "    rm ""C:\My Folder""",
-            "",
-            "df:",
-            "  Show free space for a specific drive.",
-            "    df C:",
-            "",
-            "drives:",
-            "  Show all drives with graphical usage bars.",
-            "    drives",
-            "",
-            "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
-            "  Exit the application.",
-            "    exit",
-            "",
-            "find (search):",
-            "  Search for files and folders in the current directory.",
-            "    find report",
-            "",
-            "findnext (searchnext, next):",
-            "  Show the next search result.",
-            "    findnext",
-            "",
-            "help (commands, ?):",
-            "  Show help for commands.",
-            "    help",
-            "    help cd",
-            "",
-            "man (manual, appmanual):",
-            "  Show the full application manual.",
-            "    man",
-            "    manual",
-            "",
-            "mkdir (make, md):",
-            "  Create a new folder.",
-            "    mkdir C:\NewFolder",
-            "    md ""C:\Another Folder""",
-            "",
-            "move (mv):",
-            "  Move a file or folder.",
-            "    move C:\file.txt D:\Archive",
-            "",
-            "open:",
-            "  Open a file or navigate into a folder.",
-            "    open C:\folder\file.txt",
-            "",
-            "pin:",
-            "  Pin or unpin a folder.",
-            "    pin C:\Projects",
-            "    pin",
-            "",
-            "rename (rn):",
-            "  Rename a file or folder.",
-            "    rename ""C:\old.txt"" ""new.txt""",
-            "",
-            "shortcuts (keys):",
-            "  Show all keyboard shortcuts.",
-            "    shortcuts",
-            "",
-            "text (txt):",
-            "  Create a new text file.",
-            "    text ""C:\folder\example.txt"""
+        Dim sections As New Dictionary(Of String, String()) From {
+        {
+            "Introduction",
+            {
+                "File Explorer is an open‑source file management application",
+                "designed for clarity, speed, and emotional safety.",
+                "It blends a familiar Windows‑style interface with a powerful command line,",
+                "keyboard‑driven navigation, and a polished help drawer."
+            }
+        },
+        {
+            "Getting Started",
+            {
+                "Installation:",
+                "",
+                "  1. Clone the repository:",
+                "       git clone https://github.com/JoeLumbley/File-Explorer.git",
+                "",
+                "  2. Navigate to the project directory:",
+                "       cd File-Explorer",
+                "",
+                "  3. Build and run the application:",
+                "       dotnet build",
+                "       dotnet run"
+            }
+        },
+        {
+            "Features",
+            {
+                "  • File Organization: Create, rename, and delete folders.",
+                "  • File Operations: Move, copy, delete, and rename files.",
+                "  • Search System: Fast in‑folder search with highlighting and HUD.",
+                "  • Keyboard Navigation: Shortcuts with repeat suppression.",
+                "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
+                "  • Drive Tools: df and drives commands for free‑space bars.",
+                "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+            }
+        },
+        {
+            "Using the App",
+            {
+                "Main Interface:",
+                "",
+                "  • Navigation Pane — browse folders quickly.",
+                "  • File List — shows files and folders in the current directory.",
+                "  • Address Bar — displays and accepts paths.",
+                "  • Toolbar — quick access to common operations.",
+                "  • Help Drawer — slides in from the right for documentation."
+            }
+        },
+        {
+            "File Operations",
+            {
+                "Creating a Folder:",
+                "  • Click ""New Folder""",
+                "  • Press Ctrl+Shift+N",
+                "  • Or run:  mkdir <folder>",
+                "",
+                "Renaming:",
+                "  • Select an item and press F2",
+                "  • Or run:  rename <old> <new>",
+                "",
+                "Copying Files:",
+                "  • Ctrl+C → Ctrl+V",
+                "  • Or run:  copy <source> <destination>",
+                "",
+                "Moving Files:",
+                "  • Drag and drop",
+                "  • Or run:  move <source> <destination>",
+                "",
+                "Deleting Files:",
+                "  • Press Delete",
+                "  • Or run:  delete <path>",
+                "",
+                "Opening Files:",
+                "  • Press Enter",
+                "  • Or run:  open <path>",
+                "",
+                "Open With:",
+                "  • openwith notepad file.txt",
+                "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+            }
+        },
+        {
+            "Search",
+            {
+                "Starting a Search:",
+                "  • Press Ctrl+F",
+                "  • Or run:  find <term>",
+                "",
+                "Navigating Results:",
+                "  • F3 — next result",
+                "  • Shift+F3 — previous result",
+                "",
+                "Resetting Search:",
+                "  • Press Esc"
+            }
+        },
+        {
+            "Keyboard Shortcuts",
+            {
+                "Navigation:",
+                "  Alt+Left       Back",
+                "  Alt+Right      Forward",
+                "  Alt+Up         Parent folder",
+                "  Alt+Home       User folder",
+                "  F11            Full screen",
+                "",
+                "Address Bar:",
+                "  Ctrl+L         Focus",
+                "  Alt+D          Focus",
+                "  F4             Focus",
+                "  Esc            Reset",
+                "",
+                "Search:",
+                "  Ctrl+F         Find",
+                "  F3             Next",
+                "  Shift+F3       Previous",
+                "",
+                "Focus Navigation:",
+                "  Tab            Cycle forward",
+                "  Shift+Tab      Cycle backward",
+                "",
+                "File Operations:",
+                "  Enter          Open",
+                "  F2             Rename",
+                "  Delete         Delete",
+                "  Ctrl+Shift+N   New folder",
+                "",
+                "Pinning:",
+                "  Alt+P          Pin/unpin",
+                "",
+                "Refresh:",
+                "  F5             Refresh current folder"
+            }
+        },
+        {
+            "Command Line Interface (CLI)",
+            {
+                "File Explorer includes a built‑in command line with:",
+                "",
+                "  • Aliases (cp, mv, rm, etc.)",
+                "  • Direct path navigation",
+                "  • Manual pages (man <command>)",
+                "  • Auto‑generated help (help, help <command>)",
+                "",
+                "Examples:",
+                "  cd C:\Projects",
+                "  copy file.txt D:\Backup",
+                "  openwith notepad notes.txt",
+                "  find report",
+                "  findnext",
+                "  pin",
+                "  drives",
+                "  df C:"
+            }
+        },
+        {
+            "Commands",
+            {
+                "Available Commands:",
+                "",
+                "cd:",
+                "  Change the current directory.",
+                "    cd C:\Projects",
+                "    cd ""C:\My Folder""",
+                "",
+                "copy (cp):",
+                "  Copy a file or folder to a destination.",
+                "    copy C:\file.txt D:\Backup",
+                "    cp ""C:\Folder A"" ""C:\Folder B""",
+                "",
+                "delete (rm):",
+                "  Delete a file or folder.",
+                "    delete C:\file.txt",
+                "    rm ""C:\My Folder""",
+                "",
+                "df:",
+                "  Show free space for a specific drive.",
+                "    df C:",
+                "",
+                "drives:",
+                "  Show all drives with graphical usage bars.",
+                "    drives",
+                "",
+                "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+                "  Exit the application.",
+                "    exit",
+                "",
+                "find (search):",
+                "  Search for files and folders in the current directory.",
+                "    find report",
+                "",
+                "findnext (searchnext, next):",
+                "  Show the next search result.",
+                "    findnext",
+                "",
+                "help (commands, ?):",
+                "  Show help for commands.",
+                "    help",
+                "    help cd",
+                "",
+                "man (manual, appmanual):",
+                "  Show the full application manual.",
+                "    man",
+                "    manual",
+                "",
+                "mkdir (make, md):",
+                "  Create a new folder.",
+                "    mkdir C:\NewFolder",
+                "    md ""C:\Another Folder""",
+                "",
+                "move (mv):",
+                "  Move a file or folder.",
+                "    move C:\file.txt D:\Archive",
+                "",
+                "open:",
+                "  Open a file or navigate into a folder.",
+                "    open C:\folder\file.txt",
+                "",
+                "pin:",
+                "  Pin or unpin a folder.",
+                "    pin C:\Projects",
+                "    pin",
+                "",
+                "rename (rn):",
+                "  Rename a file or folder.",
+                "    rename ""C:\old.txt"" ""new.txt""",
+                "",
+                "shortcuts (keys):",
+                "  Show all keyboard shortcuts.",
+                "    shortcuts",
+                "",
+                "text (txt):",
+                "  Create a new text file.",
+                "    text ""C:\folder\example.txt"""
+            }
+        },
+        {
+            "Drive Tools",
+            {
+                "df:",
+                "  Shows free space for a specific drive.",
+                "    df C:",
+                "",
+                "drives:",
+                "  Shows all drives with graphical usage bars.",
+                "    drives"
+            }
+        },
+        {
+            "Pinning System",
+            {
+                "Pin any folder:",
+                "  pin C:\Projects",
+                "  pin",
+                "",
+                "Pinned folders appear in the sidebar and persist across sessions."
+            }
+        },
+        {
+            "Manual & Help System",
+            {
+                "Help:",
+                "  help",
+                "  commands",
+                "  ?",
+                "",
+                "The 'man' Command",
+                "Man displays a detailed manual.",
+                "",
+                "Examples:",
+                "  man",
+                "  manual",
+                "  appmanual"
+            }
         }
-
-
-        manual("Drive Tools") = New List(Of String) From {
-        "df:",
-        "  Shows free space for a specific drive.",
-        "    df C:",
-        "",
-        "drives:",
-        "  Shows all drives with graphical usage bars.",
-        "    drives"
     }
 
-        manual("Pinning System") = New List(Of String) From {
-        "Pin any folder:",
-        "  pin C:\Projects",
-        "  pin",
-        "",
-        "Pinned folders appear in the sidebar and persist across sessions."
-    }
+        ' Convert arrays → List(Of String)
+        Return sections.ToDictionary(
+        Function(kvp) kvp.Key,
+        Function(kvp) kvp.Value.ToList()
+    )
 
-        manual("Manual & Help System") = New List(Of String) From {
-            "Help:",
-            "  help",
-            "  commands",
-            "  ?",
-            "",
-            "The 'man' Command",
-            "Man displays a detailed manual.",
-            "",
-            "Examples:",
-            "  man",
-            "  manual",
-            "  appmanual"
-        }
-
-        Return manual
     End Function
-
 
 
     'Private Function ManualSectionAliases() As Dictionary(Of String, String)
@@ -8099,84 +8473,205 @@ Public Class Form1
     '}
     'End Function
 
+    'Private Function ManualSectionAliases() As Dictionary(Of String, String)
+    '    Return New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
+    '    {"key", "Keyboard Shortcuts"},
+    '    {"keys", "Keyboard Shortcuts"},
+    '    {"keyboard", "Keyboard Shortcuts"},
+    '    {"kbd", "Keyboard Shortcuts"},
+    '    {"kb", "Keyboard Shortcuts"},
+    '    {"shortcut", "Keyboard Shortcuts"},
+    '    {"shortcuts", "Keyboard Shortcuts"},
+    '    {"hotkey", "Keyboard Shortcuts"},
+    '    {"hotkeys", "Keyboard Shortcuts"},
+    '    {"bindings", "Keyboard Shortcuts"},
+    '    {"keybindings", "Keyboard Shortcuts"},
+    '    {"keybinds", "Keyboard Shortcuts"},
+    '    {"controls", "Keyboard Shortcuts"},
+    '    {"accelerators", "Keyboard Shortcuts"},
+    '    {"function keys", "Keyboard Shortcuts"},
+    '    {"fn keys", "Keyboard Shortcuts"},
+    '    {"nav keys", "Keyboard Shortcuts"},
+    '    {"navigation keys", "Keyboard Shortcuts"},
+    '    {"key commands", "Keyboard Shortcuts"},
+    '    {"key commands list", "Keyboard Shortcuts"},
+    '    {"key list", "Keyboard Shortcuts"},
+    '    {"shortcut list", "Keyboard Shortcuts"},
+    '    {"keyboard help", "Keyboard Shortcuts"},
+    '    {"keyboard guide", "Keyboard Shortcuts"},
+    '    {"find", "Search"},
+    '    {"search", "Search"},
+    '    {"lookup", "Search"},
+    '    {"locate", "Search"},
+    '    {"findnext", "Search"},
+    '    {"searching", "Search"},
+    '    {"files", "File Operations"},
+    '    {"file ops", "File Operations"},
+    '    {"ops", "File Operations"},
+    '    {"operations", "File Operations"},
+    '    {"copy", "File Operations"},
+    '    {"move", "File Operations"},
+    '    {"rename", "File Operations"},
+    '    {"delete", "File Operations"},
+    '    {"open", "File Operations"},
+    '    {"openwith", "File Operations"},
+    '    {"df", "Drive Tools"},
+    '    {"drives", "Drive Tools"},
+    '    {"drive", "Drive Tools"},
+    '    {"disk", "Drive Tools"},
+    '    {"disks", "Drive Tools"},
+    '    {"storage", "Drive Tools"},
+    '    {"pin", "Pinning System"},
+    '    {"pinned", "Pinning System"},
+    '    {"pins", "Pinning System"},
+    '    {"cli", "Command Line Interface (CLI)"},
+    '    {"command line", "Command Line Interface (CLI)"},
+    '    {"terminal", "Command Line Interface (CLI)"},
+    '    {"console", "Command Line Interface (CLI)"},
+    '    {"commands", "Commands"},
+    '    {"manual", "Manual & Help System"},
+    '    {"man", "Manual & Help System"},
+    '    {"help", "Manual & Help System"},
+    '    {"appmanual", "Manual & Help System"},
+    '    {"docs", "Manual & Help System"},
+    '    {"documentation", "Manual & Help System"},
+    '    {"reference", "Manual & Help System"},
+    '    {"intro", "Introduction"},
+    '    {"start", "Getting Started"},
+    '    {"getting started", "Getting Started"},
+    '    {"install", "Getting Started"},
+    '    {"installation", "Getting Started"},
+    '    {"setup", "Getting Started"},
+    '    {"features", "Features"},
+    '    {"capabilities", "Features"},
+    '    {"what it does", "Features"},
+    '    {"usage", "Using the App"},
+    '    {"using", "Using the App"},
+    '    {"interface", "Using the App"},
+    '    {"ui", "Using the App"}
+    '}
+    'End Function
+
     Private Function ManualSectionAliases() As Dictionary(Of String, String)
-        Return New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
-        {"key", "Keyboard Shortcuts"},
-        {"keys", "Keyboard Shortcuts"},
-        {"keyboard", "Keyboard Shortcuts"},
-        {"kbd", "Keyboard Shortcuts"},
-        {"kb", "Keyboard Shortcuts"},
-        {"shortcut", "Keyboard Shortcuts"},
-        {"shortcuts", "Keyboard Shortcuts"},
-        {"hotkey", "Keyboard Shortcuts"},
-        {"hotkeys", "Keyboard Shortcuts"},
-        {"bindings", "Keyboard Shortcuts"},
-        {"keybindings", "Keyboard Shortcuts"},
-        {"keybinds", "Keyboard Shortcuts"},
-        {"controls", "Keyboard Shortcuts"},
-        {"accelerators", "Keyboard Shortcuts"},
-        {"function keys", "Keyboard Shortcuts"},
-        {"fn keys", "Keyboard Shortcuts"},
-        {"nav keys", "Keyboard Shortcuts"},
-        {"navigation keys", "Keyboard Shortcuts"},
-        {"key commands", "Keyboard Shortcuts"},
-        {"key commands list", "Keyboard Shortcuts"},
-        {"key list", "Keyboard Shortcuts"},
-        {"shortcut list", "Keyboard Shortcuts"},
-        {"keyboard help", "Keyboard Shortcuts"},
-        {"keyboard guide", "Keyboard Shortcuts"},
-        {"find", "Search"},
-        {"search", "Search"},
-        {"lookup", "Search"},
-        {"locate", "Search"},
-        {"findnext", "Search"},
-        {"searching", "Search"},
-        {"files", "File Operations"},
-        {"file ops", "File Operations"},
-        {"ops", "File Operations"},
-        {"operations", "File Operations"},
-        {"copy", "File Operations"},
-        {"move", "File Operations"},
-        {"rename", "File Operations"},
-        {"delete", "File Operations"},
-        {"open", "File Operations"},
-        {"openwith", "File Operations"},
-        {"df", "Drive Tools"},
-        {"drives", "Drive Tools"},
-        {"drive", "Drive Tools"},
-        {"disk", "Drive Tools"},
-        {"disks", "Drive Tools"},
-        {"storage", "Drive Tools"},
-        {"pin", "Pinning System"},
-        {"pinned", "Pinning System"},
-        {"pins", "Pinning System"},
-        {"cli", "Command Line Interface (CLI)"},
-        {"command line", "Command Line Interface (CLI)"},
-        {"terminal", "Command Line Interface (CLI)"},
-        {"console", "Command Line Interface (CLI)"},
-        {"commands", "Commands"},
-        {"manual", "Manual & Help System"},
-        {"man", "Manual & Help System"},
-        {"help", "Manual & Help System"},
-        {"appmanual", "Manual & Help System"},
-        {"docs", "Manual & Help System"},
-        {"documentation", "Manual & Help System"},
-        {"reference", "Manual & Help System"},
-        {"intro", "Introduction"},
-        {"start", "Getting Started"},
-        {"getting started", "Getting Started"},
-        {"install", "Getting Started"},
-        {"installation", "Getting Started"},
-        {"setup", "Getting Started"},
-        {"features", "Features"},
-        {"capabilities", "Features"},
-        {"what it does", "Features"},
-        {"usage", "Using the App"},
-        {"using", "Using the App"},
-        {"interface", "Using the App"},
-        {"ui", "Using the App"}
-    }
+        Dim map As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+
+        ' -----------------------------
+        ' Keyboard Shortcuts
+        ' -----------------------------
+        AddAliases(map, "Keyboard Shortcuts",
+            "key", "keys", "keyboard", "kbd", "kb",
+            "shortcut", "shortcuts", "hotkey", "hotkeys",
+            "bindings", "keybindings", "keybinds",
+            "controls", "accelerators",
+            "function keys", "fn keys",
+            "nav keys", "navigation keys",
+            "key commands", "key commands list",
+            "key list", "shortcut list",
+            "keyboard help", "keyboard guide"
+        )
+
+        ' -----------------------------
+        ' Search
+        ' -----------------------------
+        AddAliases(map, "Search",
+            "find", "search", "lookup", "locate",
+            "findnext", "searching"
+        )
+
+        ' -----------------------------
+        ' File Operations
+        ' -----------------------------
+        AddAliases(map, "File Operations",
+            "files", "file ops", "ops", "operations",
+            "copy", "move", "rename", "delete",
+            "open", "openwith"
+        )
+
+        ' -----------------------------
+        ' Drive Tools
+        ' -----------------------------
+        AddAliases(map, "Drive Tools",
+            "df", "drives", "drive", "disk", "disks", "storage"
+        )
+
+        ' -----------------------------
+        ' Pinning System
+        ' -----------------------------
+        AddAliases(map, "Pinning System",
+            "pin", "pins", "pinned",
+            "bookmark", "bookmarks",
+            "fav", "favs",
+            "favorite", "favorites",
+            "star", "starred"
+        )
+        ' -----------------------------
+        ' CLI
+        ' -----------------------------
+        AddAliases(map, "Command Line Interface (CLI)",
+            "cli", "command line", "terminal", "console"
+        )
+
+        ' -----------------------------
+        ' Commands
+        ' -----------------------------
+        AddAliases(map, "Commands",
+            "commands"
+        )
+
+        ' -----------------------------
+        ' Manual & Help System
+        ' -----------------------------
+        AddAliases(map, "Manual & Help System",
+            "manual", "man", "help", "appmanual",
+            "docs", "documentation", "reference"
+        )
+
+        ' -----------------------------
+        ' Introduction
+        ' -----------------------------
+        AddAliases(map, "Introduction",
+            "intro"
+        )
+
+        ' -----------------------------
+        ' Getting Started
+        ' -----------------------------
+        AddAliases(map, "Getting Started",
+            "start", "getting started", "install",
+            "installation", "setup"
+        )
+
+        ' -----------------------------
+        ' Features
+        ' -----------------------------
+        AddAliases(map, "Features",
+            "capabilities", "what it does"
+        )
+
+        ' -----------------------------
+        ' Using the App
+        ' -----------------------------
+        AddAliases(map, "Using the App",
+            "usage", "using", "interface", "ui"
+        )
+
+        Return map
     End Function
+
+    Private Sub AddAliases(map As Dictionary(Of String, String),
+                       section As String,
+                       ParamArray names() As String)
+
+        For Each n In names
+            map(n) = section
+        Next
+    End Sub
+
+
+
+
+
+
 
 
 
@@ -8688,6 +9183,7 @@ Public Class Form1
 
         ' --- Help Text Area ---
         HelpTextBox = New RichTextBox() With {
+        .DetectUrls = True,
         .Dock = DockStyle.Fill,
         .ReadOnly = True,
         .BorderStyle = BorderStyle.None,
@@ -8696,6 +9192,14 @@ Public Class Form1
         .ScrollBars = RichTextBoxScrollBars.Vertical,
         .Height = 300
     }
+        AddHandler HelpTextBox.LinkClicked,
+    Sub(sender, e)
+        Try
+            Process.Start(New ProcessStartInfo(e.LinkText) With {.UseShellExecute = True})
+        Catch ex As Exception
+            MessageBox.Show("Failed to open link: " & ex.Message)
+        End Try
+    End Sub
 
         scrollPanel.Controls.Add(HelpTextBox)
         HelpPanel.Controls.Add(scrollPanel)
@@ -9390,15 +9894,6 @@ Public Class Form1
         Debug.WriteLine("✓ ValidateNotCopyingIntoSelf tests passed")
 
     End Sub
-
-    'Private Sub TestListViewParser()
-
-    '    lvFiles.Items.Add(New ListViewItem({"alpha.txt", "Text", "12 KB", "1/2/2024"}))
-    '    lvFiles.Items.Add(New ListViewItem({"beta.txt", "Text", "3,200", "12/25/2023"}))
-    '    lvFiles.Items.Add(New ListViewItem({"gamma.txt", "Text", "1.5 MB", "5/10/2024"}))
-    '    lvFiles.Items.Add(New ListViewItem({"delta.txt", "Text", "1.2 GB", "3/1/2023"}))
-
-    'End Sub
 
     Private Sub AssertTrue(condition As Boolean, message As String)
         Debug.Assert(condition, message)
