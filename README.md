@@ -95,6 +95,9 @@ Everything is open-source under the MIT License, so you’re free to explore, cu
 ### **A reminder that even “simple” tools contain fascinating engineering challenges**  
 Re-creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
 
+### **A space for deliberate practice and student‑driven growth**
+One of the core ideas behind this project is the value of deliberate practice—breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
+My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at—it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
 
 If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
 
