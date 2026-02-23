@@ -25,6 +25,8 @@
 ' Github repo: https://github.com/JoeLumbley/File-Explorer
 ' Documentation: You can find the documentation at the GitHub repository.
 
+' How do you eat an elephant?
+
 Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
@@ -9543,6 +9545,8 @@ End Class
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
 ' The goal: Explorer‑grade behavior with learner‑friendly clarity.
 
-' Maximum Effort
+' One bite at a time.
+
+' Maximum Effort.
 
 
