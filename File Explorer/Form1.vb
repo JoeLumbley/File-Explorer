@@ -7271,6 +7271,177 @@ Public Class Form1
 
 
 
+    '    Private Sub HandleManualCommand(parts As String())
+    '        Try
+    '            HelpHeaderLabel.Text = "Manual"
+    '            HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '            Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '            If Not String.IsNullOrEmpty(searchTerm) Then
+    '                'Dim dict = BuildManualDictionary()
+
+    '                '' 1. Exact section match (case-insensitive)
+    '                'Dim section = dict.Keys.
+    '                'FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '                'If Not String.IsNullOrEmpty(section) Then
+    '                '    ' Show the entire section
+    '                '    HelpTextBox.Text =
+    '                '    section & Environment.NewLine &
+    '                '    New String("-"c, section.Length) & Environment.NewLine &
+    '                '    String.Join(Environment.NewLine, dict(section))
+
+    '                'Else
+    '                '    ' 2. Fallback to keyword search
+    '                '    Dim searchResults As String = SearchManualDict(searchTerm)
+
+    '                '    If String.IsNullOrEmpty(searchResults) Then
+    '                '        HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+    '                '    Else
+    '                '        HelpTextBox.Text = searchResults
+    '                '    End If
+    '                'End If
+    '                Dim dict = BuildManualDictionary()
+    '                Dim aliases = ManualSectionAliases()
+
+    '                ' 1. Alias match (keyboard → Keyboard Shortcuts)
+    '                If aliases.ContainsKey(searchTerm) Then
+    '                    Dim realSection = aliases(searchTerm)
+    '                    HelpTextBox.Text =
+    '                    realSection & Environment.NewLine &
+    '                    New String("-"c, realSection.Length) & Environment.NewLine &
+    '                    String.Join(Environment.NewLine, dict(realSection))
+    '                    GoTo Done
+    '                End If
+
+    '                ' 2. Exact section match
+    '                Dim exact = dict.Keys.
+    '                FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '                If Not String.IsNullOrEmpty(exact) Then
+    '                    HelpTextBox.Text =
+    '                    exact & Environment.NewLine &
+    '                    New String("-"c, exact.Length) & Environment.NewLine &
+    '                    String.Join(Environment.NewLine, dict(exact))
+    '                    GoTo Done
+    '                End If
+
+    '                ' 3. Prefix match (man key → Keyboard Shortcuts)
+    '                Dim prefix = dict.Keys.
+    '                FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '                If Not String.IsNullOrEmpty(prefix) Then
+    '                    HelpTextBox.Text =
+    '                    prefix & Environment.NewLine &
+    '                    New String("-"c, prefix.Length) & Environment.NewLine &
+    '                    String.Join(Environment.NewLine, dict(prefix))
+    '                    GoTo Done
+    '                End If
+
+    '                ' 4. Fallback keyword search
+    '                Dim searchResults As String = SearchManualDict(searchTerm)
+    '                If String.IsNullOrEmpty(searchResults) Then
+    '                    HelpTextBox.Text = $"No results found for ""{searchTerm}""."
+    '                Else
+    '                    HelpTextBox.Text = searchResults
+    '                End If
+
+    'Done:
+    '            Else
+    '                HelpTextBox.Text = BuildAppManualText()
+    '            End If
+
+
+
+    '            FocusHelpText()
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError &
+    '                   "  Failed to display manual: " & ex.Message)
+    '        End Try
+
+    '        RestoreAddressBar()
+    '    End Sub
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        ' No argument → show full manual
+    '        If String.IsNullOrEmpty(searchTerm) Then
+    '            HelpTextBox.Text = BuildAppManualText()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        Dim dict = BuildManualDictionary()
+    '        Dim aliases = ManualSectionAliases()
+
+    '        ' -----------------------------
+    '        ' 1. Alias match
+    '        ' -----------------------------
+    '        Dim realSection As String = Nothing
+    '        If aliases.TryGetValue(searchTerm, realSection) Then
+    '            HelpTextBox.Text = RenderSection(realSection, dict(realSection))
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' -----------------------------
+    '        ' 2. Exact match
+    '        ' -----------------------------
+    '        Dim exact = dict.Keys.
+    '        FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If exact IsNot Nothing Then
+    '            HelpTextBox.Text = RenderSection(exact, dict(exact))
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' -----------------------------
+    '        ' 3. Prefix match
+    '        ' -----------------------------
+    '        Dim prefix = dict.Keys.
+    '        FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If prefix IsNot Nothing Then
+    '            HelpTextBox.Text = RenderSection(prefix, dict(prefix))
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' -----------------------------
+    '        ' 4. Keyword search fallback
+    '        ' -----------------------------
+    '        Dim results = SearchManualDict(searchTerm)
+    '        HelpTextBox.Text =
+    '        If(String.IsNullOrEmpty(results),
+    '           $"No results found for ""{searchTerm}"".",
+    '           results)
+
+    '        ' Show help panel if not already visible
+    '        If Not HelpPanel.Visible Then
+    '            ShowHelpPanelAnimated()
+    '        End If
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    End Try
+
+    '    RestoreAddressBar()
+    'End Sub
+
     Private Sub HandleManualCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Manual"
@@ -7278,82 +7449,68 @@ Public Class Form1
 
             Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
-            If Not String.IsNullOrEmpty(searchTerm) Then
-                'Dim dict = BuildManualDictionary()
-
-                '' 1. Exact section match (case-insensitive)
-                'Dim section = dict.Keys.
-                'FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-                'If Not String.IsNullOrEmpty(section) Then
-                '    ' Show the entire section
-                '    HelpTextBox.Text =
-                '    section & Environment.NewLine &
-                '    New String("-"c, section.Length) & Environment.NewLine &
-                '    String.Join(Environment.NewLine, dict(section))
-
-                'Else
-                '    ' 2. Fallback to keyword search
-                '    Dim searchResults As String = SearchManualDict(searchTerm)
-
-                '    If String.IsNullOrEmpty(searchResults) Then
-                '        HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-                '    Else
-                '        HelpTextBox.Text = searchResults
-                '    End If
-                'End If
-                Dim dict = BuildManualDictionary()
-                Dim aliases = ManualSectionAliases()
-
-                ' 1. Alias match (keyboard → Keyboard Shortcuts)
-                If aliases.ContainsKey(searchTerm) Then
-                    Dim realSection = aliases(searchTerm)
-                    HelpTextBox.Text =
-                    realSection & Environment.NewLine &
-                    New String("-"c, realSection.Length) & Environment.NewLine &
-                    String.Join(Environment.NewLine, dict(realSection))
-                    GoTo Done
-                End If
-
-                ' 2. Exact section match
-                Dim exact = dict.Keys.
-                FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-                If Not String.IsNullOrEmpty(exact) Then
-                    HelpTextBox.Text =
-                    exact & Environment.NewLine &
-                    New String("-"c, exact.Length) & Environment.NewLine &
-                    String.Join(Environment.NewLine, dict(exact))
-                    GoTo Done
-                End If
-
-                ' 3. Prefix match (man key → Keyboard Shortcuts)
-                Dim prefix = dict.Keys.
-                FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-                If Not String.IsNullOrEmpty(prefix) Then
-                    HelpTextBox.Text =
-                    prefix & Environment.NewLine &
-                    New String("-"c, prefix.Length) & Environment.NewLine &
-                    String.Join(Environment.NewLine, dict(prefix))
-                    GoTo Done
-                End If
-
-                ' 4. Fallback keyword search
-                Dim searchResults As String = SearchManualDict(searchTerm)
-                If String.IsNullOrEmpty(searchResults) Then
-                    HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-                Else
-                    HelpTextBox.Text = searchResults
-                End If
-
-Done:
-            Else
+            ' No argument → show full manual
+            If String.IsNullOrEmpty(searchTerm) Then
                 HelpTextBox.Text = BuildAppManualText()
+                EnsureHelpPanelVisible()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
             End If
 
+            Dim dict = BuildManualDictionary()
+            Dim aliases = ManualSectionAliases()
 
+            ' -----------------------------
+            ' 1. Alias match
+            ' -----------------------------
+            Dim realSection As String = Nothing
+            If aliases.TryGetValue(searchTerm, realSection) Then
+                HelpTextBox.Text = RenderSection(realSection, dict(realSection))
+                EnsureHelpPanelVisible()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
 
+            ' -----------------------------
+            ' 2. Exact match
+            ' -----------------------------
+            Dim exact = dict.Keys.
+            FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+            If exact IsNot Nothing Then
+                HelpTextBox.Text = RenderSection(exact, dict(exact))
+                EnsureHelpPanelVisible()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
+
+            ' -----------------------------
+            ' 3. Prefix match
+            ' -----------------------------
+            Dim prefix = dict.Keys.
+            FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+            If prefix IsNot Nothing Then
+                HelpTextBox.Text = RenderSection(prefix, dict(prefix))
+                EnsureHelpPanelVisible()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
+
+            ' -----------------------------
+            ' 4. Keyword search fallback
+            ' -----------------------------
+            Dim results = SearchManualDict(searchTerm)
+            HelpTextBox.Text =
+            If(String.IsNullOrEmpty(results),
+               $"No results found for ""{searchTerm}"".",
+               results)
+
+            EnsureHelpPanelVisible()
             FocusHelpText()
 
         Catch ex As Exception
@@ -7364,10 +7521,35 @@ Done:
         RestoreAddressBar()
     End Sub
 
+    Private Sub EnsureHelpPanelVisible()
+        If Not HelpPanel.Visible Then
+            ShowHelpPanelAnimated()
+        End If
+    End Sub
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Private Function RenderSection(title As String, lines As List(Of String)) As String
+        Return title & Environment.NewLine &
+           New String("-"c, title.Length) & Environment.NewLine &
+           String.Join(Environment.NewLine, lines)
+    End Function
 
 
 
@@ -8007,19 +8189,96 @@ Done:
     End Function
 
 
+    'Private Function ManualSectionAliases() As Dictionary(Of String, String)
+    '    Return New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
+    '    {"key", "Keyboard Shortcuts"},
+    '    {"keys", "Keyboard Shortcuts"},
+    '    {"keyboard", "Keyboard Shortcuts"},
+    '    {"shortcut", "Keyboard Shortcuts"},
+    '    {"shortcuts", "Keyboard Shortcuts"},
+    '    {"hotkeys", "Keyboard Shortcuts"},
+    '    {"kb", "Keyboard Shortcuts"}
+    '}
+    'End Function
+
     Private Function ManualSectionAliases() As Dictionary(Of String, String)
         Return New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase) From {
         {"key", "Keyboard Shortcuts"},
         {"keys", "Keyboard Shortcuts"},
         {"keyboard", "Keyboard Shortcuts"},
+        {"kbd", "Keyboard Shortcuts"},
+        {"kb", "Keyboard Shortcuts"},
         {"shortcut", "Keyboard Shortcuts"},
         {"shortcuts", "Keyboard Shortcuts"},
+        {"hotkey", "Keyboard Shortcuts"},
         {"hotkeys", "Keyboard Shortcuts"},
-        {"kb", "Keyboard Shortcuts"}
+        {"bindings", "Keyboard Shortcuts"},
+        {"keybindings", "Keyboard Shortcuts"},
+        {"keybinds", "Keyboard Shortcuts"},
+        {"controls", "Keyboard Shortcuts"},
+        {"accelerators", "Keyboard Shortcuts"},
+        {"function keys", "Keyboard Shortcuts"},
+        {"fn keys", "Keyboard Shortcuts"},
+        {"nav keys", "Keyboard Shortcuts"},
+        {"navigation keys", "Keyboard Shortcuts"},
+        {"key commands", "Keyboard Shortcuts"},
+        {"key commands list", "Keyboard Shortcuts"},
+        {"key list", "Keyboard Shortcuts"},
+        {"shortcut list", "Keyboard Shortcuts"},
+        {"keyboard help", "Keyboard Shortcuts"},
+        {"keyboard guide", "Keyboard Shortcuts"},
+        {"find", "Search"},
+        {"search", "Search"},
+        {"lookup", "Search"},
+        {"locate", "Search"},
+        {"findnext", "Search"},
+        {"searching", "Search"},
+        {"files", "File Operations"},
+        {"file ops", "File Operations"},
+        {"ops", "File Operations"},
+        {"operations", "File Operations"},
+        {"copy", "File Operations"},
+        {"move", "File Operations"},
+        {"rename", "File Operations"},
+        {"delete", "File Operations"},
+        {"open", "File Operations"},
+        {"openwith", "File Operations"},
+        {"df", "Drive Tools"},
+        {"drives", "Drive Tools"},
+        {"drive", "Drive Tools"},
+        {"disk", "Drive Tools"},
+        {"disks", "Drive Tools"},
+        {"storage", "Drive Tools"},
+        {"pin", "Pinning System"},
+        {"pinned", "Pinning System"},
+        {"pins", "Pinning System"},
+        {"cli", "Command Line Interface (CLI)"},
+        {"command line", "Command Line Interface (CLI)"},
+        {"terminal", "Command Line Interface (CLI)"},
+        {"console", "Command Line Interface (CLI)"},
+        {"commands", "Command Line Interface (CLI)"},
+        {"manual", "Manual & Help System"},
+        {"man", "Manual & Help System"},
+        {"help", "Manual & Help System"},
+        {"appmanual", "Manual & Help System"},
+        {"docs", "Manual & Help System"},
+        {"documentation", "Manual & Help System"},
+        {"reference", "Manual & Help System"},
+        {"intro", "Introduction"},
+        {"start", "Getting Started"},
+        {"getting started", "Getting Started"},
+        {"install", "Getting Started"},
+        {"installation", "Getting Started"},
+        {"setup", "Getting Started"},
+        {"features", "Features"},
+        {"capabilities", "Features"},
+        {"what it does", "Features"},
+        {"usage", "Using the App"},
+        {"using", "Using the App"},
+        {"interface", "Using the App"},
+        {"ui", "Using the App"}
     }
     End Function
-
-
 
 
 
