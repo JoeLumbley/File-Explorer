@@ -8030,9 +8030,6 @@ Public Class Form1
         "       dotnet run"
     }
 
-        ' …and so on for each section…
-
-
         manual("Features") = New List(Of String) From {
         "  • File Organization: Create, rename, and delete folders.",
         "  • File Operations: Move, copy, delete, and rename files.",
@@ -8152,6 +8149,87 @@ Public Class Form1
         "  df C:"
     }
 
+
+        manual("Commands") = New List(Of String) From {
+            "Available Commands:",
+            "",
+            "cd:",
+            "  Change the current directory.",
+            "    cd C:\Projects",
+            "    cd ""C:\My Folder""",
+            "",
+            "copy (cp):",
+            "  Copy a file or folder to a destination.",
+            "    copy C:\file.txt D:\Backup",
+            "    cp ""C:\Folder A"" ""C:\Folder B""",
+            "",
+            "delete (rm):",
+            "  Delete a file or folder.",
+            "    delete C:\file.txt",
+            "    rm ""C:\My Folder""",
+            "",
+            "df:",
+            "  Show free space for a specific drive.",
+            "    df C:",
+            "",
+            "drives:",
+            "  Show all drives with graphical usage bars.",
+            "    drives",
+            "",
+            "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+            "  Exit the application.",
+            "    exit",
+            "",
+            "find (search):",
+            "  Search for files and folders in the current directory.",
+            "    find report",
+            "",
+            "findnext (searchnext, next):",
+            "  Show the next search result.",
+            "    findnext",
+            "",
+            "help (commands, ?):",
+            "  Show help for commands.",
+            "    help",
+            "    help cd",
+            "",
+            "man (manual, appmanual):",
+            "  Show the full application manual.",
+            "    man",
+            "    manual",
+            "",
+            "mkdir (make, md):",
+            "  Create a new folder.",
+            "    mkdir C:\NewFolder",
+            "    md ""C:\Another Folder""",
+            "",
+            "move (mv):",
+            "  Move a file or folder.",
+            "    move C:\file.txt D:\Archive",
+            "",
+            "open:",
+            "  Open a file or navigate into a folder.",
+            "    open C:\folder\file.txt",
+            "",
+            "pin:",
+            "  Pin or unpin a folder.",
+            "    pin C:\Projects",
+            "    pin",
+            "",
+            "rename (rn):",
+            "  Rename a file or folder.",
+            "    rename ""C:\old.txt"" ""new.txt""",
+            "",
+            "shortcuts (keys):",
+            "  Show all keyboard shortcuts.",
+            "    shortcuts",
+            "",
+            "text (txt):",
+            "  Create a new text file.",
+            "    text ""C:\folder\example.txt"""
+        }
+
+
         manual("Drive Tools") = New List(Of String) From {
         "df:",
         "  Shows free space for a specific drive.",
@@ -8171,22 +8249,23 @@ Public Class Form1
     }
 
         manual("Manual & Help System") = New List(Of String) From {
-        "Help:",
-        "  help",
-        "  commands",
-        "  ?",
-        "",
-        "The 'man' Command",
-        "Man displays a detailed manual.",
-        "",
-        "Examples:",
-        "  man",
-        "  manual",
-        "  appmanual"
-    }
+            "Help:",
+            "  help",
+            "  commands",
+            "  ?",
+            "",
+            "The 'man' Command",
+            "Man displays a detailed manual.",
+            "",
+            "Examples:",
+            "  man",
+            "  manual",
+            "  appmanual"
+        }
 
         Return manual
     End Function
+
 
 
     'Private Function ManualSectionAliases() As Dictionary(Of String, String)
@@ -8256,7 +8335,7 @@ Public Class Form1
         {"command line", "Command Line Interface (CLI)"},
         {"terminal", "Command Line Interface (CLI)"},
         {"console", "Command Line Interface (CLI)"},
-        {"commands", "Command Line Interface (CLI)"},
+        {"commands", "Commands"},
         {"manual", "Manual & Help System"},
         {"man", "Manual & Help System"},
         {"help", "Manual & Help System"},
