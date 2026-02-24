@@ -363,7 +363,7 @@ Public Class Form1
         (
             {
                 "exit", "quit", "close", "stop", "halt", "end", "signout",
-                "poweroff", "bye", "terminate"
+                "poweroff", "bye"
             },
             "exit",
             "Exit the application.",
@@ -392,7 +392,7 @@ Public Class Form1
         (
             {"help", "commands", "?"},
             "help [search_term]",
-            "Show help information for commands. Use 'help [command]' to get specific assistance.",
+            $"Show help information for commands.{ Environment.NewLine} Use 'help [command]' to get specific assistance.",
             {
                 "help",
                 "help cd",
@@ -4676,6 +4676,47 @@ Public Class Form1
     'End Function
 
 
+    'Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
+    '    Dim sb As New StringBuilder()
+    '    Dim list = If(entries, CommandHelp)
+
+    '    ' ---------------------------------------------------------
+    '    ' Navigation Hint (only for full help)
+    '    ' ---------------------------------------------------------
+    '    If entries Is Nothing Then
+    '        sb.AppendLine("Use help [command] to jump to a command.")
+    '        sb.AppendLine()
+    '    End If
+
+    '    ' ---------------------------------------------------------
+    '    ' Command Entries
+    '    ' ---------------------------------------------------------
+    '    For Each entry In list
+    '        Dim meta = entry.Value
+
+    '        ' Aliases (comma-separated)
+    '        sb.AppendLine(String.Join(", ", meta.Aliases))
+
+    '        ' Usage
+    '        sb.AppendLine(meta.Usage)
+
+    '        ' Description
+    '        sb.AppendLine("  " & meta.Description)
+
+    '        ' Examples (optional)
+    '        If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+    '            sb.AppendLine("  Examples:")
+    '            For Each ex In meta.Examples
+    '                sb.AppendLine("    " & ex)
+    '            Next
+    '        End If
+
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
     Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
         Dim sb As New StringBuilder()
         Dim list = If(entries, CommandHelp)
@@ -4685,6 +4726,16 @@ Public Class Form1
         ' ---------------------------------------------------------
         If entries Is Nothing Then
             sb.AppendLine("Use help [command] to jump to a command.")
+            sb.AppendLine()
+
+            ' -----------------------------------------------------
+            ' Command Index (Top for Discoverability)
+            ' -----------------------------------------------------
+            sb.AppendLine("Commands:")
+            For Each entry In CommandHelp
+                Dim aliases = entry.Value.Aliases
+                sb.AppendLine("  • " & String.Join(", ", aliases))
+            Next
             sb.AppendLine()
         End If
 
@@ -4716,6 +4767,17 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
+
+
+
+
+
+
+
+
+
+
+
 
 
 
