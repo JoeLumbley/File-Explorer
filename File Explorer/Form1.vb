@@ -7189,7 +7189,7 @@ Public Class Form1
         .Dock = DockStyle.Fill,
         .ReadOnly = True,
         .BorderStyle = BorderStyle.None,
-        .Font = New Font("Segoe UI", 10),
+        .Font = New Font("Segoe UI", 11, FontStyle.Regular),
         .BackColor = Color.White,
         .ScrollBars = RichTextBoxScrollBars.Both,
         .Height = 300
