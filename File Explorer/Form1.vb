@@ -303,193 +303,6 @@ Public Class Form1
         {"keys", AddressOf HandleShortcutsCommand}
     }
 
-    'Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
-    '    {"cd",
-    '        (
-    '            {"cd"},
-    '            "cd [directory]",
-    '            "Change directory to the specified path.",
-    '            {
-    '                "cd C:\",
-    '                "cd ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"copy",
-    '        (
-    '            {"copy", "cp"},
-    '            "copy [source] [destination]",
-    '            "Copy a file or folder to a destination folder.",
-    '            {
-    '                "copy C:\folderA\file.doc C:\folderB",
-    '                "copy ""C:\folder A"" ""C:\folder B"""
-    '            }
-    '        )
-    '    },
-    '    {"delete",
-    '        (
-    '            {"delete", "rm"},
-    '            "delete [file_or_directory]",
-    '            "Delete a file or folder.",
-    '            {
-    '                "delete C:\file.txt",
-    '                "delete ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"df",
-    '        (
-    '            {"df"},
-    '            "df <drive_letter>:",
-    '            "Display the available free space on the specified drive.",
-    '            {
-    '                "df C:",
-    '                "df D:",
-    '                "df E:"
-    '            }
-    '        )
-    '    },
-    '    {"drives",
-    '        (
-    '            {"drives"},
-    '            "drives",
-    '            "Show an overview of all drives, including free space bars.",
-    '            {
-    '                "drives"
-    '            }
-    '        )
-    '    },
-    '    {"exit",
-    '        (
-    '            {
-    '                "exit", "quit", "close", "stop", "halt", "end", "signout",
-    '                "poweroff", "bye", "terminate"
-    '            },
-    '            "exit",
-    '            "Exit the application.",
-    '            {}
-    '        )
-    '    },
-    '    {"find",
-    '        (
-    '            {"find", "search"},
-    '            "find [search_term]",
-    '            "Search for files and folders in the current directory.",
-    '            {
-    '                "find document"
-    '            }
-    '        )
-    '    },
-    '    {"findnext",
-    '        (
-    '            {"findnext", "searchnext", "next"},
-    '            "findnext",
-    '            "Show the next search result from the previous search.",
-    '            {}
-    '        )
-    '    },
-    '    {"help",
-    '        (
-    '            {"help", "commands", "?"},
-    '            "help",
-    '            "Show this help information.",
-    '            {}
-    '        )
-    '    },
-    '    {"man",
-    '        (
-    '            {"man", "manual", "appmanual"},
-    '            "manual",
-    '            "Show the full application manual.",
-    '            {
-    '                "manual",
-    '                "appmanual"
-    '            }
-    '        )
-    '    },
-    '    {"mkdir",
-    '        (
-    '            {"mkdir", "make", "md"},
-    '            "mkdir [directory_path]",
-    '            "Create a new folder.",
-    '            {
-    '                "mkdir C:\newfolder",
-    '                "make ""C:\My New Folder""",
-    '                "md C:\anotherfolder"
-    '            }
-    '        )
-    '    },
-    '    {"move",
-    '        (
-    '            {"move", "mv"},
-    '            "move [source] [destination]",
-    '            "Move a file or folder to a new location.",
-    '            {
-    '                "move C:\folderA\file.doc C:\folderB\file.doc",
-    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-    '            }
-    '        )
-    '    },
-    '    {"open",
-    '        (
-    '            {"open"},
-    '            "open [file_or_directory]",
-    '            "Open a file or navigate into a folder.",
-    '            {
-    '                "open C:\folder\file.txt",
-    '                "open ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"pin",
-    '        (
-    '            {"pin"},
-    '            "pin [folder_path]",
-    '            "Pin or unpin a folder.",
-    '            {
-    '                "pin C:\Projects",
-    '                "pin ""C:\My Documents""",
-    '                "pin"
-    '            }
-    '        )
-    '    },
-    '    {"rename",
-    '        (
-    '            {"rename", "rn"},
-    '            "rename [source_path] [new_name]",
-    '            "Rename a file or directory.",
-    '            {
-    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-    '            }
-    '        )
-    '    },
-    '    {"shortcuts",
-    '        (
-    '            {"shortcuts", "keys"},
-    '            "shortcuts",
-    '            "Show a list of all keyboard shortcuts.",
-    '            {
-    '                "shortcuts",
-    '                "keys"
-    '            }
-    '        )
-    '    },
-    '    {"text",
-    '        (
-    '            {"text", "txt"},
-    '            "text [file_path]",
-    '            "Create a new text file.",
-    '            {
-    '                "text ""C:\folder\example.txt"""
-    '            }
-    '        )
-    '    }
-    '}
-
-
-
-
-
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
     {"cd",
         (
@@ -676,15 +489,6 @@ Public Class Form1
         )
     }
 }
-
-
-
-
-
-
-
-
-
 
 
     Private HelpHeaderLabel As Label
@@ -901,48 +705,6 @@ Public Class Form1
 
     End Function
 
-    'Private Function HandleTabNavigation(keyData As Keys) As Boolean
-
-    '    If keyData <> Keys.Tab Then
-    '        _tabDown = False
-    '        Return False
-    '    End If
-
-    '    If _tabDown Then Return True   ' swallow repeat
-    '    _tabDown = True
-
-    '    If _isRenaming Then Return False
-
-    '    Dim handled As Boolean
-
-    '    If txtAddressBar.Focused Then
-    '        handled = FocusFileList()
-
-    '    ElseIf lvFiles.Focused Then
-    '        handled = FocusTreeView()
-
-    '    ElseIf tvFolders.Focused Then
-    '        ' If help is open, go to HelpTextBox instead of looping back
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Focus()
-    '            handled = True
-    '        Else
-    '            handled = FocusAddressBar()
-    '        End If
-
-    '    ElseIf HelpPanel.Visible AndAlso HelpTextBox.Focused Then
-    '        ' After HelpTextBox, return to AddressBar
-    '        handled = FocusAddressBar()
-
-    '    Else
-    '        handled = FocusAddressBar()
-    '    End If
-
-    '    If handled Then UpdateAllUIStates()
-    '    Return handled
-    'End Function
-
-
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
 
@@ -1005,161 +767,6 @@ Public Class Form1
         Return handled
 
     End Function
-
-
-    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
-
-    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
-    '        _shiftTabDown = False
-    '        Return False
-    '    End If
-
-    '    If _isRenaming Then Return False
-
-    '    If _shiftTabDown Then Return True   ' swallow repeat
-    '    _shiftTabDown = True
-
-    '    ' ===========================
-    '    '   TreeView → File List
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        lvFiles.Focus()
-
-    '        If lvFiles.Items.Count > 0 Then
-    '            If lvFiles.SelectedItems.Count > 0 Then
-    '                Dim sel = lvFiles.SelectedItems(0)
-    '                sel.Focused = True
-    '                sel.EnsureVisible()
-    '            Else
-    '                lvFiles.Items(0).Selected = True
-    '                lvFiles.Items(0).Focused = True
-    '                lvFiles.Items(0).EnsureVisible()
-    '            End If
-    '        End If
-
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   File List → Address Bar
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   Address Bar → TreeView
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        tvFolders.Focus()
-
-    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
-    '        End If
-
-    '        tvFolders.SelectedNode?.EnsureVisible()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   Fallback
-    '    ' ===========================
-    '    txtAddressBar.Focus()
-    '    PlaceCaretAtEndOfAddressBar()
-    '    Return True
-    'End Function
-
-
-
-    'Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
-
-    '    If keyData <> (Keys.Shift Or Keys.Tab) Then
-    '        _shiftTabDown = False
-    '        Return False
-    '    End If
-
-    '    If _isRenaming Then Return False
-
-    '    If _shiftTabDown Then Return True   ' swallow repeat
-    '    _shiftTabDown = True
-
-    '    ' ===========================
-    '    '   HelpTextBox → TreeView
-    '    ' ===========================
-    '    If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
-    '        tvFolders.Focus()
-
-    '        If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-    '            tvFolders.SelectedNode = tvFolders.Nodes(0)
-    '        End If
-
-    '        tvFolders.SelectedNode?.EnsureVisible()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   TreeView → File List
-    '    ' ===========================
-    '    If tvFolders.Focused Then
-    '        lvFiles.Focus()
-
-    '        If lvFiles.Items.Count > 0 Then
-    '            If lvFiles.SelectedItems.Count > 0 Then
-    '                Dim sel = lvFiles.SelectedItems(0)
-    '                sel.Focused = True
-    '                sel.EnsureVisible()
-    '            Else
-    '                lvFiles.Items(0).Selected = True
-    '                lvFiles.Items(0).Focused = True
-    '                lvFiles.Items(0).EnsureVisible()
-    '            End If
-    '        End If
-
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   File List → Address Bar
-    '    ' ===========================
-    '    If lvFiles.Focused Then
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    '   Address Bar → HelpTextBox (if visible)
-    '    ' ===========================
-    '    If txtAddressBar.Focused Then
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Focus()
-    '            Return True
-    '        Else
-    '            ' Normal reverse cycle: AddressBar → TreeView
-    '            tvFolders.Focus()
-
-    '            If tvFolders.SelectedNode Is Nothing AndAlso tvFolders.Nodes.Count > 0 Then
-    '                tvFolders.SelectedNode = tvFolders.Nodes(0)
-    '            End If
-
-    '            tvFolders.SelectedNode?.EnsureVisible()
-    '            Return True
-    '        End If
-    '    End If
-
-    '    ' ===========================
-    '    '   Fallback
-    '    ' ===========================
-    '    txtAddressBar.Focus()
-    '    PlaceCaretAtEndOfAddressBar()
-    '    Return True
-
-    'End Function
-
-
-
 
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
@@ -1225,125 +832,6 @@ Public Class Form1
     End Function
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    ' ALT + HOME (User Folder)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Home) AndAlso Not _isRenaming Then
-    '        If _altHomeDown Then Return True
-    '        _altHomeDown = True
-
-    '        GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + P (Pin/Unpin)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.P) AndAlso Not _isRenaming Then
-    '        If _altPDown Then Return True
-    '        _altPDown = True
-
-    '        Dim target As String = GetPinnableTarget()
-
-    '        If target Is Nothing Then
-    '            If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '                target = currentFolder
-    '            Else
-    '                Return False
-    '            End If
-    '        End If
-
-    '        PinOrUnpin(target)
-    '        UpdatePinButtonState()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + LEFT (Back)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Left) AndAlso Not _isRenaming Then
-    '        If _altLeftDown Then Return True
-    '        _altLeftDown = True
-
-    '        NavigateBackward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + RIGHT (Forward)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Right) AndAlso Not _isRenaming Then
-    '        If _altRightDown Then Return True
-    '        _altRightDown = True
-
-    '        NavigateForward_Click()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' ALT + UP (Parent)
-    '    ' ===========================
-    '    If keyData = (Keys.Alt Or Keys.Up) AndAlso Not _isRenaming Then
-    '        If _altUpDown Then Return True
-    '        _altUpDown = True
-
-    '        NavigateToParent()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' F5 (Refresh)
-    '    ' ===========================
-    '    If keyData = Keys.F5 AndAlso Not _isRenaming Then
-    '        If _f5Down Then Return True
-    '        _f5Down = True
-
-    '        RefreshCurrentFolder()
-    '        txtAddressBar.Focus()
-    '        PlaceCaretAtEndOfAddressBar()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' F11 (Full Screen)
-    '    ' ===========================
-    '    If keyData = Keys.F11 AndAlso Not _isRenaming Then
-    '        If _f11Down Then Return True
-    '        _f11Down = True
-
-    '        ToggleFullScreen()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
-
-
-
-
     Private Function HandleNavigationShortcuts(keyData As Keys) As Boolean
 
         ' ============================================================
@@ -1402,48 +890,6 @@ Public Class Form1
         Return True
     End Function
 
-
-
-
-    'Private Function HandleAltP() As Boolean
-    '    If _altPDown Then Return True
-    '    _altPDown = True
-
-    '    Dim target As String = GetPinnableTarget()
-
-    '    If target Is Nothing Then
-    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '            target = currentFolder
-    '        Else
-    '            Return False
-    '        End If
-    '    End If
-
-    '    PinOrUnpin(target)
-    '    UpdatePinButtonState()
-    '    Return True
-    'End Function
-
-
-
-
-
-
-
-
-
-    'Private Function HandleAltP() As Boolean
-    '    If _altPDown Then Return True
-    '    _altPDown = True
-
-    '    Dim target = ResolvePinnableTarget()
-    '    If target Is Nothing Then Return False
-
-    '    Return TryPinOrUnpin(target)
-    'End Function
-
-
-
     Private Function HandleAltP() As Boolean
         If _altPDown Then Return True
         _altPDown = True
@@ -1453,39 +899,6 @@ Public Class Form1
 
         Return TryPinOrUnpin(target)
     End Function
-
-
-
-
-
-
-
-
-
-    'Private Function TryPinOrUnpin(target As String, Optional showErrors As Boolean = False) As Boolean
-
-    '    ' Validate folder
-    '    If String.IsNullOrWhiteSpace(target) _
-    'OrElse Not Directory.Exists(target) _
-    'OrElse IsSpecialFolder(target) Then
-
-    '        If showErrors Then
-    '            ShowStatus(StatusPad & IconError &
-    '            $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
-    '        End If
-
-    '        Return False
-    '    End If
-
-    '    PinOrUnpin(target)
-    '    UpdatePinButtonState()
-    '    Return True
-    'End Function
-
-
-
-
-
 
     ' ============================================================
     '  PIN ENGINE — the single source of truth for pin/unpin logic
@@ -1517,29 +930,6 @@ Public Class Form1
         Return True
     End Function
 
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function ResolvePinnableTarget() As String
-    '    Dim target = GetPinnableTarget()
-
-    '    If target IsNot Nothing Then Return target
-
-    '    If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '        Return currentFolder
-    '    End If
-
-    '    Return Nothing
-    'End Function
-
     Private Function ResolvePinnableTarget() As String
         Dim target = GetPinnableTarget()
         If target IsNot Nothing Then Return target
@@ -1552,13 +942,6 @@ Public Class Form1
     End Function
 
 
-
-
-
-
-
-
-
     Private Function HandleAltLeft() As Boolean
         If _altLeftDown Then Return True
         _altLeftDown = True
@@ -1568,10 +951,6 @@ Public Class Form1
         Return True
     End Function
 
-
-
-
-
     Private Function HandleAltRight() As Boolean
         If _altRightDown Then Return True
         _altRightDown = True
@@ -1580,10 +959,6 @@ Public Class Form1
         PlaceCaretAtEndOfAddressBar()
         Return True
     End Function
-
-
-
-
 
     Private Function HandleAltUp() As Boolean
         If _altUpDown Then Return True
@@ -1605,7 +980,6 @@ Public Class Form1
     End Function
 
 
-
     Private Function HandleF11FullScreen() As Boolean
         If _f11Down Then Return True
         _f11Down = True
@@ -1613,62 +987,6 @@ Public Class Form1
         ToggleFullScreen()
         Return True
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
-
-    '    ' ===========================
-    '    ' CTRL + F (Find)
-    '    ' ===========================
-    '    If keyData = (Keys.Control Or Keys.F) AndAlso Not _isRenaming Then
-    '        If _ctrlFDown Then Return True
-    '        _ctrlFDown = True
-
-    '        InitiateSearch()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' F3 (Find Next)
-    '    ' ===========================
-    '    If keyData = Keys.F3 AndAlso GlobalShortcutsAllowed() Then
-    '        If _f3Down Then Return True
-    '        _f3Down = True
-
-    '        HandleFindNextCommand()
-    '        Return True
-    '    End If
-
-    '    ' ===========================
-    '    ' SHIFT + F3 (Find Previous)
-    '    ' ===========================
-    '    If keyData = (Keys.Shift Or Keys.F3) AndAlso GlobalShortcutsAllowed() Then
-    '        If _shiftF3Down Then Return True
-    '        _shiftF3Down = True
-
-    '        HandleFindPreviousCommand()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
 
 
     Private Function HandleSearchShortcuts(keyData As Keys) As Boolean
@@ -1733,33 +1051,6 @@ Public Class Form1
         HandleFindPreviousCommand()
         Return True
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
         Handles tvFolders.BeforeExpand
@@ -1980,35 +1271,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
-    '    Handles btnPin.Click
-
-    '    Dim target As String = GetPinnableTarget()
-
-    '    ' If no contextual target, fall back to currentFolder
-    '    If target Is Nothing Then
-    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '            target = currentFolder
-    '        Else
-    '            Exit Sub
-    '        End If
-    '    End If
-
-    '    PinOrUnpin(target)
-
-    '    UpdatePinButtonState()
-
-    'End Sub
-
-
-    'Private Sub btnPin_Click(sender As Object, e As EventArgs) _
-    'Handles btnPin.Click
-
-    '    Dim target = ResolvePinnableTarget()
-    '    If target Is Nothing Then Exit Sub
-
-    '    TryPinOrUnpin(target)
-    'End Sub
 
     Private Sub btnPin_Click(sender As Object, e As EventArgs) _
     Handles btnPin.Click
@@ -2018,8 +1280,6 @@ Public Class Form1
 
         TryPinOrUnpin(target)
     End Sub
-
-
 
 
     Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
@@ -2073,7 +1333,6 @@ Public Class Form1
     End Sub
 
 
-
     Private Sub ResetSearchState()
 
         ' If a search was active, reset index and clear results
@@ -2086,7 +1345,6 @@ Public Class Form1
         RestoreBackground()
 
     End Sub
-
 
 
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
@@ -2223,8 +1481,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
         UpdateDestructiveButtonsAndMenus()
@@ -2305,46 +1561,6 @@ Public Class Form1
     End Sub
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
-
-        '' ============================================
-        ''   HELP DRAWER CONTEXT — LET RICHTEXTBOX HANDLE SHORTCUTS
-        '' ============================================
-        'If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
-        '    Select Case keyData
-
-        '        Case (Keys.Control Or Keys.C)
-        '            If _ctrlCDown Then Return True
-        '            _ctrlCDown = True
-
-        '            HelpTextBox.Copy()
-        '            Return True
-
-        '        Case (Keys.Control Or Keys.V)
-        '            If _ctrlVDown Then Return True
-        '            _ctrlVDown = True
-
-        '            HelpTextBox.Paste()
-        '            Return True
-
-        '        Case (Keys.Control Or Keys.X)
-        '            If _ctrlXDown Then Return True
-        '            _ctrlXDown = True
-
-        '            HelpTextBox.Cut()
-        '            Return True
-
-        '        Case (Keys.Control Or Keys.A)
-        '            If _ctrlADown Then Return True
-        '            _ctrlADown = True
-
-        '            HelpTextBox.SelectAll()
-        '            Return True
-
-        '    End Select
-
-        '    ' Let other keys fall through normally
-        '    Return False
-        'End If
 
 
         ' ============================================
@@ -2926,9 +2142,6 @@ Public Class Form1
                $"  Unknown command: ""{cmd}""   Esc to reset.   Type ""help"" for a list of commands.")
     End Sub
 
-
-
-
     Private Function ParseCommandLine(input As String) As String()
         Dim matches = Regex.Matches(input, "("".+?""|[^ ]+)")
         Return matches.
@@ -2936,8 +2149,6 @@ Public Class Form1
         Select(Function(m) m.Value.Trim(""""c)).
         ToArray()
     End Function
-
-
 
 
     Private Sub HandleRenameCommand(parts As String())
@@ -2988,68 +2199,6 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
-    'Private Sub HandlePinCommand(parts As String())
-
-    '    ' If a path was provided
-    '    If parts.Length > 1 Then
-    '        Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
-
-    '        If Directory.Exists(target) AndAlso Not IsSpecialFolder(target) Then
-    '            PinOrUnpin(target)
-    '            UpdatePinButtonState()
-    '            RestoreAddressBar()
-    '        Else
-    '            ShowStatus(StatusPad & IconError &
-    '                   $"  ""{target}"" can't be pinned. Make sure it exists and isn’t a special folder. Usage: pin [folder_path]  Esc to reset.")
-    '        End If
-
-    '        Exit Sub
-    '    End If
-
-    '    ' No path provided → fall back to contextual target
-    '    Dim fallback As String = GetPinnableTarget()
-
-    '    If fallback Is Nothing Then
-    '        If Directory.Exists(currentFolder) AndAlso Not IsSpecialFolder(currentFolder) Then
-    '            fallback = currentFolder
-    '        Else
-    '            ShowStatus(StatusPad & IconError &
-    '                   "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
-    '            Exit Sub
-    '        End If
-    '    End If
-
-    '    PinOrUnpin(fallback)
-    '    UpdatePinButtonState()
-    '    RestoreAddressBar()
-    'End Sub
-
-    'Private Sub HandlePinCommand(parts As String())
-
-    '    ' Explicit path provided
-    '    If parts.Length > 1 Then
-    '        Dim target As String = String.Join(" ", parts.Skip(1)).Trim(""""c)
-
-    '        If TryPinOrUnpin(target, showErrors:=True) Then
-    '            RestoreAddressBar()
-    '        End If
-
-    '        Exit Sub
-    '    End If
-
-    '    ' No path → fallback
-    '    Dim fallback = ResolvePinnableTarget()
-
-    '    If fallback Is Nothing Then
-    '        ShowStatus(StatusPad & IconError &
-    '        "  There’s no folder here to pin. Usage: pin [folder_path]  Esc to reset.")
-    '        Exit Sub
-    '    End If
-
-    '    If TryPinOrUnpin(fallback, showErrors:=True) Then
-    '        RestoreAddressBar()
-    '    End If
-    'End Sub
 
     Private Sub HandlePinCommand(parts As String())
 
@@ -3078,21 +2227,6 @@ Public Class Form1
         End If
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub HandleCdCommand(parts As String())
         If parts.Length <= 1 Then
             ShowStatus(StatusPad & IconDialog &
@@ -3115,7 +2249,6 @@ Public Class Form1
         ' Restore address bar after CLI navigation
         RestoreAddressBar()
     End Sub
-
 
     Private Async Sub HandleCopyCommand(parts As String())
         If parts.Length <= 2 Then
@@ -3189,8 +2322,6 @@ Public Class Form1
         ' ------------------------------------------------------------
         RestoreAddressBar()
     End Sub
-
-
 
     Private Async Sub HandleMoveCommand(parts As String())
         If parts.Length <= 2 Then
@@ -3319,12 +2450,6 @@ Public Class Form1
         ' ------------------------------------------------------------
         RestoreAddressBar()
     End Sub
-
-
-
-
-
-
 
     Private Sub HandleMkdirCommand(parts As String())
         If parts.Length <= 1 Then
@@ -3486,24 +2611,6 @@ Public Class Form1
 
 
 
-
-
-    'Private Function TryHandleDirectPath(input As String) As Boolean
-    '    If Directory.Exists(input) Then
-    '        NavigateTo(input)
-    '        Return True
-    '    End If
-
-    '    If File.Exists(input) Then
-    '        OpenFileWithDefaultApp(input)
-    '        RestoreAddressBar()
-    '        Return True
-    '    End If
-
-    '    Return False
-    'End Function
-
-
     Private Function TryHandleDirectPath(input As String) As Boolean
 
         ' --- URL detection ---
@@ -3635,9 +2742,6 @@ Public Class Form1
 
     End Function
 
-
-
-
     Private Function ResolveNavigationTarget(path2Resolve As String) As String
         ' Returns the correct folder to navigate to after an operation.
         ' If the path is a directory, returns it directly.
@@ -3673,14 +2777,6 @@ Public Class Form1
         GoToFolderOrOpenFile(fullPath)
     End Sub
 
-    'Private Sub ShowHelpFile()
-    '    Dim helpFilePath As String =
-    '    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cli_help.txt")
-
-    '    EnsureHelpFileExists(helpFilePath)
-    '    OpenFileWithDefaultApp(helpFilePath)
-    '    RestoreAddressBar()
-    'End Sub
 
     Private Sub HandleOpenPath(path As String)
 
@@ -3699,19 +2795,11 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub RestoreAddressBar()
-    '    txtAddressBar.Text = currentFolder
-    '    txtAddressBar.Focus()
-    '    PlaceCaretAtEndOfAddressBar()
-    'End Sub
-
 
     Private Sub FocusHelpText()
         HelpTextBox.Select(0, 0)
         HelpTextBox.Focus()
     End Sub
-
-
 
     Private Sub RestoreAddressBar()
 
@@ -4538,8 +3626,6 @@ Public Class Form1
     End Function
 
 
-
-
     Private Function GetDirectoriesSafe(path2Get As String) As List(Of String)
         Dim results As New List(Of String)
 
@@ -4598,8 +3684,6 @@ Public Class Form1
     End Function
 
 
-
-
     ' ============================================================
     ' LISTVIEW ITEM BUILDERS
     ' ============================================================
@@ -4631,8 +3715,6 @@ Public Class Form1
 
         Return item
     End Function
-
-
 
     ' ============================================================
     ' VALIDATION HELPERS
@@ -4667,8 +3749,6 @@ Public Class Form1
         Return New ValidationResult(True, "")
     End Function
 
-
-
     Private Sub GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
         ' This event is triggered when the user double-clicks a file or folder in lvFiles or
         ' presses the Enter key when a file or folder is selected.
@@ -4683,101 +3763,6 @@ Public Class Form1
         GoToFolderOrOpenFile(fullPath)
 
     End Sub
-
-    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    'Handles lvFiles.AfterLabelEdit
-
-    '    _isRenaming = False
-
-    '    If e.Label Is Nothing Then Exit Sub
-
-    '    Dim item = lvFiles.Items(e.Item)
-    '    Dim oldPath = CStr(item.Tag)
-
-    '    ' Canceled with esc key
-    '    If escCancelRename Then
-    '        e.CancelEdit = True
-    '    End If
-
-    '    ' General validation
-    '    Dim result = ValidateNewName(e.Label)
-    '    If Not result.IsValid Then
-    '        e.CancelEdit = True
-    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
-    '        Exit Sub
-    '    End If
-
-    '    ' Extension protection
-    '    Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
-    '    If Not extCheck.IsValid Then
-    '        e.CancelEdit = True
-    '        ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
-    '        Exit Sub
-    '    End If
-
-    '    ' Unified rename engine handles:
-    '    ' - filesystem rename
-    '    ' - ListView update
-    '    ' - selection
-    '    ' - navigation (if renaming current folder)
-    '    PerformRename(oldPath, e.Label)
-    'End Sub
-
-
-
-    'Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
-    'Handles lvFiles.AfterLabelEdit
-
-    '    _isRenaming = False
-
-    '    '' ============================================
-    '    '' 1. Cancel rename triggered by Escape
-    '    '' ============================================
-    '    'If escCancelRename Then
-    '    '    e.CancelEdit = True
-    '    '    escCancelRename = False
-    '    '    Return
-    '    'End If
-
-    '    ' ============================================
-    '    ' 2. User pressed Escape manually
-    '    ' ============================================
-    '    If e.Label Is Nothing Then
-    '        ' User canceled rename with ESC
-    '        e.CancelEdit = True
-    '        Return
-    '    End If
-
-    '    Dim item = lvFiles.Items(e.Item)
-    '    Dim oldPath = CStr(item.Tag)
-
-    '    ' ============================================
-    '    ' 3. General validation
-    '    ' ============================================
-    '    Dim result = ValidateNewName(e.Label)
-    '    If Not result.IsValid Then
-    '        e.CancelEdit = True
-    '        ShowStatus(StatusPad & IconError & " " & result.ErrorMessage)
-    '        Return
-    '    End If
-
-    '    ' ============================================
-    '    ' 4. Extension protection
-    '    ' ============================================
-    '    Dim extCheck = ValidateNewNameForFile(oldPath, e.Label)
-    '    If Not extCheck.IsValid Then
-    '        e.CancelEdit = True
-    '        ShowStatus(StatusPad & IconError & " " & extCheck.ErrorMessage)
-    '        Return
-    '    End If
-
-    '    ' ============================================
-    '    ' 5. Commit rename
-    '    ' ============================================
-    '    PerformRename(oldPath, e.Label)
-
-    'End Sub
-
 
     Private Sub lvFiles_AfterLabelEdit(sender As Object, e As LabelEditEventArgs) _
     Handles lvFiles.AfterLabelEdit
@@ -4833,11 +3818,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
     Private Sub PerformRename(oldFullPath As String, newName As String)
         Try
             Dim parentDir As String = Path.GetDirectoryName(oldFullPath)
@@ -4878,9 +3858,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-
-
     Private Function TryRenameItem(oldPath As String, newPath As String) As Boolean
         If File.Exists(oldPath) Then
             File.Move(oldPath, newPath)
@@ -4895,8 +3872,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
     Private Sub UpdateListViewItemPath(oldPath As String, newPath As String, newName As String)
         Dim item = lvFiles.Items.Cast(Of ListViewItem)().
                FirstOrDefault(Function(i) CStr(i.Tag) = oldPath)
@@ -4906,9 +3881,6 @@ Public Class Form1
             item.Text = newName
         End If
     End Sub
-
-
-
 
     Private Sub SelectListViewItemIfVisible(newPath As String)
         Dim item = lvFiles.Items.Cast(Of ListViewItem)().
@@ -4927,8 +3899,6 @@ Public Class Form1
             NavigateTo(navTarget, recordHistory:=True)
         End If
     End Sub
-
-
 
 
     Private Function ValidateNewNameForFile(oldFullPath As String, newName As String) _
@@ -5635,8 +4605,6 @@ Public Class Form1
         PlaceCaretAtEndOfAddressBar()
     End Sub
 
-
-
     Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
         Dim sb As New StringBuilder()
 
@@ -5661,8 +4629,6 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
-
-
 
     Private Function PathExists(path As String) As Boolean
         Return IO.File.Exists(path) OrElse Directory.Exists(path)
@@ -5804,77 +4770,6 @@ Public Class Form1
             Return False
         End Try
     End Function
-
-    'Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
-
-    '    If String.IsNullOrWhiteSpace(path2Check) Then Return False
-
-    '    ' Reject relative paths outright
-    '    If Not Path.IsPathRooted(path2Check) Then Return False
-
-    '    ' Normalize input
-    '    Dim normalizedInput As String = Path.GetFullPath(path2Check).TrimEnd("\"c)
-
-    '    ' ------------------------------------------------------------
-    '    ' 1. Drive roots (C:, D:, E:) are ALWAYS protected
-    '    ' ------------------------------------------------------------
-    '    If normalizedInput.Length = 2 AndAlso normalizedInput(1) = ":"c Then
-    '        Return True
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' 2. System-level protected folders (exact or subpaths)
-    '    ' ------------------------------------------------------------
-    '    Dim protectedPaths As String() = {
-    '    "C:\Windows",
-    '    "C:\Program Files",
-    '    "C:\Program Files (x86)",
-    '    "C:\ProgramData"
-    '}
-
-    '    For Each protectedPath In protectedPaths
-    '        Dim normProt As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
-
-    '        ' Exact match
-    '        If normalizedInput.Equals(normProt, StringComparison.OrdinalIgnoreCase) Then
-    '            Return True
-    '        End If
-
-    '        ' Subdirectory match
-    '        If normalizedInput.StartsWith(normProt & "\", StringComparison.OrdinalIgnoreCase) Then
-    '            Return True
-    '        End If
-    '    Next
-
-    '    ' ------------------------------------------------------------
-    '    ' 3. User-profile protected folders (exact match only)
-    '    ' ------------------------------------------------------------
-    '    Dim userRoot As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-
-    '    Dim protectedUserFolders As String() = {
-    '    "C:\Users",
-    '    userRoot,
-    '    Path.Combine(userRoot, "Documents"),
-    '    Path.Combine(userRoot, "Desktop"),
-    '    Path.Combine(userRoot, "Downloads"),
-    '    Path.Combine(userRoot, "Pictures"),
-    '    Path.Combine(userRoot, "Music"),
-    '    Path.Combine(userRoot, "Videos"),
-    '    Path.Combine(userRoot, "AppData\Local"),
-    '    Path.Combine(userRoot, "AppData\Roaming")
-    '}
-
-    '    For Each protectedFolder In protectedUserFolders
-    '        Dim normProt As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
-
-    '        If normalizedInput.Equals(normProt, StringComparison.OrdinalIgnoreCase) Then
-    '            Return True
-    '        End If
-    '    Next
-
-    '    Return False
-    'End Function
-
 
 
     Private Function IsProtectedPathOrFolder(path2Check As String) As Boolean
@@ -6401,8 +5296,6 @@ Public Class Form1
     End Function
 
 
-
-
     ' ============================================================
     '  EASY ACCESS PINNING SYSTEM — REFINED & COMPLETE
     ' ============================================================
@@ -6732,88 +5625,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-    'Private Sub HandleHelpCommand(parts As String())
-    '    Try
-    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-
-    '        Dim terms = parts.Skip(1).
-    '                      Select(Function(t) t.Trim()).
-    '                      Where(Function(t) t <> "").
-    '                      ToList()
-
-    '        ' ------------------------------------------------------------
-    '        ' Special case: help keys / help shortcuts → show keyboard shortcuts
-    '        ' ------------------------------------------------------------
-    '        If terms.Count = 1 Then
-    '            Dim t = terms(0).ToLowerInvariant()
-
-    '            If t = "keys" OrElse t = "shortcuts" Then
-    '                HelpHeaderLabel.Text = "Keyboard Shortcuts"
-    '                HelpTextBox.Text = BuildShortcutsHelp()
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-    '        End If
-
-    '        Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
-
-    '        If terms.Count > 0 Then
-    '            Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '            For Each term In terms
-    '                filtered = filtered.
-    '                Union(SearchHelp(term)).
-    '                ToList()
-    '            Next
-
-    '            If filtered.Count = 0 Then
-    '                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
-    '                HelpTextBox.Text = "No matching commands were found."
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-
-    '            entries = filtered
-    '            HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
-    '        Else
-    '            HelpHeaderLabel.Text = "Command Reference"
-    '        End If
-
-    '        Dim text As String = BuildHelpText(entries)
-
-    '        HelpTextBox.Text = text
-
-    '        If HelpPanel.Visible Then
-    '            RestoreAddressBar()
-    '            FocusHelpText()
-    '            Return
-    '        End If
-
-    '        ShowHelpPanelAnimated()
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '       " Failed to display help information: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-
-
-
-
-
     Private Sub HandleHelpCommand(parts As String())
         Try
             ' Set font for help text box
@@ -6882,31 +5693,6 @@ Public Class Form1
             RestoreAddressBar()
         End Try
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub HandleDfCommand(parts As String())
         Try
@@ -7039,7 +5825,6 @@ Public Class Form1
     End Sub
 
 
-
     Private Sub HandleShortcutsCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Keyboard Shortcuts"
@@ -7069,459 +5854,6 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
-
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        Dim text As String = BuildAppManualText()
-
-    '        If HelpPanel.Visible Then
-    '            HelpTextBox.Text = text
-    '            FocusHelpText()
-
-    '        Else
-    '            'HelpTextBox.Text = text
-    '            'ShowHelpPanelAnimated()
-
-    '            HelpTextBox.Text = text
-    '            ShowHelpPanelAnimated()
-    '            FocusHelpText()
-    '        End If
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-
-
-
-
-
-
-
-
-
-
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        ' Extract search term if provided
-    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-    '        ' Build the manual text
-    '        Dim manualText As String = BuildAppManualText()
-
-    '        If Not String.IsNullOrEmpty(searchTerm) Then
-    '            ' Search for the term in the manual text
-    '            Dim searchResults As String = SearchManual(manualText, searchTerm)
-    '            If String.IsNullOrEmpty(searchResults) Then
-    '                HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-    '            Else
-    '                HelpTextBox.Text = searchResults
-    '            End If
-    '        Else
-    '            ' No search term provided, display the full manual
-    '            HelpTextBox.Text = manualText
-    '        End If
-
-    '        ' Show help panel if not already visible
-    '        If Not HelpPanel.Visible Then
-    '            ShowHelpPanelAnimated()
-    '        End If
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-    'Private Function SearchManual(manualText As String, searchTerm As String) As String
-    '    Dim sb As New Text.StringBuilder()
-    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
-    '    Dim found As Boolean = False
-
-    '    For Each line As String In lines
-    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '            sb.AppendLine(line)
-    '            found = True
-    '        End If
-    '    Next
-
-    '    ' Optionally, you can add a message if no results were found
-    '    If Not found Then
-    '        Return String.Empty
-    '    End If
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        ' Extract search term if provided
-    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-    '        ' Build the manual text
-    '        Dim manualText As String = BuildAppManualText()
-
-    '        If Not String.IsNullOrEmpty(searchTerm) Then
-    '            ' Search for the term in the manual text
-    '            Dim searchResults As String = SearchManual(manualText, searchTerm)
-    '            If String.IsNullOrEmpty(searchResults) Then
-    '                HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-    '            Else
-    '                HelpTextBox.Text = searchResults
-    '            End If
-    '        Else
-    '            ' No search term provided, display the full manual
-    '            HelpTextBox.Text = manualText
-    '        End If
-
-    '        ' Show help panel if not already visible
-    '        If Not HelpPanel.Visible Then
-    '            ShowHelpPanelAnimated()
-    '        End If
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-
-
-
-
-
-
-
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-    '        'If Not String.IsNullOrEmpty(searchTerm) Then
-    '        '    Dim searchResults As String = SearchManualDict(searchTerm)
-
-    '        '    If String.IsNullOrEmpty(searchResults) Then
-    '        '        HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-    '        '    Else
-    '        '        HelpTextBox.Text = searchResults
-    '        '    End If
-    '        'Else
-    '        '    HelpTextBox.Text = BuildAppManualText()   ' Render full manual from dictionary
-    '        'End If
-
-    '        'If Not HelpPanel.Visible Then
-    '        '    ShowHelpPanelAnimated()
-    '        'End If
-
-    '        If Not String.IsNullOrEmpty(searchTerm) Then
-    '            Dim dict = BuildManualDictionary()
-
-    '            ' 1. Exact section match (case-insensitive)
-    '            Dim section = dict.Keys.
-    '    FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '            If section IsNot Nothing Then
-    '                ' Show the entire section
-    '                HelpTextBox.Text = section & Environment.NewLine &
-    '                       New String("-"c, section.Length) & Environment.NewLine &
-    '                       String.Join(Environment.NewLine, dict(section))
-    '            Else
-    '                ' 2. Fallback to keyword search
-    '                Dim searchResults As String = SearchManualDict(searchTerm)
-
-    '                If String.IsNullOrEmpty(searchResults) Then
-    '                    HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-    '                Else
-    '                    HelpTextBox.Text = searchResults
-    '                End If
-    '            End If
-    '        Else
-    '            HelpTextBox.Text = BuildAppManualText()
-    '        End If
-
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-
-
-
-    '    Private Sub HandleManualCommand(parts As String())
-    '        Try
-    '            HelpHeaderLabel.Text = "Manual"
-    '            HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '            Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-    '            If Not String.IsNullOrEmpty(searchTerm) Then
-    '                'Dim dict = BuildManualDictionary()
-
-    '                '' 1. Exact section match (case-insensitive)
-    '                'Dim section = dict.Keys.
-    '                'FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '                'If Not String.IsNullOrEmpty(section) Then
-    '                '    ' Show the entire section
-    '                '    HelpTextBox.Text =
-    '                '    section & Environment.NewLine &
-    '                '    New String("-"c, section.Length) & Environment.NewLine &
-    '                '    String.Join(Environment.NewLine, dict(section))
-
-    '                'Else
-    '                '    ' 2. Fallback to keyword search
-    '                '    Dim searchResults As String = SearchManualDict(searchTerm)
-
-    '                '    If String.IsNullOrEmpty(searchResults) Then
-    '                '        HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-    '                '    Else
-    '                '        HelpTextBox.Text = searchResults
-    '                '    End If
-    '                'End If
-    '                Dim dict = BuildManualDictionary()
-    '                Dim aliases = ManualSectionAliases()
-
-    '                ' 1. Alias match (keyboard → Keyboard Shortcuts)
-    '                If aliases.ContainsKey(searchTerm) Then
-    '                    Dim realSection = aliases(searchTerm)
-    '                    HelpTextBox.Text =
-    '                    realSection & Environment.NewLine &
-    '                    New String("-"c, realSection.Length) & Environment.NewLine &
-    '                    String.Join(Environment.NewLine, dict(realSection))
-    '                    GoTo Done
-    '                End If
-
-    '                ' 2. Exact section match
-    '                Dim exact = dict.Keys.
-    '                FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '                If Not String.IsNullOrEmpty(exact) Then
-    '                    HelpTextBox.Text =
-    '                    exact & Environment.NewLine &
-    '                    New String("-"c, exact.Length) & Environment.NewLine &
-    '                    String.Join(Environment.NewLine, dict(exact))
-    '                    GoTo Done
-    '                End If
-
-    '                ' 3. Prefix match (man key → Keyboard Shortcuts)
-    '                Dim prefix = dict.Keys.
-    '                FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '                If Not String.IsNullOrEmpty(prefix) Then
-    '                    HelpTextBox.Text =
-    '                    prefix & Environment.NewLine &
-    '                    New String("-"c, prefix.Length) & Environment.NewLine &
-    '                    String.Join(Environment.NewLine, dict(prefix))
-    '                    GoTo Done
-    '                End If
-
-    '                ' 4. Fallback keyword search
-    '                Dim searchResults As String = SearchManualDict(searchTerm)
-    '                If String.IsNullOrEmpty(searchResults) Then
-    '                    HelpTextBox.Text = $"No results found for ""{searchTerm}""."
-    '                Else
-    '                    HelpTextBox.Text = searchResults
-    '                End If
-
-    'Done:
-    '            Else
-    '                HelpTextBox.Text = BuildAppManualText()
-    '            End If
-
-
-
-    '            FocusHelpText()
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError &
-    '                   "  Failed to display manual: " & ex.Message)
-    '        End Try
-
-    '        RestoreAddressBar()
-    '    End Sub
-
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-    '        ' No argument → show full manual
-    '        If String.IsNullOrEmpty(searchTerm) Then
-    '            HelpTextBox.Text = BuildAppManualText()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        Dim dict = BuildManualDictionary()
-    '        Dim aliases = ManualSectionAliases()
-
-    '        ' -----------------------------
-    '        ' 1. Alias match
-    '        ' -----------------------------
-    '        Dim realSection As String = Nothing
-    '        If aliases.TryGetValue(searchTerm, realSection) Then
-    '            HelpTextBox.Text = RenderSection(realSection, dict(realSection))
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' -----------------------------
-    '        ' 2. Exact match
-    '        ' -----------------------------
-    '        Dim exact = dict.Keys.
-    '        FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '        If exact IsNot Nothing Then
-    '            HelpTextBox.Text = RenderSection(exact, dict(exact))
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' -----------------------------
-    '        ' 3. Prefix match
-    '        ' -----------------------------
-    '        Dim prefix = dict.Keys.
-    '        FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '        If prefix IsNot Nothing Then
-    '            HelpTextBox.Text = RenderSection(prefix, dict(prefix))
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' -----------------------------
-    '        ' 4. Keyword search fallback
-    '        ' -----------------------------
-    '        Dim results = SearchManualDict(searchTerm)
-    '        HelpTextBox.Text =
-    '        If(String.IsNullOrEmpty(results),
-    '           $"No results found for ""{searchTerm}"".",
-    '           results)
-
-    '        ' Show help panel if not already visible
-    '        If Not HelpPanel.Visible Then
-    '            ShowHelpPanelAnimated()
-    '        End If
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
-
-    'Private Sub HandleManualCommand(parts As String())
-    '    Try
-    '        HelpHeaderLabel.Text = "Manual"
-    '        HelpTextBox.Font = New Font("Segoe UI", 10)
-
-    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-    '        ' No argument → show full manual
-    '        If String.IsNullOrEmpty(searchTerm) Then
-    '            HelpTextBox.Text = BuildAppManualText()
-    '            EnsureHelpPanelVisible()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        Dim dict = BuildManualDictionary()
-    '        Dim aliases = ManualSectionAliases()
-
-    '        ' -----------------------------
-    '        ' 1. Alias match
-    '        ' -----------------------------
-    '        Dim realSection As String = Nothing
-    '        If aliases.TryGetValue(searchTerm, realSection) Then
-    '            HelpTextBox.Text = RenderSection(realSection, dict(realSection))
-    '            EnsureHelpPanelVisible()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' -----------------------------
-    '        ' 2. Exact match
-    '        ' -----------------------------
-    '        Dim exact = dict.Keys.
-    '        FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '        If exact IsNot Nothing Then
-    '            HelpTextBox.Text = RenderSection(exact, dict(exact))
-    '            EnsureHelpPanelVisible()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' -----------------------------
-    '        ' 3. Prefix match
-    '        ' -----------------------------
-    '        Dim prefix = dict.Keys.
-    '        FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
-
-    '        If prefix IsNot Nothing Then
-    '            HelpTextBox.Text = RenderSection(prefix, dict(prefix))
-    '            EnsureHelpPanelVisible()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' -----------------------------
-    '        ' 4. Keyword search fallback
-    '        ' -----------------------------
-    '        Dim results = SearchManualDict(searchTerm)
-    '        HelpTextBox.Text =
-    '        If(String.IsNullOrEmpty(results),
-    '           $"No results found for ""{searchTerm}"".",
-    '           results)
-
-    '        EnsureHelpPanelVisible()
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Failed to display manual: " & ex.Message)
-    '    End Try
-
-    '    RestoreAddressBar()
-    'End Sub
 
     Private Sub HandleManualCommand(parts As String())
         Try
@@ -7605,33 +5937,11 @@ Public Class Form1
     End Sub
 
 
-
-
-
-
-
     Private Sub EnsureHelpPanelVisible()
         If Not HelpPanel.Visible Then
             ShowHelpPanelAnimated()
         End If
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Function RenderSection(title As String, lines As List(Of String)) As String
@@ -7640,218 +5950,6 @@ Public Class Form1
            String.Join(Environment.NewLine, lines)
     End Function
 
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function SearchManual(manualText As String, searchTerm As String) As String
-    '    Dim sb As New Text.StringBuilder()
-    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
-    '    Dim found As Boolean = False
-
-    '    Dim currentSection As String = String.Empty
-    '    Dim sectionContent As New Text.StringBuilder()
-
-    '    For Each line As String In lines
-    '        ' Check for section headers (assuming they are capitalized)
-    '        If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
-    '            ' If we are in a section and we found a new section, output the previous section
-    '            If currentSection <> String.Empty Then
-    '                sb.AppendLine(currentSection)
-    '                sb.AppendLine(sectionContent.ToString())
-    '                sb.AppendLine()
-    '                sectionContent.Clear()
-    '            End If
-    '            currentSection = line.Trim()
-    '        End If
-
-    '        ' Check if the line contains the search term
-    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '            If sectionContent.Length = 0 Then
-    '                ' Only add the section header if we haven't added content yet
-    '                sectionContent.AppendLine(currentSection)
-    '            End If
-    '            sectionContent.AppendLine(line)
-    '            found = True
-    '        End If
-    '    Next
-
-    '    ' Output the last section if it exists
-    '    If currentSection <> String.Empty Then
-    '        sb.AppendLine(currentSection)
-    '        sb.AppendLine(sectionContent.ToString())
-    '    End If
-
-    '    ' Optionally, you can add a message if no results were found
-    '    If Not found Then
-    '        Return String.Empty
-    '    End If
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-    'Private Function SearchManual(manualText As String, searchTerm As String) As String
-    '    Dim sb As New Text.StringBuilder()
-    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
-    '    Dim found As Boolean = False
-
-    '    Dim currentSection As String = String.Empty
-    '    Dim sectionContent As New List(Of String)() ' To hold lines of the current section
-
-    '    For Each line As String In lines
-    '        ' Check for section headers (assuming they are capitalized)
-    '        If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
-    '            ' If we are in a section and we found a new section, output the previous section if it has content
-    '            If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
-    '                sb.AppendLine(currentSection)
-    '                sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
-    '                sb.AppendLine() ' Add an empty line for separation
-    '                sectionContent.Clear() ' Clear for the next section
-    '            End If
-    '            currentSection = line.Trim() ' Update the current section header
-    '        End If
-
-    '        ' Check if the line contains the search term
-    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '            If sectionContent.Count = 0 Then
-    '                ' Only add the section header if we haven't added content yet
-    '                sectionContent.Add(currentSection)
-    '            End If
-    '            sectionContent.Add(line) ' Add the matching line
-    '            found = True
-    '        End If
-    '    Next
-
-    '    ' Output the last section if it exists and has content
-    '    If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
-    '        sb.AppendLine(currentSection)
-    '        sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
-    '    End If
-
-    '    ' Optionally, you can add a message if no results were found
-    '    If Not found Then
-    '        Return String.Empty
-    '    End If
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-    'Private Function SearchManual(manualText As String, searchTerm As String) As String
-    '    Dim sb As New Text.StringBuilder()
-    '    Dim lines = manualText.Split({Environment.NewLine}, StringSplitOptions.None)
-
-    '    Dim currentHeader As String = ""
-    '    Dim currentSection As New List(Of String)
-    '    Dim results As New List(Of (Header As String, Lines As List(Of String)))
-
-    '    Dim headerPattern As New Regex("^[A-Z][A-Za-z0-9 &\-]+$") ' Clean header lines
-
-    '    For Each line In lines
-    '        Dim trimmed = line.Trim()
-
-    '        ' Detect section header
-    '        If headerPattern.IsMatch(trimmed) Then
-    '            ' Commit previous section
-    '            If currentHeader <> "" AndAlso currentSection.Count > 0 Then
-    '                results.Add((currentHeader, New List(Of String)(currentSection)))
-    '            End If
-
-    '            currentHeader = trimmed
-    '            currentSection.Clear()
-    '        Else
-    '            currentSection.Add(line)
-    '        End If
-    '    Next
-
-    '    ' Commit last section
-    '    If currentHeader <> "" AndAlso currentSection.Count > 0 Then
-    '        results.Add((currentHeader, currentSection))
-    '    End If
-
-    '    ' Filter for matches
-    '    Dim matches = results.
-    '    Where(Function(sec) sec.Lines.Any(Function(l) l.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)).
-    '    ToList()
-
-    '    If matches.Count = 0 Then
-    '        Return ""
-    '    End If
-
-    '    ' Build output
-    '    For Each sec In matches
-    '        sb.AppendLine(sec.Header)
-    '        sb.AppendLine(New String("-"c, sec.Header.Length))
-
-    '        For Each line In sec.Lines
-    '            If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '                sb.AppendLine(Highlight(line, searchTerm))
-    '            End If
-    '        Next
-
-    '        sb.AppendLine()
-    '    Next
-
-    '    Return sb.ToString()
-    'End Function
-
-    'Private Function SearchManual(manualText As String, searchTerm As String) As String
-    '    Dim sb As New Text.StringBuilder()
-    '    Dim lines As String() = manualText.Split(New String() {Environment.NewLine}, StringSplitOptions.None)
-    '    Dim found As Boolean = False
-
-    '    Dim currentSection As String = String.Empty
-    '    Dim sectionContent As New List(Of String)() ' To hold lines of the current section
-
-    '    For Each line As String In lines
-    '        ' Check for section headers (assuming they are capitalized)
-    '        If line.Trim().Length > 0 AndAlso line(0) = Char.ToUpper(line(0)) Then
-    '            ' If we are in a section and we found a new section, output the previous section if it has content
-    '            If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
-    '                sb.AppendLine(currentSection)
-    '                sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
-    '                sb.AppendLine() ' Add an empty line for separation
-    '                sectionContent.Clear() ' Clear for the next section
-    '            End If
-    '            currentSection = line.Trim() ' Update the current section header
-    '        End If
-
-    '        ' Check if the line contains the search term
-    '        If line.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0 Then
-    '            If sectionContent.Count = 0 Then
-    '                ' Only add the section header if we haven't added content yet
-    '                sectionContent.Add(currentSection)
-    '            End If
-    '            ' Highlight the search term in brackets
-    '            Dim highlightedLine As String = line.Replace(searchTerm, "[" & searchTerm & "]")
-    '            sectionContent.Add(highlightedLine) ' Add the matching line
-    '            found = True
-    '        End If
-    '    Next
-
-    '    ' Output the last section if it exists and has content
-    '    If currentSection <> String.Empty AndAlso sectionContent.Count > 0 Then
-    '        sb.AppendLine(currentSection)
-    '        sb.AppendLine(String.Join(Environment.NewLine, sectionContent.Take(5))) ' Take first 5 lines
-    '    End If
-
-    '    ' Optionally, you can add a message if no results were found
-    '    If Not found Then
-    '        Return String.Empty
-    '    End If
-
-    '    Return sb.ToString()
-    'End Function
 
     Private Function SearchManual(manualText As String, searchTerm As String) As String
         Dim sb As New Text.StringBuilder()
@@ -8886,31 +6984,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub TestIsProtectedPath_ExactMode()
-
-    '    Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Exact Mode)")
-
-    '    Dim userProfile As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-
-    '    ' === Positive Tests (Exact Matches, expected True) ===
-    '    AssertTrue(IsProtectedPathOrFolder(userProfile), "User profile should be protected")
-    '    AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents")), "Documents should be protected")
-    '    AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop")), "Desktop should be protected")
-    '    AssertTrue(IsProtectedPathOrFolder(Path.Combine(userProfile, "Downloads")), "Downloads should be protected")
-
-    '    ' === Negative Tests (Subdirectories should fail in exact-only mode) ===
-    '    AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Documents\MyProject")), "Subfolder under Documents should NOT be protected in exact mode")
-    '    AssertFalse(IsProtectedPathOrFolder(Path.Combine(userProfile, "Desktop\TestFolder")), "Subfolder under Desktop should NOT be protected in exact mode")
-
-    '    ' === Edge Cases ===
-    '    AssertFalse(IsProtectedPathOrFolder(""), "Empty string should not be protected")
-    '    AssertFalse(IsProtectedPathOrFolder(Nothing), "Nothing should not be protected")
-
-    '    Debug.WriteLine("✓ Exact-mode tests passed")
-
-    'End Sub
-
-
 
     Private Sub TestIsProtectedPath_ExactMode()
 
@@ -8941,31 +7014,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub TestIsProtectedPath_SubdirMode()
-
-    '    Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Subdirectory Mode)")
-
-    '    ' === Positive Tests (Exact Matches, expected True) ===
-    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows"), "Windows root should be protected")
-    '    AssertTrue(IsProtectedPathOrFolder("C:\Program Files"), "Program Files root should be protected")
-
-    '    ' === Positive Tests (Subdirectories now succeed) ===
-    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows\System32"), "System32 should be protected as a subdirectory")
-    '    AssertTrue(IsProtectedPathOrFolder("C:\Program Files\MyApp"), "Subfolder under Program Files should be protected")
-    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows\SysWOW64\WindowsPowerShell\v1.0"),
-    '           "Deep Windows subdirectory should be protected")
-
-    '    ' === Negative Tests (Unrelated paths still fail) ===
-    '    AssertFalse(IsProtectedPathOrFolder("C:\Temp"), "Temp should NOT be protected")
-    '    AssertFalse(IsProtectedPathOrFolder("D:\Games"), "Unrelated drive should NOT be protected")
-
-    '    ' === Edge Cases ===
-    '    AssertTrue(IsProtectedPathOrFolder("c:\windows"), "Case-insensitive match should be protected")
-    '    AssertTrue(IsProtectedPathOrFolder("C:\Windows\"), "Trailing slash should still match protected path")
-
-    '    Debug.WriteLine("✓ Subdirectory-inclusive tests passed")
-
-    'End Sub
 
     Private Sub TestIsProtectedPath_SubdirMode()
 
@@ -8992,13 +7040,6 @@ Public Class Form1
         Debug.WriteLine("✓ Subdirectory-inclusive tests passed")
 
     End Sub
-
-
-
-
-
-
-
 
 
     Private Sub TestFormatSize()
