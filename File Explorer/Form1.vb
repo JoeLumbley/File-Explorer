@@ -6322,69 +6322,69 @@ Public Class Form1
             }
         },
         {
-    "Getting Started",
-    New String() {
-        "You can clone the File Explorer project directly inside Visual Studio.",
-        "This is the recommended method.",
-        "",
-        "1. Open Visual Studio",
-        "   Launch Visual Studio (2019, 2022, or later).",
-        "",
-        "2. Access the Clone Repository Feature",
-        "   From the Start Window:",
-        "     • Click ""Clone a repository""",
-        "",
-        "   If a project is already open:",
-        "     • Go to File → Clone Repository...",
-        "",
-        "   Both options open the same cloning dialog.",
-        "",
-        "3. Enter the GitHub Repository URL",
-        "   In the ""Repository Location"" box, enter:",
-        "     https://github.com/JoeLumbley/File-Explorer.git",
-        "",
-        "   Visual Studio will suggest a local folder where the project will be cloned.",
-        "   You may change this location if you prefer.",
-        "",
-        "4. Click ""Clone""",
-        "   Visual Studio will:",
-        "     • Download the repository",
-        "     • Create a local working copy",
-        "     • Detect the solution file",
-        "     • Prompt you to open it",
-        "",
-        "5. Open the Solution",
-        "   After cloning, Visual Studio will display:",
-        "     File Explorer.sln",
-        "",
-        "   Click ""Open"" to load the VB.NET WinForms project.",
-        "",
-        "6. Build and Run the Application",
-        "   To run the application:",
-        "     • Press F5",
-        "     • Or click the Start button",
-        "",
-        "   Visual Studio will build the project automatically if needed.",
-        "",
-        "   To build manually:",
-        "     • Go to Build → Build Solution",
-        "     • Or press Ctrl+Shift+B",
-        "",
-        "7. Troubleshooting Tips",
-        "   • Ensure you have an active internet connection when cloning.",
-        "   • Restart Visual Studio if it becomes unresponsive during cloning.",
-        "   • If dependencies are missing, right‑click the solution and select ""Restore NuGet Packages"".",
-        "   • If build errors occur, review the Error List or Output window for details.",
-        "   • Make sure the "".NET Desktop Development"" workload is installed.",
-        "",
-        "Summary:",
-        "   Visual Studio → Clone a repository",
-        "   Paste the GitHub URL",
-        "   Click Clone",
-        "   Open File Explorer.sln",
-        "   Press F5 to run"
-    }
-},
+            "Getting Started",
+            New String() {
+                "You can clone the File Explorer project directly inside Visual Studio.",
+                "This is the recommended method.",
+                "",
+                "1. Open Visual Studio",
+                "   Launch Visual Studio (2019, 2022, or later).",
+                "",
+                "2. Access the Clone Repository Feature",
+                "   From the Start Window:",
+                "     • Click ""Clone a repository""",
+                "",
+                "   If a project is already open:",
+                "     • Go to File → Clone Repository...",
+                "",
+                "   Both options open the same cloning dialog.",
+                "",
+                "3. Enter the GitHub Repository URL",
+                "   In the ""Repository Location"" box, enter:",
+                "     https://github.com/JoeLumbley/File-Explorer.git",
+                "",
+                "   Visual Studio will suggest a local folder where the project will be cloned.",
+                "   You may change this location if you prefer.",
+                "",
+                "4. Click ""Clone""",
+                "   Visual Studio will:",
+                "     • Download the repository",
+                "     • Create a local working copy",
+                "     • Detect the solution file",
+                "     • Prompt you to open it",
+                "",
+                "5. Open the Solution",
+                "   After cloning, Visual Studio will display:",
+                "     File Explorer.sln",
+                "",
+                "   Click ""Open"" to load the VB.NET WinForms project.",
+                "",
+                "6. Build and Run the Application",
+                "   To run the application:",
+                "     • Press F5",
+                "     • Or click the Start button",
+                "",
+                "   Visual Studio will build the project automatically if needed.",
+                "",
+                "   To build manually:",
+                "     • Go to Build → Build Solution",
+                "     • Or press Ctrl+Shift+B",
+                "",
+                "7. Troubleshooting Tips",
+                "   • Ensure you have an active internet connection when cloning.",
+                "   • Restart Visual Studio if it becomes unresponsive during cloning.",
+                "   • If dependencies are missing, right‑click the solution and select ""Restore NuGet Packages"".",
+                "   • If build errors occur, review the Error List or Output window for details.",
+                "   • Make sure the "".NET Desktop Development"" workload is installed.",
+                "",
+                "Summary:",
+                "   Visual Studio → Clone a repository",
+                "   Paste the GitHub URL",
+                "   Click Clone",
+                "   Open File Explorer.sln",
+                "   Press F5 to run"
+            }
+        },
         {
             "Features",
             {
@@ -6866,17 +6866,86 @@ Public Class Form1
         Next
     End Sub
 
+    'Private Function BuildAppManualText() As String
+    '    Dim dict = BuildManualDictionary()
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine("Table of Contents")
+    '    For Each key In dict.Keys
+    '        sb.AppendLine("  • " & key)
+    '    Next
+    '    sb.AppendLine()
+
+    '    For Each key In dict.Keys
+    '        sb.AppendLine(key)
+    '        For Each line In dict(key)
+    '            sb.AppendLine(line)
+    '        Next
+    '        sb.AppendLine()
+    '    Next
+
+    '    sb.AppendLine("Use man [section] to jump to a section.")
+
+
+
+    '    Return sb.ToString()
+    'End Function
+
+
+    'Private Function BuildAppManualText() As String
+    '    Dim dict = BuildManualDictionary()
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' Table of Contents
+    '    sb.AppendLine("Table of Contents")
+    '    For Each key In dict.Keys.OrderBy(Function(k) k)
+    '        sb.AppendLine("  • " & key)
+    '    Next
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Use man [section] to jump to a section.")
+
+    '    sb.AppendLine()
+
+    '    ' Sections
+    '    For Each key In dict.Keys.OrderBy(Function(k) k)
+    '        sb.AppendLine(key)
+    '        For Each line In dict(key)
+    '            sb.AppendLine(line)
+    '        Next
+    '        sb.AppendLine()
+
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
     Private Function BuildAppManualText() As String
         Dim dict = BuildManualDictionary()
         Dim sb As New Text.StringBuilder()
 
+        ' ---------------------------------------------------------
+        ' Navigation Hint (Top for Student Discovery)
+        ' ---------------------------------------------------------
+        sb.AppendLine("Use man [section] to jump to a section.")
+        sb.AppendLine()
+
+        ' ---------------------------------------------------------
+        ' Table of Contents
+        ' ---------------------------------------------------------
         sb.AppendLine("Table of Contents")
-        For Each key In dict.Keys
+        For Each key In dict.Keys.OrderBy(Function(k) k)
             sb.AppendLine("  • " & key)
         Next
         sb.AppendLine()
 
-        For Each key In dict.Keys
+        ' ---------------------------------------------------------
+        ' Sections
+        ' ---------------------------------------------------------
+        For Each key In dict.Keys.OrderBy(Function(k) k)
             sb.AppendLine(key)
             For Each line In dict(key)
                 sb.AppendLine(line)
