@@ -8171,16 +8171,309 @@ Public Class Form1
 
     '    Return manual
     'End Function
+
+
+    'Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
+
+    '    Dim sections As New Dictionary(Of String, String()) From {
+    '    {
+    '        "Introduction",
+    '        {
+    '            "File Explorer is an open‑source file management application",
+    '            "designed for clarity, speed, and emotional safety.",
+    '            "It blends a familiar Windows‑style interface with a powerful command line,",
+    '            "keyboard‑driven navigation, and a polished help drawer."
+    '        }
+    '    },
+    '    {
+    '        "Getting Started",
+    '        {
+    '            "Installation:",
+    '            "",
+    '            "  1. Clone the repository:",
+    '            "       git clone https://github.com/JoeLumbley/File-Explorer.git",
+    '            "",
+    '            "  2. Navigate to the project directory:",
+    '            "       cd File-Explorer",
+    '            "",
+    '            "  3. Build and run the application:",
+    '            "       dotnet build",
+    '            "       dotnet run"
+    '        }
+    '    },
+    '    {
+    '        "Features",
+    '        {
+    '            "  • File Organization: Create, rename, and delete folders.",
+    '            "  • File Operations: Move, copy, delete, and rename files.",
+    '            "  • Search System: Fast in‑folder search with highlighting and HUD.",
+    '            "  • Keyboard Navigation: Shortcuts with repeat suppression.",
+    '            "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
+    '            "  • Drive Tools: df and drives commands for free‑space bars.",
+    '            "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+    '        }
+    '    },
+    '    {
+    '        "Using the App",
+    '        {
+    '            "Main Interface:",
+    '            "",
+    '            "  • Navigation Pane — browse folders quickly.",
+    '            "  • File List — shows files and folders in the current directory.",
+    '            "  • Address Bar — displays and accepts paths.",
+    '            "  • Toolbar — quick access to common operations.",
+    '            "  • Help Drawer — slides in from the right for documentation."
+    '        }
+    '    },
+    '    {
+    '        "File Operations",
+    '        {
+    '            "Creating a Folder:",
+    '            "  • Click ""New Folder""",
+    '            "  • Press Ctrl+Shift+N",
+    '            "  • Or run:  mkdir <folder>",
+    '            "",
+    '            "Renaming:",
+    '            "  • Select an item and press F2",
+    '            "  • Or run:  rename <old> <new>",
+    '            "",
+    '            "Copying Files:",
+    '            "  • Ctrl+C → Ctrl+V",
+    '            "  • Or run:  copy <source> <destination>",
+    '            "",
+    '            "Moving Files:",
+    '            "  • Drag and drop",
+    '            "  • Or run:  move <source> <destination>",
+    '            "",
+    '            "Deleting Files:",
+    '            "  • Press Delete",
+    '            "  • Or run:  delete <path>",
+    '            "",
+    '            "Opening Files:",
+    '            "  • Press Enter",
+    '            "  • Or run:  open <path>",
+    '            "",
+    '            "Open With:",
+    '            "  • openwith notepad file.txt",
+    '            "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+    '        }
+    '    },
+    '    {
+    '        "Search",
+    '        {
+    '            "Starting a Search:",
+    '            "  • Press Ctrl+F",
+    '            "  • Or run:  find <term>",
+    '            "",
+    '            "Navigating Results:",
+    '            "  • F3 — next result",
+    '            "  • Shift+F3 — previous result",
+    '            "",
+    '            "Resetting Search:",
+    '            "  • Press Esc"
+    '        }
+    '    },
+    '    {
+    '        "Keyboard Shortcuts",
+    '        {
+    '            "Navigation:",
+    '            "  Alt+Left       Back",
+    '            "  Alt+Right      Forward",
+    '            "  Alt+Up         Parent folder",
+    '            "  Alt+Home       User folder",
+    '            "  F11            Full screen",
+    '            "",
+    '            "Address Bar:",
+    '            "  Ctrl+L         Focus",
+    '            "  Alt+D          Focus",
+    '            "  F4             Focus",
+    '            "  Esc            Reset",
+    '            "",
+    '            "Search:",
+    '            "  Ctrl+F         Find",
+    '            "  F3             Next",
+    '            "  Shift+F3       Previous",
+    '            "",
+    '            "Focus Navigation:",
+    '            "  Tab            Cycle forward",
+    '            "  Shift+Tab      Cycle backward",
+    '            "",
+    '            "File Operations:",
+    '            "  Enter          Open",
+    '            "  F2             Rename",
+    '            "  Delete         Delete",
+    '            "  Ctrl+Shift+N   New folder",
+    '            "",
+    '            "Pinning:",
+    '            "  Alt+P          Pin/unpin",
+    '            "",
+    '            "Refresh:",
+    '            "  F5             Refresh current folder"
+    '        }
+    '    },
+    '    {
+    '        "Command Line Interface (CLI)",
+    '        {
+    '            "File Explorer includes a built‑in command line with:",
+    '            "",
+    '            "  • Aliases (cp, mv, rm, etc.)",
+    '            "  • Direct path navigation",
+    '            "  • Manual pages (man <command>)",
+    '            "  • Auto‑generated help (help, help <command>)",
+    '            "",
+    '            "Examples:",
+    '            "  cd C:\Projects",
+    '            "  copy file.txt D:\Backup",
+    '            "  openwith notepad notes.txt",
+    '            "  find report",
+    '            "  findnext",
+    '            "  pin",
+    '            "  drives",
+    '            "  df C:"
+    '        }
+    '    },
+    '    {
+    '        "Commands",
+    '        {
+    '            "Available Commands:",
+    '            "",
+    '            "cd:",
+    '            "  Change the current directory.",
+    '            "    cd C:\Projects",
+    '            "    cd ""C:\My Folder""",
+    '            "",
+    '            "copy (cp):",
+    '            "  Copy a file or folder to a destination.",
+    '            "    copy C:\file.txt D:\Backup",
+    '            "    cp ""C:\Folder A"" ""C:\Folder B""",
+    '            "",
+    '            "delete (rm):",
+    '            "  Delete a file or folder.",
+    '            "    delete C:\file.txt",
+    '            "    rm ""C:\My Folder""",
+    '            "",
+    '            "df:",
+    '            "  Show free space for a specific drive.",
+    '            "    df C:",
+    '            "",
+    '            "drives:",
+    '            "  Show all drives with graphical usage bars.",
+    '            "    drives",
+    '            "",
+    '            "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+    '            "  Exit the application.",
+    '            "    exit",
+    '            "",
+    '            "find (search):",
+    '            "  Search for files and folders in the current directory.",
+    '            "    find report",
+    '            "",
+    '            "findnext (searchnext, next):",
+    '            "  Show the next search result.",
+    '            "    findnext",
+    '            "",
+    '            "help (commands, ?):",
+    '            "  Show help for commands.",
+    '            "    help",
+    '            "    help cd",
+    '            "",
+    '            "man (manual, appmanual):",
+    '            "  Show the full application manual.",
+    '            "    man",
+    '            "    manual",
+    '            "",
+    '            "mkdir (make, md):",
+    '            "  Create a new folder.",
+    '            "    mkdir C:\NewFolder",
+    '            "    md ""C:\Another Folder""",
+    '            "",
+    '            "move (mv):",
+    '            "  Move a file or folder.",
+    '            "    move C:\file.txt D:\Archive",
+    '            "",
+    '            "open:",
+    '            "  Open a file or navigate into a folder.",
+    '            "    open C:\folder\file.txt",
+    '            "",
+    '            "pin:",
+    '            "  Pin or unpin a folder.",
+    '            "    pin C:\Projects",
+    '            "    pin",
+    '            "",
+    '            "rename (rn):",
+    '            "  Rename a file or folder.",
+    '            "    rename ""C:\old.txt"" ""new.txt""",
+    '            "",
+    '            "shortcuts (keys):",
+    '            "  Show all keyboard shortcuts.",
+    '            "    shortcuts",
+    '            "",
+    '            "text (txt):",
+    '            "  Create a new text file.",
+    '            "    text ""C:\folder\example.txt"""
+    '        }
+    '    },
+    '    {
+    '        "Drive Tools",
+    '        {
+    '            "df:",
+    '            "  Shows free space for a specific drive.",
+    '            "    df C:",
+    '            "",
+    '            "drives:",
+    '            "  Shows all drives with graphical usage bars.",
+    '            "    drives"
+    '        }
+    '    },
+    '    {
+    '        "Pinning System",
+    '        {
+    '            "Pin any folder:",
+    '            "  pin C:\Projects",
+    '            "  pin",
+    '            "",
+    '            "Pinned folders appear in the sidebar and persist across sessions."
+    '        }
+    '    },
+    '    {
+    '        "Manual & Help System",
+    '        {
+    '            "Help:",
+    '            "  help",
+    '            "  commands",
+    '            "  ?",
+    '            "",
+    '            "The 'man' Command",
+    '            "Man displays a detailed manual.",
+    '            "",
+    '            "Examples:",
+    '            "  man",
+    '            "  manual",
+    '            "  appmanual"
+    '        }
+    '    }
+    '}
+
+    '    ' Convert arrays → List(Of String)
+    '    Return sections.ToDictionary(
+    '    Function(kvp) kvp.Key,
+    '    Function(kvp) kvp.Value.ToList()
+    ')
+
+    'End Function
+
+
+
     Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
 
         Dim sections As New Dictionary(Of String, String()) From {
         {
             "Introduction",
             {
-                "File Explorer is an open‑source file management application",
-                "designed for clarity, speed, and emotional safety.",
-                "It blends a familiar Windows‑style interface with a powerful command line,",
-                "keyboard‑driven navigation, and a polished help drawer."
+                "File Explorer is an open‑source file manager designed for clarity, speed, and emotional safety.",
+                "It blends a familiar Windows‑style interface with a built‑in command line,",
+                "keyboard‑driven navigation, and a polished help drawer.",
+                "Whether you prefer clicking, typing, or shortcut‑driven workflows, the app adapts to you."
             }
         },
         {
@@ -8191,12 +8484,15 @@ Public Class Form1
                 "  1. Clone the repository:",
                 "       git clone https://github.com/JoeLumbley/File-Explorer.git",
                 "",
-                "  2. Navigate to the project directory:",
+                "  2. Open the project folder:",
                 "       cd File-Explorer",
                 "",
                 "  3. Build and run the application:",
                 "       dotnet build",
-                "       dotnet run"
+                "       dotnet run",
+                "",
+                "Once launched, you'll see a clean interface with a navigation pane, file list,",
+                "address bar, and a slide‑out help drawer."
             }
         },
         {
@@ -8204,10 +8500,10 @@ Public Class Form1
             {
                 "  • File Organization: Create, rename, and delete folders.",
                 "  • File Operations: Move, copy, delete, and rename files.",
-                "  • Search System: Fast in‑folder search with highlighting and HUD.",
-                "  • Keyboard Navigation: Shortcuts with repeat suppression.",
-                "  • Help Drawer: Command Reference, Manual pages, Drive Overview, Shortcuts.",
-                "  • Drive Tools: df and drives commands for free‑space bars.",
+                "  • Search System: Fast in‑folder search with highlighting and a HUD.",
+                "  • Keyboard Navigation: Explorer‑style shortcuts with repeat suppression.",
+                "  • Help Drawer: Command reference, manual pages, drive overview, shortcuts.",
+                "  • Drive Tools: df and drives commands with graphical free‑space bars.",
                 "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
             }
         },
@@ -8220,7 +8516,7 @@ Public Class Form1
                 "  • File List — shows files and folders in the current directory.",
                 "  • Address Bar — displays and accepts paths.",
                 "  • Toolbar — quick access to common operations.",
-                "  • Help Drawer — slides in from the right for documentation."
+                "  • Help Drawer — slides in from the right for documentation and shortcuts."
             }
         },
         {
@@ -8442,7 +8738,7 @@ Public Class Form1
                 "  ?",
                 "",
                 "The 'man' Command",
-                "Man displays a detailed manual.",
+                "Man displays the full application manual.",
                 "",
                 "Examples:",
                 "  man",
@@ -8452,7 +8748,6 @@ Public Class Form1
         }
     }
 
-        ' Convert arrays → List(Of String)
         Return sections.ToDictionary(
         Function(kvp) kvp.Key,
         Function(kvp) kvp.Value.ToList()
