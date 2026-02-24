@@ -4636,15 +4636,57 @@ Public Class Form1
     'End Function
 
 
+    'Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
+    '    Dim sb As New StringBuilder()
+    '    Dim list = If(entries, CommandHelp)
+
+    '    ' ---------------------------------------------------------
+    '    ' Navigation Hint (Top for Discoverability)
+    '    ' ---------------------------------------------------------
+    '    sb.AppendLine("Use help [command] to jump to a command.")
+    '    sb.AppendLine()
+
+    '    ' ---------------------------------------------------------
+    '    ' Command Entries
+    '    ' ---------------------------------------------------------
+    '    For Each entry In list
+    '        Dim meta = entry.Value
+
+    '        ' Aliases (comma-separated)
+    '        sb.AppendLine(String.Join(", ", meta.Aliases))
+
+    '        ' Usage
+    '        sb.AppendLine(meta.Usage)
+
+    '        ' Description
+    '        sb.AppendLine("  " & meta.Description)
+
+    '        ' Examples (optional)
+    '        If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+    '            sb.AppendLine("  Examples:")
+    '            For Each ex In meta.Examples
+    '                sb.AppendLine("    " & ex)
+    '            Next
+    '        End If
+
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
     Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
         Dim sb As New StringBuilder()
         Dim list = If(entries, CommandHelp)
 
         ' ---------------------------------------------------------
-        ' Navigation Hint (Top for Discoverability)
+        ' Navigation Hint (only for full help)
         ' ---------------------------------------------------------
-        sb.AppendLine("Use help [command] to jump to a command.")
-        sb.AppendLine()
+        If entries Is Nothing Then
+            sb.AppendLine("Use help [command] to jump to a command.")
+            sb.AppendLine()
+        End If
 
         ' ---------------------------------------------------------
         ' Command Entries
@@ -4674,9 +4716,6 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
-
-
-
 
 
 
