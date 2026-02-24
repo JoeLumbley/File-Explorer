@@ -6939,7 +6939,6 @@ Public Class Form1
 
         TestParseSource()
 
-
         TestParseDestination()
 
         TestValidateSourceExists()
@@ -6947,9 +6946,6 @@ Public Class Form1
         TestValidateDestinationExists()
 
         TestValidateNotCopyingIntoSelf()
-
-
-
 
         Debug.WriteLine("All tests executed.")
 
