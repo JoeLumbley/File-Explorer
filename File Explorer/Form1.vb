@@ -31,6 +31,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports System.Windows
 
 Public Class Form1
 
@@ -6015,18 +6016,47 @@ Public Class Form1
             HelpHeaderLabel.Text = "Manual"
             HelpTextBox.Font = New Font("Segoe UI", 10)
 
+            'Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+            '' -----------------------------
+            '' 0. No argument → full manual
+            '' -----------------------------
+            'If String.IsNullOrEmpty(searchTerm) Then
+            '    ShowManualContent(BuildAppManualText())
+            '    Return
+            'End If
+
             Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
-            ' -----------------------------
             ' 0. No argument → full manual
-            ' -----------------------------
             If String.IsNullOrEmpty(searchTerm) Then
                 ShowManualContent(BuildAppManualText())
                 Return
             End If
 
+            ' ⭐ Special case: man help / man commands
+            If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
+        OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
+
+                HelpHeaderLabel.Text = "Command Reference"
+                HelpTextBox.Text = BuildHelpText()
+
+                If Not HelpPanel.Visible Then
+                    ShowHelpPanelAnimated()
+                End If
+
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
+
+
+
             Dim dict = BuildManualDictionary()
             Dim aliases = ManualSectionAliases()
+
+
+
 
             ' -----------------------------
             ' 1. Alias match
@@ -6847,21 +6877,32 @@ Public Class Form1
         {
             "Manual & Help System",
             {
-                "Help Commands:",
-                "  help",
-                "  commands",
-                "  ?",
                 "",
-                "The 'man' Command:",
-                "  Displays the full application manual.",
+                "help (commands, ?):",
+                "  Usage: help [command]",
+                "  Shows help for commands or lists all commands.",
+                "",
+                "Examples:",
+                "  help",
+                "  help cd",
+                "  help copy",
+                "",
+                "man (manual, appmanual):",
+                "  Usage: man [section]",
+                "  Opens the app manual or jumps to a specific section.",
                 "",
                 "Examples:",
                 "  man",
+                "  man help        (opens the Command Reference)",
+                "  man commands    (opens the Command Reference)",
                 "  manual",
                 "  appmanual"
             }
         }
     }
+
+
+
 
         Return sections.ToDictionary(
         Function(kvp) kvp.Key,
@@ -6869,6 +6910,9 @@ Public Class Form1
     )
 
     End Function
+
+
+
 
 
 
@@ -6968,8 +7012,17 @@ Public Class Form1
         ' -----------------------------
         ' Commands
         ' -----------------------------
+        'AddAliases(map, "Commands",
+        '    "commands"
+        ')
+
+
+        ' -----------------------------
+        ' Commands
+        ' -----------------------------
         AddAliases(map, "Commands",
-            "commands"
+            "help", "commands", "cmds", "command list",
+            "cli commands", "all commands", "command reference"
         )
 
         ' -----------------------------
@@ -7220,7 +7273,7 @@ Public Class Form1
         HelpHeaderLabel.Text = "Drive Overview"
 
         HelpTextBox.Clear()
-        HelpTextBox.Font = New Font("Segoe UI", 12, FontStyle.Regular)
+        HelpTextBox.Font = New Font("Segoe UI", 13, FontStyle.Regular)
         HelpTextBox.AppendText(Environment.NewLine)
 
 
