@@ -6007,59 +6007,452 @@ Public Class Form1
                          RegexOptions.IgnoreCase)
     End Function
 
+    'Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
+
+    '    Dim sections As New Dictionary(Of String, String()) From {
+    '    {
+    '        "Introduction",
+    '        {
+    '            "File Explorer is an open‑source file manager designed for clarity, speed, and emotional safety.",
+    '            "It blends a familiar Windows‑style interface with a built‑in command line,",
+    '            "keyboard‑driven navigation, and a polished help drawer.",
+    '            "Whether you prefer clicking, typing, or shortcut‑driven workflows, the app adapts to you."
+    '        }
+    '    },
+    '    {
+    '        "Getting Started",
+    '        {
+    '            "Installation:",
+    '            "",
+    '            "  1. Clone the repository:",
+    '            "       git clone https://github.com/JoeLumbley/File-Explorer.git",
+    '            "",
+    '            "  2. Open the project folder:",
+    '            "       cd File-Explorer",
+    '            "",
+    '            "  3. Build and run the application:",
+    '            "       dotnet build",
+    '            "       dotnet run",
+    '            "",
+    '            "Once launched, you'll see a clean interface with a navigation pane, file list,",
+    '            "address bar, and a slide‑out help drawer."
+    '        }
+    '    },
+    '    {
+    '        "Features",
+    '        {
+    '            "  • File Organization: Create, rename, and delete folders.",
+    '            "  • File Operations: Move, copy, delete, and rename files.",
+    '            "  • Search System: Fast in‑folder search with highlighting and a HUD.",
+    '            "  • Keyboard Navigation: Explorer‑style shortcuts with repeat suppression.",
+    '            "  • Help Drawer: Command reference, manual pages, drive overview, shortcuts.",
+    '            "  • Drive Tools: df and drives commands with graphical free‑space bars.",
+    '            "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+    '        }
+    '    },
+    '    {
+    '        "Using the App",
+    '        {
+    '            "Main Interface:",
+    '            "",
+    '            "  • Navigation Pane — browse folders quickly.",
+    '            "  • File List — shows files and folders in the current directory.",
+    '            "  • Address Bar — displays and accepts paths.",
+    '            "  • Toolbar — quick access to common operations.",
+    '            "  • Help Drawer — slides in from the right for documentation and shortcuts."
+    '        }
+    '    },
+    '    {
+    '        "File Operations",
+    '        {
+    '            "Creating a Folder:",
+    '            "  • Click ""New Folder""",
+    '            "  • Press Ctrl+Shift+N",
+    '            "  • Or run:  mkdir <folder>",
+    '            "",
+    '            "Renaming:",
+    '            "  • Select an item and press F2",
+    '            "  • Or run:  rename <old> <new>",
+    '            "",
+    '            "Copying Files:",
+    '            "  • Ctrl+C → Ctrl+V",
+    '            "  • Or run:  copy <source> <destination>",
+    '            "",
+    '            "Moving Files:",
+    '            "  • Drag and drop",
+    '            "  • Or run:  move <source> <destination>",
+    '            "",
+    '            "Deleting Files:",
+    '            "  • Press Delete",
+    '            "  • Or run:  delete <path>",
+    '            "",
+    '            "Opening Files:",
+    '            "  • Press Enter",
+    '            "  • Or run:  open <path>",
+    '            "",
+    '            "Open With:",
+    '            "  • openwith notepad file.txt",
+    '            "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+    '        }
+    '    },
+    '    {
+    '        "Search",
+    '        {
+    '            "Starting a Search:",
+    '            "  • Press Ctrl+F",
+    '            "  • Or run:  find <term>",
+    '            "",
+    '            "Navigating Results:",
+    '            "  • F3 — next result",
+    '            "  • Shift+F3 — previous result",
+    '            "",
+    '            "Resetting Search:",
+    '            "  • Press Esc"
+    '        }
+    '    },
+    '    {
+    '        "Keyboard Shortcuts",
+    '        {
+    '            "Navigation:",
+    '            "  Alt+Left       Back",
+    '            "  Alt+Right      Forward",
+    '            "  Alt+Up         Parent folder",
+    '            "  Alt+Home       User folder",
+    '            "  F11            Full screen",
+    '            "",
+    '            "Address Bar:",
+    '            "  Ctrl+L         Focus",
+    '            "  Alt+D          Focus",
+    '            "  F4             Focus",
+    '            "  Esc            Reset",
+    '            "",
+    '            "Search:",
+    '            "  Ctrl+F         Find",
+    '            "  F3             Next",
+    '            "  Shift+F3       Previous",
+    '            "",
+    '            "Focus Navigation:",
+    '            "  Tab            Cycle forward",
+    '            "  Shift+Tab      Cycle backward",
+    '            "",
+    '            "File Operations:",
+    '            "  Enter          Open",
+    '            "  F2             Rename",
+    '            "  Delete         Delete",
+    '            "  Ctrl+Shift+N   New folder",
+    '            "",
+    '            "Pinning:",
+    '            "  Alt+P          Pin/unpin",
+    '            "",
+    '            "Refresh:",
+    '            "  F5             Refresh current folder"
+    '        }
+    '    },
+    '    {
+    '        "Command Line Interface (CLI)",
+    '        {
+    '            "File Explorer includes a built‑in command line with:",
+    '            "",
+    '            "  • Aliases (cp, mv, rm, etc.)",
+    '            "  • Direct path navigation",
+    '            "  • Manual pages (man <command>)",
+    '            "  • Auto‑generated help (help, help <command>)",
+    '            "",
+    '            "Examples:",
+    '            "  cd C:\Projects",
+    '            "  copy file.txt D:\Backup",
+    '            "  openwith notepad notes.txt",
+    '            "  find report",
+    '            "  findnext",
+    '            "  pin",
+    '            "  drives",
+    '            "  df C:"
+    '        }
+    '    },
+    '    {
+    '        "Commands",
+    '        {
+    '            "Available Commands:",
+    '            "",
+    '            "cd:",
+    '            "  Change the current directory.",
+    '            "    cd C:\Projects",
+    '            "    cd ""C:\My Folder""",
+    '            "",
+    '            "copy (cp):",
+    '            "  Copy a file or folder to a destination.",
+    '            "    copy C:\file.txt D:\Backup",
+    '            "    cp ""C:\Folder A"" ""C:\Folder B""",
+    '            "",
+    '            "delete (rm):",
+    '            "  Delete a file or folder.",
+    '            "    delete C:\file.txt",
+    '            "    rm ""C:\My Folder""",
+    '            "",
+    '            "df:",
+    '            "  Show free space for a specific drive.",
+    '            "    df C:",
+    '            "",
+    '            "drives:",
+    '            "  Show all drives with graphical usage bars.",
+    '            "    drives",
+    '            "",
+    '            "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+    '            "  Exit the application.",
+    '            "    exit",
+    '            "",
+    '            "find (search):",
+    '            "  Search for files and folders in the current directory.",
+    '            "    find report",
+    '            "",
+    '            "findnext (searchnext, next):",
+    '            "  Show the next search result.",
+    '            "    findnext",
+    '            "",
+    '            "help (commands, ?):",
+    '            "  Show help for commands.",
+    '            "    help",
+    '            "    help cd",
+    '            "",
+    '            "man (manual, appmanual):",
+    '            "  Show the full application manual.",
+    '            "    man",
+    '            "    manual",
+    '            "",
+    '            "mkdir (make, md):",
+    '            "  Create a new folder.",
+    '            "    mkdir C:\NewFolder",
+    '            "    md ""C:\Another Folder""",
+    '            "",
+    '            "move (mv):",
+    '            "  Move a file or folder.",
+    '            "    move C:\file.txt D:\Archive",
+    '            "",
+    '            "open:",
+    '            "  Open a file or navigate into a folder.",
+    '            "    open C:\folder\file.txt",
+    '            "",
+    '            "pin:",
+    '            "  Pin or unpin a folder.",
+    '            "    pin C:\Projects",
+    '            "    pin",
+    '            "",
+    '            "rename (rn):",
+    '            "  Rename a file or folder.",
+    '            "    rename ""C:\old.txt"" ""new.txt""",
+    '            "",
+    '            "shortcuts (keys):",
+    '            "  Show all keyboard shortcuts.",
+    '            "    shortcuts",
+    '            "",
+    '            "text (txt):",
+    '            "  Create a new text file.",
+    '            "    text ""C:\folder\example.txt"""
+    '        }
+    '    },
+    '    {
+    '        "Drive Tools",
+    '        {
+    '            "df:",
+    '            "  Shows free space for a specific drive.",
+    '            "    df C:",
+    '            "",
+    '            "drives:",
+    '            "  Shows all drives with graphical usage bars.",
+    '            "    drives"
+    '        }
+    '    },
+    '    {
+    '        "Pinning System",
+    '        {
+    '            "Pin any folder:",
+    '            "  pin C:\Projects",
+    '            "  pin",
+    '            "",
+    '            "Pinned folders appear in the sidebar and persist across sessions."
+    '        }
+    '    },
+    '    {
+    '        "Manual & Help System",
+    '        {
+    '            "Help:",
+    '            "  help",
+    '            "  commands",
+    '            "  ?",
+    '            "",
+    '            "The 'man' Command",
+    '            "Man displays the full application manual.",
+    '            "",
+    '            "Examples:",
+    '            "  man",
+    '            "  manual",
+    '            "  appmanual"
+    '        }
+    '    }
+    '}
+
+    '    Return sections.ToDictionary(
+    '    Function(kvp) kvp.Key,
+    '    Function(kvp) kvp.Value.ToList()
+    ')
+
+    'End Function
+
+
+
+
+
+
+
     Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
 
         Dim sections As New Dictionary(Of String, String()) From {
         {
             "Introduction",
             {
-                "File Explorer is an open‑source file manager designed for clarity, speed, and emotional safety.",
-                "It blends a familiar Windows‑style interface with a built‑in command line,",
-                "keyboard‑driven navigation, and a polished help drawer.",
-                "Whether you prefer clicking, typing, or shortcut‑driven workflows, the app adapts to you."
+                "File Explorer is a simple, fast, and user‑friendly file management",
+                "application designed to make navigating, organizing, and manipulating",
+                "files intuitive for all users. It combines a clean graphical interface",
+                "with a powerful built‑in Command Line Interface (CLI) for users who",
+                "prefer keyboard‑driven workflows.",
+                "",
+                "The application is designed around clarity, predictability, and emotional",
+                "safety. Whether you prefer clicking, typing, or shortcut‑driven workflows,",
+                "File Explorer adapts to your style."
             }
         },
         {
-            "Getting Started",
-            {
-                "Installation:",
-                "",
-                "  1. Clone the repository:",
-                "       git clone https://github.com/JoeLumbley/File-Explorer.git",
-                "",
-                "  2. Open the project folder:",
-                "       cd File-Explorer",
-                "",
-                "  3. Build and run the application:",
-                "       dotnet build",
-                "       dotnet run",
-                "",
-                "Once launched, you'll see a clean interface with a navigation pane, file list,",
-                "address bar, and a slide‑out help drawer."
-            }
-        },
+    "Getting Started",
+    New String() {
+        "You can clone the File Explorer project directly inside Visual Studio.",
+        "This is the recommended method.",
+        "",
+        "1. Open Visual Studio",
+        "   Launch Visual Studio (2019, 2022, or later).",
+        "",
+        "2. Access the Clone Repository Feature",
+        "   From the Start Window:",
+        "     • Click ""Clone a repository""",
+        "",
+        "   If a project is already open:",
+        "     • Go to File → Clone Repository...",
+        "",
+        "   Both options open the same cloning dialog.",
+        "",
+        "3. Enter the GitHub Repository URL",
+        "   In the ""Repository Location"" box, enter:",
+        "     https://github.com/JoeLumbley/File-Explorer.git",
+        "",
+        "   Visual Studio will suggest a local folder where the project will be cloned.",
+        "   You may change this location if you prefer.",
+        "",
+        "4. Click ""Clone""",
+        "   Visual Studio will:",
+        "     • Download the repository",
+        "     • Create a local working copy",
+        "     • Detect the solution file",
+        "     • Prompt you to open it",
+        "",
+        "5. Open the Solution",
+        "   After cloning, Visual Studio will display:",
+        "     File Explorer.sln",
+        "",
+        "   Click ""Open"" to load the VB.NET WinForms project.",
+        "",
+        "6. Build and Run the Application",
+        "   To run the application:",
+        "     • Press F5",
+        "     • Or click the Start button",
+        "",
+        "   Visual Studio will build the project automatically if needed.",
+        "",
+        "   To build manually:",
+        "     • Go to Build → Build Solution",
+        "     • Or press Ctrl+Shift+B",
+        "",
+        "7. Troubleshooting Tips",
+        "   • Ensure you have an active internet connection when cloning.",
+        "   • Restart Visual Studio if it becomes unresponsive during cloning.",
+        "   • If dependencies are missing, right‑click the solution and select ""Restore NuGet Packages"".",
+        "   • If build errors occur, review the Error List or Output window for details.",
+        "   • Make sure the "".NET Desktop Development"" workload is installed.",
+        "",
+        "Summary:",
+        "   Visual Studio → Clone a repository",
+        "   Paste the GitHub URL",
+        "   Click Clone",
+        "   Open File Explorer.sln",
+        "   Press F5 to run"
+    }
+},
         {
             "Features",
             {
-                "  • File Organization: Create, rename, and delete folders.",
-                "  • File Operations: Move, copy, delete, and rename files.",
-                "  • Search System: Fast in‑folder search with highlighting and a HUD.",
-                "  • Keyboard Navigation: Explorer‑style shortcuts with repeat suppression.",
-                "  • Help Drawer: Command reference, manual pages, drive overview, shortcuts.",
-                "  • Drive Tools: df and drives commands with graphical free‑space bars.",
-                "  • Pinning System: Pin/unpin folders with Alt+P or the pin command."
+                "Graphical Interface:",
+                "  • Browse directories using a tree view and list view.",
+                "  • Perform file operations such as copy, move, delete, and rename.",
+                "  • Use cut, copy, and paste for file and folder management.",
+                "  • Access context menus for quick actions.",
+                "  • Navigate backward and forward through history.",
+                "  • View file type icons and real‑time status updates.",
+                "",
+                "Integrated Command Line Interface (CLI):",
+                "  • Fast directory navigation (cd).",
+                "  • File operations (copy, move, delete, rename).",
+                "  • Create text files (text, txt).",
+                "  • Search and cycle results (find, findnext).",
+                "  • Type a path to open it directly.",
+                "  • Supports quoted paths with spaces.",
+                "  • Helpful usage messages and error feedback.",
+                "  • Built‑in help system with full documentation.",
+                "",
+                "The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best."
             }
         },
         {
             "Using the App",
             {
-                "Main Interface:",
+                "File Explorer is designed as a space for deliberate practice and student‑driven growth.",
+                "By breaking a complex system into understandable pieces, learners can study how real applications work and rebuild them with intention.",
                 "",
-                "  • Navigation Pane — browse folders quickly.",
-                "  • File List — shows files and folders in the current directory.",
-                "  • Address Bar — displays and accepts paths.",
-                "  • Toolbar — quick access to common operations.",
-                "  • Help Drawer — slides in from the right for documentation and shortcuts."
+                "This project is small enough to grasp, but rich enough to teach:",
+                "  • Decomposition and naming",
+                "  • Event flow and UI state management",
+                "  • Predictable, user‑centered design",
+                "",
+                "The goal is to provide a foundation learners can extend, reshape, and eventually outgrow as they build their own tools."
+            }
+        },
+        {
+            "Why I’m Creating File Explorer",
+            {
+                "File Explorer began as a personal exploration into how file managers work under the hood.",
+                "We use them every day, but rarely think about the engineering behind navigation history, sorting, context menus, clipboard operations, and folder trees.",
+                "",
+                "Re‑creating these features has been a practical way to study:",
+                "  • System I/O",
+                "  • UI design",
+                "  • Event handling",
+                "  • Performance considerations",
+                "",
+                "This project is not meant to replace Windows Explorer.",
+                "Instead, it serves as a learning environment—a place to experiment, break things, fix them, and understand why they work."
+            }
+        },
+        {
+            "What I Hope Learners Get From This",
+            {
+                "This project is designed for learners at all levels.",
+                "",
+                "What you can gain:",
+                "",
+                "• A clearer understanding of how file systems are accessed and managed.",
+                "• Insight into building a real Windows Forms application.",
+                "• Practical examples of organizing and structuring a larger project.",
+                "• Confidence to modify, extend, or build your own tools.",
+                "• An appreciation for the subtle engineering challenges behind everyday software.",
+                "",
+                "Re‑creating something familiar is one of the most effective ways to deepen your understanding."
             }
         },
         {
@@ -6092,7 +6485,7 @@ Public Class Form1
                 "",
                 "Open With:",
                 "  • openwith notepad file.txt",
-                "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+                "  • openwith ""C:\\Path\\To\\App.exe"" ""C:\\file.txt"""
             }
         },
         {
@@ -6151,103 +6544,127 @@ Public Class Form1
         {
             "Command Line Interface (CLI)",
             {
-                "File Explorer includes a built‑in command line with:",
+                "The Command Line Interface (CLI) is an integrated text‑based command system inside File Explorer.",
+                "It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.",
                 "",
-                "  • Aliases (cp, mv, rm, etc.)",
-                "  • Direct path navigation",
-                "  • Manual pages (man <command>)",
-                "  • Auto‑generated help (help, help <command>)",
+                "The CLI is designed to be:",
+                "  • Fast — no menus, no dialogs.",
+                "  • Predictable — clear rules and consistent behavior.",
+                "  • Beginner‑friendly — helpful messages and examples.",
+                "  • Powerful — supports navigation, search, file operations, and more.",
                 "",
-                "Examples:",
-                "  cd C:\Projects",
-                "  copy file.txt D:\Backup",
-                "  openwith notepad notes.txt",
-                "  find report",
-                "  findnext",
-                "  pin",
-                "  drives",
-                "  df C:"
+                "If a command doesn't match a known keyword, the CLI checks:",
+                "  • Is it a folder? → Navigate to it.",
+                "  • Is it a file? → Open it.",
+                "  • Otherwise → Unknown command.",
+                "",
+                "This makes the CLI feel natural and forgiving."
             }
         },
         {
             "Commands",
             {
-                "Available Commands:",
+                "Below is the complete list of supported commands, including syntax, descriptions, and examples.",
                 "",
-                "cd:",
-                "  Change the current directory.",
-                "    cd C:\Projects",
-                "    cd ""C:\My Folder""",
+                "mkdir (make):",
+                "  Usage: mkdir [directory_path]",
+                "  Creates a new folder.",
+                "  Examples:",
+                "    mkdir C:\newfolder",
+                "    make ""C:\My New Folder""",
                 "",
-                "copy (cp):",
-                "  Copy a file or folder to a destination.",
-                "    copy C:\file.txt D:\Backup",
-                "    cp ""C:\Folder A"" ""C:\Folder B""",
+                "pin:",
+                "  Usage: pin [path]",
+                "  Pins or unpins a folder in Easy Access. Acts as a toggle.",
+                "  Examples:",
+                "    pin C:\Docs",
+                "    pin ""C:\My Folder""",
+                "    pin",
+                "",
+                "copy:",
+                "  Usage: copy [source] [destination]",
+                "  Copies a file or folder to a destination directory.",
+                "  Examples:",
+                "    copy C:\folderA\file.txt C:\folderB",
+                "    copy ""C:\folder A"" ""C:\folder B""",
+                "",
+                "move:",
+                "  Usage: move [source] [destination]",
+                "  Moves a file or folder to a new location.",
+                "  Examples:",
+                "    move C:\folderA\file.txt C:\folderB\file.txt",
+                "    move ""C:\folder A\file.txt"" ""C:\folder B\renamed.txt""",
                 "",
                 "delete (rm):",
-                "  Delete a file or folder.",
+                "  Usage: delete [path]",
+                "  Deletes a file or folder.",
+                "  Examples:",
                 "    delete C:\file.txt",
                 "    rm ""C:\My Folder""",
                 "",
-                "df:",
-                "  Show free space for a specific drive.",
-                "    df C:",
+                "rename (rn):",
+                "  Usage: rename [old] [new]",
+                "  Renames a file or folder.",
+                "  Examples:",
+                "    rename ""C:\old.txt"" ""new.txt""",
                 "",
-                "drives:",
-                "  Show all drives with graphical usage bars.",
-                "    drives",
+                "open:",
+                "  Usage: open [path]",
+                "  Opens a file or navigates into a folder.",
+                "  Examples:",
+                "    open C:\folder\file.txt",
                 "",
-                "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
-                "  Exit the application.",
-                "    exit",
+                "text (txt):",
+                "  Usage: text [path]",
+                "  Creates a new text file.",
+                "  Examples:",
+                "    text ""C:\folder\example.txt""",
                 "",
                 "find (search):",
-                "  Search for files and folders in the current directory.",
+                "  Usage: find [term]",
+                "  Searches the current folder for matching items.",
+                "  Example:",
                 "    find report",
                 "",
                 "findnext (searchnext, next):",
-                "  Show the next search result.",
-                "    findnext",
+                "  Usage: findnext",
+                "  Moves to the next search result.",
+                "",
+                "df:",
+                "  Usage: df [drive]",
+                "  Shows free space for a specific drive.",
+                "  Example:",
+                "    df C:",
+                "",
+                "drives:",
+                "  Usage: drives",
+                "  Shows all drives with graphical usage bars.",
+                "",
+                "cd:",
+                "  Usage: cd [path]",
+                "  Changes the current directory.",
+                "  Examples:",
+                "    cd C:\Projects",
+                "    cd ""C:\My Folder""",
                 "",
                 "help (commands, ?):",
-                "  Show help for commands.",
+                "  Usage: help [command]",
+                "  Shows help for commands or lists all commands.",
+                "  Examples:",
                 "    help",
                 "    help cd",
                 "",
                 "man (manual, appmanual):",
-                "  Show the full application manual.",
+                "  Usage: man",
+                "  Displays the full application manual.",
+                "  Examples:",
                 "    man",
                 "    manual",
+                "    appmanual",
                 "",
-                "mkdir (make, md):",
-                "  Create a new folder.",
-                "    mkdir C:\NewFolder",
-                "    md ""C:\Another Folder""",
-                "",
-                "move (mv):",
-                "  Move a file or folder.",
-                "    move C:\file.txt D:\Archive",
-                "",
-                "open:",
-                "  Open a file or navigate into a folder.",
-                "    open C:\folder\file.txt",
-                "",
-                "pin:",
-                "  Pin or unpin a folder.",
-                "    pin C:\Projects",
-                "    pin",
-                "",
-                "rename (rn):",
-                "  Rename a file or folder.",
-                "    rename ""C:\old.txt"" ""new.txt""",
-                "",
-                "shortcuts (keys):",
-                "  Show all keyboard shortcuts.",
-                "    shortcuts",
-                "",
-                "text (txt):",
-                "  Create a new text file.",
-                "    text ""C:\folder\example.txt"""
+                "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+                "  Usage: exit",
+                "  Exits the application."
             }
         },
         {
@@ -6266,7 +6683,7 @@ Public Class Form1
             "Pinning System",
             {
                 "Pin any folder:",
-                "  pin C:\Projects",
+                "  pin C:\\Projects",
                 "  pin",
                 "",
                 "Pinned folders appear in the sidebar and persist across sessions."
@@ -6275,13 +6692,13 @@ Public Class Form1
         {
             "Manual & Help System",
             {
-                "Help:",
+                "Help Commands:",
                 "  help",
                 "  commands",
                 "  ?",
                 "",
-                "The 'man' Command",
-                "Man displays the full application manual.",
+                "The 'man' Command:",
+                "  Displays the full application manual.",
                 "",
                 "Examples:",
                 "  man",
@@ -6297,6 +6714,42 @@ Public Class Form1
     )
 
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function ManualSectionAliases() As Dictionary(Of String, String)
         Dim map As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
@@ -6663,12 +7116,13 @@ Public Class Form1
         ' --- Help Text Area ---
         HelpTextBox = New RichTextBox() With {
         .DetectUrls = True,
+        .WordWrap = False,
         .Dock = DockStyle.Fill,
         .ReadOnly = True,
         .BorderStyle = BorderStyle.None,
         .Font = New Font("Segoe UI", 10),
         .BackColor = Color.White,
-        .ScrollBars = RichTextBoxScrollBars.Vertical,
+        .ScrollBars = RichTextBoxScrollBars.Both,
         .Height = 300
     }
         AddHandler HelpTextBox.LinkClicked,
