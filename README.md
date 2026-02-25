@@ -141,6 +141,10 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 # **Command Index**
 
+
+# **Command Index**
+[Command Index](#command-index)
+
 - [`cd`](#-change-directory--cd)  
 - [`copy cp`](#-copy--copy-cp)  
 - [`delete rm`](#-delete--delete-rm)  
@@ -211,6 +215,7 @@ mkdir C:\newfolder
 make "C:\My New Folder"
 md C:\anotherfolder
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -231,6 +236,7 @@ pin C:\Projects
 pin "C:\My Documents"
 pin
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -249,6 +255,7 @@ Copy a file or folder to the specified destination.
 copy C:\folderA\file.doc C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -267,6 +274,7 @@ Move a file or folder to a new location.
 move C:\folderA\file.doc C:\folderB\file.doc
 move "C:\folder A\file.doc" "C:\folder B\renamed.doc"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -284,6 +292,7 @@ Rename a file or folder.
 ```
 rename "C:\folder\oldname.txt" "newname.txt"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -302,6 +311,7 @@ Delete the specified file or folder.
 delete C:\file.txt
 delete "C:\My Folder"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -319,6 +329,7 @@ Search the current directory for items whose names contain the given term.
 ```
 find document
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -349,6 +360,7 @@ Change the current working directory.
 cd C:\
 cd "C:\My Folder"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -367,6 +379,7 @@ Open a file or navigate into a folder.
 open C:\folder\file.txt
 open "C:\My Folder"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -384,6 +397,7 @@ Create a new text file at the specified path.
 ```
 text "C:\folder\example.txt"
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -403,6 +417,7 @@ df C:
 df D:
 df E:
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -420,6 +435,7 @@ Show all available drives along with their free‑space information.
 ```
 drives
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -439,6 +455,7 @@ help
 help cd
 help copy
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -460,6 +477,7 @@ man commands
 manual
 appmanual
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -478,6 +496,7 @@ Show all available keyboard shortcuts.
 shortcuts
 keys
 ```
+[Command Index](#command-index)
 
 ---
 
@@ -494,6 +513,7 @@ Close the application.
 ---
 
 
+[Command Index](#command-index)
 
 
 
