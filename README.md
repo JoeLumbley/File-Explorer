@@ -669,7 +669,10 @@ If you’re curious, the GitHub repository includes the full source code and doc
 ## Table of Contents
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
+- [What I Hope Learners Get From This](#what-i-hope-learners-get-from-this)
 
+
+What I Hope Learners Get From This
 
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#features-overview)
