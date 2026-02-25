@@ -1047,37 +1047,13 @@ If you’re curious, the GitHub repository includes the full source code and doc
   
 - [What I Hope Learners Get From This](#what-i-hope-learners-get-from-this)
 
-
-
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#features-overview)
   - [Commands](#commands)
-
-    - [mkdir / make - Create Directory](#-create-directory---mkdir-make)
-    - [copy - Copy Files or Folders](#-copy---copy)
-    - [move - Move Files or Folders](#-move---move)
-    - [rename - Rename Files or Folders](#-rename---rename)
-    - [delete - Delete Files or Folders](#-delete---delete)
-   
-    - [find / search - Search](#-search---find-search)
-    - [findnext / searchnext - Next Search Result](#-next-search-result---findnext-searchnext)
-    - 
-    - [text / txt - Create Text Files](#-create-text-file---text-txt)
-    - [cd - Change Directory](#-change-directory---cd)
-    - [open - Open Files or Folders](#-open---open)
-    - 
-    - 
-    - [exit - Closes the App](#-exit---exit-quit)
-    - [help - Show Help](#-help---help)
-   
-      
   - [Quoting Rules](#-quoting-rules-important)
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
-
-
-
-
+  - [Command Index](#command-index)
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
