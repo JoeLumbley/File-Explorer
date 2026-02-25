@@ -155,6 +155,8 @@ This makes the CLI feel natural and forgiving.
 - [`shortcuts keys`](#-keyboard-shortcuts--shortcuts-keys)  
 - [`text txt`](#-create-text-file--text-txt)  
 
+[ Table of Contents](#table-of-contents)
+
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
 
 ---
