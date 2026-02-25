@@ -161,9 +161,41 @@ Below is the complete list of supported commands, including syntax, descriptions
 
 ---
 
+Here you go, Joseph — a **fully synced Commands section with a clean, professional Index at the top**, matching your dictionary exactly and using the neutral, Explorer‑free descriptions you requested.
 
+This block is **ready to paste directly into your README**.
 
-## 📁 Create Directory — `mkdir`, `make`
+---
+
+# **Commands**
+
+Below is the complete list of supported commands, including syntax, descriptions, and examples.
+
+---
+
+# **Command Index**
+
+- [`cd`](#-change-directory--cd)  
+- [`copy`, `cp`](#-copy--copy-cp)  
+- [`delete`, `rm`](#-delete--delete-rm)  
+- [`df`](#-disk-free--df)  
+- [`drives`](#-drives-overview--drives)  
+- [`exit`, `quit`, `close`, `stop`, `halt`, `end`, `signout`, `poweroff`, `bye`](#-exit--exit-quit-close-stop-halt-end-signout-poweroff-bye)  
+- [`find`, `search`](#-search--find-search)  
+- [`findnext`, `searchnext`, `next`](#-next-search-result--findnext-searchnext-next)  
+- [`help`, `commands`, `?`](#-help--help-commands-)  
+- [`man`, `manual`, `appmanual`](#-manual--man-manual-appmanual)  
+- [`mkdir`, `make`, `md`](#-create-directory--mkdir-make-md)  
+- [`move`, `mv`](#-move--move-mv)  
+- [`open`](#-open--open)  
+- [`pin`](#-pin--pin)  
+- [`rename`, `rn`](#-rename--rename-rn)  
+- [`shortcuts`, `keys`](#-keyboard-shortcuts--shortcuts-keys)  
+- [`text`, `txt`](#-create-text-file--text-txt)  
+
+---
+
+## 📁 Create Directory — `mkdir`, `make`, `md`
 
 **Usage**
 ```
@@ -171,15 +203,14 @@ mkdir [directory_path]
 ```
 
 **Description**  
-Creates a new folder at the specified path.
+Create a new folder at the specified path.
 
 **Examples**
 ```
 mkdir C:\newfolder
 make "C:\My New Folder"
+md C:\anotherfolder
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
@@ -187,30 +218,23 @@ make "C:\My New Folder"
 
 **Usage**
 ```
-pin [path]
+pin [folder_path]
 ```
 
 **Description**  
-Pins or unpins a folder in **Easy Access**.  
-If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
-
-The `pin` command acts as a **toggle**:
-
-- If the folder is **not pinned**, it becomes pinned  
-- If the folder **is already pinned**, it becomes unpinned  
+Pin or unpin a folder.  
+If no path is provided, the current folder is used when valid.
 
 **Examples**
 ```
-pin C:\Docs
-pin "C:\My Folder"
+pin C:\Projects
+pin "C:\My Documents"
 pin
 ```
 
-[Table of Contents](#table-of-contents)
-
 ---
 
-## 📄⇢📁 Copy — `copy`
+## 📄⇢📁 Copy — `copy`, `cp`
 
 **Usage**
 ```
@@ -218,19 +242,17 @@ copy [source] [destination]
 ```
 
 **Description**  
-Copies a file or folder into the specified destination directory.
+Copy a file or folder to the specified destination.
 
 **Examples**
 ```
-copy C:\folderA\file.txt C:\folderB
+copy C:\folderA\file.doc C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
 
-[Table of Contents](#table-of-contents)
-
 ---
 
-## 📦 Move — `move`
+## 📦 Move — `move`, `mv`
 
 **Usage**
 ```
@@ -238,19 +260,17 @@ move [source] [destination]
 ```
 
 **Description**  
-Moves a file or folder to a new location.
+Move a file or folder to a new location.
 
 **Examples**
 ```
-move C:\folderA\file.txt C:\folderB\file.txt
-move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
+move C:\folderA\file.doc C:\folderB\file.doc
+move "C:\folder A\file.doc" "C:\folder B\renamed.doc"
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
-## ✏ Rename — `rename`
+## ✏ Rename — `rename`, `rn`
 
 **Usage**
 ```
@@ -258,20 +278,16 @@ rename [source_path] [new_name]
 ```
 
 **Description**  
-Renames a file or folder.  
-Paths containing spaces **must** be enclosed in quotes.
+Rename a file or folder.
 
 **Examples**
 ```
 rename "C:\folder\oldname.txt" "newname.txt"
-rename "C:\folder\old name.txt" "new name.txt"
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
-## 🗑 Delete — `delete`
+## 🗑 Delete — `delete`, `rm`
 
 **Usage**
 ```
@@ -279,15 +295,13 @@ delete [file_or_directory]
 ```
 
 **Description**  
-Deletes the specified file or folder.
+Delete the specified file or folder.
 
 **Examples**
 ```
 delete C:\file.txt
 delete "C:\My Folder"
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
@@ -299,22 +313,16 @@ find [search_term]
 ```
 
 **Description**  
-Searches the current directory for files or folders containing the given term.
+Search the current directory for items whose names contain the given term.
 
-**Example**
+**Examples**
 ```
-find report
+find document
 ```
-
-**Behavior**
-- Automatically selects the first match  
-- Status bar displays the number of results found  
-
-[Table of Contents](#table-of-contents)
 
 ---
 
-## ⏭ Next Search Result — `findnext`, `searchnext`
+## ⏭ Next Search Result — `findnext`, `searchnext`, `next`
 
 **Usage**
 ```
@@ -322,10 +330,7 @@ findnext
 ```
 
 **Description**  
-Cycles to the next result from the previous search.  
-Wraps around when reaching the end.
-
-[Table of Contents](#table-of-contents)
+Show the next result from the previous search.
 
 ---
 
@@ -337,15 +342,13 @@ cd [directory]
 ```
 
 **Description**  
-Changes the current working directory.
+Change the current working directory.
 
 **Examples**
 ```
 cd C:\
 cd "C:\My Folder"
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
@@ -357,23 +360,13 @@ open [file_or_directory]
 ```
 
 **Description**  
-Opens a file with its default application or navigates into a folder.  
-If no path is provided, the command opens the **currently selected** item in the GUI.
+Open a file or navigate into a folder.
 
 **Examples**
 ```
 open C:\folder\file.txt
 open "C:\My Folder"
-open
 ```
-
-**Behavior**
-- File → opens with default program  
-- Folder → navigates into it  
-- No selection + no path → shows usage help  
-- Supports quoted paths  
-
-[Table of Contents](#table-of-contents)
 
 ---
 
@@ -385,19 +378,12 @@ text [file_path]
 ```
 
 **Description**  
-Creates a new text file at the specified path and opens it.
+Create a new text file at the specified path.
 
-**Example**
+**Examples**
 ```
 text "C:\folder\example.txt"
 ```
-
-If no file name is provided, the CLI creates:
-```
-New Text File.txt
-```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
@@ -409,45 +395,93 @@ df <drive_letter>:
 ```
 
 **Description**  
-Displays free and total disk space for the specified drive.  
-Accepts any of the following formats:
-
-- `C`  
-- `C:`  
-- `C:\`  
+Display free and total space for the specified drive.
 
 **Examples**
 ```
 df C:
-df D
+df D:
+df E:
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
-## ❓ Help — `help`, `man`, `commands`
+## 💾 Drives Overview — `drives`
 
 **Usage**
 ```
-help
+drives
 ```
 
 **Description**  
-Shows the full list of available commands and their descriptions.
+Show all available drives along with their free‑space information.
+
+**Examples**
+```
+drives
+```
+
+---
+
+## ❓ Help — `help`, `commands`, `?`
+
+**Usage**
+```
+help [search_term]
+```
+
+**Description**  
+Show the full list of commands or display help for a specific command.
 
 **Examples**
 ```
 help
-commands
+help cd
+help copy
+```
+
+---
+
+## 📘 Manual — `man`, `manual`, `appmanual`
+
+**Usage**
+```
+man [section]
+```
+
+**Description**  
+Show the full application manual or jump to a specific section.
+
+**Examples**
+```
 man
+man help
+man commands
+manual
+appmanual
 ```
-
-[Table of Contents](#table-of-contents)
 
 ---
 
-## ❌ Exit — `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
+## ⌨ Keyboard Shortcuts — `shortcuts`, `keys`
+
+**Usage**
+```
+shortcuts
+```
+
+**Description**  
+Show all available keyboard shortcuts.
+
+**Examples**
+```
+shortcuts
+keys
+```
+
+---
+
+## ❌ Exit — `exit`, `quit`, `close`, `stop`, `halt`, `end`, `signout`, `poweroff`, `bye`
 
 **Usage**
 ```
@@ -455,33 +489,9 @@ exit
 ```
 
 **Description**  
-Closes the application.  
-A confirmation dialog prevents accidental exits.
+Close the application.
 
-**Examples**
-```
-exit
-quit
-bye
-```
-
-[Table of Contents](#table-of-contents)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+---
 
 
 
