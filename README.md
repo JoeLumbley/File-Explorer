@@ -135,15 +135,7 @@ This makes the CLI feel natural and forgiving.
 
 # **Commands**
 
-Below is the complete list of supported commands, including syntax, descriptions, and examples.
-
----
-
-# **Command Index**
-
-
-# **Command Index**
-[Command Index](#command-index)
+## **Command Index**
 
 - [`cd`](#-change-directory--cd)  
 - [`copy cp`](#-copy--copy-cp)  
@@ -163,39 +155,7 @@ Below is the complete list of supported commands, including syntax, descriptions
 - [`shortcuts keys`](#-keyboard-shortcuts--shortcuts-keys)  
 - [`text txt`](#-create-text-file--text-txt)  
 
----
-
-Here you go, Joseph — a **fully synced Commands section with a clean, professional Index at the top**, matching your dictionary exactly and using the neutral, Explorer‑free descriptions you requested.
-
-This block is **ready to paste directly into your README**.
-
----
-
-# **Commands**
-
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
-
----
-
-# **Command Index**
-
-- [`cd`](#-change-directory--cd)  
-- [`copy`, `cp`](#-copy--copy-cp)  
-- [`delete`, `rm`](#-delete--delete-rm)  
-- [`df`](#-disk-free--df)  
-- [`drives`](#-drives-overview--drives)  
-- [`exit`, `quit`, `close`, `stop`, `halt`, `end`, `signout`, `poweroff`, `bye`](#-exit--exit-quit-close-stop-halt-end-signout-poweroff-bye)  
-- [`find`, `search`](#-search--find-search)  
-- [`findnext`, `searchnext`, `next`](#-next-search-result--findnext-searchnext-next)  
-- [`help`, `commands`, `?`](#-help--help-commands-)  
-- [`man`, `manual`, `appmanual`](#-manual--man-manual-appmanual)  
-- [`mkdir`, `make`, `md`](#-create-directory--mkdir-make-md)  
-- [`move`, `mv`](#-move--move-mv)  
-- [`open`](#-open--open)  
-- [`pin`](#-pin--pin)  
-- [`rename`, `rn`](#-rename--rename-rn)  
-- [`shortcuts`, `keys`](#-keyboard-shortcuts--shortcuts-keys)  
-- [`text`, `txt`](#-create-text-file--text-txt)  
 
 ---
 
