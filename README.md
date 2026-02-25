@@ -133,6 +133,353 @@ This makes the CLI feel natural and forgiving.
 
 
 
+# **Commands**
+
+Below is the complete list of supported commands, including syntax, descriptions, and examples.
+
+---
+
+# **Command Index**
+
+- [`cd`](#-change-directory--cd)  
+- [`copy`, `cp`](#-copy--copy-cp)  
+- [`delete`, `rm`](#-delete--delete-rm)  
+- [`df`](#-disk-free--df)  
+- [`drives`](#-drives-overview--drives)  
+- [`exit`, `quit`, `close`, `stop`, `halt`, `end`, `signout`, `poweroff`, `bye`](#-exit--exit-quit-close-stop-halt-end-signout-poweroff-bye)  
+- [`find`, `search`](#-search--find-search)  
+- [`findnext`, `searchnext`, `next`](#-next-search-result--findnext-searchnext-next)  
+- [`help`, `commands`, `?`](#-help--help-commands-)  
+- [`man`, `manual`, `appmanual`](#-manual--man-manual-appmanual)  
+- [`mkdir`, `make`, `md`](#-create-directory--mkdir-make-md)  
+- [`move`, `mv`](#-move--move-mv)  
+- [`open`](#-open--open)  
+- [`pin`](#-pin--pin)  
+- [`rename`, `rn`](#-rename--rename-rn)  
+- [`shortcuts`, `keys`](#-keyboard-shortcuts--shortcuts-keys)  
+- [`text`, `txt`](#-create-text-file--text-txt)  
+
+---
+
+## 📁 Create Directory — `mkdir`, `make`, `md`
+
+**Usage**
+```
+mkdir [directory_path]
+```
+
+**Description**  
+Create a new folder at the specified path.
+
+**Examples**
+```
+mkdir C:\newfolder
+make "C:\My New Folder"
+md C:\anotherfolder
+```
+
+---
+
+## 📌 Pin — `pin`
+
+**Usage**
+```
+pin [folder_path]
+```
+
+**Description**  
+Pin or unpin a folder.  
+If no path is provided, the current folder is used when valid.
+
+**Examples**
+```
+pin C:\Projects
+pin "C:\My Documents"
+pin
+```
+
+---
+
+## 📄⇢📁 Copy — `copy`, `cp`
+
+**Usage**
+```
+copy [source] [destination]
+```
+
+**Description**  
+Copy a file or folder to the specified destination.
+
+**Examples**
+```
+copy C:\folderA\file.doc C:\folderB
+copy "C:\folder A" "C:\folder B"
+```
+
+---
+
+## 📦 Move — `move`, `mv`
+
+**Usage**
+```
+move [source] [destination]
+```
+
+**Description**  
+Move a file or folder to a new location.
+
+**Examples**
+```
+move C:\folderA\file.doc C:\folderB\file.doc
+move "C:\folder A\file.doc" "C:\folder B\renamed.doc"
+```
+
+---
+
+## ✏ Rename — `rename`, `rn`
+
+**Usage**
+```
+rename [source_path] [new_name]
+```
+
+**Description**  
+Rename a file or folder.
+
+**Examples**
+```
+rename "C:\folder\oldname.txt" "newname.txt"
+```
+
+---
+
+## 🗑 Delete — `delete`, `rm`
+
+**Usage**
+```
+delete [file_or_directory]
+```
+
+**Description**  
+Delete the specified file or folder.
+
+**Examples**
+```
+delete C:\file.txt
+delete "C:\My Folder"
+```
+
+---
+
+## 🔍 Search — `find`, `search`
+
+**Usage**
+```
+find [search_term]
+```
+
+**Description**  
+Search the current directory for items whose names contain the given term.
+
+**Examples**
+```
+find document
+```
+
+---
+
+## ⏭ Next Search Result — `findnext`, `searchnext`, `next`
+
+**Usage**
+```
+findnext
+```
+
+**Description**  
+Show the next result from the previous search.
+
+---
+
+## 📁 Change Directory — `cd`
+
+**Usage**
+```
+cd [directory]
+```
+
+**Description**  
+Change the current working directory.
+
+**Examples**
+```
+cd C:\
+cd "C:\My Folder"
+```
+
+---
+
+## 📂 Open — `open`
+
+**Usage**
+```
+open [file_or_directory]
+```
+
+**Description**  
+Open a file or navigate into a folder.
+
+**Examples**
+```
+open C:\folder\file.txt
+open "C:\My Folder"
+```
+
+---
+
+## 📝 Create Text File — `text`, `txt`
+
+**Usage**
+```
+text [file_path]
+```
+
+**Description**  
+Create a new text file at the specified path.
+
+**Examples**
+```
+text "C:\folder\example.txt"
+```
+
+---
+
+## 💽 Disk Free — `df`
+
+**Usage**
+```
+df <drive_letter>:
+```
+
+**Description**  
+Display free and total space for the specified drive.
+
+**Examples**
+```
+df C:
+df D:
+df E:
+```
+
+---
+
+## 💾 Drives Overview — `drives`
+
+**Usage**
+```
+drives
+```
+
+**Description**  
+Show all available drives along with their free‑space information.
+
+**Examples**
+```
+drives
+```
+
+---
+
+## ❓ Help — `help`, `commands`, `?`
+
+**Usage**
+```
+help [search_term]
+```
+
+**Description**  
+Show the full list of commands or display help for a specific command.
+
+**Examples**
+```
+help
+help cd
+help copy
+```
+
+---
+
+## 📘 Manual — `man`, `manual`, `appmanual`
+
+**Usage**
+```
+man [section]
+```
+
+**Description**  
+Show the full application manual or jump to a specific section.
+
+**Examples**
+```
+man
+man help
+man commands
+manual
+appmanual
+```
+
+---
+
+## ⌨ Keyboard Shortcuts — `shortcuts`, `keys`
+
+**Usage**
+```
+shortcuts
+```
+
+**Description**  
+Show all available keyboard shortcuts.
+
+**Examples**
+```
+shortcuts
+keys
+```
+
+---
+
+## ❌ Exit — `exit`, `quit`, `close`, `stop`, `halt`, `end`, `signout`, `poweroff`, `bye`
+
+**Usage**
+```
+exit
+```
+
+**Description**  
+Close the application.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
