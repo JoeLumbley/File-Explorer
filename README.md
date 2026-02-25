@@ -668,7 +668,7 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 ## Table of Contents
 
-- [Why I’m Creating File Explorer](#why-i’m-creating-file-explorer)
+- [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
 
 
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
