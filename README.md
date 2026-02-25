@@ -1,3 +1,50 @@
+# 📄🧭 **File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for those who prefer keyboard‑driven workflows.
+
+The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
+
+---
+
+## **Features**
+
+### **Graphical Interface**  
+- • Browse directories using a tree view and list view.  
+- • Perform file operations such as copy, move, delete, and rename.  
+- • Use cut, copy, and paste for file and folder management.  
+- • Access context menus for quick actions.  
+- • Navigate backward and forward through history.  
+- • View file type icons and real‑time status updates.  
+- • Open the **Help Drawer**, a right‑side panel that provides scrollable, beginner‑friendly documentation, command references, and keyboard shortcuts.
+
+### **Integrated Command Line Interface (CLI)**  
+- • Fast directory navigation (`cd`).  
+- • File operations (`copy`, `move`, `delete`, `rename`).  
+- • Create text files (`text`, `txt`).  
+- • Search and cycle results (`find`, `findnext`).  
+- • Type a path to open it directly.  
+- • Supports quoted paths with spaces.  
+- • Helpful usage messages and error feedback.  
+- • Built‑in help system with full documentation, accessible from both the CLI and the Help Drawer.
+
+The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 📄🧭 File Explorer
 
 **File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
