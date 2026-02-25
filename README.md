@@ -43,6 +43,9 @@ For users who enjoy the speed and precision of typed commands, the built‑in CL
 The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
+[ Table of Contents](#table-of-contents)
+
+
 ---
 ---
 ---
