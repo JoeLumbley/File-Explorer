@@ -304,6 +304,7 @@ Public Class Form1
         {"keys", AddressOf HandleShortcutsCommand}
     }
 
+
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
     {"cd",
         (
@@ -393,7 +394,7 @@ Public Class Form1
         (
             {"help", "commands", "?"},
             "help [search_term]",
-            $"Show help information for commands.{ Environment.NewLine} Use 'help [command]' to get specific assistance.",
+            $"Show the full command list or jump to a specific command.",
             {
                 "help",
                 "help cd",
@@ -451,7 +452,7 @@ Public Class Form1
     },
     {"pin",
         (
-            {"pin"},
+            {$"pin"},
             "pin [folder_path]",
             "Pin or unpin a folder.",
             {
@@ -4752,17 +4753,51 @@ Public Class Form1
         ' ---------------------------------------------------------
         ' Command Entries
         ' ---------------------------------------------------------
+        'For Each entry In list
+        '    Dim meta = entry.Value
+
+        '    ' Aliases (comma-separated)
+        '    sb.AppendLine(String.Join(", ", meta.Aliases))
+
+        '    ' Usage
+        '    sb.AppendLine(meta.Usage)
+
+        '    ' Description
+        '    sb.AppendLine("  " & meta.Description)
+
+        '    ' Examples (optional)
+        '    If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+        '        sb.AppendLine("  Examples:")
+        '        For Each ex In meta.Examples
+        '            sb.AppendLine("    " & ex)
+        '        Next
+        '    End If
+
+        '    sb.AppendLine()
+        'Next
+
+        ' ---------------------------------------------------------
+        ' Command Entries
+        ' ---------------------------------------------------------
+        Dim lastIndex = list.Count - 1
+        Dim currentIndex As Integer = 0
+
         For Each entry In list
             Dim meta = entry.Value
 
             ' Aliases (comma-separated)
             sb.AppendLine(String.Join(", ", meta.Aliases))
 
+            sb.AppendLine("")
+
             ' Usage
             sb.AppendLine(meta.Usage)
 
             ' Description
             sb.AppendLine("  " & meta.Description)
+
+            sb.AppendLine("")
+
 
             ' Examples (optional)
             If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
@@ -4772,7 +4807,15 @@ Public Class Form1
                 Next
             End If
 
+            ' Divider (only if not the last entry)
+            If currentIndex < lastIndex Then
+                sb.AppendLine("")
+
+                sb.AppendLine("────────────────────────────────────────")
+            End If
+
             sb.AppendLine()
+            currentIndex += 1
         Next
 
         Return sb.ToString()
