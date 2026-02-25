@@ -7,7 +7,6 @@
 
 The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
 
----
 
 ## **Features**
 
@@ -35,67 +34,6 @@ The application is built around clarity, predictability, and emotional safety. W
 
 The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 📄🧭 File Explorer
-
-**File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
-
-
-
-
-<img width="1266" height="733" alt="118" src="https://github.com/user-attachments/assets/eddcf5af-98f4-406c-a742-439325ccee10" />
-
-
-
-
-## Features
-
-### 🖱️ Graphical Interface
-- **Navigation**: Browse directories using a tree view and list view.
-- **File Operations**: Perform essential actions such as:
-  - Change Directory (`cd`)
-  - Copy files and directories (`copy`)
-  - Move files and directories (`move`)
-  - Delete files and directories (`delete`)
-- **Clipboard Support**: Cut, copy, and paste files and folders.
-- **Context Menu**: Right‑click menus for quick access to common actions.
-- **History Tracking**: Move backward and forward through previously visited directories.
-- **File Type Icons**: Visual indicators for different file types.
-- **Status Bar**: Real‑time feedback on operations and system status.
-
-### 💻 Integrated Command Line Interface (CLI)
-For users who enjoy the speed and precision of typed commands, the built‑in CLI provides:
-
-- Fast directory navigation (`cd`)
-- File and folder operations (`copy`, `move`, `delete`, `rename`)
-- Text file creation (`text`, `txt`)
-- Search and result cycling (`find`, `findnext`)
-- Contextual path handling (type a path to open it)
-- Quoting rules for paths with spaces
-- Helpful usage messages and error feedback
-- A built‑in `help` command with full documentation
-
-
-<img width="1266" height="733" alt="114" src="https://github.com/user-attachments/assets/a00cf73a-91b0-43be-a94f-1cee53d79fd3" />
-
-The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
 [ Table of Contents](#table-of-contents)
