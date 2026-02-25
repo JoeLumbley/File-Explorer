@@ -132,6 +132,382 @@ This makes the CLI feel natural and forgiving.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+# **Commands**
+
+Below is the complete list of supported commands, including syntax, descriptions, and examples.
+
+---
+
+## 📁 Create Directory — `mkdir`, `make`
+
+**Usage**
+```
+mkdir [directory_path]
+```
+
+**Description**  
+Creates a new folder at the specified path.
+
+**Examples**
+```
+mkdir C:\newfolder
+make "C:\My New Folder"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📌 Pin — `pin`
+
+**Usage**
+```
+pin [path]
+```
+
+**Description**  
+Pins or unpins a folder in **Easy Access**.  
+If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+
+The `pin` command acts as a **toggle**:
+
+- If the folder is **not pinned**, it becomes pinned  
+- If the folder **is already pinned**, it becomes unpinned  
+
+**Examples**
+```
+pin C:\Docs
+pin "C:\My Folder"
+pin
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📄⇢📁 Copy — `copy`
+
+**Usage**
+```
+copy [source] [destination]
+```
+
+**Description**  
+Copies a file or folder into the specified destination directory.
+
+**Examples**
+```
+copy C:\folderA\file.txt C:\folderB
+copy "C:\folder A" "C:\folder B"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📦 Move — `move`
+
+**Usage**
+```
+move [source] [destination]
+```
+
+**Description**  
+Moves a file or folder to a new location.
+
+**Examples**
+```
+move C:\folderA\file.txt C:\folderB\file.txt
+move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## ✏ Rename — `rename`
+
+**Usage**
+```
+rename [source_path] [new_name]
+```
+
+**Description**  
+Renames a file or folder.  
+Paths containing spaces **must** be enclosed in quotes.
+
+**Examples**
+```
+rename "C:\folder\oldname.txt" "newname.txt"
+rename "C:\folder\old name.txt" "new name.txt"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 🗑 Delete — `delete`
+
+**Usage**
+```
+delete [file_or_directory]
+```
+
+**Description**  
+Deletes the specified file or folder.
+
+**Examples**
+```
+delete C:\file.txt
+delete "C:\My Folder"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 🔍 Search — `find`, `search`
+
+**Usage**
+```
+find [search_term]
+```
+
+**Description**  
+Searches the current directory for files or folders containing the given term.
+
+**Example**
+```
+find report
+```
+
+**Behavior**
+- Automatically selects the first match  
+- Status bar displays the number of results found  
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## ⏭ Next Search Result — `findnext`, `searchnext`
+
+**Usage**
+```
+findnext
+```
+
+**Description**  
+Cycles to the next result from the previous search.  
+Wraps around when reaching the end.
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📁 Change Directory — `cd`
+
+**Usage**
+```
+cd [directory]
+```
+
+**Description**  
+Changes the current working directory.
+
+**Examples**
+```
+cd C:\
+cd "C:\My Folder"
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📂 Open — `open`
+
+**Usage**
+```
+open [file_or_directory]
+```
+
+**Description**  
+Opens a file with its default application or navigates into a folder.  
+If no path is provided, the command opens the **currently selected** item in the GUI.
+
+**Examples**
+```
+open C:\folder\file.txt
+open "C:\My Folder"
+open
+```
+
+**Behavior**
+- File → opens with default program  
+- Folder → navigates into it  
+- No selection + no path → shows usage help  
+- Supports quoted paths  
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 📝 Create Text File — `text`, `txt`
+
+**Usage**
+```
+text [file_path]
+```
+
+**Description**  
+Creates a new text file at the specified path and opens it.
+
+**Example**
+```
+text "C:\folder\example.txt"
+```
+
+If no file name is provided, the CLI creates:
+```
+New Text File.txt
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## 💽 Disk Free — `df`
+
+**Usage**
+```
+df <drive_letter>:
+```
+
+**Description**  
+Displays free and total disk space for the specified drive.  
+Accepts any of the following formats:
+
+- `C`  
+- `C:`  
+- `C:\`  
+
+**Examples**
+```
+df C:
+df D
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## ❓ Help — `help`, `man`, `commands`
+
+**Usage**
+```
+help
+```
+
+**Description**  
+Shows the full list of available commands and their descriptions.
+
+**Examples**
+```
+help
+commands
+man
+```
+
+[Table of Contents](#table-of-contents)
+
+---
+
+## ❌ Exit — `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
+
+**Usage**
+```
+exit
+```
+
+**Description**  
+Closes the application.  
+A confirmation dialog prevents accidental exits.
+
+**Examples**
+```
+exit
+quit
+bye
+```
+
+[Table of Contents](#table-of-contents)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # **Commands**
 
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
