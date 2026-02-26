@@ -1111,15 +1111,57 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 
 ## **RefreshPinUI**
 
-This method updates every UI element that depends on pin state.
+### **RefreshPinUI Index**
+- [What this method does](#what-this-method-does-4)  
+- [How the method works](#how-the-method-works-4)  
+- [Why this method matters](#why-this-method-matters-4)  
+- [Back to Pinning System Index](#pinning-system-index)
 
-- Calls `UpdateTreeRoots()` to refresh the folder tree, including pinned roots.  
-- Calls `UpdateFileListPinState()` to update the file list’s context menu.  
-- Calls `UpdatePinButtonState()` to update the toolbar pin/unpin button.
+---
 
-This ensures the UI always reflects the current pin state after any change.
+### **What this method does**
 
-[Pinning System Index](#pinning-system-index)  
+`RefreshPinUI` updates every UI element that depends on the current pin state. It ensures that the tree view, file list, and toolbar button all reflect the latest pinned/unpinned status after any change.
+
+---
+
+```vb.net
+
+Private Sub RefreshPinUI()
+    UpdateTreeRoots()
+    UpdateFileListPinState()
+    UpdatePinButtonState()
+End Sub
+
+```
+
+---
+
+
+### **How the method works**
+
+- Calls `UpdateTreeRoots()` to rebuild the folder tree, including pinned roots at the top.  
+- Calls `UpdateFileListPinState()` to update the file list’s context menu so the correct Pin/Unpin option is shown.  
+- Calls `UpdatePinButtonState()` to update the toolbar pin/unpin button based on the current folder or selection.
+
+Together, these updates ensure the interface stays synchronized with the underlying Easy Access data.
+
+---
+
+### **Why this method matters**
+
+`RefreshPinUI` is the central refresh point for the entire pinning system. It ensures:
+
+- The UI always reflects the correct pin state.  
+- All views (tree, list, toolbar) stay consistent with each other.  
+- Any pin/unpin action—whether from CLI, context menu, or toolbar—immediately updates the interface.  
+- The user never sees stale or outdated pin indicators.
+
+Without this method, the UI could easily fall out of sync with the underlying data.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1661,6 +1703,135 @@ This cleanly removes the folder from the pinned list and ensures the UI reflects
 [Pinning System Index](#pinning-system-index)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+## **RefreshPinUI**
+
+### **RefreshPinUI Index**
+- [What this method does](#what-this-method-does-4)  
+- [How the method works](#how-the-method-works-4)  
+- [Why this method matters](#why-this-method-matters-4)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`RefreshPinUI` updates every UI element that depends on the current pin state. It ensures that the tree view, file list, and toolbar button all reflect the latest pinned/unpinned status after any change.
+
+---
+
+```vb.net
+
+Private Sub RefreshPinUI()
+    UpdateTreeRoots()
+    UpdateFileListPinState()
+    UpdatePinButtonState()
+End Sub
+
+```
+
+---
+
+
+### **How the method works**
+
+- Calls `UpdateTreeRoots()` to rebuild the folder tree, including pinned roots at the top.  
+- Calls `UpdateFileListPinState()` to update the file list’s context menu so the correct Pin/Unpin option is shown.  
+- Calls `UpdatePinButtonState()` to update the toolbar pin/unpin button based on the current folder or selection.
+
+Together, these updates ensure the interface stays synchronized with the underlying Easy Access data.
+
+---
+
+### **Why this method matters**
+
+`RefreshPinUI` is the central refresh point for the entire pinning system. It ensures:
+
+- The UI always reflects the correct pin state.  
+- All views (tree, list, toolbar) stay consistent with each other.  
+- Any pin/unpin action—whether from CLI, context menu, or toolbar—immediately updates the interface.  
+- The user never sees stale or outdated pin indicators.
+
+Without this method, the UI could easily fall out of sync with the underlying data.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
