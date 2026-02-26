@@ -1323,6 +1323,8 @@ This is the core toggle method.
 
 This is the heart of the pinning system.
 
+[TogglePin - Walkthrough](#togglepin---walkthrough)  
+
 [Pinning System Index](#pinning-system-index)  
 
 ---
@@ -1415,11 +1417,12 @@ This ensures the pin button and `pin` command always act on the correct folder.
 
 
 
+- [TogglePin - Walkthrough](#togglepin---walkthrough)  
 
 
-## **TogglePin**
+## **TogglePin - Walkthrough**
 
-### **Index**
+### **TogglePin Index**
 - [What this method does](#what-this-method-does)  
 - [How the method works](#how-the-method-works)  
 - [Why this method matters](#why-this-method-matters)
