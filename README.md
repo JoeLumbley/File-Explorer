@@ -1417,7 +1417,21 @@ This ensures the pin button and `pin` command always act on the correct folder.
 
 
 
-- [TogglePin - Walkthrough](#togglepin---walkthrough)  
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
 
 
 ## **TogglePin - Walkthrough**
@@ -1425,9 +1439,8 @@ This ensures the pin button and `pin` command always act on the correct folder.
 ### **TogglePin Index**
 - [What this method does](#what-this-method-does)  
 - [How the method works](#how-the-method-works)  
-- [Why this method matters](#why-this-method-matters)
-
-[Pinning System Index](#pinning-system-index)
+- [Why this method matters](#why-this-method-matters)  
+- [Back to Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1437,29 +1450,25 @@ This ensures the pin button and `pin` command always act on the correct folder.
 
 ---
 
-
 ```vb.net
+Private Sub TogglePin(path As String)
+    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+    If Not Directory.Exists(path) Then Exit Sub
+    If IsSpecialFolder(path) Then Exit Sub
 
-    Private Sub TogglePin(path As String)
-        If String.IsNullOrWhiteSpace(path) Then Exit Sub
-        If Not Directory.Exists(path) Then Exit Sub
-        If IsSpecialFolder(path) Then Exit Sub
+    Dim name As String = GetFolderDisplayName(path)
 
-        Dim name As String = GetFolderDisplayName(path)
+    If IsPinned(path) Then
+        RemoveFromEasyAccess(path)
+    Else
+        AddToEasyAccess(name, path)
+    End If
 
-        If IsPinned(path) Then
-            RemoveFromEasyAccess(path)
-        Else
-            AddToEasyAccess(name, path)
-        End If
-
-        RefreshPinUI()
-    End Sub
-
+    RefreshPinUI()
+End Sub
 ```
 
-
-
+---
 
 ### **How the method works**
 
@@ -1476,8 +1485,7 @@ This ensures the pin button and `pin` command always act on the correct folder.
 
 ### **Why this method matters**
 
-`TogglePin` is the heart of the pinning system.  
-It ensures:
+`TogglePin` is the heart of the pinning system. It ensures:
 
 - The pin/unpin behavior is consistent everywhere (CLI, tree view, file list, toolbar).  
 - Invalid or unsafe paths are rejected early.  
@@ -1486,27 +1494,16 @@ It ensures:
 
 ---
 
+### **Back to Pinning System Index**
+
 [Pinning System Index](#pinning-system-index)
 
 ---
 
-
-
-
 ---
 ---
 ---
 ---
-
-
-
-
-
-
-
-
-
-
 
 
 
