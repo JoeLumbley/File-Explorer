@@ -1153,7 +1153,7 @@ The result is the authoritative list of pinned folders.
 
 ---
 
-## **AddToEasyAccess - Walkthrough**
+## **AddToEasyAccess**
 
 ### **AddToEasyAccess Index**
 - [What this method does](#what-this-method-does-1)  
