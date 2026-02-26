@@ -1225,18 +1225,69 @@ This prevents duplicate entries and keeps the UI synchronized with the underlyin
 
 ## **RemoveFromEasyAccess**
 
-This method removes a pinned folder.
+### **RemoveFromEasyAccess Index**
+- [What this method does](#what-this-method-does-3)  
+- [How the method works](#how-the-method-works-3)  
+- [Why this method matters](#why-this-method-matters-3)  
+- [Back to Pinning System Index](#pinning-system-index)
 
-- Ensures the Easy Access file exists.  
-- Normalizes the target path.  
-- Reads all lines from the file.  
-- Filters out any entry whose normalized path matches the target.  
-- Writes the updated list back to disk.  
-- Refreshes the UI.
+---
 
-This cleanly removes the folder from the pinned list.
+### **What this method does**
 
-[Pinning System Index](#pinning-system-index)  
+`RemoveFromEasyAccess` removes a folder from the Easy Access list. It ensures the storage file exists, filters out the target entry, writes the updated list back to disk, and refreshes the UI so the change is immediately visible.
+
+---
+
+---
+
+```vb.net
+Public Sub RemoveFromEasyAccess(path As String)
+    EnsureEasyAccessFile()
+
+    Dim target = NormalizePath(path)
+    Dim lines = IO.File.ReadAllLines(EasyAccessFile)
+
+    Dim updated = lines.Where(Function(line)
+                                  Dim e = ParseEntry(line)
+                                  If Not e.HasValue Then Return True
+                                  Return NormalizePath(e.Value.Path) <> target
+                              End Function).ToList()
+
+    IO.File.WriteAllLines(EasyAccessFile, updated)
+
+    RefreshPinUI()
+End Sub
+
+```
+
+---
+
+### **How the method works**
+
+- Ensures the Easy Access file exists before doing anything else.  
+- Normalizes the target path so comparisons are consistent.  
+- Reads all lines from the Easy Access file.  
+- Parses each entry and filters out any whose normalized path matches the target.  
+- Writes the updated list back to the file.  
+- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
+
+This cleanly removes the folder from the pinned list and ensures the UI reflects the change immediately.
+
+---
+
+### **Why this method matters**
+
+`RemoveFromEasyAccess` ensures:
+
+- Pinned folders can be safely and reliably removed.  
+- The Easy Access file never contains stale or duplicate entries.  
+- The UI stays synchronized with the underlying data.  
+- The toggle behavior (`pin` / `unpin`) remains predictable and consistent.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1530,6 +1581,169 @@ Without this method, the pinning system would not know which folder the user int
 ---
 ---
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+## **RemoveFromEasyAccess**
+
+### **RemoveFromEasyAccess Index**
+- [What this method does](#what-this-method-does-3)  
+- [How the method works](#how-the-method-works-3)  
+- [Why this method matters](#why-this-method-matters-3)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`RemoveFromEasyAccess` removes a folder from the Easy Access list. It ensures the storage file exists, filters out the target entry, writes the updated list back to disk, and refreshes the UI so the change is immediately visible.
+
+---
+
+---
+
+```vb.net
+Public Sub RemoveFromEasyAccess(path As String)
+    EnsureEasyAccessFile()
+
+    Dim target = NormalizePath(path)
+    Dim lines = IO.File.ReadAllLines(EasyAccessFile)
+
+    Dim updated = lines.Where(Function(line)
+                                  Dim e = ParseEntry(line)
+                                  If Not e.HasValue Then Return True
+                                  Return NormalizePath(e.Value.Path) <> target
+                              End Function).ToList()
+
+    IO.File.WriteAllLines(EasyAccessFile, updated)
+
+    RefreshPinUI()
+End Sub
+
+```
+
+---
+
+### **How the method works**
+
+- Ensures the Easy Access file exists before doing anything else.  
+- Normalizes the target path so comparisons are consistent.  
+- Reads all lines from the Easy Access file.  
+- Parses each entry and filters out any whose normalized path matches the target.  
+- Writes the updated list back to the file.  
+- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
+
+This cleanly removes the folder from the pinned list and ensures the UI reflects the change immediately.
+
+---
+
+### **Why this method matters**
+
+`RemoveFromEasyAccess` ensures:
+
+- Pinned folders can be safely and reliably removed.  
+- The Easy Access file never contains stale or duplicate entries.  
+- The UI stays synchronized with the underlying data.  
+- The toggle behavior (`pin` / `unpin`) remains predictable and consistent.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
