@@ -698,10 +698,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 - [📚 YearBook](#yearbook)
 
-- [Pinning System - Code Walkthrough](#pinning-system---code-walkthrough)
 
-
-Pinning System - Code Walkthrough*
 
 ---
 ---
@@ -711,10 +708,97 @@ Pinning System - Code Walkthrough*
 
 
 
-## 🧩 Code Walkthrough: Systems That Make Up the App
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 🧩 Code Walkthrough: Systems That Make Up the App
 
 This application is built as a set of small, focused systems that work together.  
-In this walkthrough, we’ll go **line by line** through the core systems that make up the app and see how each one is implemented in code.
+In this walkthrough, we go **line by line** through the core systems that make up the app and see how each one is implemented in code.
+
+---
+
+## **Index**
+
+- [1. Directory & File Navigation System](#1-directory--file-navigation-system)  
+- [2. Command Line Interface (CLI) System](#2-command-line-interface-cli-system)  
+- [3. Help & Manual System](#3-help--manual-system)  
+- [4. Keyboard Input & Routing System](#4-keyboard-input--routing-system)  
+- [5. File Operation System](#5-file-operation-system)  
+- [6. Search System](#6-search-system)  
+- [7. GUI Rendering System](#7-gui-rendering-system)  
+- [8. Pinning System](#8-pinning-system)  
+- [9. State Management System](#9-state-management-system)  
+- [10. Exit & Safety System](#10-exit--safety-system)  
+
+---
 
 ### 1. Directory & File Navigation System
 
@@ -725,7 +809,7 @@ This system is responsible for **where you are** and **what you see**.
 - Manages history (Back/Forward) and selection state  
 - Resolves paths (absolute, relative, quoted)
 
-In the code walkthrough, we’ll look at:
+In the code walkthrough, we look at:
 
 - How the current path is stored  
 - How directory changes trigger UI refreshes  
@@ -743,7 +827,7 @@ This system turns user input into actions.
 - Routes each command to the correct handler method  
 - Shows usage and error messages when something isn’t valid
 
-In the walkthrough, we’ll go through:
+In the walkthrough, we go through:
 
 - The main input handler  
 - How the command name is matched against `CommandHelp`  
@@ -761,7 +845,7 @@ This system makes the app **self‑documenting**.
 - Rendering logic for help text and manual pages  
 - Search and fallback behavior when an exact match isn’t found
 
-In the walkthrough, we’ll examine:
+In the walkthrough, we examine:
 
 - How `CommandHelp` is built  
 - How `BuildHelpText` constructs the help output  
@@ -778,7 +862,7 @@ This system decides **what a key press means** in each context.
 - Suppresses unsafe repeats and protects modal states  
 - Keeps behavior predictable and consistent
 
-In the walkthrough, we’ll look at:
+In the walkthrough, we look at:
 
 - The central key handler  
 - How context is detected (which control is active)  
@@ -799,7 +883,7 @@ This system performs the actual work on the filesystem.
 - Pin/Unpin: `pin`  
 - Disk info: `df`, `drives`
 
-In the walkthrough, we’ll step through:
+In the walkthrough, we step through:
 
 - How each command validates paths  
 - How errors are handled and surfaced to the user  
@@ -817,7 +901,7 @@ This system finds items in the current directory.
 - Automatically selects the first match  
 - Wraps around when reaching the end
 
-In the walkthrough, we’ll cover:
+In the walkthrough, we cover:
 
 - How the search term is applied to items  
 - How results are stored and reused  
@@ -835,7 +919,7 @@ This system draws what the user sees.
 - Help Drawer layout and content  
 - Context menus and their actions
 
-In the walkthrough, we’ll look at:
+In the walkthrough, we look at:
 
 - How the UI is initialized  
 - How data binding or manual population works  
@@ -843,34 +927,31 @@ In the walkthrough, we’ll look at:
 
 ---
 
-
-
 ### 8. Pinning System
 
 The pinning system manages the set of folders the user has marked for quick access. It provides a simple toggle‑based workflow and keeps both the internal state and the user interface consistent.
 
 This system is responsible for:
 
-- Tracking which folders are currently pinned.
-- Implementing the toggle behavior for the `pin` command.
-- Validating paths before pinning or unpinning.
-- Updating any UI elements that display pinned folders.
-- Ensuring pinned state stays synchronized across the CLI, GUI, and internal state.
+- Tracking which folders are currently pinned  
+- Implementing the toggle behavior for the `pin` command  
+- Validating paths before pinning or unpinning  
+- Updating any UI elements that display pinned folders  
+- Keeping pinned state synchronized across CLI, GUI, and internal state  
 
-In the walkthrough, we’ll examine:
+In the walkthrough, we examine:
 
-- How pinned folders are stored, whether in memory or persisted to disk.
-- How the `pin` command interacts with the pin list.
-- How the toggle logic determines whether a folder should be pinned or unpinned.
-- How invalid or special folders are rejected safely.
-- How the UI is refreshed after pinning changes.
-- How the system integrates with contextual selection (e.g., pinning the current folder when no path is provided).
+- How pinned folders are stored, whether in memory or persisted to disk  
+- How the `pin` command interacts with the pin list  
+- How the toggle logic determines whether a folder should be pinned or unpinned  
+- How invalid or special folders are rejected safely  
+- How the UI is refreshed after pinning changes  
+- How the system integrates with contextual selection  
 
- [Pinning System - Code Walkthrough](#pinning-system---code-walkthrough)
+**Full walkthrough:**  
+[Pinning System – Code Walkthrough](#pinning-system---code-walkthrough)
 
 ---
-
-
 
 ### 9. State Management System
 
@@ -883,7 +964,7 @@ This system keeps everything in sync.
 - Pinned folders  
 - History
 
-In the walkthrough, we’ll examine:
+In the walkthrough, we examine:
 
 - Where shared state lives  
 - How different systems read and update it  
@@ -899,7 +980,7 @@ This system handles closing the app safely.
 - Confirmation prompts  
 - Cleanup logic before shutdown
 
-In the walkthrough, we’ll cover:
+In the walkthrough, we cover:
 
 - How exit is triggered from CLI and GUI  
 - How the confirmation dialog is shown  
@@ -911,11 +992,12 @@ In the walkthrough, we’ll cover:
 
 
 
+---
+---
+---
+---
 
----
----
----
----
+
 
 
 
