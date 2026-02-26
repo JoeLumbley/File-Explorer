@@ -1224,17 +1224,70 @@ It acts as the foundation for all pinning operations, ensuring the system always
 
 ## **LoadEasyAccessEntries**
 
-This method loads all pinned entries from disk.
+### **LoadEasyAccessEntries Index**
+- [What this method does](#what-this-method-does-6)  
+- [How the method works](#how-the-method-works-6)  
+- [Why this method matters](#why-this-method-matters-6)  
+- [Back to Pinning System Index](#pinning-system-index)
 
-- Ensures the Easy Access file exists.  
-- Creates a list to hold entries.  
-- Reads each line from the file.  
-- Uses `ParseEntry` to convert each line into a `(Name, Path)` tuple.  
-- Adds valid entries to the list, even if the folder no longer exists.
+---
 
-The result is the authoritative list of pinned folders.
+### **What this method does**
 
-[Pinning System Index](#pinning-system-index)  
+`LoadEasyAccessEntries` reads the Easy Access storage file and converts each valid line into a `(Name, Path)` tuple. It ensures the file exists, parses each entry safely, and returns the authoritative list of pinned folders used throughout the app.
+
+---
+
+```vb.net
+
+Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
+    EnsureEasyAccessFile()
+
+    Dim list As New List(Of (String, String))
+
+    For Each line In IO.File.ReadAllLines(EasyAccessFile)
+        Dim entry = ParseEntry(line)
+        If entry.HasValue Then
+            ' Keep even if missing — Explorer behavior
+            list.Add((entry.Value.Name, entry.Value.Path))
+        End If
+    Next
+
+    Return list
+End Function
+
+```
+
+---
+
+
+### **How the method works**
+
+- Calls `EnsureEasyAccessFile()` to guarantee the storage file and directory exist.  
+- Creates a new list to hold the parsed `(Name, Path)` entries.  
+- Reads every line from the Easy Access file.  
+- Uses `ParseEntry` to convert each line into a structured tuple.  
+- Adds the entry to the list **even if the folder no longer exists**, matching Windows Explorer’s behavior.  
+- Returns the completed list to the caller.
+
+This method centralizes all loading logic so the rest of the system can rely on a clean, structured list of pinned folders.
+
+---
+
+### **Why this method matters**
+
+`LoadEasyAccessEntries` ensures:
+
+- The pinning system always works with a consistent, normalized list of entries.  
+- Corrupted or malformed lines do not break the system.  
+- Missing folders remain visible, preserving user intent and matching Explorer semantics.  
+- All UI components (tree, list, toolbar) can rebuild their pinned state from a single source of truth.
+
+It is the backbone of the pinning system’s data layer.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1687,307 +1740,129 @@ Without this method, the pinning system would not know which folder the user int
 
 
 
----
 
-## **EnsureEasyAccessFile**
 
-### **EnsureEasyAccessFile Index**
-- [What this method does](#what-this-method-does-5)  
-- [How the method works](#how-the-method-works-5)  
-- [Why this method matters](#why-this-method-matters-5)  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **LoadEasyAccessEntries**
+
+### **LoadEasyAccessEntries Index**
+- [What this method does](#what-this-method-does-6)  
+- [How the method works](#how-the-method-works-6)  
+- [Why this method matters](#why-this-method-matters-6)  
 - [Back to Pinning System Index](#pinning-system-index)
 
 ---
 
 ### **What this method does**
 
-`EnsureEasyAccessFile` guarantees that the Easy Access storage file exists before any pinning operation is performed. It creates both the directory and the file if they are missing, ensuring the rest of the system can safely read and write entries.
+`LoadEasyAccessEntries` reads the Easy Access storage file and converts each valid line into a `(Name, Path)` tuple. It ensures the file exists, parses each entry safely, and returns the authoritative list of pinned folders used throughout the app.
 
 ---
 
 ```vb.net
 
-
-Private Sub EnsureEasyAccessFile()
-    Dim dir = Path.GetDirectoryName(EasyAccessFile)
-    If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
-    If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
-End Sub
-
-```
-
----
-
-
-### **How the method works**
-
-- Extracts the directory portion of the Easy Access file path.  
-- Checks whether that directory exists; if not, it creates it.  
-- Checks whether the Easy Access file exists; if not, it creates an empty file.  
-
-This ensures the storage location is always valid and ready for use.
-
----
-
-### **Why this method matters**
-
-`EnsureEasyAccessFile` prevents:
-
-- File‑not‑found exceptions  
-- Directory‑not‑found exceptions  
-- Corrupted or missing Easy Access storage  
-- Inconsistent behavior between sessions  
-
-It acts as the foundation for all pinning operations, ensuring the system always has a safe, predictable place to store pinned folder entries.
-
----
-
-[Pinning System Index](#pinning-system-index)
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
-
-## **RemoveFromEasyAccess**
-
-### **RemoveFromEasyAccess Index**
-- [What this method does](#what-this-method-does-3)  
-- [How the method works](#how-the-method-works-3)  
-- [Why this method matters](#why-this-method-matters-3)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
-### **What this method does**
-
-`RemoveFromEasyAccess` removes a folder from the Easy Access list. It ensures the storage file exists, filters out the target entry, writes the updated list back to disk, and refreshes the UI so the change is immediately visible.
-
----
-
----
-
-```vb.net
-Public Sub RemoveFromEasyAccess(path As String)
+Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
     EnsureEasyAccessFile()
 
-    Dim target = NormalizePath(path)
-    Dim lines = IO.File.ReadAllLines(EasyAccessFile)
-
-    Dim updated = lines.Where(Function(line)
-                                  Dim e = ParseEntry(line)
-                                  If Not e.HasValue Then Return True
-                                  Return NormalizePath(e.Value.Path) <> target
-                              End Function).ToList()
-
-    IO.File.WriteAllLines(EasyAccessFile, updated)
-
-    RefreshPinUI()
-End Sub
-
-```
-
----
-
-### **How the method works**
-
-- Ensures the Easy Access file exists before doing anything else.  
-- Normalizes the target path so comparisons are consistent.  
-- Reads all lines from the Easy Access file.  
-- Parses each entry and filters out any whose normalized path matches the target.  
-- Writes the updated list back to the file.  
-- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
-
-This cleanly removes the folder from the pinned list and ensures the UI reflects the change immediately.
-
----
-
-### **Why this method matters**
-
-`RemoveFromEasyAccess` ensures:
-
-- Pinned folders can be safely and reliably removed.  
-- The Easy Access file never contains stale or duplicate entries.  
-- The UI stays synchronized with the underlying data.  
-- The toggle behavior (`pin` / `unpin`) remains predictable and consistent.
-
----
-
-[Pinning System Index](#pinning-system-index)
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
-
-## **RefreshPinUI**
-
-### **RefreshPinUI Index**
-- [What this method does](#what-this-method-does-4)  
-- [How the method works](#how-the-method-works-4)  
-- [Why this method matters](#why-this-method-matters-4)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
-### **What this method does**
-
-`RefreshPinUI` updates every UI element that depends on the current pin state. It ensures that the tree view, file list, and toolbar button all reflect the latest pinned/unpinned status after any change.
-
----
-
-```vb.net
-
-Private Sub RefreshPinUI()
-    UpdateTreeRoots()
-    UpdateFileListPinState()
-    UpdatePinButtonState()
-End Sub
+    Dim list As New List(Of (String, String))
+
+    For Each line In IO.File.ReadAllLines(EasyAccessFile)
+        Dim entry = ParseEntry(line)
+        If entry.HasValue Then
+            ' Keep even if missing — Explorer behavior
+            list.Add((entry.Value.Name, entry.Value.Path))
+        End If
+    Next
+
+    Return list
+End Function
 
 ```
 
@@ -1996,80 +1871,33 @@ End Sub
 
 ### **How the method works**
 
-- Calls `UpdateTreeRoots()` to rebuild the folder tree, including pinned roots at the top.  
-- Calls `UpdateFileListPinState()` to update the file list’s context menu so the correct Pin/Unpin option is shown.  
-- Calls `UpdatePinButtonState()` to update the toolbar pin/unpin button based on the current folder or selection.
+- Calls `EnsureEasyAccessFile()` to guarantee the storage file and directory exist.  
+- Creates a new list to hold the parsed `(Name, Path)` entries.  
+- Reads every line from the Easy Access file.  
+- Uses `ParseEntry` to convert each line into a structured tuple.  
+- Adds the entry to the list **even if the folder no longer exists**, matching Windows Explorer’s behavior.  
+- Returns the completed list to the caller.
 
-Together, these updates ensure the interface stays synchronized with the underlying Easy Access data.
+This method centralizes all loading logic so the rest of the system can rely on a clean, structured list of pinned folders.
 
 ---
 
 ### **Why this method matters**
 
-`RefreshPinUI` is the central refresh point for the entire pinning system. It ensures:
+`LoadEasyAccessEntries` ensures:
 
-- The UI always reflects the correct pin state.  
-- All views (tree, list, toolbar) stay consistent with each other.  
-- Any pin/unpin action—whether from CLI, context menu, or toolbar—immediately updates the interface.  
-- The user never sees stale or outdated pin indicators.
+- The pinning system always works with a consistent, normalized list of entries.  
+- Corrupted or malformed lines do not break the system.  
+- Missing folders remain visible, preserving user intent and matching Explorer semantics.  
+- All UI components (tree, list, toolbar) can rebuild their pinned state from a single source of truth.
 
-Without this method, the UI could easily fall out of sync with the underlying data.
+It is the backbone of the pinning system’s data layer.
 
 ---
 
 [Pinning System Index](#pinning-system-index)
 
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
