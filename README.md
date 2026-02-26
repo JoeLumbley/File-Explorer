@@ -1,75 +1,55 @@
-# 📄🧭 File Explorer
-
-**File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for users who prefer keyboard‑driven workflows.
+# File Explorer
 
 
+**File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for those who prefer keyboard‑driven workflows.
 
 
 <img width="1266" height="733" alt="118" src="https://github.com/user-attachments/assets/eddcf5af-98f4-406c-a742-439325ccee10" />
 
+The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
+
+[ Table of Contents](#table-of-contents)
 
 
+## **Features**
 
-## Features
+### **Graphical Interface**  
+• Browse directories using a tree view and list view.  
+• Perform file operations such as copy, move, delete, and rename.  
+• Use cut, copy, and paste for file and folder management.  
+• Access context menus for quick actions.  
+• Navigate backward and forward through history.  
+• View file type icons and real‑time status updates.  
+• Open the **Help Drawer**, a panel with beginner‑friendly documentation.
 
-### 🖱️ Graphical Interface
-- **Navigation**: Browse directories using a tree view and list view.
-- **File Operations**: Perform essential actions such as:
-  - Change Directory (`cd`)
-  - Copy files and directories (`copy`)
-  - Move files and directories (`move`)
-  - Delete files and directories (`delete`)
-- **Clipboard Support**: Cut, copy, and paste files and folders.
-- **Context Menu**: Right‑click menus for quick access to common actions.
-- **History Tracking**: Move backward and forward through previously visited directories.
-- **File Type Icons**: Visual indicators for different file types.
-- **Status Bar**: Real‑time feedback on operations and system status.
-
-### 💻 Integrated Command Line Interface (CLI)
-For users who enjoy the speed and precision of typed commands, the built‑in CLI provides:
-
-- Fast directory navigation (`cd`)
-- File and folder operations (`copy`, `move`, `delete`, `rename`)
-- Text file creation (`text`, `txt`)
-- Search and result cycling (`find`, `findnext`)
-- Contextual path handling (type a path to open it)
-- Quoting rules for paths with spaces
-- Helpful usage messages and error feedback
-- A built‑in `help` command with full documentation
-
+### **Integrated Command Line Interface (CLI)**  
+• Fast directory navigation (`cd`).  
+• File operations (`copy`, `move`, `delete`, `rename`).  
+• Create text files (`text`, `txt`).  
+• Search and cycle results (`find`, `findnext`).  
+• Type a path to open it directly.  
+• Supports quoted paths with spaces.  
+• Helpful usage messages and error feedback.  
+• Built‑in help system with full documentation in the Help Drawer.
 
 <img width="1266" height="733" alt="114" src="https://github.com/user-attachments/assets/a00cf73a-91b0-43be-a94f-1cee53d79fd3" />
 
-The CLI and GUI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
-
----
----
----
----
-
-
-
-## **A space for deliberate practice and student‑driven growth**
-One of the core ideas behind this project is the value of deliberate practice, breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
-My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at, it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
-
-
-
-
+The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
 
 
 [ Table of Contents](#table-of-contents)
 
 
+---
+---
+---
+---
 
 
 
----
----
----
----
+
 
 
 
@@ -86,6 +66,7 @@ This project is not meant to replace the built-in Windows Explorer. Instead, it 
 
 
 
+[ Table of Contents](#table-of-contents)
 
 
 
@@ -111,14 +92,20 @@ Re-creating something familiar is one of the most effective ways to deepen your 
 
 
 
+
+
+
+### **A space for deliberate practice and student‑driven growth**
+One of the core ideas behind this project is the value of deliberate practice, breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
+My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at, it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
+
+
+
 If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
 
 
 
-
-
-
-
+[ Table of Contents](#table-of-contents)
 
 
 
@@ -128,105 +115,6 @@ If you’re curious, the GitHub repository includes the full source code and doc
 ---
 ---
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Table of Contents
-
-- [🖥️ Command Line Interface (CLI)](#command-line-interface)
-  - [Features Overview](#features-overview)
-  - [Commands](#commands)
-
-    - [mkdir / make - Create Directory](#-create-directory---mkdir-make)
-    - [copy - Copy Files or Folders](#-copy---copy)
-    - [move - Move Files or Folders](#-move---move)
-    - [rename - Rename Files or Folders](#-rename---rename)
-    - [delete - Delete Files or Folders](#-delete---delete)
-   
-    - [find / search - Search](#-search---find-search)
-    - [findnext / searchnext - Next Search Result](#-next-search-result---findnext-searchnext)
-    - 
-    - [text / txt - Create Text Files](#-create-text-file---text-txt)
-    - [cd - Change Directory](#-change-directory---cd)
-    - [open - Open Files or Folders](#-open---open)
-    - 
-    - 
-    - [exit - Closes the App](#-exit---exit-quit)
-    - [help - Show Help](#-help---help)
-   
-      
-  - [Quoting Rules](#-quoting-rules-important)
-  - [Contextual Navigation](#-contextual-navigation)
-  - [Example Session](#-example-session)
-
-
-
-
-
-- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
-
-
-
-
-
-
-
-
-- 💻 Code Walkthrough
-  
-  - [NavigateTo](#navigateto)
- 
-  
-  - [ Find Command](#find-command)
-
-  - [ HandleFindNextCommand](#handlefindnextcommand)
-
-  - [ SelectListViewItemByPath](#selectlistviewitembypath)
-
-
-  - [MoveFileOrDirectory](#movefileordirectory)
-
-  - [RenameFileOrDirectory](#renamefileordirectory)
-
-  - [CopyDirectory](#copydirectory)
-
-
-
-
-
-- [📄 License](#license)
-
-- [🧬 Clones](#clones)
-
-- [📚 YearBook](#yearbook)
-
-
----
----
----
----
-
-
-
-
-
-
-
-
-
 
 
 
@@ -305,335 +193,350 @@ This makes the CLI feel natural and forgiving.
 
 
 
+
 # **Commands**
+
+## **Command Index**
+
+- [`cd`](#-change-directory--cd)  
+- [`copy cp`](#-copy--copy-cp)  
+- [`delete rm`](#-delete--delete-rm)  
+- [`df`](#-disk-free--df)  
+- [`drives`](#-drives-overview--drives)  
+- [`exit quit close`](#-exit--exit-quit-close-stop-halt-end-signout-poweroff-bye)  
+- [`find search`](#-search--find-search)  
+- [`findnext searchnext next`](#-next-search-result--findnext-searchnext-next)  
+- [`help commands ?`](#-help--help-commands-)  
+- [`man manual appmanual`](#-manual--man-manual-appmanual)  
+- [`mkdir make md`](#-create-directory--mkdir-make-md)  
+- [`move mv`](#-move--move-mv)  
+- [`open`](#-open--open)  
+- [`pin`](#-pin--pin)  
+- [`rename rn`](#-rename--rename-rn)  
+- [`shortcuts keys`](#-keyboard-shortcuts--shortcuts-keys)  
+- [`text txt`](#-create-text-file--text-txt)  
+
+[ Table of Contents](#table-of-contents)
 
 Below is the complete list of supported commands, including syntax, descriptions, and examples.
 
 ---
 
-## 📁 Create Directory — `mkdir`, `make`
+## 📁 Create Directory — `mkdir`, `make`, `md`
 
-**Usage:**  
+**Usage**
 ```
 mkdir [directory_path]
 ```
 
-**Description:**  
-Creates a new folder.
+**Description**  
+Create a new folder at the specified path.
 
-**Examples:**  
+**Examples**
 ```
 mkdir C:\newfolder
 make "C:\My New Folder"
+md C:\anotherfolder
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
 ## 📌 Pin — `pin`
 
-**Usage:**  
+**Usage**
 ```
-pin [path]
+pin [folder_path]
 ```
 
-**Description:**  
-Pins or unpins a folder in Easy Access.  
-If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
+**Description**  
+Pin or unpin a folder.  
+If no path is provided, the current folder is used when valid.
 
-The `pin` command acts as a **toggle**:
-
-- If the folder is **not pinned**, it becomes pinned  
-- If the folder **is already pinned**, it becomes unpinned  
-
-**Examples:**  
+**Examples**
 ```
-pin C:\Docs
-pin "C:\My Folder"
+pin C:\Projects
+pin "C:\My Documents"
 pin
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## 📄⇢📁 Copy — `copy`
+## 📄⇢📁 Copy — `copy`, `cp`
 
-**Usage:**  
+**Usage**
 ```
 copy [source] [destination]
 ```
 
-**Description:**  
-Copies a file or folder to a destination directory.
+**Description**  
+Copy a file or folder to the specified destination.
 
-**Examples:**  
+**Examples**
 ```
-copy C:\folderA\file.txt C:\folderB
+copy C:\folderA\file.doc C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## 📦 Move — `move`
+## 📦 Move — `move`, `mv`
 
-**Usage:**  
+**Usage**
 ```
 move [source] [destination]
 ```
 
-**Description:**  
-Moves a file or folder to a new location.
+**Description**  
+Move a file or folder to a new location.
 
-**Examples:**  
+**Examples**
 ```
-move C:\folderA\file.txt C:\folderB\file.txt
-move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
+move C:\folderA\file.doc C:\folderB\file.doc
+move "C:\folder A\file.doc" "C:\folder B\renamed.doc"
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## ✏ Rename — `rename`
+## ✏ Rename — `rename`, `rn`
 
-**Usage:**  
+**Usage**
 ```
 rename [source_path] [new_name]
 ```
 
-**Important:**  
-Paths containing spaces **must** be enclosed in quotes.
+**Description**  
+Rename a file or folder.
 
-**Examples:**  
+**Examples**
 ```
 rename "C:\folder\oldname.txt" "newname.txt"
-rename "C:\folder\old name.txt" "new name.txt"
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## 🗑 Delete — `delete`
+## 🗑 Delete — `delete`, `rm`
 
-**Usage:**  
+**Usage**
 ```
 delete [file_or_directory]
 ```
 
-**Description:**  
-Deletes a file or folder.
+**Description**  
+Delete the specified file or folder.
 
-**Examples:**  
+**Examples**
 ```
 delete C:\file.txt
 delete "C:\My Folder"
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
 ## 🔍 Search — `find`, `search`
 
-**Usage:**  
+**Usage**
 ```
 find [search_term]
 ```
 
-**Description:**  
-Searches the current folder for files or folders containing the term.
+**Description**  
+Search the current directory for items whose names contain the given term.
 
-**Example:**  
+**Examples**
 ```
-find report
+find document
 ```
-
-If results are found:
-
-- The first result is automatically selected  
-- The status bar shows how many matches were found  
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## ⏭ Next Search Result — `findnext`, `searchnext`
+## ⏭ Next Search Result — `findnext`, `searchnext`, `next`
 
-**Usage:**  
+**Usage**
 ```
 findnext
 ```
 
-**Description:**  
-Cycles to the next result from the previous search.  
-Wraps around when reaching the end.
-
-[Table of Contents](#table-of-contents)
+**Description**  
+Show the next result from the previous search.
 
 ---
 
 ## 📁 Change Directory — `cd`
 
-**Usage:**  
+**Usage**
 ```
 cd [directory]
 ```
 
-**Description:**  
-Changes the current working directory.
+**Description**  
+Change the current working directory.
 
-**Examples:**  
+**Examples**
 ```
 cd C:\
 cd "C:\My Folder"
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
 ## 📂 Open — `open`
 
-**Usage:**  
+**Usage**
 ```
 open [file_or_directory]
 ```
 
-**Description:**  
-Opens a file with its default application, or navigates into a folder.
+**Description**  
+Open a file or navigate into a folder.
 
-If no path is provided, the command opens the **currently selected** file or folder in the File Explorer list.
-
-**Examples:**  
+**Examples**
 ```
 open C:\folder\file.txt
 open "C:\My Folder"
-open
 ```
-
-**Behavior:**
-
-- If the target is a **file** → opens it using the default program  
-- If the target is a **folder** → navigates into it  
-- If nothing is selected and no path is provided → shows usage help  
-- Supports quoted paths with spaces  
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
 ## 📝 Create Text File — `text`, `txt`
 
-**Usage:**  
+**Usage**
 ```
 text [file_path]
 ```
 
-**Description:**  
-Creates a new text file at the specified path and opens it.
+**Description**  
+Create a new text file at the specified path.
 
-**Example:**  
+**Examples**
 ```
 text "C:\folder\example.txt"
 ```
-
-If no file name is provided, the CLI creates a new file named:  
-```
-New Text File.txt
-```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
 ## 💽 Disk Free — `df`
 
-**Usage:**  
+**Usage**
 ```
 df <drive_letter>:
 ```
 
-**Description:**  
-Shows free and total disk space for the specified drive.  
-Accepts any of the following formats:
+**Description**  
+Display free and total space for the specified drive.
 
-- `C`  
-- `C:`  
-- `C:\`  
-
-**Examples:**  
+**Examples**
 ```
 df C:
-df D
+df D:
+df E:
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## ❓ Help — `help`, `man`, `commands`
+## 💾 Drives Overview — `drives`
 
-**Usage:**  
+**Usage**
+```
+drives
+```
+
+**Description**  
+Show all available drives along with their free‑space information.
+
+**Examples**
+```
+drives
+```
+[Command Index](#command-index)
+
+---
+
+## ❓ Help — `help`, `commands`, `?`
+
+**Usage**
+```
+help [search_term]
+```
+
+**Description**  
+Show the full list of commands or display help for a specific command.
+
+**Examples**
 ```
 help
+help cd
+help copy
+```
+[Command Index](#command-index)
+
+---
+
+## 📘 Manual — `man`, `manual`, `appmanual`
+
+**Usage**
+```
+man [section]
 ```
 
-**Description:**  
-Displays the full list of available commands and their descriptions.
+**Description**  
+Show the full application manual or jump to a specific section.
 
-**Examples:**  
+**Examples**
 ```
-help
-commands
 man
+man help
+man commands
+manual
+appmanual
 ```
-
-[Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
-## ❌ Exit — `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
+## ⌨ Keyboard Shortcuts — `shortcuts`, `keys`
 
-**Usage:**  
+**Usage**
+```
+shortcuts
+```
+
+**Description**  
+Show all available keyboard shortcuts.
+
+**Examples**
+```
+shortcuts
+keys
+```
+[Command Index](#command-index)
+
+---
+
+## ❌ Exit — `exit`, `quit`, `close`, `stop`, `halt`, `end`, `signout`, `poweroff`, `bye`
+
+**Usage**
 ```
 exit
 ```
 
-**Description:**  
-Closes the application.  
-A confirmation dialog appears to prevent accidental exits.
-
-**Examples:**  
-```
-exit
-quit
-bye
-```
-
-[Table of Contents](#table-of-contents)
+**Description**  
+Close the application.
 
 ---
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[Command Index](#command-index)
 
 
 
@@ -729,6 +632,1568 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 ---
 ---
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Table of Contents
+
+- [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
+  
+- [What I Hope Learners Get From This](#what-i-hope-learners-get-from-this)
+
+- [Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
+
+
+- [Command Line Interface (CLI)](#command-line-interface)
+  - [Features Overview](#features-overview)
+  - [Commands](#commands)
+  - [Quoting Rules](#-quoting-rules-important)
+  - [Contextual Navigation](#-contextual-navigation)
+  - [Example Session](#-example-session)
+
+- [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
+
+
+- [📄 License](#license)
+
+- [🧬 Clones](#clones)
+
+- [📚 YearBook](#yearbook)
+
+
+[Back to the start](#file-explorer)
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 🧩 Code Walkthrough: Systems That Make Up the App
+
+This application is built as a set of small, focused systems that work together.  
+In this walkthrough, we go **line by line** through the core systems that make up the app and see how each one is implemented in code.
+
+---
+
+## **Systems Index**
+
+- [Directory & File Navigation System](#directory--file-navigation-system)  
+- [Command Line Interface (CLI) System](#command-line-interface-cli-system)  
+- [Help & Manual System](#help--manual-system)  
+- [Keyboard Input & Routing System](#keyboard-input--routing-system)  
+- [File Operation System](#file-operation-system)  
+- [Search System](#search-system)  
+- [GUI Rendering System](#gui-rendering-system)  
+- [Pinning System](#pinning-system)  
+- [State Management System](#state-management-system)  
+- [Exit & Safety System](#exit--safety-system)  
+
+[ Table of Contents](#table-of-contents)
+
+[Back to the start](#file-explorer)
+
+---
+
+### Directory & File Navigation System
+
+This system is responsible for **where you are** and **what you see**.
+
+- Tracks the current directory and updates the UI when it changes  
+- Keeps the **tree view** and **list view** in sync  
+- Manages history (Back/Forward) and selection state  
+- Resolves paths (absolute, relative, quoted)
+
+In the code walkthrough, we look at:
+
+- How the current path is stored  
+- How directory changes trigger UI refreshes  
+- How selection is read and used by commands like `open`, `delete`, and `rename`
+
+[Systems Index](#systems-index)
+
+---
+
+### Command Line Interface (CLI) System
+
+This system turns user input into actions.
+
+- Parses commands and arguments  
+- Resolves aliases using the `CommandHelp` dictionary  
+- Handles quoted paths and spacing rules  
+- Routes each command to the correct handler method  
+- Shows usage and error messages when something isn’t valid
+
+In the walkthrough, we go through:
+
+- The main input handler  
+- How the command name is matched against `CommandHelp`  
+- How arguments are split, validated, and passed to operations
+
+[Systems Index](#systems-index)
+
+---
+
+### Help & Manual System
+
+This system makes the app **self‑documenting**.
+
+- `CommandHelp` dictionary with aliases, usage, descriptions, and examples  
+- `help` command for command‑level help  
+- `man` command for full manual sections  
+- Rendering logic for help text and manual pages  
+- Search and fallback behavior when an exact match isn’t found
+
+In the walkthrough, we examine:
+
+- How `CommandHelp` is built  
+- How `BuildHelpText` constructs the help output  
+- How `help` and `man` decide what to show
+
+[Systems Index](#systems-index)
+
+---
+
+### Keyboard Input & Routing System
+
+This system decides **what a key press means** in each context.
+
+- Handles Enter, Escape, Tab, Shift+Tab, and shortcuts  
+- Routes keys differently depending on focus (CLI, list view, Help Drawer)  
+- Suppresses unsafe repeats and protects modal states  
+- Keeps behavior predictable and consistent
+
+In the walkthrough, we look at:
+
+- The central key handler  
+- How context is detected (which control is active)  
+- How routing tables or `Select Case` blocks map keys to actions
+
+[Systems Index](#systems-index)
+
+---
+
+### File Operation System
+
+This system performs the actual work on the filesystem.
+
+- Create: `mkdir`, `text`  
+- Copy: `copy`  
+- Move: `move`  
+- Delete: `delete`  
+- Rename: `rename`  
+- Open: `open`  
+- Pin/Unpin: `pin`  
+- Disk info: `df`, `drives`
+
+In the walkthrough, we step through:
+
+- How each command validates paths  
+- How errors are handled and surfaced to the user  
+- How the UI is refreshed after an operation completes
+
+[Systems Index](#systems-index)
+
+---
+
+### Search System
+
+This system finds items in the current directory.
+
+- `find` to start a search  
+- `findnext` to move through results  
+- Stores the current result list and index  
+- Automatically selects the first match  
+- Wraps around when reaching the end
+
+In the walkthrough, we cover:
+
+- How the search term is applied to items  
+- How results are stored and reused  
+- How selection is updated as you cycle through matches
+
+[Systems Index](#systems-index)
+
+---
+
+### GUI Rendering System
+
+This system draws what the user sees.
+
+- Tree view and list view population  
+- Status bar updates (current path, selection, search results)  
+- Icons and visual indicators  
+- Help Drawer layout and content  
+- Context menus and their actions
+
+In the walkthrough, we look at:
+
+- How the UI is initialized  
+- How data binding or manual population works  
+- How the GUI reacts to changes from the CLI
+
+[Systems Index](#systems-index)
+
+---
+
+### Pinning System
+
+The pinning system manages the set of folders the user has marked for quick access. It provides a simple toggle‑based workflow and keeps both the internal state and the user interface consistent.
+
+This system is responsible for:
+
+- Tracking which folders are currently pinned  
+- Implementing the toggle behavior for the `pin` command  
+- Validating paths before pinning or unpinning  
+- Updating any UI elements that display pinned folders  
+- Keeping pinned state synchronized across CLI, GUI, and internal state  
+
+In the walkthrough, we examine:
+
+- How pinned folders are stored, whether in memory or persisted to disk  
+- How the `pin` command interacts with the pin list  
+- How the toggle logic determines whether a folder should be pinned or unpinned  
+- How invalid or special folders are rejected safely  
+- How the UI is refreshed after pinning changes  
+- How the system integrates with contextual selection  
+
+[Pinning System – Walkthrough](#pinning-system---code-walkthrough)
+
+
+[Systems Index](#systems-index)
+
+---
+
+### State Management System
+
+This system keeps everything in sync.
+
+- Current directory  
+- Current selection  
+- Search state  
+- Help/manual state  
+- Pinned folders  
+- History
+
+In the walkthrough, we examine:
+
+- Where shared state lives  
+- How different systems read and update it  
+- How we avoid inconsistent or unsafe states
+
+[Systems Index](#systems-index)
+
+---
+
+### Exit & Safety System
+
+This system handles closing the app safely.
+
+- `exit` command and its aliases  
+- Confirmation prompts  
+- Cleanup logic before shutdown
+
+In the walkthrough, we cover:
+
+- How exit is triggered from CLI and GUI  
+- How the confirmation dialog is shown  
+- How the app ensures a clean shutdown
+
+
+[Systems Index](#systems-index)
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# **Pinning System - Code Walkthrough**
+
+The pinning system manages the user’s Easy Access list. It stores pinned folders, validates them, updates the UI, and provides the toggle behavior used by both the GUI and CLI. This walkthrough explains each method in the system line by line so readers can understand how the feature works internally.
+
+---
+
+## **Pinning System Index**
+
+- [RefreshPinUI](#refreshpinui)  
+- [EnsureEasyAccessFile](#ensureeasyaccessfile)  
+- [LoadEasyAccessEntries](#loadeasyaccessentries)  
+- [AddToEasyAccess](#addtoeasyaccess)  
+- [RemoveFromEasyAccess](#removefromeasyaccess)  
+- [IsPinned](#ispinned)  
+- [UpdatePinButtonState](#updatepinbuttonstate)  
+- [UpdateFileListPinState](#updatefilelistpinstate)  
+- [IsTreeNodePinnable](#istreenodepinnable)  
+- [UpdateTreeContextMenu](#updatetreecontextmenu)  
+- [IsSpecialFolder](#isspecialfolder)  
+- [PinFromFiles / UnpinFromFiles](#pinfromfiles--unpinfromfiles)  
+- [Pin_Click / Unpin_Click](#pin_click--unpin_click)  
+- [TogglePin](#togglepin)  
+- [GetPinnableTarget](#getpinnabletarget)  
+
+[Systems Index](#systems-index)
+
+[ Table of Contents](#table-of-contents)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **RefreshPinUI**
+
+### **RefreshPinUI Index**
+- [What this method does](#what-this-method-does-4)  
+- [How the method works](#how-the-method-works-4)  
+- [Why this method matters](#why-this-method-matters-4)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`RefreshPinUI` updates every UI element that depends on the current pin state. It ensures that the tree view, file list, and toolbar button all reflect the latest pinned/unpinned status after any change.
+
+---
+
+```vb.net
+
+Private Sub RefreshPinUI()
+    UpdateTreeRoots()
+    UpdateFileListPinState()
+    UpdatePinButtonState()
+End Sub
+
+```
+
+---
+
+
+### **How the method works**
+
+- Calls `UpdateTreeRoots()` to rebuild the folder tree, including pinned roots at the top.  
+- Calls `UpdateFileListPinState()` to update the file list’s context menu so the correct Pin/Unpin option is shown.  
+- Calls `UpdatePinButtonState()` to update the toolbar pin/unpin button based on the current folder or selection.
+
+Together, these updates ensure the interface stays synchronized with the underlying Easy Access data.
+
+---
+
+### **Why this method matters**
+
+`RefreshPinUI` is the central refresh point for the entire pinning system. It ensures:
+
+- The UI always reflects the correct pin state.  
+- All views (tree, list, toolbar) stay consistent with each other.  
+- Any pin/unpin action—whether from CLI, context menu, or toolbar—immediately updates the interface.  
+- The user never sees stale or outdated pin indicators.
+
+Without this method, the UI could easily fall out of sync with the underlying data.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **EnsureEasyAccessFile**
+
+### **EnsureEasyAccessFile Index**
+- [What this method does](#what-this-method-does-5)  
+- [How the method works](#how-the-method-works-5)  
+- [Why this method matters](#why-this-method-matters-5)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`EnsureEasyAccessFile` guarantees that the Easy Access storage file exists before any pinning operation is performed. It creates both the directory and the file if they are missing, ensuring the rest of the system can safely read and write entries.
+
+---
+
+```vb.net
+
+
+Private Sub EnsureEasyAccessFile()
+    Dim dir = Path.GetDirectoryName(EasyAccessFile)
+    If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+    If Not IO.File.Exists(EasyAccessFile) Then IO.File.WriteAllText(EasyAccessFile, "")
+End Sub
+
+```
+
+---
+
+
+### **How the method works**
+
+- Extracts the directory portion of the Easy Access file path.  
+- Checks whether that directory exists; if not, it creates it.  
+- Checks whether the Easy Access file exists; if not, it creates an empty file.  
+
+This ensures the storage location is always valid and ready for use.
+
+---
+
+### **Why this method matters**
+
+`EnsureEasyAccessFile` prevents:
+
+- File‑not‑found exceptions  
+- Directory‑not‑found exceptions  
+- Corrupted or missing Easy Access storage  
+- Inconsistent behavior between sessions  
+
+It acts as the foundation for all pinning operations, ensuring the system always has a safe, predictable place to store pinned folder entries.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **LoadEasyAccessEntries**
+
+### **LoadEasyAccessEntries Index**
+- [What this method does](#what-this-method-does-6)  
+- [How the method works](#how-the-method-works-6)  
+- [Why this method matters](#why-this-method-matters-6)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`LoadEasyAccessEntries` reads the Easy Access storage file and converts each valid line into a `(Name, Path)` tuple. It ensures the file exists, parses each entry safely, and returns the authoritative list of pinned folders used throughout the app.
+
+---
+
+```vb.net
+
+Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
+    EnsureEasyAccessFile()
+
+    Dim list As New List(Of (String, String))
+
+    For Each line In IO.File.ReadAllLines(EasyAccessFile)
+        Dim entry = ParseEntry(line)
+        If entry.HasValue Then
+            ' Keep even if missing
+            list.Add((entry.Value.Name, entry.Value.Path))
+        End If
+    Next
+
+    Return list
+End Function
+
+```
+
+---
+
+
+### **How the method works**
+
+- Calls `EnsureEasyAccessFile()` to guarantee the storage file and directory exist.  
+- Creates a new list to hold the parsed `(Name, Path)` entries.  
+- Reads every line from the Easy Access file.  
+- Uses `ParseEntry` to convert each line into a structured tuple.  
+- Adds the entry to the list **even if the folder no longer exists**.  
+- Returns the completed list to the caller.
+
+This method centralizes all loading logic so the rest of the system can rely on a clean, structured list of pinned folders.
+
+---
+
+### **Why this method matters**
+
+`LoadEasyAccessEntries` ensures:
+
+- The pinning system always works with a consistent, normalized list of entries.  
+- Corrupted or malformed lines do not break the system.  
+- Missing folders remain visible, preserving user intent and matching Explorer semantics.  
+- All UI components (tree, list, toolbar) can rebuild their pinned state from a single source of truth.
+
+It is the backbone of the pinning system’s data layer.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **AddToEasyAccess**
+
+### **AddToEasyAccess Index**
+- [What this method does](#what-this-method-does-1)  
+- [How the method works](#how-the-method-works-1)  
+- [Why this method matters](#why-this-method-matters-1)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`AddToEasyAccess` adds a new folder to the Easy Access list. It ensures the storage file exists, prevents duplicates, writes the new entry, and refreshes the UI so the change is immediately visible.
+
+---
+
+```vb.net
+Public Sub AddToEasyAccess(name As String, path As String)
+    EnsureEasyAccessFile()
+
+    Dim normalized = NormalizePath(path)
+    Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+    ' Prevent duplicates by normalized path
+    If existing.Any(Function(line)
+                        Dim e = ParseEntry(line)
+                        Return e.HasValue AndAlso NormalizePath(e.Value.Path) = normalized
+                    End Function) Then
+        RefreshPinUI()
+        Exit Sub
+    End If
+
+    ' Write new entry
+    IO.File.AppendAllLines(EasyAccessFile, {$"{name},{path}"})
+
+    RefreshPinUI()
+End Sub
+```
+
+---
+
+### **How the method works**
+
+- Ensures the Easy Access file exists before doing anything else.  
+- Normalizes the incoming path so comparisons are consistent.  
+- Reads all existing entries from the file.  
+- Checks for duplicates by comparing normalized paths.  
+- If the folder is already pinned, it simply refreshes the UI and exits.  
+- If not pinned, it appends a new entry in `name,path` format.  
+- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
+
+This prevents duplicate entries and keeps the UI synchronized with the underlying data.
+
+---
+
+### **Why this method matters**
+
+`AddToEasyAccess` ensures:
+
+- The pinned list stays clean and free of duplicates.  
+- The Easy Access file is always valid and ready to use.  
+- The UI updates immediately after any change.  
+- The pinning system behaves consistently across CLI and GUI.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **RemoveFromEasyAccess**
+
+### **RemoveFromEasyAccess Index**
+- [What this method does](#what-this-method-does-3)  
+- [How the method works](#how-the-method-works-3)  
+- [Why this method matters](#why-this-method-matters-3)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`RemoveFromEasyAccess` removes a folder from the Easy Access list. It ensures the storage file exists, filters out the target entry, writes the updated list back to disk, and refreshes the UI so the change is immediately visible.
+
+---
+
+```vb.net
+Public Sub RemoveFromEasyAccess(path As String)
+    EnsureEasyAccessFile()
+
+    Dim target = NormalizePath(path)
+    Dim lines = IO.File.ReadAllLines(EasyAccessFile)
+
+    Dim updated = lines.Where(Function(line)
+                                  Dim e = ParseEntry(line)
+                                  If Not e.HasValue Then Return True
+                                  Return NormalizePath(e.Value.Path) <> target
+                              End Function).ToList()
+
+    IO.File.WriteAllLines(EasyAccessFile, updated)
+
+    RefreshPinUI()
+End Sub
+
+```
+
+---
+
+### **How the method works**
+
+- Ensures the Easy Access file exists before doing anything else.  
+- Normalizes the target path so comparisons are consistent.  
+- Reads all lines from the Easy Access file.  
+- Parses each entry and filters out any whose normalized path matches the target.  
+- Writes the updated list back to the file.  
+- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
+
+This cleanly removes the folder from the pinned list and ensures the UI reflects the change immediately.
+
+---
+
+### **Why this method matters**
+
+`RemoveFromEasyAccess` ensures:
+
+- Pinned folders can be safely and reliably removed.  
+- The Easy Access file never contains stale or duplicate entries.  
+- The UI stays synchronized with the underlying data.  
+- The toggle behavior (`pin` / `unpin`) remains predictable and consistent.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **IsPinned**
+
+This method checks whether a folder is currently pinned.
+
+- Normalizes the input path.  
+- Reads all lines from the Easy Access file.  
+- Parses each line.  
+- Compares normalized paths.  
+- Returns `True` if a match is found.
+
+This method is used by the toggle logic and UI updates.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **UpdatePinButtonState**
+
+This method updates the toolbar pin/unpin button.
+
+- Disables the button and sets the default pin icon.  
+- Calls `GetPinnableTarget()` to determine the current target.  
+- If no valid target exists, the button stays disabled.  
+- If a target exists:  
+  - Enables the button.  
+  - Sets the icon to “unpin” if the folder is pinned.  
+  - Sets the icon to “pin” if it is not pinned.
+
+This ensures the button always reflects the correct state.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **UpdateFileListPinState**
+
+This method updates the file list’s context menu.
+
+- Retrieves the Pin and Unpin menu items.  
+- Hides both by default.  
+- If no item is selected, exits.  
+- Retrieves the selected item’s path.  
+- Validates that the path exists and is not a special folder.  
+- Shows either Pin or Unpin depending on the folder’s state.
+
+This provides correct context menu options for each folder.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **IsTreeNodePinnable**
+
+This method checks whether a tree node represents a pinnable folder.
+
+- Ensures the node exists.  
+- Extracts the path from the node.  
+- Validates that the path exists and is not a special folder.  
+- Returns `True` only if the folder is eligible for pinning.
+
+This is used by the tree view’s context menu logic.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **UpdateTreeContextMenu**
+
+This method updates the tree view’s context menu.
+
+- Extracts the path from the selected node.  
+- Validates the path.  
+- If invalid, hides both Pin and Unpin.  
+- If valid, shows the appropriate option based on whether the folder is pinned.
+
+This keeps the tree view’s context menu consistent with the file list.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **IsSpecialFolder**
+
+This method prevents pinning system folders.
+
+- Defines a list of known special folders (Documents, Music, Pictures, Videos, Downloads, Desktop).  
+- Compares the input path to each special folder path.  
+- Returns `True` if the folder is special.
+
+This protects the user from pinning system‑managed locations.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **PinFromFiles / UnpinFromFiles**
+
+These handlers respond to context menu clicks in the file list.
+
+- Ensure an item is selected.  
+- Extract the path.  
+- Call the toggle method.
+
+These provide GUI‑based pin/unpin actions.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **Pin_Click / Unpin_Click**
+
+These handlers respond to context menu clicks in the tree view.
+
+- Extract the selected node’s path.  
+- Call the toggle method.
+
+This mirrors the file list behavior for the tree.
+
+[Pinning System Index](#pinning-system-index)  
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **TogglePin**
+
+### **TogglePin Index**
+- [What this method does](#what-this-method-does)  
+- [How the method works](#how-the-method-works)  
+- [Why this method matters](#why-this-method-matters)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`TogglePin` is the core method that switches a folder between pinned and unpinned states. It validates the folder, determines whether it is already pinned, performs the appropriate action, and then refreshes the UI so the change is immediately visible.
+
+---
+
+```vb.net
+Private Sub TogglePin(path As String)
+    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+    If Not Directory.Exists(path) Then Exit Sub
+    If IsSpecialFolder(path) Then Exit Sub
+
+    Dim name As String = GetFolderDisplayName(path)
+
+    If IsPinned(path) Then
+        RemoveFromEasyAccess(path)
+    Else
+        AddToEasyAccess(name, path)
+    End If
+
+    RefreshPinUI()
+End Sub
+```
+
+---
+
+### **How the method works**
+
+- It first checks whether the provided path is empty or whitespace. If so, the method exits immediately.  
+- It verifies that the path points to an existing directory. If not, the operation is ignored.  
+- It checks whether the folder is a special folder (Documents, Desktop, etc.). Special folders cannot be pinned, so the method exits.  
+- It retrieves a display name for the folder using `GetFolderDisplayName(path)`.  
+- It calls `IsPinned(path)` to determine the current state:  
+  - If the folder **is pinned**, it calls `RemoveFromEasyAccess(path)` to unpin it.  
+  - If the folder **is not pinned**, it calls `AddToEasyAccess(name, path)` to pin it.  
+- Finally, it calls `RefreshPinUI()` to update the tree view, file list, and pin button.
+
+---
+
+### **Why this method matters**
+
+`TogglePin` is the heart of the pinning system. It ensures:
+
+- The pin/unpin behavior is consistent everywhere (CLI, tree view, file list, toolbar).  
+- Invalid or unsafe paths are rejected early.  
+- The UI always reflects the correct state after any change.  
+- The logic for pinning is centralized, preventing duplication across the app.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## **GetPinnableTarget**
+
+### **GetPinnableTarget Index**
+- [What this method does](#what-this-method-does-2)  
+- [How the method works](#how-the-method-works-2)  
+- [Why this method matters](#why-this-method-matters-2)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`GetPinnableTarget` determines which folder should be pinned or unpinned based on the user’s most recent interaction. It inspects the last‑focused control and returns the appropriate folder path, or `Nothing` if no valid target exists.
+
+---
+
+```vb.net
+Private Function GetPinnableTarget() As String
+
+    ' ==========================
+    ' 0. Helper: must be a real, pinnable directory
+    ' ==========================
+    Dim isValidDir As Func(Of String, Boolean) =
+    Function(p As String)
+        Return Not String.IsNullOrEmpty(p) AndAlso
+               Directory.Exists(p) AndAlso
+               Not IsSpecialFolder(p)
+    End Function
+
+    ' ==========================
+    ' 1. If the last focused control was lvFiles
+    ' ==========================
+    If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If isValidDir(path) Then Return path
+    End If
+
+    ' ==========================
+    ' 2. If the last focused control was tvFolders
+    ' ==========================
+    If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+        If isValidDir(path) Then Return path
+    End If
+
+    ' ==========================
+    ' 3. If the last focused control was the address bar
+    ' ==========================
+    If _lastFocusedControl Is txtAddressBar Then
+        If isValidDir(currentFolder) Then Return currentFolder
+    End If
+
+    ' ==========================
+    ' 4. No contextual target
+    ' ==========================
+    Return Nothing
+End Function
+
+```
+
+---
+
+### **How the method works**
+
+The method evaluates potential targets in a strict priority order:
+
+1. **File list**  
+   If the last focused control was the file list and a folder is selected, that folder is returned.
+
+2. **Tree view**  
+   If the last focused control was the tree view and a folder is selected, that folder is returned.
+
+3. **Address bar**  
+   If the last focused control was the address bar and the current folder is valid, the current folder is returned.
+
+4. **Fallback**  
+   If none of the above conditions apply, the method returns `Nothing`.
+
+This ensures the pin button and the `pin` command always act on the folder the user is actually interacting with.
+
+---
+
+### **Why this method matters**
+
+`GetPinnableTarget` is essential for:
+
+- Making the pin/unpin button context‑aware  
+- Ensuring the `pin` command behaves predictably  
+- Preventing accidental pinning of the wrong folder  
+- Keeping keyboard, mouse, and CLI interactions unified  
+- Supporting a consistent mental model across the entire app  
+
+Without this method, the pinning system would not know which folder the user intends to pin, especially when switching between the tree view, file list, and address bar.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2676,6 +4141,18 @@ For more details, check the source code and documentation within the repository.
 
 
 # Clones
+
+
+
+
+
+<img width="1920" height="1080" alt="120" src="https://github.com/user-attachments/assets/8a2b6f6e-9d53-401d-bf46-d3104378d6f9" />
+
+
+
+
+
+
 
 
 
