@@ -798,6 +798,8 @@ In this walkthrough, we go **line by line** through the core systems that make u
 - [9. State Management System](#9-state-management-system)  
 - [10. Exit & Safety System](#10-exit--safety-system)  
 
+[ Table of Contents](#table-of-contents)
+
 ---
 
 ### 1. Directory & File Navigation System
@@ -1076,7 +1078,9 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 - [TogglePin](#togglepin)  
 - [GetPinnableTarget](#getpinnabletarget)  
 
-[Back to Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+
+[ Table of Contents](#table-of-contents)
 
 ---
 
