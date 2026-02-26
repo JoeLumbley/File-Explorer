@@ -1076,7 +1076,7 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 - [TogglePin](#togglepin)  
 - [GetPinnableTarget](#getpinnabletarget)  
 
-[Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
+[Back to Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
 
 ---
 
