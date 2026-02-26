@@ -925,6 +925,236 @@ In the walkthrough, we’ll cover:
 
 
 
+# ** Pinning System — Code Walkthrough**
+
+The pinning system manages the user’s Easy Access list. It stores pinned folders, validates them, updates the UI, and provides the toggle behavior used by both the GUI and CLI. This walkthrough explains each method in the system line by line so readers can understand how the feature works internally.
+
+---
+
+## **RefreshPinUI**
+
+This method updates every UI element that depends on pin state.
+
+- `UpdateTreeRoots()` refreshes the folder tree, including pinned roots.
+- `UpdateFileListPinState()` updates the context menu in the file list.
+- `UpdatePinButtonState()` updates the pin/unpin button in the toolbar.
+
+This ensures the UI always reflects the current pin state after any change.
+
+---
+
+## **EnsureEasyAccessFile**
+
+This method guarantees that the Easy Access storage file exists.
+
+- It extracts the directory of the file path.
+- If the directory does not exist, it creates it.
+- If the file does not exist, it creates an empty file.
+
+This prevents file‑not‑found errors anywhere else in the system.
+
+---
+
+## **LoadEasyAccessEntries**
+
+This method loads all pinned entries from disk.
+
+- Calls `EnsureEasyAccessFile()` to guarantee the file exists.
+- Creates a new list to hold entries.
+- Reads each line from the file.
+- Uses `ParseEntry` to convert each line into a `(Name, Path)` tuple.
+- Adds valid entries to the list, even if the folder no longer exists (matching Explorer behavior).
+
+The result is the authoritative list of pinned folders.
+
+---
+
+## **AddToEasyAccess**
+
+This method adds a new pinned folder.
+
+- Ensures the file exists.
+- Normalizes the incoming path.
+- Reads all existing lines.
+- Checks for duplicates by comparing normalized paths.
+- If already pinned, it simply refreshes the UI and exits.
+- Otherwise, it appends a new line in the format `name,path`.
+- Calls `RefreshPinUI()` to update the interface.
+
+This prevents duplicate entries and keeps the UI synchronized.
+
+---
+
+## **RemoveFromEasyAccess**
+
+This method removes a pinned folder.
+
+- Ensures the file exists.
+- Normalizes the target path.
+- Reads all lines from the file.
+- Filters out any entry whose normalized path matches the target.
+- Writes the updated list back to disk.
+- Calls `RefreshPinUI()` to update the interface.
+
+This cleanly removes the folder from the pinned list.
+
+---
+
+## **IsPinned**
+
+This method checks whether a folder is currently pinned.
+
+- Normalizes the input path.
+- Reads all lines from the Easy Access file.
+- Parses each line.
+- Compares normalized paths.
+- Returns `True` if a match is found.
+
+This method is used by the toggle logic and UI updates.
+
+---
+
+## **UpdatePinButtonState**
+
+This method updates the toolbar pin/unpin button.
+
+- Disables the button by default and sets the icon to “pin”.
+- Calls `GetPinnableTarget()` to determine the current target.
+- If no valid target exists, the button stays disabled.
+- If a target exists:
+  - Enables the button.
+  - Sets the icon to “unpin” if the folder is pinned.
+  - Sets the icon to “pin” if it is not pinned.
+
+This ensures the button always reflects the correct state.
+
+---
+
+## **UpdateFileListPinState**
+
+This method updates the file list’s context menu.
+
+- Retrieves the Pin and Unpin menu items.
+- Hides both by default.
+- If no item is selected, it exits.
+- Retrieves the selected item’s path.
+- Validates that the path exists and is not a special folder.
+- Shows either the Pin or Unpin menu item depending on the folder’s state.
+
+This provides correct context menu options for each folder.
+
+---
+
+## **IsTreeNodePinnable**
+
+This method checks whether a tree node represents a pinnable folder.
+
+- Ensures the node exists.
+- Extracts the path from the node.
+- Validates that the path exists and is not a special folder.
+- Returns `True` only if the folder is eligible for pinning.
+
+This is used by the tree view’s context menu logic.
+
+---
+
+## **UpdateTreeContextMenu**
+
+This method updates the tree view’s context menu.
+
+- Extracts the path from the selected node.
+- Validates the path.
+- If invalid, hides both Pin and Unpin.
+- If valid, shows the appropriate option based on whether the folder is pinned.
+
+This keeps the tree view’s context menu consistent with the file list.
+
+---
+
+## **IsSpecialFolder**
+
+This method prevents pinning system folders.
+
+- Defines a list of known special folders (Documents, Music, Pictures, Videos, Downloads, Desktop).
+- Compares the input path to each special folder path.
+- Returns `True` if the folder is special.
+
+This protects the user from pinning system‑managed locations.
+
+---
+
+## **PinFromFiles / UnpinFromFiles**
+
+These handlers respond to context menu clicks in the file list.
+
+- Ensure an item is selected.
+- Extract the path.
+- Call `TryPinOrUnpin` (or `TogglePin` depending on your naming).
+
+These provide GUI‑based pin/unpin actions.
+
+---
+
+## **Pin_Click / Unpin_Click**
+
+These handlers respond to context menu clicks in the tree view.
+
+- Extract the selected node’s path.
+- Call the toggle method.
+
+This mirrors the file list behavior for the tree.
+
+---
+
+## **TogglePin**
+
+This is the core toggle method.
+
+- Validates the path.
+- Rejects special folders.
+- Retrieves the display name.
+- If the folder is pinned → removes it.
+- If not pinned → adds it.
+- Calls `RefreshPinUI()` to update the interface.
+
+This is the heart of the pinning system.
+
+---
+
+## **GetPinnableTarget**
+
+This method determines which folder should be pinned or unpinned based on context.
+
+It checks in order:
+
+1. **File list**  
+   - If the last focused control was the file list and a folder is selected, return it.
+
+2. **Tree view**  
+   - If the last focused control was the tree view and a folder is selected, return it.
+
+3. **Address bar**  
+   - If the last focused control was the address bar, return the current folder.
+
+4. **Fallback**  
+   - If none of the above apply, return `Nothing`.
+
+This method ensures the pin button and `pin` command always act on the correct folder.
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
 
 
 
