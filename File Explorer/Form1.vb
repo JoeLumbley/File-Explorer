@@ -5552,7 +5552,7 @@ Public Class Form1
         For Each line In IO.File.ReadAllLines(EasyAccessFile)
             Dim entry = ParseEntry(line)
             If entry.HasValue Then
-                ' Keep even if missing — Explorer behavior
+                ' Keep even if missing
                 list.Add((entry.Value.Name, entry.Value.Path))
             End If
         Next
