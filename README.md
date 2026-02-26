@@ -685,7 +685,6 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
   - [Quoting Rules](#-quoting-rules-important)
   - [Contextual Navigation](#-contextual-navigation)
   - [Example Session](#-example-session)
-  - [Command Index](#command-index)
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
