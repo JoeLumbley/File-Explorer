@@ -789,7 +789,7 @@ In this walkthrough, we go **line by line** through the core systems that make u
 
 ---
 
-## **Index**
+## **Systems Index**
 
 - [Directory & File Navigation System](#directory--file-navigation-system)  
 - [Command Line Interface (CLI) System](#command-line-interface-cli-system)  
@@ -823,7 +823,7 @@ In the code walkthrough, we look at:
 - How directory changes trigger UI refreshes  
 - How selection is read and used by commands like `open`, `delete`, and `rename`
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -843,7 +843,7 @@ In the walkthrough, we go through:
 - How the command name is matched against `CommandHelp`  
 - How arguments are split, validated, and passed to operations
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -863,7 +863,7 @@ In the walkthrough, we examine:
 - How `BuildHelpText` constructs the help output  
 - How `help` and `man` decide what to show
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -882,7 +882,7 @@ In the walkthrough, we look at:
 - How context is detected (which control is active)  
 - How routing tables or `Select Case` blocks map keys to actions
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -905,7 +905,7 @@ In the walkthrough, we step through:
 - How errors are handled and surfaced to the user  
 - How the UI is refreshed after an operation completes
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -925,8 +925,7 @@ In the walkthrough, we cover:
 - How results are stored and reused  
 - How selection is updated as you cycle through matches
 
-
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -946,7 +945,7 @@ In the walkthrough, we look at:
 - How data binding or manual population works  
 - How the GUI reacts to changes from the CLI
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+[Systems Index](#systems-index)
 
 ---
 
@@ -973,7 +972,8 @@ In the walkthrough, we examine:
 
 [Pinning System – Walkthrough](#pinning-system---code-walkthrough)
 
-[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+
+[Systems Index](#systems-index)
 
 ---
 
@@ -994,6 +994,8 @@ In the walkthrough, we examine:
 - How different systems read and update it  
 - How we avoid inconsistent or unsafe states
 
+[Systems Index](#systems-index)
+
 ---
 
 ### Exit & Safety System
@@ -1011,6 +1013,7 @@ In the walkthrough, we cover:
 - How the app ensures a clean shutdown
 
 
+[Systems Index](#systems-index)
 
 
 
