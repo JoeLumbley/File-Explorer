@@ -944,13 +944,42 @@ In the walkthrough, we’ll cover:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # **Pinning System - Code Walkthrough**
 
 The pinning system manages the user’s Easy Access list. It stores pinned folders, validates them, updates the UI, and provides the toggle behavior used by both the GUI and CLI. This walkthrough explains each method in the system line by line so readers can understand how the feature works internally.
 
 ---
 
-## **Index**
+## **Pinning System Index**
+
+- [Pinning System Index](#pinning-system-index)  
+
 
 - [RefreshPinUI](#refreshpinui)  
 - [EnsureEasyAccessFile](#ensureeasyaccessfile)  
@@ -980,6 +1009,8 @@ This method updates every UI element that depends on pin state.
 
 This ensures the UI always reflects the current pin state after any change.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **EnsureEasyAccessFile**
@@ -991,6 +1022,8 @@ This method guarantees that the Easy Access storage file exists.
 - Creates an empty file if the Easy Access file does not exist.
 
 This prevents file‑not‑found errors anywhere else in the system.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1005,6 +1038,8 @@ This method loads all pinned entries from disk.
 - Adds valid entries to the list, even if the folder no longer exists.
 
 The result is the authoritative list of pinned folders.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1022,6 +1057,8 @@ This method adds a new pinned folder.
 
 This prevents duplicates and keeps the UI synchronized.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **RemoveFromEasyAccess**
@@ -1037,6 +1074,8 @@ This method removes a pinned folder.
 
 This cleanly removes the folder from the pinned list.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **IsPinned**
@@ -1050,6 +1089,8 @@ This method checks whether a folder is currently pinned.
 - Returns `True` if a match is found.
 
 This method is used by the toggle logic and UI updates.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1067,6 +1108,8 @@ This method updates the toolbar pin/unpin button.
 
 This ensures the button always reflects the correct state.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **UpdateFileListPinState**
@@ -1082,6 +1125,8 @@ This method updates the file list’s context menu.
 
 This provides correct context menu options for each folder.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **IsTreeNodePinnable**
@@ -1094,6 +1139,8 @@ This method checks whether a tree node represents a pinnable folder.
 - Returns `True` only if the folder is eligible for pinning.
 
 This is used by the tree view’s context menu logic.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1108,6 +1155,8 @@ This method updates the tree view’s context menu.
 
 This keeps the tree view’s context menu consistent with the file list.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **IsSpecialFolder**
@@ -1119,6 +1168,8 @@ This method prevents pinning system folders.
 - Returns `True` if the folder is special.
 
 This protects the user from pinning system‑managed locations.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1132,6 +1183,8 @@ These handlers respond to context menu clicks in the file list.
 
 These provide GUI‑based pin/unpin actions.
 
+[Pinning System Index](#pinning-system-index)  
+
 ---
 
 ## **Pin_Click / Unpin_Click**
@@ -1142,6 +1195,8 @@ These handlers respond to context menu clicks in the tree view.
 - Call the toggle method.
 
 This mirrors the file list behavior for the tree.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1157,6 +1212,8 @@ This is the core toggle method.
 - Refreshes the UI.
 
 This is the heart of the pinning system.
+
+[Pinning System Index](#pinning-system-index)  
 
 ---
 
@@ -1184,6 +1241,7 @@ This ensures the pin button and `pin` command always act on the correct folder.
 
 
 
+[Pinning System Index](#pinning-system-index)  
 
 
 
@@ -1192,6 +1250,48 @@ This ensures the pin button and `pin` command always act on the correct folder.
 ---
 ---
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
