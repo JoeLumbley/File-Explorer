@@ -978,9 +978,6 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 
 ## **Pinning System Index**
 
-- [Pinning System Index](#pinning-system-index)  
-
-
 - [RefreshPinUI](#refreshpinui)  
 - [EnsureEasyAccessFile](#ensureeasyaccessfile)  
 - [LoadEasyAccessEntries](#loadeasyaccessentries)  
