@@ -1109,6 +1109,22 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **RefreshPinUI**
 
 ### **RefreshPinUI Index**
@@ -1164,6 +1180,27 @@ Without this method, the UI could easily fall out of sync with the underlying da
 [Pinning System Index](#pinning-system-index)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **EnsureEasyAccessFile**
 
@@ -1222,6 +1259,20 @@ It acts as the foundation for all pinning operations, ensuring the system always
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **LoadEasyAccessEntries**
 
 ### **LoadEasyAccessEntries Index**
@@ -1248,7 +1299,7 @@ Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As Str
     For Each line In IO.File.ReadAllLines(EasyAccessFile)
         Dim entry = ParseEntry(line)
         If entry.HasValue Then
-            ' Keep even if missing — Explorer behavior
+            ' Keep even if missing
             list.Add((entry.Value.Name, entry.Value.Path))
         End If
     Next
@@ -1267,7 +1318,7 @@ End Function
 - Creates a new list to hold the parsed `(Name, Path)` entries.  
 - Reads every line from the Easy Access file.  
 - Uses `ParseEntry` to convert each line into a structured tuple.  
-- Adds the entry to the list **even if the folder no longer exists**, matching Windows Explorer’s behavior.  
+- Adds the entry to the list **even if the folder no longer exists**.  
 - Returns the completed list to the caller.
 
 This method centralizes all loading logic so the rest of the system can rely on a clean, structured list of pinned folders.
@@ -1290,6 +1341,25 @@ It is the backbone of the pinning system’s data layer.
 [Pinning System Index](#pinning-system-index)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **AddToEasyAccess**
 
@@ -1361,6 +1431,25 @@ This prevents duplicate entries and keeps the UI synchronized with the underlyin
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **RemoveFromEasyAccess**
 
 ### **RemoveFromEasyAccess Index**
@@ -1427,6 +1516,28 @@ This cleanly removes the folder from the pinned list and ensures the UI reflects
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **IsPinned**
 
 This method checks whether a folder is currently pinned.
@@ -1442,6 +1553,23 @@ This method is used by the toggle logic and UI updates.
 [Pinning System Index](#pinning-system-index)  
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **UpdatePinButtonState**
 
@@ -1461,6 +1589,28 @@ This ensures the button always reflects the correct state.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **UpdateFileListPinState**
 
 This method updates the file list’s context menu.
@@ -1478,6 +1628,21 @@ This provides correct context menu options for each folder.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **IsTreeNodePinnable**
 
 This method checks whether a tree node represents a pinnable folder.
@@ -1492,6 +1657,26 @@ This is used by the tree view’s context menu logic.
 [Pinning System Index](#pinning-system-index)  
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **UpdateTreeContextMenu**
 
@@ -1508,6 +1693,25 @@ This keeps the tree view’s context menu consistent with the file list.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **IsSpecialFolder**
 
 This method prevents pinning system folders.
@@ -1521,6 +1725,25 @@ This protects the user from pinning system‑managed locations.
 [Pinning System Index](#pinning-system-index)  
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **PinFromFiles / UnpinFromFiles**
 
@@ -1536,6 +1759,25 @@ These provide GUI‑based pin/unpin actions.
 
 ---
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## **Pin_Click / Unpin_Click**
 
 These handlers respond to context menu clicks in the tree view.
@@ -1548,6 +1790,27 @@ This mirrors the file list behavior for the tree.
 [Pinning System Index](#pinning-system-index)  
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **TogglePin**
 
@@ -1612,6 +1875,26 @@ End Sub
 [Pinning System Index](#pinning-system-index)
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **GetPinnableTarget**
 
@@ -1828,76 +2111,6 @@ Without this method, the pinning system would not know which folder the user int
 
 
 
-
-
-## **LoadEasyAccessEntries**
-
-### **LoadEasyAccessEntries Index**
-- [What this method does](#what-this-method-does-6)  
-- [How the method works](#how-the-method-works-6)  
-- [Why this method matters](#why-this-method-matters-6)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
-### **What this method does**
-
-`LoadEasyAccessEntries` reads the Easy Access storage file and converts each valid line into a `(Name, Path)` tuple. It ensures the file exists, parses each entry safely, and returns the authoritative list of pinned folders used throughout the app.
-
----
-
-```vb.net
-
-Private Function LoadEasyAccessEntries() As List(Of (Name As String, Path As String))
-    EnsureEasyAccessFile()
-
-    Dim list As New List(Of (String, String))
-
-    For Each line In IO.File.ReadAllLines(EasyAccessFile)
-        Dim entry = ParseEntry(line)
-        If entry.HasValue Then
-            ' Keep even if missing — Explorer behavior
-            list.Add((entry.Value.Name, entry.Value.Path))
-        End If
-    Next
-
-    Return list
-End Function
-
-```
-
----
-
-
-### **How the method works**
-
-- Calls `EnsureEasyAccessFile()` to guarantee the storage file and directory exist.  
-- Creates a new list to hold the parsed `(Name, Path)` entries.  
-- Reads every line from the Easy Access file.  
-- Uses `ParseEntry` to convert each line into a structured tuple.  
-- Adds the entry to the list **even if the folder no longer exists**, matching Windows Explorer’s behavior.  
-- Returns the completed list to the caller.
-
-This method centralizes all loading logic so the rest of the system can rely on a clean, structured list of pinned folders.
-
----
-
-### **Why this method matters**
-
-`LoadEasyAccessEntries` ensures:
-
-- The pinning system always works with a consistent, normalized list of entries.  
-- Corrupted or malformed lines do not break the system.  
-- Missing folders remain visible, preserving user intent and matching Explorer semantics.  
-- All UI components (tree, list, toolbar) can rebuild their pinned state from a single source of truth.
-
-It is the backbone of the pinning system’s data layer.
-
----
-
-[Pinning System Index](#pinning-system-index)
-
----
 
 
 
