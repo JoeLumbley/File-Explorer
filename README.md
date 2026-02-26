@@ -791,7 +791,7 @@ In this walkthrough, we go **line by line** through the core systems that make u
 
 ## **Index**
 
-- [1. Directory & File Navigation System](#1-directory--file-navigation-system)  
+- [Directory & File Navigation System](#directory--file-navigation-system)  
 - [2. Command Line Interface (CLI) System](#2-command-line-interface-cli-system)  
 - [3. Help & Manual System](#3-help--manual-system)  
 - [4. Keyboard Input & Routing System](#4-keyboard-input--routing-system)  
@@ -808,7 +808,7 @@ In this walkthrough, we go **line by line** through the core systems that make u
 
 ---
 
-### 1. Directory & File Navigation System
+### Directory & File Navigation System
 
 This system is responsible for **where you are** and **what you see**.
 
