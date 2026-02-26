@@ -5508,9 +5508,6 @@ Public Class Form1
     '  EASY ACCESS PINNING SYSTEM — REFINED & COMPLETE
     ' ============================================================
 
-    ' ------------------------------------------------------------
-    '  Helpers
-    ' ------------------------------------------------------------
 
     Private Function NormalizePath(p As String) As String
         If String.IsNullOrWhiteSpace(p) Then Return ""
