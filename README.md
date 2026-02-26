@@ -50,10 +50,68 @@ The GUI and CLI work together seamlessly, giving users the freedom to choose the
 
 
 
+## Why I’m Creating File Explorer
+
+I set out to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to overlook how much is happening behind the scenes: navigation history, sorting, file type detection, context menus, clipboard operations, lazy loading of folder trees, and many other details. Recreating these features myself has been a practical way to explore system I/O, UI design, event handling, and performance considerations in a hands-on, exploratory way.
+
+This project is not meant to replace the built-in Windows Explorer. Instead, it serves as a learning environment, a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, similar to how art students copy the masters to study technique and intention.
+
+
+<img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
 
 
 
 
+
+[ Table of Contents](#table-of-contents)
+
+
+
+
+## What I Hope Learners Get From This
+
+This project is designed for anyone who wants to understand how real applications work, from beginners taking their first steps, to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
+
+### **A clearer understanding of how file systems are accessed and managed**  
+By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
+
+### **Insight into building a real Windows Forms application**  
+The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
+
+### **Practical examples of organizing and structuring a larger project**  
+You’ll find subsystems for navigation history, sorting logic, search functionality, and file-type mapping-all working together in a cohesive, maintainable way.
+
+### **Confidence to modify, extend, or build your own tools**  
+Everything is open-source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
+
+### **A reminder that even “simple” tools contain fascinating engineering challenges**  
+Re-creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
+
+
+
+
+
+
+### **A space for deliberate practice and student‑driven growth**
+One of the core ideas behind this project is the value of deliberate practice, breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
+My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at, it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
+
+
+
+If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
+
+
+
+[ Table of Contents](#table-of-contents)
+
+
+
+
+
+---
+---
+---
+---
 
 
 
@@ -484,372 +542,6 @@ Close the application.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# **Commands**
-
-Below is the complete list of supported commands, including syntax, descriptions, and examples.
-
----
-
-## 📁 Create Directory — `mkdir`, `make`
-
-**Usage:**  
-```
-mkdir [directory_path]
-```
-
-**Description:**  
-Creates a new folder.
-
-**Examples:**  
-```
-mkdir C:\newfolder
-make "C:\My New Folder"
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 📌 Pin — `pin`
-
-**Usage:**  
-```
-pin [path]
-```
-
-**Description:**  
-Pins or unpins a folder in Easy Access.  
-If no path is provided, the command attempts to pin the **current folder**, as long as it is valid and not a special folder.
-
-The `pin` command acts as a **toggle**:
-
-- If the folder is **not pinned**, it becomes pinned  
-- If the folder **is already pinned**, it becomes unpinned  
-
-**Examples:**  
-```
-pin C:\Docs
-pin "C:\My Folder"
-pin
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 📄⇢📁 Copy — `copy`
-
-**Usage:**  
-```
-copy [source] [destination]
-```
-
-**Description:**  
-Copies a file or folder to a destination directory.
-
-**Examples:**  
-```
-copy C:\folderA\file.txt C:\folderB
-copy "C:\folder A" "C:\folder B"
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 📦 Move — `move`
-
-**Usage:**  
-```
-move [source] [destination]
-```
-
-**Description:**  
-Moves a file or folder to a new location.
-
-**Examples:**  
-```
-move C:\folderA\file.txt C:\folderB\file.txt
-move "C:\folder A\file.txt" "C:\folder B\renamed.txt"
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## ✏ Rename — `rename`
-
-**Usage:**  
-```
-rename [source_path] [new_name]
-```
-
-**Important:**  
-Paths containing spaces **must** be enclosed in quotes.
-
-**Examples:**  
-```
-rename "C:\folder\oldname.txt" "newname.txt"
-rename "C:\folder\old name.txt" "new name.txt"
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 🗑 Delete — `delete`
-
-**Usage:**  
-```
-delete [file_or_directory]
-```
-
-**Description:**  
-Deletes a file or folder.
-
-**Examples:**  
-```
-delete C:\file.txt
-delete "C:\My Folder"
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 🔍 Search — `find`, `search`
-
-**Usage:**  
-```
-find [search_term]
-```
-
-**Description:**  
-Searches the current folder for files or folders containing the term.
-
-**Example:**  
-```
-find report
-```
-
-If results are found:
-
-- The first result is automatically selected  
-- The status bar shows how many matches were found  
-
-[Table of Contents](#table-of-contents)
-
----
-
-## ⏭ Next Search Result — `findnext`, `searchnext`
-
-**Usage:**  
-```
-findnext
-```
-
-**Description:**  
-Cycles to the next result from the previous search.  
-Wraps around when reaching the end.
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 📁 Change Directory — `cd`
-
-**Usage:**  
-```
-cd [directory]
-```
-
-**Description:**  
-Changes the current working directory.
-
-**Examples:**  
-```
-cd C:\
-cd "C:\My Folder"
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 📂 Open — `open`
-
-**Usage:**  
-```
-open [file_or_directory]
-```
-
-**Description:**  
-Opens a file with its default application, or navigates into a folder.
-
-If no path is provided, the command opens the **currently selected** file or folder in the File Explorer list.
-
-**Examples:**  
-```
-open C:\folder\file.txt
-open "C:\My Folder"
-open
-```
-
-**Behavior:**
-
-- If the target is a **file** → opens it using the default program  
-- If the target is a **folder** → navigates into it  
-- If nothing is selected and no path is provided → shows usage help  
-- Supports quoted paths with spaces  
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 📝 Create Text File — `text`, `txt`
-
-**Usage:**  
-```
-text [file_path]
-```
-
-**Description:**  
-Creates a new text file at the specified path and opens it.
-
-**Example:**  
-```
-text "C:\folder\example.txt"
-```
-
-If no file name is provided, the CLI creates a new file named:  
-```
-New Text File.txt
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## 💽 Disk Free — `df`
-
-**Usage:**  
-```
-df <drive_letter>:
-```
-
-**Description:**  
-Shows free and total disk space for the specified drive.  
-Accepts any of the following formats:
-
-- `C`  
-- `C:`  
-- `C:\`  
-
-**Examples:**  
-```
-df C:
-df D
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## ❓ Help — `help`, `man`, `commands`
-
-**Usage:**  
-```
-help
-```
-
-**Description:**  
-Displays the full list of available commands and their descriptions.
-
-**Examples:**  
-```
-help
-commands
-man
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-## ❌ Exit — `exit`, `quit`, `close`, `bye`, `shutdown`, `logoff`, `end`
-
-**Usage:**  
-```
-exit
-```
-
-**Description:**  
-Closes the application.  
-A confirmation dialog appears to prevent accidental exits.
-
-**Examples:**  
-```
-exit
-quit
-bye
-```
-
-[Table of Contents](#table-of-contents)
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # 🧠 Quoting Rules (Important)
 
 Paths containing spaces **must** be enclosed in quotes:
@@ -952,68 +644,6 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 
 
-## Why I’m Creating File Explorer
-
-I set out to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to overlook how much is happening behind the scenes: navigation history, sorting, file type detection, context menus, clipboard operations, lazy loading of folder trees, and many other details. Recreating these features myself has been a practical way to explore system I/O, UI design, event handling, and performance considerations in a hands-on, exploratory way.
-
-This project is not meant to replace the built-in Windows Explorer. Instead, it serves as a learning environment, a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, similar to how art students copy the masters to study technique and intention.
-
-
-<img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
-
-
-
-
-
-[ Table of Contents](#table-of-contents)
-
-
-
-
-## What I Hope Learners Get From This
-
-This project is designed for anyone who wants to understand how real applications work, from beginners taking their first steps, to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
-
-### **A clearer understanding of how file systems are accessed and managed**  
-By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
-
-### **Insight into building a real Windows Forms application**  
-The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
-
-### **Practical examples of organizing and structuring a larger project**  
-You’ll find subsystems for navigation history, sorting logic, search functionality, and file-type mapping-all working together in a cohesive, maintainable way.
-
-### **Confidence to modify, extend, or build your own tools**  
-Everything is open-source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
-
-### **A reminder that even “simple” tools contain fascinating engineering challenges**  
-Re-creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
-
-
-
-
-
-
-### **A space for deliberate practice and student‑driven growth**
-One of the core ideas behind this project is the value of deliberate practice, breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
-My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at, it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
-
-
-
-If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
-
-
-
-[ Table of Contents](#table-of-contents)
-
-
-
-
-
----
----
----
----
 
 
 
