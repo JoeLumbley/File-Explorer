@@ -1167,6 +1167,8 @@ This method adds a new pinned folder.
 
 This prevents duplicates and keeps the UI synchronized.
 
+[AddToEasyAccess - Walkthrough](#addtoeasyaccess---walkthrough)  
+
 [Pinning System Index](#pinning-system-index)  
 
 ---
@@ -1527,7 +1529,80 @@ End Sub
 
 
 
+---
 
+## **AddToEasyAccess - Walkthrough**
+
+### **AddToEasyAccess Index**
+- [What this method does](#what-this-method-does-1)  
+- [How the method works](#how-the-method-works-1)  
+- [Why this method matters](#why-this-method-matters-1)  
+- [Back to Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`AddToEasyAccess` adds a new folder to the Easy Access list. It ensures the storage file exists, prevents duplicates, writes the new entry, and refreshes the UI so the change is immediately visible.
+
+---
+
+```vb.net
+Public Sub AddToEasyAccess(name As String, path As String)
+    EnsureEasyAccessFile()
+
+    Dim normalized = NormalizePath(path)
+    Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+    ' Prevent duplicates by normalized path
+    If existing.Any(Function(line)
+                        Dim e = ParseEntry(line)
+                        Return e.HasValue AndAlso NormalizePath(e.Value.Path) = normalized
+                    End Function) Then
+        RefreshPinUI()
+        Exit Sub
+    End If
+
+    ' Write new entry
+    IO.File.AppendAllLines(EasyAccessFile, {$"{name},{path}"})
+
+    RefreshPinUI()
+End Sub
+```
+
+### **How the method works**
+
+- Ensures the Easy Access file exists before doing anything else.  
+- Normalizes the incoming path so comparisons are consistent.  
+- Reads all existing entries from the file.  
+- Checks for duplicates by comparing normalized paths.  
+- If the folder is already pinned, it simply refreshes the UI and exits.  
+- If not pinned, it appends a new entry in `name,path` format.  
+- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
+
+This prevents duplicate entries and keeps the UI synchronized with the underlying data.
+
+---
+
+### **Why this method matters**
+
+`AddToEasyAccess` ensures:
+
+- The pinned list stays clean and free of duplicates.  
+- The Easy Access file is always valid and ready to use.  
+- The UI updates immediately after any change.  
+- The pinning system behaves consistently across CLI and GUI.
+
+---
+
+### **Back to Pinning System Index**
+
+[Pinning System Index](#pinning-system-index)
+
+---
+---
+---
+---
 
 
 
