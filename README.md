@@ -731,6 +731,234 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 
 
+  - [ Find Command](#find-command)
+
+## 🧩 Code Walkthrough: Systems That Make Up the App
+
+This application is built as a set of small, focused systems that work together.  
+In this walkthrough, we’ll go **line by line** through the core systems that make up the app and see how each one is implemented in code.
+
+### 1. Directory & File Navigation System
+
+This system is responsible for **where you are** and **what you see**.
+
+- Tracks the current directory and updates the UI when it changes  
+- Keeps the **tree view** and **list view** in sync  
+- Manages history (Back/Forward) and selection state  
+- Resolves paths (absolute, relative, quoted)
+
+In the code walkthrough, we’ll look at:
+
+- How the current path is stored  
+- How directory changes trigger UI refreshes  
+- How selection is read and used by commands like `open`, `delete`, and `rename`
+
+---
+
+### 2. Command Line Interface (CLI) System
+
+This system turns user input into actions.
+
+- Parses commands and arguments  
+- Resolves aliases using the `CommandHelp` dictionary  
+- Handles quoted paths and spacing rules  
+- Routes each command to the correct handler method  
+- Shows usage and error messages when something isn’t valid
+
+In the walkthrough, we’ll go through:
+
+- The main input handler  
+- How the command name is matched against `CommandHelp`  
+- How arguments are split, validated, and passed to operations
+
+---
+
+### 3. Help & Manual System
+
+This system makes the app **self‑documenting**.
+
+- `CommandHelp` dictionary with aliases, usage, descriptions, and examples  
+- `help` command for command‑level help  
+- `man` command for full manual sections  
+- Rendering logic for help text and manual pages  
+- Search and fallback behavior when an exact match isn’t found
+
+In the walkthrough, we’ll examine:
+
+- How `CommandHelp` is built  
+- How `BuildHelpText` constructs the help output  
+- How `help` and `man` decide what to show
+
+---
+
+### 4. Keyboard Input & Routing System
+
+This system decides **what a key press means** in each context.
+
+- Handles Enter, Escape, Tab, Shift+Tab, and shortcuts  
+- Routes keys differently depending on focus (CLI, list view, Help Drawer)  
+- Suppresses unsafe repeats and protects modal states  
+- Keeps behavior predictable and consistent
+
+In the walkthrough, we’ll look at:
+
+- The central key handler  
+- How context is detected (which control is active)  
+- How routing tables or `Select Case` blocks map keys to actions
+
+---
+
+### 5. File Operation System
+
+This system performs the actual work on the filesystem.
+
+- Create: `mkdir`, `text`  
+- Copy: `copy`  
+- Move: `move`  
+- Delete: `delete`  
+- Rename: `rename`  
+- Open: `open`  
+- Pin/Unpin: `pin`  
+- Disk info: `df`, `drives`
+
+In the walkthrough, we’ll step through:
+
+- How each command validates paths  
+- How errors are handled and surfaced to the user  
+- How the UI is refreshed after an operation completes
+
+---
+
+### 6. Search System
+
+This system finds items in the current directory.
+
+- `find` to start a search  
+- `findnext` to move through results  
+- Stores the current result list and index  
+- Automatically selects the first match  
+- Wraps around when reaching the end
+
+In the walkthrough, we’ll cover:
+
+- How the search term is applied to items  
+- How results are stored and reused  
+- How selection is updated as you cycle through matches
+
+---
+
+### 7. GUI Rendering System
+
+This system draws what the user sees.
+
+- Tree view and list view population  
+- Status bar updates (current path, selection, search results)  
+- Icons and visual indicators  
+- Help Drawer layout and content  
+- Context menus and their actions
+
+In the walkthrough, we’ll look at:
+
+- How the UI is initialized  
+- How data binding or manual population works  
+- How the GUI reacts to changes from the CLI
+
+---
+
+### 8. Pinning System
+
+This system manages pinned folders.
+
+- Tracks which folders are pinned  
+- Implements toggle behavior for `pin`  
+- Validates paths before pinning  
+- Updates any pinned‑folder UI elements
+
+In the walkthrough, we’ll see:
+
+- How pinned folders are stored (in memory or persisted)  
+- How the `pin` command interacts with this list
+
+---
+
+### 9. State Management System
+
+This system keeps everything in sync.
+
+- Current directory  
+- Current selection  
+- Search state  
+- Help/manual state  
+- Pinned folders  
+- History
+
+In the walkthrough, we’ll examine:
+
+- Where shared state lives  
+- How different systems read and update it  
+- How we avoid inconsistent or unsafe states
+
+---
+
+### 10. Exit & Safety System
+
+This system handles closing the app safely.
+
+- `exit` command and its aliases  
+- Confirmation prompts  
+- Cleanup logic before shutdown
+
+In the walkthrough, we’ll cover:
+
+- How exit is triggered from CLI and GUI  
+- How the confirmation dialog is shown  
+- How the app ensures a clean shutdown
+
+
+
+
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
