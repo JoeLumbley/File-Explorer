@@ -925,7 +925,7 @@ In the walkthrough, we’ll cover:
 
 
 
-# ** Pinning System — Code Walkthrough**
+# **Pinning System - Code Walkthrough**
 
 The pinning system manages the user’s Easy Access list. It stores pinned folders, validates them, updates the UI, and provides the toggle behavior used by both the GUI and CLI. This walkthrough explains each method in the system line by line so readers can understand how the feature works internally.
 
