@@ -1153,23 +1153,71 @@ The result is the authoritative list of pinned folders.
 
 ---
 
-## **AddToEasyAccess**
+## **AddToEasyAccess - Walkthrough**
 
-This method adds a new pinned folder.
+### **AddToEasyAccess Index**
+- [What this method does](#what-this-method-does-1)  
+- [How the method works](#how-the-method-works-1)  
+- [Why this method matters](#why-this-method-matters-1)  
+- [Back to Pinning System Index](#pinning-system-index)
 
-- Ensures the Easy Access file exists.  
-- Normalizes the incoming path.  
-- Reads all existing lines.  
+---
+
+### **What this method does**
+
+`AddToEasyAccess` adds a new folder to the Easy Access list. It ensures the storage file exists, prevents duplicates, writes the new entry, and refreshes the UI so the change is immediately visible.
+
+---
+
+```vb.net
+Public Sub AddToEasyAccess(name As String, path As String)
+    EnsureEasyAccessFile()
+
+    Dim normalized = NormalizePath(path)
+    Dim existing = IO.File.ReadAllLines(EasyAccessFile)
+
+    ' Prevent duplicates by normalized path
+    If existing.Any(Function(line)
+                        Dim e = ParseEntry(line)
+                        Return e.HasValue AndAlso NormalizePath(e.Value.Path) = normalized
+                    End Function) Then
+        RefreshPinUI()
+        Exit Sub
+    End If
+
+    ' Write new entry
+    IO.File.AppendAllLines(EasyAccessFile, {$"{name},{path}"})
+
+    RefreshPinUI()
+End Sub
+```
+
+### **How the method works**
+
+- Ensures the Easy Access file exists before doing anything else.  
+- Normalizes the incoming path so comparisons are consistent.  
+- Reads all existing entries from the file.  
 - Checks for duplicates by comparing normalized paths.  
-- If already pinned, refreshes the UI and exits.  
-- Otherwise, appends a new entry in `name,path` format.  
-- Refreshes the UI.
+- If the folder is already pinned, it simply refreshes the UI and exits.  
+- If not pinned, it appends a new entry in `name,path` format.  
+- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
 
-This prevents duplicates and keeps the UI synchronized.
+This prevents duplicate entries and keeps the UI synchronized with the underlying data.
 
-[AddToEasyAccess - Walkthrough](#addtoeasyaccess---walkthrough)  
+---
 
-[Pinning System Index](#pinning-system-index)  
+### **Why this method matters**
+
+`AddToEasyAccess` ensures:
+
+- The pinned list stays clean and free of duplicates.  
+- The Easy Access file is always valid and ready to use.  
+- The UI updates immediately after any change.  
+- The pinning system behaves consistently across CLI and GUI.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1314,20 +1362,65 @@ This mirrors the file list behavior for the tree.
 
 ## **TogglePin**
 
-This is the core toggle method.
+### **TogglePin Index**
+- [What this method does](#what-this-method-does)  
+- [How the method works](#how-the-method-works)  
+- [Why this method matters](#why-this-method-matters)  
+- [Back to Pinning System Index](#pinning-system-index)
 
-- Validates the path.  
-- Rejects special folders.  
-- Retrieves the display name.  
-- If the folder is pinned → removes it.  
-- If not pinned → adds it.  
-- Refreshes the UI.
+---
 
-This is the heart of the pinning system.
+### **What this method does**
 
-[TogglePin - Walkthrough](#togglepin---walkthrough)  
+`TogglePin` is the core method that switches a folder between pinned and unpinned states. It validates the folder, determines whether it is already pinned, performs the appropriate action, and then refreshes the UI so the change is immediately visible.
 
-[Pinning System Index](#pinning-system-index)  
+---
+
+```vb.net
+Private Sub TogglePin(path As String)
+    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+    If Not Directory.Exists(path) Then Exit Sub
+    If IsSpecialFolder(path) Then Exit Sub
+
+    Dim name As String = GetFolderDisplayName(path)
+
+    If IsPinned(path) Then
+        RemoveFromEasyAccess(path)
+    Else
+        AddToEasyAccess(name, path)
+    End If
+
+    RefreshPinUI()
+End Sub
+```
+
+---
+
+### **How the method works**
+
+- It first checks whether the provided path is empty or whitespace. If so, the method exits immediately.  
+- It verifies that the path points to an existing directory. If not, the operation is ignored.  
+- It checks whether the folder is a special folder (Documents, Desktop, etc.). Special folders cannot be pinned, so the method exits.  
+- It retrieves a display name for the folder using `GetFolderDisplayName(path)`.  
+- It calls `IsPinned(path)` to determine the current state:  
+  - If the folder **is pinned**, it calls `RemoveFromEasyAccess(path)` to unpin it.  
+  - If the folder **is not pinned**, it calls `AddToEasyAccess(name, path)` to pin it.  
+- Finally, it calls `RefreshPinUI()` to update the tree view, file list, and pin button.
+
+---
+
+### **Why this method matters**
+
+`TogglePin` is the heart of the pinning system. It ensures:
+
+- The pin/unpin behavior is consistent everywhere (CLI, tree view, file list, toolbar).  
+- Invalid or unsafe paths are rejected early.  
+- The UI always reflects the correct state after any change.  
+- The logic for pinning is centralized, preventing duplication across the app.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
