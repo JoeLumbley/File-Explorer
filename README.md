@@ -839,21 +839,32 @@ In the walkthrough, we’ll look at:
 
 ---
 
+
+
 ### 8. Pinning System
 
-This system manages pinned folders.
+The pinning system manages the set of folders the user has marked for quick access. It provides a simple toggle‑based workflow and keeps both the internal state and the user interface consistent.
 
-- Tracks which folders are pinned  
-- Implements toggle behavior for `pin`  
-- Validates paths before pinning  
-- Updates any pinned‑folder UI elements
+This system is responsible for:
 
-In the walkthrough, we’ll see:
+- Tracking which folders are currently pinned.
+- Implementing the toggle behavior for the `pin` command.
+- Validating paths before pinning or unpinning.
+- Updating any UI elements that display pinned folders.
+- Ensuring pinned state stays synchronized across the CLI, GUI, and internal state.
 
-- How pinned folders are stored (in memory or persisted)  
-- How the `pin` command interacts with this list
+In the walkthrough, we’ll examine:
+
+- How pinned folders are stored, whether in memory or persisted to disk.
+- How the `pin` command interacts with the pin list.
+- How the toggle logic determines whether a folder should be pinned or unpinned.
+- How invalid or special folders are rejected safely.
+- How the UI is refreshed after pinning changes.
+- How the system integrates with contextual selection (e.g., pinning the current folder when no path is provided).
 
 ---
+
+
 
 ### 9. State Management System
 
