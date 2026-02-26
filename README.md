@@ -1417,6 +1417,130 @@ This ensures the pin button and `pin` command always act on the correct folder.
 
 
 
+## **TogglePin**
+
+### **Index**
+- [What this method does](#what-this-method-does)  
+- [How the method works](#how-the-method-works)  
+- [Why this method matters](#why-this-method-matters)
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+### **What this method does**
+
+`TogglePin` is the core method that switches a folder between pinned and unpinned states. It validates the folder, determines whether it is already pinned, performs the appropriate action, and then refreshes the UI so the change is immediately visible.
+
+---
+
+
+```vb.net
+
+    Private Sub TogglePin(path As String)
+        If String.IsNullOrWhiteSpace(path) Then Exit Sub
+        If Not Directory.Exists(path) Then Exit Sub
+        If IsSpecialFolder(path) Then Exit Sub
+
+        Dim name As String = GetFolderDisplayName(path)
+
+        If IsPinned(path) Then
+            RemoveFromEasyAccess(path)
+        Else
+            AddToEasyAccess(name, path)
+        End If
+
+        RefreshPinUI()
+    End Sub
+
+```
+
+
+
+
+### **How the method works**
+
+- It first checks whether the provided path is empty or whitespace. If so, the method exits immediately.  
+- It verifies that the path points to an existing directory. If not, the operation is ignored.  
+- It checks whether the folder is a special folder (Documents, Desktop, etc.). Special folders cannot be pinned, so the method exits.  
+- It retrieves a display name for the folder using `GetFolderDisplayName(path)`.  
+- It calls `IsPinned(path)` to determine the current state:  
+  - If the folder **is pinned**, it calls `RemoveFromEasyAccess(path)` to unpin it.  
+  - If the folder **is not pinned**, it calls `AddToEasyAccess(name, path)` to pin it.  
+- Finally, it calls `RefreshPinUI()` to update the tree view, file list, and pin button.
+
+---
+
+### **Why this method matters**
+
+`TogglePin` is the heart of the pinning system.  
+It ensures:
+
+- The pin/unpin behavior is consistent everywhere (CLI, tree view, file list, toolbar).  
+- Invalid or unsafe paths are rejected early.  
+- The UI always reflects the correct state after any change.  
+- The logic for pinning is centralized, preventing duplication across the app.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
+
+---
+---
+---
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
