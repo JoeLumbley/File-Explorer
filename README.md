@@ -823,6 +823,8 @@ In the code walkthrough, we look at:
 - How directory changes trigger UI refreshes  
 - How selection is read and used by commands like `open`, `delete`, and `rename`
 
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+
 ---
 
 ### Command Line Interface (CLI) System
@@ -840,6 +842,8 @@ In the walkthrough, we go through:
 - The main input handler  
 - How the command name is matched against `CommandHelp`  
 - How arguments are split, validated, and passed to operations
+
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
 
 ---
 
@@ -859,6 +863,8 @@ In the walkthrough, we examine:
 - How `BuildHelpText` constructs the help output  
 - How `help` and `man` decide what to show
 
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+
 ---
 
 ### Keyboard Input & Routing System
@@ -875,6 +881,8 @@ In the walkthrough, we look at:
 - The central key handler  
 - How context is detected (which control is active)  
 - How routing tables or `Select Case` blocks map keys to actions
+
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
 
 ---
 
@@ -897,6 +905,8 @@ In the walkthrough, we step through:
 - How errors are handled and surfaced to the user  
 - How the UI is refreshed after an operation completes
 
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+
 ---
 
 ### Search System
@@ -915,6 +925,9 @@ In the walkthrough, we cover:
 - How results are stored and reused  
 - How selection is updated as you cycle through matches
 
+
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
+
 ---
 
 ### GUI Rendering System
@@ -932,6 +945,8 @@ In the walkthrough, we look at:
 - How the UI is initialized  
 - How data binding or manual population works  
 - How the GUI reacts to changes from the CLI
+
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
 
 ---
 
@@ -956,8 +971,9 @@ In the walkthrough, we examine:
 - How the UI is refreshed after pinning changes  
 - How the system integrates with contextual selection  
 
-**Full walkthrough:**  
-[Pinning System – Code Walkthrough](#pinning-system---code-walkthrough)
+[Pinning System – Walkthrough](#pinning-system---code-walkthrough)
+
+[Systems That Make Up the App](#-code-walkthrough-systems-that-make-up-the-app)
 
 ---
 
