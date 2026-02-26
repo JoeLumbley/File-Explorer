@@ -1,11 +1,14 @@
 # File Explorer
 
+
 **File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for those who prefer keyboard‑driven workflows.
 
 
 <img width="1266" height="733" alt="118" src="https://github.com/user-attachments/assets/eddcf5af-98f4-406c-a742-439325ccee10" />
 
 The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
+
+[ Table of Contents](#table-of-contents)
 
 
 ## **Features**
@@ -699,6 +702,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 - [📚 YearBook](#yearbook)
 
 
+[Back to the start](#file-explorer)
 
 ---
 ---
@@ -799,6 +803,8 @@ In this walkthrough, we go **line by line** through the core systems that make u
 - [10. Exit & Safety System](#10-exit--safety-system)  
 
 [ Table of Contents](#table-of-contents)
+
+[Back to the start](#file-explorer)
 
 ---
 
