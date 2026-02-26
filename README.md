@@ -1239,8 +1239,6 @@ This prevents duplicate entries and keeps the UI synchronized with the underlyin
 
 ---
 
----
-
 ```vb.net
 Public Sub RemoveFromEasyAccess(path As String)
     EnsureEasyAccessFile()
