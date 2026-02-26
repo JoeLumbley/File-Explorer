@@ -698,6 +698,10 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 - [📚 YearBook](#yearbook)
 
+- [Pinning System - Code Walkthrough](#pinning-system---code-walkthrough)
+
+
+Pinning System - Code Walkthrough*
 
 ---
 ---
@@ -861,6 +865,8 @@ In the walkthrough, we’ll examine:
 - How invalid or special folders are rejected safely.
 - How the UI is refreshed after pinning changes.
 - How the system integrates with contextual selection (e.g., pinning the current folder when no path is provided).
+
+ [Pinning System - Code Walkthrough](#pinning-system---code-walkthrough)
 
 ---
 
