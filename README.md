@@ -792,15 +792,15 @@ In this walkthrough, we go **line by line** through the core systems that make u
 ## **Index**
 
 - [Directory & File Navigation System](#directory--file-navigation-system)  
-- [2. Command Line Interface (CLI) System](#2-command-line-interface-cli-system)  
-- [3. Help & Manual System](#3-help--manual-system)  
-- [4. Keyboard Input & Routing System](#4-keyboard-input--routing-system)  
-- [5. File Operation System](#5-file-operation-system)  
-- [6. Search System](#6-search-system)  
-- [7. GUI Rendering System](#7-gui-rendering-system)  
-- [8. Pinning System](#8-pinning-system)  
-- [9. State Management System](#9-state-management-system)  
-- [10. Exit & Safety System](#10-exit--safety-system)  
+- [Command Line Interface (CLI) System](#command-line-interface-cli-system)  
+- [Help & Manual System](#help--manual-system)  
+- [Keyboard Input & Routing System](#keyboard-input--routing-system)  
+- [File Operation System](#file-operation-system)  
+- [Search System](#search-system)  
+- [GUI Rendering System](#gui-rendering-system)  
+- [Pinning System](#pinning-system)  
+- [State Management System](#state-management-system)  
+- [Exit & Safety System](#exit--safety-system)  
 
 [ Table of Contents](#table-of-contents)
 
@@ -825,7 +825,7 @@ In the code walkthrough, we look at:
 
 ---
 
-### 2. Command Line Interface (CLI) System
+### Command Line Interface (CLI) System
 
 This system turns user input into actions.
 
@@ -843,7 +843,7 @@ In the walkthrough, we go through:
 
 ---
 
-### 3. Help & Manual System
+### Help & Manual System
 
 This system makes the app **self‑documenting**.
 
@@ -861,7 +861,7 @@ In the walkthrough, we examine:
 
 ---
 
-### 4. Keyboard Input & Routing System
+### Keyboard Input & Routing System
 
 This system decides **what a key press means** in each context.
 
@@ -878,7 +878,7 @@ In the walkthrough, we look at:
 
 ---
 
-### 5. File Operation System
+### File Operation System
 
 This system performs the actual work on the filesystem.
 
@@ -899,7 +899,7 @@ In the walkthrough, we step through:
 
 ---
 
-### 6. Search System
+### Search System
 
 This system finds items in the current directory.
 
@@ -917,7 +917,7 @@ In the walkthrough, we cover:
 
 ---
 
-### 7. GUI Rendering System
+### GUI Rendering System
 
 This system draws what the user sees.
 
@@ -935,7 +935,7 @@ In the walkthrough, we look at:
 
 ---
 
-### 8. Pinning System
+### Pinning System
 
 The pinning system manages the set of folders the user has marked for quick access. It provides a simple toggle‑based workflow and keeps both the internal state and the user interface consistent.
 
@@ -961,7 +961,7 @@ In the walkthrough, we examine:
 
 ---
 
-### 9. State Management System
+### State Management System
 
 This system keeps everything in sync.
 
@@ -980,7 +980,7 @@ In the walkthrough, we examine:
 
 ---
 
-### 10. Exit & Safety System
+### Exit & Safety System
 
 This system handles closing the app safely.
 
