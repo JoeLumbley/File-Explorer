@@ -1192,6 +1192,8 @@ Public Sub AddToEasyAccess(name As String, path As String)
 End Sub
 ```
 
+---
+
 ### **How the method works**
 
 - Ensures the Easy Access file exists before doing anything else.  
@@ -1426,170 +1428,99 @@ End Sub
 
 ## **GetPinnableTarget**
 
-This method determines which folder should be pinned or unpinned based on context.
+### **GetPinnableTarget Index**
+- [What this method does](#what-this-method-does-2)  
+- [How the method works](#how-the-method-works-2)  
+- [Why this method matters](#why-this-method-matters-2)  
+- [Back to Pinning System Index](#pinning-system-index)
 
-It checks in order:
+---
+
+### **What this method does**
+
+`GetPinnableTarget` determines which folder should be pinned or unpinned based on the user’s most recent interaction. It inspects the last‑focused control and returns the appropriate folder path, or `Nothing` if no valid target exists.
+
+---
+
+```vb.net
+Private Function GetPinnableTarget() As String
+
+    ' ==========================
+    ' 0. Helper: must be a real, pinnable directory
+    ' ==========================
+    Dim isValidDir As Func(Of String, Boolean) =
+    Function(p As String)
+        Return Not String.IsNullOrEmpty(p) AndAlso
+               Directory.Exists(p) AndAlso
+               Not IsSpecialFolder(p)
+    End Function
+
+    ' ==========================
+    ' 1. If the last focused control was lvFiles
+    ' ==========================
+    If _lastFocusedControl Is lvFiles AndAlso lvFiles.SelectedItems.Count > 0 Then
+        Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+        If isValidDir(path) Then Return path
+    End If
+
+    ' ==========================
+    ' 2. If the last focused control was tvFolders
+    ' ==========================
+    If _lastFocusedControl Is tvFolders AndAlso tvFolders.SelectedNode IsNot Nothing Then
+        Dim path As String = TryCast(tvFolders.SelectedNode.Tag, String)
+        If isValidDir(path) Then Return path
+    End If
+
+    ' ==========================
+    ' 3. If the last focused control was the address bar
+    ' ==========================
+    If _lastFocusedControl Is txtAddressBar Then
+        If isValidDir(currentFolder) Then Return currentFolder
+    End If
+
+    ' ==========================
+    ' 4. No contextual target
+    ' ==========================
+    Return Nothing
+End Function
+
+```
+
+---
+
+### **How the method works**
+
+The method evaluates potential targets in a strict priority order:
 
 1. **File list**  
-   - If the last focused control was the file list and a folder is selected, return it.
+   If the last focused control was the file list and a folder is selected, that folder is returned.
 
 2. **Tree view**  
-   - If the last focused control was the tree view and a folder is selected, return it.
+   If the last focused control was the tree view and a folder is selected, that folder is returned.
 
 3. **Address bar**  
-   - If the last focused control was the address bar, return the current folder.
+   If the last focused control was the address bar and the current folder is valid, the current folder is returned.
 
 4. **Fallback**  
-   - If none of the above apply, return `Nothing`.
+   If none of the above conditions apply, the method returns `Nothing`.
 
-This ensures the pin button and `pin` command always act on the correct folder.
-
-
-
-
-
-[Pinning System Index](#pinning-system-index)  
-
-
-
-
----
----
----
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
----
----
----
-
-
-
-
-
-
-
-
-
-
-
-## **TogglePin - Walkthrough**
-
-### **TogglePin Index**
-- [What this method does](#what-this-method-does)  
-- [How the method works](#how-the-method-works)  
-- [Why this method matters](#why-this-method-matters)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
-### **What this method does**
-
-`TogglePin` is the core method that switches a folder between pinned and unpinned states. It validates the folder, determines whether it is already pinned, performs the appropriate action, and then refreshes the UI so the change is immediately visible.
-
----
-
-```vb.net
-Private Sub TogglePin(path As String)
-    If String.IsNullOrWhiteSpace(path) Then Exit Sub
-    If Not Directory.Exists(path) Then Exit Sub
-    If IsSpecialFolder(path) Then Exit Sub
-
-    Dim name As String = GetFolderDisplayName(path)
-
-    If IsPinned(path) Then
-        RemoveFromEasyAccess(path)
-    Else
-        AddToEasyAccess(name, path)
-    End If
-
-    RefreshPinUI()
-End Sub
-```
-
----
-
-### **How the method works**
-
-- It first checks whether the provided path is empty or whitespace. If so, the method exits immediately.  
-- It verifies that the path points to an existing directory. If not, the operation is ignored.  
-- It checks whether the folder is a special folder (Documents, Desktop, etc.). Special folders cannot be pinned, so the method exits.  
-- It retrieves a display name for the folder using `GetFolderDisplayName(path)`.  
-- It calls `IsPinned(path)` to determine the current state:  
-  - If the folder **is pinned**, it calls `RemoveFromEasyAccess(path)` to unpin it.  
-  - If the folder **is not pinned**, it calls `AddToEasyAccess(name, path)` to pin it.  
-- Finally, it calls `RefreshPinUI()` to update the tree view, file list, and pin button.
+This ensures the pin button and the `pin` command always act on the folder the user is actually interacting with.
 
 ---
 
 ### **Why this method matters**
 
-`TogglePin` is the heart of the pinning system. It ensures:
+`GetPinnableTarget` is essential for:
 
-- The pin/unpin behavior is consistent everywhere (CLI, tree view, file list, toolbar).  
-- Invalid or unsafe paths are rejected early.  
-- The UI always reflects the correct state after any change.  
-- The logic for pinning is centralized, preventing duplication across the app.
+- Making the pin/unpin button context‑aware  
+- Ensuring the `pin` command behaves predictably  
+- Preventing accidental pinning of the wrong folder  
+- Keeping keyboard, mouse, and CLI interactions unified  
+- Supporting a consistent mental model across the entire app  
+
+Without this method, the pinning system would not know which folder the user intends to pin, especially when switching between the tree view, file list, and address bar.
 
 ---
-
-### **Back to Pinning System Index**
 
 [Pinning System Index](#pinning-system-index)
 
@@ -1610,92 +1541,6 @@ End Sub
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
----
-
-## **AddToEasyAccess - Walkthrough**
-
-### **AddToEasyAccess Index**
-- [What this method does](#what-this-method-does-1)  
-- [How the method works](#how-the-method-works-1)  
-- [Why this method matters](#why-this-method-matters-1)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
-### **What this method does**
-
-`AddToEasyAccess` adds a new folder to the Easy Access list. It ensures the storage file exists, prevents duplicates, writes the new entry, and refreshes the UI so the change is immediately visible.
-
----
-
-```vb.net
-Public Sub AddToEasyAccess(name As String, path As String)
-    EnsureEasyAccessFile()
-
-    Dim normalized = NormalizePath(path)
-    Dim existing = IO.File.ReadAllLines(EasyAccessFile)
-
-    ' Prevent duplicates by normalized path
-    If existing.Any(Function(line)
-                        Dim e = ParseEntry(line)
-                        Return e.HasValue AndAlso NormalizePath(e.Value.Path) = normalized
-                    End Function) Then
-        RefreshPinUI()
-        Exit Sub
-    End If
-
-    ' Write new entry
-    IO.File.AppendAllLines(EasyAccessFile, {$"{name},{path}"})
-
-    RefreshPinUI()
-End Sub
-```
-
-### **How the method works**
-
-- Ensures the Easy Access file exists before doing anything else.  
-- Normalizes the incoming path so comparisons are consistent.  
-- Reads all existing entries from the file.  
-- Checks for duplicates by comparing normalized paths.  
-- If the folder is already pinned, it simply refreshes the UI and exits.  
-- If not pinned, it appends a new entry in `name,path` format.  
-- Calls `RefreshPinUI()` to update the tree, file list, and pin button.
-
-This prevents duplicate entries and keeps the UI synchronized with the underlying data.
-
----
-
-### **Why this method matters**
-
-`AddToEasyAccess` ensures:
-
-- The pinned list stays clean and free of duplicates.  
-- The Easy Access file is always valid and ready to use.  
-- The UI updates immediately after any change.  
-- The pinning system behaves consistently across CLI and GUI.
-
----
-
-### **Back to Pinning System Index**
-
-[Pinning System Index](#pinning-system-index)
-
----
----
----
----
 
 
 
