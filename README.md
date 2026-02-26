@@ -679,6 +679,9 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
   
 - [What I Hope Learners Get From This](#what-i-hope-learners-get-from-this)
 
+- [ 💻 Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
+
+
 - [🖥️ Command Line Interface (CLI)](#command-line-interface)
   - [Features Overview](#features-overview)
   - [Commands](#commands)
@@ -687,34 +690,6 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
   - [Example Session](#-example-session)
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
-
-
-
-
-
-
-
-
-- 💻 Code Walkthrough
-  
-  - [NavigateTo](#navigateto)
- 
-  
-  - [ Find Command](#find-command)
-
-  - [ HandleFindNextCommand](#handlefindnextcommand)
-
-  - [ SelectListViewItemByPath](#selectlistviewitembypath)
-
-
-  - [MoveFileOrDirectory](#movefileordirectory)
-
-  - [RenameFileOrDirectory](#renamefileordirectory)
-
-  - [CopyDirectory](#copydirectory)
-
-
-
 
 
 - [📄 License](#license)
@@ -731,7 +706,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 
 
-  - [ Find Command](#find-command)
+  - [Code Walkthrough](# code-walkthrough-systems-that-make-up-the-app)
 
 ## 🧩 Code Walkthrough: Systems That Make Up the App
 
