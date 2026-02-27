@@ -1579,14 +1579,15 @@ It is a foundational helper method used across the entire pinning workflow.
 ```vb.net
 Private Sub UpdatePinButtonState()
     btnPin.Enabled = False
-    btnPin.Text = ""   ' Pin icon
+    btnPin.Text = PIN_ICON
 
     Dim target As String = GetPinnableTarget()
     If target Is Nothing Then Exit Sub
 
     btnPin.Enabled = True
-    btnPin.Text = If(IsPinned(target), "", "")
+    btnPin.Text = IconForPinnedState(IsPinned(target))
 End Sub
+
 
 
 ```
