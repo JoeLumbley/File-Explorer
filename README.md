@@ -1127,8 +1127,6 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 
 ## **RefreshPinUI**
 
----
-
 ### **What this method does**
 
 `RefreshPinUI` updates every UI element that depends on the current pin state. It ensures that the tree view, file list, and toolbar button all reflect the latest pinned/unpinned status after any change.
@@ -1198,14 +1196,6 @@ Without this method, the UI could easily fall out of sync with the underlying da
 
 ## **EnsureEasyAccessFile**
 
-### **EnsureEasyAccessFile Index**
-- [What this method does](#what-this-method-does-5)  
-- [How the method works](#how-the-method-works-5)  
-- [Why this method matters](#why-this-method-matters-5)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
 ### **What this method does**
 
 `EnsureEasyAccessFile` guarantees that the Easy Access storage file exists before any pinning operation is performed. It creates both the directory and the file if they are missing, ensuring the rest of the system can safely read and write entries.
@@ -1268,14 +1258,6 @@ It acts as the foundation for all pinning operations, ensuring the system always
 
 
 ## **LoadEasyAccessEntries**
-
-### **LoadEasyAccessEntries Index**
-- [What this method does](#what-this-method-does-6)  
-- [How the method works](#how-the-method-works-6)  
-- [Why this method matters](#why-this-method-matters-6)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -1357,14 +1339,6 @@ It is the backbone of the pinning system’s data layer.
 
 ## **AddToEasyAccess**
 
-### **AddToEasyAccess Index**
-- [What this method does](#what-this-method-does-1)  
-- [How the method works](#how-the-method-works-1)  
-- [Why this method matters](#why-this-method-matters-1)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
 ### **What this method does**
 
 `AddToEasyAccess` adds a new folder to the Easy Access list. It ensures the storage file exists, prevents duplicates, writes the new entry, and refreshes the UI so the change is immediately visible.
@@ -1445,14 +1419,6 @@ This prevents duplicate entries and keeps the UI synchronized with the underlyin
 
 
 ## **RemoveFromEasyAccess**
-
-### **RemoveFromEasyAccess Index**
-- [What this method does](#what-this-method-does-3)  
-- [How the method works](#how-the-method-works-3)  
-- [Why this method matters](#why-this-method-matters-3)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -1537,14 +1503,6 @@ This cleanly removes the folder from the pinned list and ensures the UI reflects
 
 ## **IsPinned**
 
-### **IsPinned Index**
-- [What this method does](#what-this-method-does-7)  
-- [How the method works](#how-the-method-works-7)  
-- [Why this method matters](#why-this-method-matters-7)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
 ### **What this method does**
 
 `IsPinned` determines whether a given folder is currently pinned by checking the Easy Access storage file. It normalizes the path, parses each entry, and returns `True` if any entry matches the target folder.
@@ -1611,14 +1569,6 @@ It is a foundational helper method used across the entire pinning workflow.
 
 
 ## **UpdatePinButtonState**
-
-### **UpdatePinButtonState Index**
-- **What this method does**  
-- **How the method works**  
-- **Why this method matters**  
-- **Back to Pinning System Index**
-
----
 
 ### **What this method does**
 
@@ -1698,14 +1648,6 @@ Without this method, the toolbar could easily fall out of sync with the rest of 
 
 
 ## **UpdateFileListPinState**
-
-### **UpdateFileListPinState Index**
-- **What this method does**  
-- **How the method works**  
-- **Why this method matters**  
-- **Back to Pinning System Index**
-
----
 
 ### **What this method does**
 
@@ -1788,14 +1730,6 @@ It is a key part of keeping the UI intuitive and predictable.
 
 ## **IsTreeNodePinnable**
 
-### **IsTreeNodePinnable Index**
-- **What this method does**  
-- **How the method works**  
-- **Why this method matters**  
-- **Back to Pinning System Index**
-
----
-
 ### **What this method does**
 
 `IsTreeNodePinnable` determines whether a given tree node represents a folder that can be pinned. It validates the node, checks the underlying path, and ensures the folder is eligible for pinning based on existence and special‑folder rules.
@@ -1868,14 +1802,6 @@ It is a small but essential guardrail that keeps the pinning workflow safe and i
 
 
 ## **UpdateTreeContextMenu**
-
-### **UpdateTreeContextMenu Index**
-- **What this method does**  
-- **How the method works**  
-- **Why this method matters**  
-- **Back to Pinning System Index**
-
----
 
 ### **What this method does**
 
@@ -1959,14 +1885,6 @@ It is a key part of keeping the tree view’s behavior aligned with the rest of 
 
 ## **IsSpecialFolder**
 
-### **IsSpecialFolder Index**
-- **What this method does**  
-- **How the method works**  
-- **Why this method matters**  
-- **Back to Pinning System Index**
-
----
-
 ### **What this method does**
 
 `IsSpecialFolder` determines whether a given path refers to a system‑managed folder that should never be pinnable. It compares the input path against a predefined set of known special folders such as Documents, Desktop, Downloads, and other user‑profile locations.
@@ -2044,14 +1962,6 @@ It acts as a safety gate for every pin/unpin operation.
 
 ## **PinFromFiles / UnpinFromFiles**
 
-### **PinFromFiles / UnpinFromFiles Index**
-- **What these handlers do**  
-- **How they work**  
-- **Why they matter**  
-- **Back to Pinning System Index**
-
----
-
 ### **What these handlers do**
 
 `PinFromFiles` and `UnpinFromFiles` are the file‑list context‑menu handlers that let the user pin or unpin a folder directly from the list view. They extract the selected folder and pass it to the central toggle logic so the UI and Easy Access list update consistently.
@@ -2125,14 +2035,6 @@ They complete the GUI side of the pinning workflow.
 
 ## **Pin_Click / Unpin_Click**
 
-### **Pin_Click / Unpin_Click Index**
-- **What these handlers do**  
-- **How they work**  
-- **Why they matter**  
-- **Back to Pinning System Index**
-
----
-
 ### **What these handlers do**
 
 `Pin_Click` and `Unpin_Click` are the tree‑view context‑menu handlers that let the user pin or unpin a folder directly from the folder tree. They mirror the behavior of the file‑list handlers but operate on the currently selected tree node instead of a list item.
@@ -2204,14 +2106,6 @@ They complete the tree‑view side of the pinning workflow.
 
 
 ## **TogglePin**
-
-### **TogglePin Index**
-- [What this method does](#what-this-method-does)  
-- [How the method works](#how-the-method-works)  
-- [Why this method matters](#why-this-method-matters)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -2288,14 +2182,6 @@ End Sub
 
 
 ## **GetPinnableTarget**
-
-### **GetPinnableTarget Index**
-- [What this method does](#what-this-method-does-2)  
-- [How the method works](#how-the-method-works-2)  
-- [Why this method matters](#why-this-method-matters-2)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
