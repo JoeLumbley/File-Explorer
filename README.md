@@ -2183,8 +2183,6 @@ End Sub
 
 
 
----
-
 ## **GetPinnableTarget**
 
 ### **What this method does**
@@ -2269,7 +2267,7 @@ Without this method, the pinning system would not know which folder the user int
 
 ---
 
-With this, your **entire Pinning System walkthrough is complete and beautifully cohesive**. The next natural step is deciding which system you want to document next—Search, Navigation, or CLI.
+
 
 ---
 ---
