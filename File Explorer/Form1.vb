@@ -501,6 +501,12 @@ Public Class Form1
     Private HelpTextBox As RichTextBox
     Private HelpPanel As Panel
 
+    ' ==========================
+    ' Pin/Unpin icon constants
+    ' ==========================
+    Private Const PIN_ICON As String = ""
+    Private Const UNPIN_ICON As String = ""
+
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -5620,16 +5626,32 @@ Public Class Form1
     '  Pin Button State
     ' ------------------------------------------------------------
 
+    'Private Sub UpdatePinButtonState()
+    '    btnPin.Enabled = False
+    '    btnPin.Text = ""   ' Pin icon
+
+    '    Dim target As String = GetPinnableTarget()
+    '    If target Is Nothing Then Exit Sub
+
+    '    btnPin.Enabled = True
+    '    btnPin.Text = If(IsPinned(target), "", "")
+    'End Sub
+
     Private Sub UpdatePinButtonState()
         btnPin.Enabled = False
-        btnPin.Text = ""   ' Pin icon
+        btnPin.Text = PIN_ICON
 
         Dim target As String = GetPinnableTarget()
         If target Is Nothing Then Exit Sub
 
         btnPin.Enabled = True
-        btnPin.Text = If(IsPinned(target), "", "")
+        btnPin.Text = IconForPinnedState(IsPinned(target))
     End Sub
+
+
+    Private Function IconForPinnedState(isPinned As Boolean) As String
+        Return If(isPinned, UNPIN_ICON, PIN_ICON)
+    End Function
 
     ' ------------------------------------------------------------
     '  File List Pin State
