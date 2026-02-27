@@ -1127,12 +1127,6 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 
 ## **RefreshPinUI**
 
-### **RefreshPinUI Index**
-- [What this method does](#what-this-method-does-4)  
-- [How the method works](#how-the-method-works-4)  
-- [Why this method matters](#why-this-method-matters-4)  
-- [Back to Pinning System Index](#pinning-system-index)
-
 ---
 
 ### **What this method does**
