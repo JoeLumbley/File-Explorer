@@ -2240,10 +2240,10 @@ End Function
 
 The method evaluates potential targets in a strict priority order:
 
-1. **File list** — If the last‑focused control was the file list and a folder is selected, that folder is returned.  
-2. **Tree view** — If the last‑focused control was the tree view and a folder is selected, that folder is returned.  
-3. **Address bar** — If the last‑focused control was the address bar and the current folder is valid, the current folder is returned.  
-4. **Fallback** — If none of the above apply, the method returns `Nothing`.
+1. **File list** - If the last‑focused control was the file list and a folder is selected, that folder is returned.  
+2. **Tree view** - If the last‑focused control was the tree view and a folder is selected, that folder is returned.  
+3. **Address bar** - If the last‑focused control was the address bar and the current folder is valid, the current folder is returned.  
+4. **Fallback** - If none of the above apply, the method returns `Nothing`.
 
 This ensures the pin button and the `pin` command always act on the folder the user is actually interacting with.
 
