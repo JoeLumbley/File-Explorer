@@ -1127,14 +1127,6 @@ The pinning system manages the user’s Easy Access list. It stores pinned folde
 
 ## **RefreshPinUI**
 
-### **RefreshPinUI Index**
-- [What this method does](#what-this-method-does-4)  
-- [How the method works](#how-the-method-works-4)  
-- [Why this method matters](#why-this-method-matters-4)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
 ### **What this method does**
 
 `RefreshPinUI` updates every UI element that depends on the current pin state. It ensures that the tree view, file list, and toolbar button all reflect the latest pinned/unpinned status after any change.
@@ -1204,14 +1196,6 @@ Without this method, the UI could easily fall out of sync with the underlying da
 
 ## **EnsureEasyAccessFile**
 
-### **EnsureEasyAccessFile Index**
-- [What this method does](#what-this-method-does-5)  
-- [How the method works](#how-the-method-works-5)  
-- [Why this method matters](#why-this-method-matters-5)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
 ### **What this method does**
 
 `EnsureEasyAccessFile` guarantees that the Easy Access storage file exists before any pinning operation is performed. It creates both the directory and the file if they are missing, ensuring the rest of the system can safely read and write entries.
@@ -1274,14 +1258,6 @@ It acts as the foundation for all pinning operations, ensuring the system always
 
 
 ## **LoadEasyAccessEntries**
-
-### **LoadEasyAccessEntries Index**
-- [What this method does](#what-this-method-does-6)  
-- [How the method works](#how-the-method-works-6)  
-- [Why this method matters](#why-this-method-matters-6)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -1362,14 +1338,6 @@ It is the backbone of the pinning system’s data layer.
 
 
 ## **AddToEasyAccess**
-
-### **AddToEasyAccess Index**
-- [What this method does](#what-this-method-does-1)  
-- [How the method works](#how-the-method-works-1)  
-- [Why this method matters](#why-this-method-matters-1)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -1452,14 +1420,6 @@ This prevents duplicate entries and keeps the UI synchronized with the underlyin
 
 ## **RemoveFromEasyAccess**
 
-### **RemoveFromEasyAccess Index**
-- [What this method does](#what-this-method-does-3)  
-- [How the method works](#how-the-method-works-3)  
-- [Why this method matters](#why-this-method-matters-3)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
-
 ### **What this method does**
 
 `RemoveFromEasyAccess` removes a folder from the Easy Access list. It ensures the storage file exists, filters out the target entry, writes the updated list back to disk, and refreshes the UI so the change is immediately visible.
@@ -1538,22 +1498,59 @@ This cleanly removes the folder from the pinned list and ensures the UI reflects
 
 
 
-## **IsPinned**
-
-This method checks whether a folder is currently pinned.
-
-- Normalizes the input path.  
-- Reads all lines from the Easy Access file.  
-- Parses each line.  
-- Compares normalized paths.  
-- Returns `True` if a match is found.
-
-This method is used by the toggle logic and UI updates.
-
-[Pinning System Index](#pinning-system-index)  
 
 ---
 
+## **IsPinned**
+
+### **What this method does**
+
+`IsPinned` determines whether a given folder is currently pinned by checking the Easy Access storage file. It normalizes the path, parses each entry, and returns `True` if any entry matches the target folder.
+
+---
+
+```vb.net
+Private Function IsPinned(path As String) As Boolean
+    Dim target = NormalizePath(path)
+    Return File.ReadAllLines(EasyAccessFile).
+    Any(Function(line)
+            Dim e = ParseEntry(line)
+            Return e.HasValue AndAlso NormalizePath(e.Value.Path) = target
+        End Function)
+End Function
+
+```
+
+---
+
+### **How the method works**
+
+- Normalizes the input path to ensure consistent comparison.  
+- Reads all lines from the Easy Access file.  
+- Parses each line using `ParseEntry`.  
+- Compares the normalized stored path against the normalized input path.  
+- Returns `True` if a match is found; otherwise returns `False`.
+
+This method is used throughout the pinning system to determine whether a folder should be pinned or unpinned, and to update UI elements accordingly.
+
+---
+
+### **Why this method matters**
+
+`IsPinned` ensures:
+
+- The toggle logic (`TogglePin`) behaves correctly.  
+- The UI (tree view, list view, toolbar button) always reflects the correct pin state.  
+- Duplicate entries are prevented by checking normalized paths.  
+- The system remains consistent even if paths differ in casing or formatting.
+
+It is a foundational helper method used across the entire pinning workflow.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
 
 
 
@@ -1573,21 +1570,61 @@ This method is used by the toggle logic and UI updates.
 
 ## **UpdatePinButtonState**
 
-This method updates the toolbar pin/unpin button.
+### **What this method does**
 
-- Disables the button and sets the default pin icon.  
-- Calls `GetPinnableTarget()` to determine the current target.  
-- If no valid target exists, the button stays disabled.  
-- If a target exists:  
-  - Enables the button.  
-  - Sets the icon to “unpin” if the folder is pinned.  
-  - Sets the icon to “pin” if it is not pinned.
-
-This ensures the button always reflects the correct state.
-
-[Pinning System Index](#pinning-system-index)  
+`UpdatePinButtonState` updates the toolbar’s pin/unpin button so it always reflects the correct state of the folder the user is currently interacting with. It determines whether a valid target exists, enables or disables the button accordingly, and switches the icon based on whether that folder is pinned.
 
 ---
+
+```vb.net
+Private Sub UpdatePinButtonState()
+    btnPin.Enabled = False
+    btnPin.Text = PIN_ICON
+
+    Dim target As String = GetPinnableTarget()
+    If target Is Nothing Then Exit Sub
+
+    btnPin.Enabled = True
+    btnPin.Text = IconForPinnedState(IsPinned(target))
+End Sub
+
+
+
+```
+
+---
+
+### **How the method works**
+
+- It begins by disabling the button and setting the default “pin” icon. This prevents misleading UI states when no valid folder is selected.  
+- It calls `GetPinnableTarget()` to determine which folder—if any—is currently eligible for pinning or unpinning.  
+- If no valid target is returned, the method exits, leaving the button disabled.  
+- If a valid folder is found, the button is enabled.  
+- The icon is then updated:  
+  - The “unpin” icon is shown if the folder is already pinned.  
+  - The “pin” icon is shown if the folder is not pinned.
+
+This ensures the toolbar button always communicates the correct action to the user.
+
+---
+
+### **Why this method matters**
+
+`UpdatePinButtonState` keeps the toolbar intuitive and trustworthy. It ensures:
+
+- The user never sees an enabled pin button when no folder can be pinned.  
+- The icon always matches the actual state of the selected or active folder.  
+- The UI stays synchronized with the underlying pin data and the user’s current context.  
+- Keyboard, mouse, and CLI interactions all produce consistent visual feedback.
+
+Without this method, the toolbar could easily fall out of sync with the rest of the interface.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
 
 
 
@@ -1613,18 +1650,66 @@ This ensures the button always reflects the correct state.
 
 ## **UpdateFileListPinState**
 
-This method updates the file list’s context menu.
+### **What this method does**
 
-- Retrieves the Pin and Unpin menu items.  
-- Hides both by default.  
-- If no item is selected, exits.  
-- Retrieves the selected item’s path.  
-- Validates that the path exists and is not a special folder.  
-- Shows either Pin or Unpin depending on the folder’s state.
+`UpdateFileListPinState` updates the visibility of the **Pin** and **Unpin** options in the file list’s context menu. It evaluates the currently selected item, determines whether it is a valid folder, and shows the appropriate menu option based on whether that folder is already pinned.
 
-This provides correct context menu options for each folder.
+---
 
-[Pinning System Index](#pinning-system-index)  
+```vb.net
+Private Sub UpdateFileListPinState()
+    Dim mnuPin = cmsFiles.Items("Pin")
+    Dim mnuUnpin = cmsFiles.Items("Unpin")
+
+    mnuPin.Visible = False
+    mnuUnpin.Visible = False
+
+    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+    Dim path As String = TryCast(lvFiles.SelectedItems(0).Tag, String)
+    If String.IsNullOrEmpty(path) Then Exit Sub
+    If Not Directory.Exists(path) Then Exit Sub
+    If IsSpecialFolder(path) Then Exit Sub
+
+    mnuPin.Visible = Not IsPinned(path)
+    mnuUnpin.Visible = IsPinned(path)
+End Sub
+
+```
+
+---
+
+### **How the method works**
+
+- Retrieves the `Pin` and `Unpin` menu items from the file list context menu.  
+- Hides both options by default to avoid showing incorrect actions.  
+- Exits early if no item is selected in the file list.  
+- Extracts the selected item’s path and validates that:  
+  - The path is not empty.  
+  - The directory exists.  
+  - The folder is not a special folder (Documents, Desktop, etc.).  
+- If the folder is valid, it checks whether it is pinned:  
+  - Shows **Pin** when the folder is not pinned.  
+  - Shows **Unpin** when the folder is pinned.
+
+This ensures the context menu always presents the correct action for the selected folder.
+
+---
+
+### **Why this method matters**
+
+`UpdateFileListPinState` ensures:
+
+- The user never sees both Pin and Unpin at the same time.  
+- Invalid or non-folder items never show pin options.  
+- The context menu stays synchronized with the actual pinned state.  
+- The file list behaves consistently with the tree view and toolbar button.
+
+It is a key part of keeping the UI intuitive and predictable.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1643,18 +1728,57 @@ This provides correct context menu options for each folder.
 
 
 
+
 ## **IsTreeNodePinnable**
 
-This method checks whether a tree node represents a pinnable folder.
+### **What this method does**
 
-- Ensures the node exists.  
-- Extracts the path from the node.  
-- Validates that the path exists and is not a special folder.  
-- Returns `True` only if the folder is eligible for pinning.
+`IsTreeNodePinnable` determines whether a given tree node represents a folder that can be pinned. It validates the node, checks the underlying path, and ensures the folder is eligible for pinning based on existence and special‑folder rules.
 
-This is used by the tree view’s context menu logic.
+---
 
-[Pinning System Index](#pinning-system-index)  
+```vb.net
+Private Function IsTreeNodePinnable(node As TreeNode) As Boolean
+    If node Is Nothing Then Return False
+
+    Dim path As String = TryCast(node.Tag, String)
+    If String.IsNullOrEmpty(path) Then Return False
+    If Not Directory.Exists(path) Then Return False
+    If IsSpecialFolder(path) Then Return False
+
+    Return True
+End Function
+
+```
+
+---
+
+### **How the method works**
+
+- Confirms the node itself is not `Nothing`.  
+- Extracts the folder path stored in the node’s `Tag`.  
+- Validates that the path is not empty and that the directory actually exists.  
+- Rejects the folder if it is a special folder such as Documents, Desktop, or Downloads.  
+- Returns `True` only when the folder is a real, existing, non‑special directory.
+
+This ensures the tree view only offers pin/unpin options for folders that are truly pinnable.
+
+---
+
+### **Why this method matters**
+
+`IsTreeNodePinnable` ensures:
+
+- The tree view context menu never shows invalid pin options.  
+- System folders remain protected from being pinned.  
+- The pinning system behaves consistently across both the tree view and file list.  
+- The UI remains predictable and aligned with Explorer‑style behavior.
+
+It is a small but essential guardrail that keeps the pinning workflow safe and intuitive.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1680,16 +1804,64 @@ This is used by the tree view’s context menu logic.
 
 ## **UpdateTreeContextMenu**
 
-This method updates the tree view’s context menu.
+### **What this method does**
 
-- Extracts the path from the selected node.  
-- Validates the path.  
-- If invalid, hides both Pin and Unpin.  
-- If valid, shows the appropriate option based on whether the folder is pinned.
+`UpdateTreeContextMenu` updates the visibility of the **Pin** and **Unpin** options in the tree view’s context menu. It evaluates the selected node, validates the underlying folder path, and shows the correct action based on whether the folder is already pinned.
 
-This keeps the tree view’s context menu consistent with the file list.
+---
 
-[Pinning System Index](#pinning-system-index)  
+```vb.net
+Private Sub UpdateTreeContextMenu(node As TreeNode)
+    Dim path As String = TryCast(node.Tag, String)
+
+    If String.IsNullOrEmpty(path) OrElse
+   Not Directory.Exists(path) OrElse
+   IsSpecialFolder(path) Then
+
+        mnuPin.Visible = False
+        mnuUnpin.Visible = False
+        Exit Sub
+    End If
+
+    mnuPin.Visible = Not IsPinned(path)
+    mnuUnpin.Visible = IsPinned(path)
+End Sub
+
+
+```
+
+---
+
+### **How the method works**
+
+- Extracts the folder path from the selected tree node’s `Tag`.  
+- Validates the path by checking that:  
+  - It is not empty.  
+  - The directory exists.  
+  - It is not a special folder (Documents, Desktop, Downloads, etc.).  
+- If the path is invalid, both **Pin** and **Unpin** are hidden to prevent incorrect actions.  
+- If the path is valid, the method checks whether the folder is pinned:  
+  - Shows **Pin** when the folder is not pinned.  
+  - Shows **Unpin** when the folder is pinned.
+
+This ensures the context menu always presents the correct, safe action for the selected folder.
+
+---
+
+### **Why this method matters**
+
+`UpdateTreeContextMenu` ensures:
+
+- The tree view behaves consistently with the file list and toolbar button.  
+- Users never see pin options for invalid or protected folders.  
+- The UI remains predictable and Explorer‑accurate.  
+- The pinning workflow stays intuitive regardless of where the user interacts.
+
+It is a key part of keeping the tree view’s behavior aligned with the rest of the pinning system.
+
+---
+
+[Pinning System Index](#pinning-system-index)
 
 ---
 
@@ -1714,17 +1886,61 @@ This keeps the tree view’s context menu consistent with the file list.
 
 ## **IsSpecialFolder**
 
-This method prevents pinning system folders.
+### **What this method does**
 
-- Defines a list of known special folders (Documents, Music, Pictures, Videos, Downloads, Desktop).  
-- Compares the input path to each special folder path.  
-- Returns `True` if the folder is special.
-
-This protects the user from pinning system‑managed locations.
-
-[Pinning System Index](#pinning-system-index)  
+`IsSpecialFolder` determines whether a given path refers to a system‑managed folder that should never be pinnable. It compares the input path against a predefined set of known special folders such as Documents, Desktop, Downloads, and other user‑profile locations.
 
 ---
+
+```vb.net
+Private Function IsSpecialFolder(folderPath As String) As Boolean
+    Dim specialFolders As (String, String)() = {
+      ("Documents", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+      ("Music", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)),
+      ("Pictures", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)),
+      ("Videos", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos)),
+      ("Downloads", IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")),
+      ("Desktop", Environment.GetFolderPath(Environment.SpecialFolder.Desktop))
+    }
+
+    Return specialFolders.Any(Function(sf) String.Equals(sf.Item2, folderPath, StringComparison.OrdinalIgnoreCase))
+End Function
+
+
+```
+
+---
+
+### **How the method works**
+
+- Builds a list of special folder paths using `Environment.GetFolderPath` and known user‑profile subdirectories.  
+- Normalizes both the input path and each special folder path for consistent comparison.  
+- Checks for an exact match between the normalized input path and any special folder path.  
+- Returns `True` when the folder is considered special; otherwise returns `False`.
+
+This ensures the method reliably identifies folders that should not be pinned.
+
+---
+
+### **Why this method matters**
+
+`IsSpecialFolder` protects:
+
+- System‑managed directories that users should not modify through pinning.  
+- Core user folders like Documents, Desktop, Downloads, Pictures, Music, and Videos.  
+- The integrity of the pinning system by preventing unsafe or confusing pin states.  
+- Consistency with Windows Explorer, which also restricts pinning of these locations.
+
+It acts as a safety gate for every pin/unpin operation.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
+
+
 
 
 
@@ -1747,17 +1963,57 @@ This protects the user from pinning system‑managed locations.
 
 ## **PinFromFiles / UnpinFromFiles**
 
-These handlers respond to context menu clicks in the file list.
+### **What these handlers do**
 
-- Ensure an item is selected.  
-- Extract the path.  
-- Call the toggle method.
-
-These provide GUI‑based pin/unpin actions.
-
-[Pinning System Index](#pinning-system-index)  
+`PinFromFiles` and `UnpinFromFiles` are the file‑list context‑menu handlers that let the user pin or unpin a folder directly from the list view. They extract the selected folder and pass it to the central toggle logic so the UI and Easy Access list update consistently.
 
 ---
+
+---
+
+```vb.net
+Private Sub PinFromFiles_Click(sender As Object, e As EventArgs)
+    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    TryPinOrUnpin(TryCast(lvFiles.SelectedItems(0).Tag, String))
+End Sub
+
+Private Sub UnpinFromFiles_Click(sender As Object, e As EventArgs)
+    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+    TryPinOrUnpin(TryCast(lvFiles.SelectedItems(0).Tag, String))
+End Sub
+
+```
+
+---
+
+### **How they work**
+
+- They first confirm that an item is selected in the file list.  
+- They extract the folder path from the selected item’s `Tag`.  
+- They call `TogglePin(path)` to perform the actual pin or unpin operation.  
+- The toggle method then updates the Easy Access file and refreshes the UI.
+
+These handlers contain no business logic themselves—they simply act as bridges between the UI and the core pinning engine.
+
+---
+
+### **Why they matter**
+
+`PinFromFiles` and `UnpinFromFiles` ensure:
+
+- The file list behaves consistently with the tree view and toolbar.  
+- Users can pin or unpin folders using familiar right‑click actions.  
+- All pin/unpin operations flow through the same centralized logic (`TogglePin`).  
+- The UI stays synchronized regardless of where the action originates.
+
+They complete the GUI side of the pinning workflow.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
 
 
 
@@ -1780,16 +2036,54 @@ These provide GUI‑based pin/unpin actions.
 
 ## **Pin_Click / Unpin_Click**
 
-These handlers respond to context menu clicks in the tree view.
+### **What these handlers do**
 
-- Extract the selected node’s path.  
-- Call the toggle method.
-
-This mirrors the file list behavior for the tree.
-
-[Pinning System Index](#pinning-system-index)  
+`Pin_Click` and `Unpin_Click` are the tree‑view context‑menu handlers that let the user pin or unpin a folder directly from the folder tree. They mirror the behavior of the file‑list handlers but operate on the currently selected tree node instead of a list item.
 
 ---
+
+```vb.net
+
+    Private Sub Pin_Click(sender As Object, e As EventArgs)
+        TryPinOrUnpin(TryCast(tvFolders.SelectedNode?.Tag, String))
+    End Sub
+
+    Private Sub Unpin_Click(sender As Object, e As EventArgs)
+        TryPinOrUnpin(TryCast(tvFolders.SelectedNode?.Tag, String))
+    End Sub
+
+```
+
+---
+
+### **How they work**
+
+- They extract the folder path from the selected tree node’s `Tag`.  
+- They validate that the node exists and contains a usable path.  
+- They call `TogglePin(path)` to perform the actual pin or unpin operation.  
+- The toggle logic updates the Easy Access file and refreshes the UI.
+
+These handlers contain no business logic themselves—they simply delegate to the central pinning engine.
+
+---
+
+### **Why they matter**
+
+`Pin_Click` and `Unpin_Click` ensure:
+
+- The tree view offers the same pin/unpin functionality as the file list.  
+- Users can pin or unpin folders using familiar right‑click actions in the tree.  
+- All pin/unpin operations flow through the unified `TogglePin` method.  
+- The UI stays synchronized regardless of where the action originates.
+
+They complete the tree‑view side of the pinning workflow.
+
+---
+
+[Pinning System Index](#pinning-system-index)
+
+---
+
 
 
 
@@ -1813,14 +2107,6 @@ This mirrors the file list behavior for the tree.
 
 
 ## **TogglePin**
-
-### **TogglePin Index**
-- [What this method does](#what-this-method-does)  
-- [How the method works](#how-the-method-works)  
-- [Why this method matters](#why-this-method-matters)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -1896,15 +2182,9 @@ End Sub
 
 
 
+
+
 ## **GetPinnableTarget**
-
-### **GetPinnableTarget Index**
-- [What this method does](#what-this-method-does-2)  
-- [How the method works](#how-the-method-works-2)  
-- [Why this method matters](#why-this-method-matters-2)  
-- [Back to Pinning System Index](#pinning-system-index)
-
----
 
 ### **What this method does**
 
@@ -1953,7 +2233,6 @@ Private Function GetPinnableTarget() As String
     ' ==========================
     Return Nothing
 End Function
-
 ```
 
 ---
@@ -1962,17 +2241,10 @@ End Function
 
 The method evaluates potential targets in a strict priority order:
 
-1. **File list**  
-   If the last focused control was the file list and a folder is selected, that folder is returned.
-
-2. **Tree view**  
-   If the last focused control was the tree view and a folder is selected, that folder is returned.
-
-3. **Address bar**  
-   If the last focused control was the address bar and the current folder is valid, the current folder is returned.
-
-4. **Fallback**  
-   If none of the above conditions apply, the method returns `Nothing`.
+1. **File list** - If the last‑focused control was the file list and a folder is selected, that folder is returned.  
+2. **Tree view** - If the last‑focused control was the tree view and a folder is selected, that folder is returned.  
+3. **Address bar** - If the last‑focused control was the address bar and the current folder is valid, the current folder is returned.  
+4. **Fallback** - If none of the above apply, the method returns `Nothing`.
 
 This ensures the pin button and the `pin` command always act on the folder the user is actually interacting with.
 
@@ -1995,6 +2267,8 @@ Without this method, the pinning system would not know which folder the user int
 [Pinning System Index](#pinning-system-index)
 
 ---
+
+
 
 ---
 ---
