@@ -2261,13 +2261,98 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
+
+    'Private Async Sub HandleCopyCommand(parts As String())
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '               " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate source
+    '    ' ------------------------------------------------------------
+    '    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+    '        ShowStatus(StatusPad & IconError &
+    '               $" Copy failed: Source ""{source}"" does not exist. " &
+    '               "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate destination root
+    '    ' ------------------------------------------------------------
+    '    If Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '               $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+    '               "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Prevent copying a folder into itself or its own subtree
+    '    ' ------------------------------------------------------------
+    '    If Directory.Exists(source) Then
+    '        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+    '        Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+    '        If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+    '            ShowStatus(StatusPad & IconError &
+    '                   " Cannot copy a folder into itself or one of its subfolders.")
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Perform unified copy (always Copy, never Cut)
+    '    ' ------------------------------------------------------------
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+
+    '    ' ------------------------------------------------------------
+    '    ' Report result
+    '    ' ------------------------------------------------------------
+    '    If result.Success Then
+    '        ShowStatus(StatusPad & IconCopy &
+    '               $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '               " Copy completed with errors. Some items could not be copied.")
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Restore address bar after CLI copy
+    '    ' ------------------------------------------------------------
+    '    RestoreAddressBar()
+    'End Sub
+
+
+
     Private Async Sub HandleCopyCommand(parts As String())
+
+        ' ------------------------------------------------------------
+        ' Require: copy [source] [destination]
+        ' ------------------------------------------------------------
         If parts.Length <= 2 Then
             ShowStatus(StatusPad & IconDialog &
-                   " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+               " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
             Exit Sub
         End If
 
+        ' ------------------------------------------------------------
+        ' Parse arguments
+        ' Source = everything except the last token
+        ' Destination = last token
+        ' ------------------------------------------------------------
         Dim source As String =
         String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
 
@@ -2279,8 +2364,8 @@ Public Class Form1
         ' ------------------------------------------------------------
         If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
             ShowStatus(StatusPad & IconError &
-                   $" Copy failed: Source ""{source}"" does not exist. " &
-                   "If the path contains spaces, enclose it in quotes.")
+               $" Copy failed: Source ""{source}"" does not exist. " &
+               "If the path contains spaces, enclose it in quotes.")
             Exit Sub
         End If
 
@@ -2289,24 +2374,48 @@ Public Class Form1
         ' ------------------------------------------------------------
         If Not Directory.Exists(destinationRoot) Then
             ShowStatus(StatusPad & IconError &
-                   $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
-                   "If the path contains spaces, enclose it in quotes.")
+               $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+               "If the path contains spaces, enclose it in quotes.")
             Exit Sub
         End If
+
+        '' ------------------------------------------------------------
+        '' Prevent copying a folder into itself or its own subtree
+        '' ------------------------------------------------------------
+        'If Directory.Exists(source) Then
+        '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+        '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+        '    If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+        '        ShowStatus(StatusPad & IconError &
+        '           " Cannot copy a folder into itself or one of its subfolders.")
+        '        Exit Sub
+        '    End If
+        'End If
+
 
         ' ------------------------------------------------------------
         ' Prevent copying a folder into itself or its own subtree
         ' ------------------------------------------------------------
-        If Directory.Exists(source) Then
-            Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
-            Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
-
-            If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
-                ShowStatus(StatusPad & IconError &
-                       " Cannot copy a folder into itself or one of its subfolders.")
-                Exit Sub
-            End If
+        If IsCopyIntoSelf(source, destinationRoot) Then
+            ShowStatus(StatusPad & IconError &
+           " Cannot copy a folder into itself or one of its subfolders.")
+            Exit Sub
         End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         ' ------------------------------------------------------------
         ' Perform unified copy (always Copy, never Cut)
@@ -2322,17 +2431,146 @@ Public Class Form1
         ' ------------------------------------------------------------
         If result.Success Then
             ShowStatus(StatusPad & IconCopy &
-                   $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+               $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
         Else
             ShowStatus(StatusPad & IconError &
-                   " Copy completed with errors. Some items could not be copied.")
+               " Copy completed with errors. Some items could not be copied.")
         End If
 
         ' ------------------------------------------------------------
         ' Restore address bar after CLI copy
         ' ------------------------------------------------------------
         RestoreAddressBar()
+
     End Sub
+
+
+
+
+
+
+
+    Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
+        ' ------------------------------------------------------------
+        ' Prevent copying a folder into itself or its own subtree
+        ' ------------------------------------------------------------
+
+        ' Only a folder can be copied into itself.
+        ' So files are always safe.
+        If Not Directory.Exists(source) Then
+            Return False
+        End If
+
+        ' Normalize both paths and enforce a trailing separator.
+        ' This prevents false positives such as C:\A matching C:\ABC.
+        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
+                  Path.DirectorySeparatorChar
+
+        Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
+                   Path.DirectorySeparatorChar
+
+        ' Explorer-style, case-insensitive subtree check.
+        Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
+    End Function
+
+
+    'Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
+    '    ' Returns True if copying source into destinationRoot.
+    '    ' would place the destination inside the source's own subtree.
+    '    ' Safe for both files and directories; files always return False.
+
+    '    ' Is the source a file? If so, it can't be copying into itself, so return False.
+    '    If Not Directory.Exists(source) Then
+    '        Return False
+    '    End If
+
+    '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
+    '              Path.DirectorySeparatorChar
+
+    '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
+    '               Path.DirectorySeparatorChar
+
+    '    ' Case-insensitive subtree check
+    '    Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
+    'Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
+    '    ' Only directories can contain subtrees
+    '    If Not Directory.Exists(source) Then
+    '        Return False
+    '    End If
+
+    '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
+    '              Path.DirectorySeparatorChar
+
+    '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
+    '               Path.DirectorySeparatorChar
+
+    '    ' Explorer-style case-insensitive subtree check
+    '    Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
+    '    ' Returns True if copying source into destinationRoot.
+    '    ' would place the destination inside the source's own subtree.
+    '    ' Safe for both files and directories; files always return False.
+
+    '    ' Only directories can contain subtrees
+    '    If Not Directory.Exists(source) Then
+    '        Return False
+    '    End If
+
+    '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+    '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+    '    ' Case-insensitive, comparison
+    '    Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Async Sub HandleMoveCommand(parts As String())
         If parts.Length <= 2 Then
