@@ -692,13 +692,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 - [Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
 
-
 - [Command Line Interface (CLI)](#command-line-interface)
-  - [Features Overview](#features-overview)
-  - [Commands](#commands)
-  - [Quoting Rules](#-quoting-rules-important)
-  - [Contextual Navigation](#-contextual-navigation)
-  - [Example Session](#-example-session)
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
