@@ -168,7 +168,7 @@ The CLI is designed to be:
 - **Beginner‑friendly** - helpful messages and examples  
 - **Powerful** - supports navigation, search, file operations, and more  
 
-[ Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
