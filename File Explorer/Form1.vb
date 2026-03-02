@@ -2625,8 +2625,8 @@ Public Class Form1
     Private Function BuildCopyReport(result As CopyResult) As String
         Dim sb As New Text.StringBuilder()
 
-        sb.AppendLine("Copy Operation Report")
-        sb.AppendLine("────────────────────────────")
+        'sb.AppendLine("Copy Operation Report")
+        'sb.AppendLine("────────────────────────────")
         sb.AppendLine()
 
         sb.AppendLine("Summary")
