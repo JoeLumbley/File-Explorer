@@ -4197,6 +4197,9 @@ End Sub
 
 The File Explorer supports a set of convenient keyboard shortcuts to speed up navigation and file operations. These shortcuts mirror familiar behaviors from traditional file managers, making the interface fast and intuitive.
 
+
+<img width="1266" height="733" alt="124" src="https://github.com/user-attachments/assets/e1538746-670c-4c2b-98d1-ec4c89319f88" />
+
 ---
 
 ## 🧭 Navigation
