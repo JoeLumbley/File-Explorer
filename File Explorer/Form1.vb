@@ -25,7 +25,6 @@
 ' Github repo: https://github.com/JoeLumbley/File-Explorer
 ' Documentation: You can find the documentation at the GitHub repository.
 
-' How do you eat an elephant?
 
 Imports System.IO
 Imports System.Text
@@ -507,6 +506,28 @@ Public Class Form1
     ' ==========================
     Private Const PIN_ICON As String = ""
     Private Const UNPIN_ICON As String = ""
+
+
+
+
+    'Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
@@ -2339,6 +2360,72 @@ Public Class Form1
 
 
 
+    'Private Async Sub HandleCopyCommand(parts As String())
+
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '       " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       $" Copy failed: Source ""{source}"" does not exist. " &
+    '       "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    If Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+    '       "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    If IsCopyIntoSelf(source, destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       " Cannot copy a folder into itself or one of its subfolders.")
+    '        Exit Sub
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+
+    '    If result.Success Then
+    '        ShowStatus(StatusPad & IconCopy &
+    '       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '       " Copy completed with errors. Some items could not be copied.")
+    '    End If
+
+    '    ' --- Open HelpPanel with full report ---
+    '    HelpHeaderLabel.Text = "Copy Operation Report"
+    '    HelpTextBox.Text = BuildCopyReport(result)
+
+    '    If Not HelpPanel.Visible Then
+    '        ShowHelpPanelAnimated()
+    '    End If
+
+    '    FocusHelpText()
+    '    RestoreAddressBar()
+
+    'End Sub
+
+
+
+
     Private Async Sub HandleCopyCommand(parts As String())
 
         If parts.Length <= 2 Then
@@ -2376,18 +2463,72 @@ Public Class Form1
         copyCts = New CancellationTokenSource()
         Dim ct = copyCts.Token
 
+        Dim processedCount As Integer = 0
+        Dim finishing As Boolean = False
+
+        Dim progressCallback As Action(Of CopyResult) =
+        Sub(r)
+            ' Only pulse for directory copies (TotalDirectories > 0)
+            If r.TotalDirectories <= 0 Then
+                Exit Sub
+            End If
+
+            processedCount = r.FilesProcessed
+
+            If Not finishing AndAlso r.DirectoriesStarted >= r.TotalDirectories Then
+                finishing = True
+            End If
+
+            If finishing Then
+                ShowStatus(StatusPad & IconCopy &
+                           $" Finishing up... {processedCount} file(s) processed so far.")
+            Else
+                ShowStatus(StatusPad & IconCopy &
+                           $" Copying... {processedCount} file(s) processed so far.")
+            End If
+        End Sub
+
+        ' Initial indication
+        ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
         Dim result As CopyResult =
-        Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+        Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct, progressCallback)
+
+        'If result.Success Then
+        '    ShowStatus(StatusPad & IconCopy &
+        '   $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+        'Else
+        '    ShowStatus(StatusPad & IconError &
+        '   " Copy completed with errors. Some items could not be copied.")
+        'End If
+
+        'Await PopulateFiles(currentFolder)
+
+
+        '' --- Open HelpPanel with full report ---
+        'HelpHeaderLabel.Text = "Copy Operation Report"
+        'HelpTextBox.Text = BuildCopyReport(result)
+
+        'If Not HelpPanel.Visible Then
+        '    ShowHelpPanelAnimated()
+        'End If
+
+        'FocusHelpText()
+        'RestoreAddressBar()
 
         If result.Success Then
             ShowStatus(StatusPad & IconCopy &
-           $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+               $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
         Else
             ShowStatus(StatusPad & IconError &
-           " Copy completed with errors. Some items could not be copied.")
+               " Copy completed with errors. Some items could not be copied.")
         End If
 
+        Await PopulateFiles(currentFolder)
+
         ' --- Open HelpPanel with full report ---
+        HelpPanel.SuspendLayout()
+
         HelpHeaderLabel.Text = "Copy Operation Report"
         HelpTextBox.Text = BuildCopyReport(result)
 
@@ -2395,15 +2536,12 @@ Public Class Form1
             ShowHelpPanelAnimated()
         End If
 
+        HelpPanel.ResumeLayout()
+
         FocusHelpText()
         RestoreAddressBar()
 
     End Sub
-
-
-
-
-
 
 
 
@@ -2622,6 +2760,49 @@ Public Class Form1
     'End Function
 
 
+    'Private Function BuildCopyReport(result As CopyResult) As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    'sb.AppendLine("Copy Operation Report")
+    '    'sb.AppendLine("────────────────────────────")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Summary")
+    '    sb.AppendLine($"  Files copied:        {result.FilesCopied}")
+    '    sb.AppendLine($"  Files skipped:       {result.FilesSkipped}")
+    '    sb.AppendLine($"  Directories created: {result.DirectoriesCreated}")
+    '    sb.AppendLine()
+
+    '    If result.CopiedFilePaths.Count > 0 Then
+    '        sb.AppendLine("Copied Files:")
+    '        For Each path In result.CopiedFilePaths
+    '            sb.AppendLine("  • " & path)
+    '        Next
+    '        sb.AppendLine()
+    '    End If
+
+    '    'If result.Errors.Count > 0 Then
+    '    '    sb.AppendLine("Errors:")
+    '    '    For Each Err In result.Errors
+    '    '        sb.AppendLine("  • " & Err())   ' ← FIXED
+    '    '    Next
+    '    '    sb.AppendLine()
+    '    'End If
+
+    '    If result.Errors.Count > 0 Then
+    '        sb.AppendLine("Errors:")
+    '        For Each errMsg In result.Errors
+    '            sb.AppendLine("  • " & errMsg)
+    '        Next
+    '        sb.AppendLine()
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
     Private Function BuildCopyReport(result As CopyResult) As String
         Dim sb As New Text.StringBuilder()
 
@@ -2643,14 +2824,6 @@ Public Class Form1
             sb.AppendLine()
         End If
 
-        'If result.Errors.Count > 0 Then
-        '    sb.AppendLine("Errors:")
-        '    For Each Err In result.Errors
-        '        sb.AppendLine("  • " & Err())   ' ← FIXED
-        '    Next
-        '    sb.AppendLine()
-        'End If
-
         If result.Errors.Count > 0 Then
             sb.AppendLine("Errors:")
             For Each errMsg In result.Errors
@@ -2661,6 +2834,12 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
+
+
+
+
+
+
 
 
     Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
@@ -3636,11 +3815,84 @@ Public Class Form1
     End Sub
 
 
+    '    Public Async Function CopyFileOrDirectoryUnified(
+    '    source As String,
+    '    destinationRoot As String,
+    '    isCut As Boolean,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            If Not Directory.Exists(destinationRoot) Then
+    '                Throw New DirectoryNotFoundException(
+    '                "destinationRoot must be a folder: " & destinationRoot)
+    '            End If
+
+    '            Dim isFile As Boolean = File.Exists(source)
+    '            Dim isDir As Boolean = Directory.Exists(source)
+
+    '            If Not (isFile OrElse isDir) Then
+    '                result.Errors.Add("Source does not exist.")
+    '                Return result
+    '            End If
+
+    '            ' Prevent folder → itself
+    '            If isDir Then
+    '                Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+    '                Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+    '                If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+    '                    result.Errors.Add("Cannot copy a folder into itself or its subfolders.")
+    '                    Return result
+    '                End If
+    '            End If
+
+    '            Dim baseName = Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar))
+    '            Dim initialTarget = Path.Combine(destinationRoot, baseName)
+    '            Dim finalTarget As String = initialTarget
+
+    '            If Not isCut Then
+    '                finalTarget = ResolveDestinationPathWithAutoRename(initialTarget, isDir)
+    '            End If
+
+    '            If isFile Then
+    '                result = Await CopyFile(source, finalTarget, ct)
+    '            Else
+    '                result = Await CopyDirectory(source, finalTarget, ct)
+    '            End If
+
+    '            If isCut AndAlso result.Success Then
+    '                Try
+    '                    If isFile Then
+    '                        File.Delete(source)
+    '                    Else
+    '                        Directory.Delete(source, True)
+    '                    End If
+    '                Catch ex As Exception
+    '                    result.Errors.Add("Cut completed, but failed to delete original: " & ex.Message)
+    '                End Try
+    '            End If
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Copy failed: " & ex.Message)
+    '        End Try
+
+    '        Return result
+
+    '    End Function
+
+
+
     Public Async Function CopyFileOrDirectoryUnified(
     source As String,
     destinationRoot As String,
     isCut As Boolean,
-    ct As CancellationToken
+    ct As CancellationToken,
+    Optional progressCallback As Action(Of CopyResult) = Nothing
 ) As Task(Of CopyResult)
 
         Dim result As New CopyResult()
@@ -3681,9 +3933,12 @@ Public Class Form1
             End If
 
             If isFile Then
+                ' No progress pulse for single-file copy
                 result = Await CopyFile(source, finalTarget, ct)
             Else
-                result = Await CopyDirectory(source, finalTarget, ct)
+                ' Pre-count directories for accurate "finishing up" pulse
+                result.TotalDirectories = CountAllDirectories(source)
+                result = Await CopyDirectory(source, finalTarget, ct, result, progressCallback)
             End If
 
             If isCut AndAlso result.Success Then
@@ -3703,8 +3958,137 @@ Public Class Form1
         End Try
 
         Return result
-
     End Function
+
+
+
+
+    Public Async Function CopyDirectory(
+    sourceDir As String,
+    destDir As String,
+    ct As CancellationToken,
+    result As CopyResult,
+    Optional progressCallback As Action(Of CopyResult) = Nothing
+) As Task(Of CopyResult)
+
+        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+        If Not dirInfo.Exists Then
+            result.Errors.Add("Source directory not found: " & sourceDir)
+            Return result
+        End If
+
+        Try
+            ct.ThrowIfCancellationRequested()
+
+            ' Mark this directory as started
+            result.DirectoriesStarted += 1
+            progressCallback?.Invoke(result)
+
+            ' Create destination directory safely
+            Try
+                Directory.CreateDirectory(destDir)
+                result.DirectoriesCreated += 1
+            Catch ex As Exception
+                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+                Return result
+            End Try
+
+            ' Copy files in this directory
+            For Each srcFile In dirInfo.GetFiles()
+                ct.ThrowIfCancellationRequested()
+
+                Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+                If IsFileLocked(srcFile) Then
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
+                    result.FilesProcessed += 1
+                    progressCallback?.Invoke(result)
+                    Continue For
+                End If
+
+                Try
+                    Await Task.Run(Sub()
+                                       ct.ThrowIfCancellationRequested()
+                                       srcFile.CopyTo(targetFile, overwrite:=False)
+                                   End Sub, ct)
+
+                    result.FilesCopied += 1
+                    result.CopiedFilePaths.Add(targetFile)
+
+                Catch ex As OperationCanceledException
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
+
+                Catch ex As IOException
+                    result.FilesSkipped += 1
+                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+
+                Catch ex As UnauthorizedAccessException
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
+
+                Catch ex As Exception
+                    result.FilesSkipped += 1
+                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
+                End Try
+
+                ' File processed (success or failure)
+                result.FilesProcessed += 1
+                progressCallback?.Invoke(result)
+            Next
+
+            ' Copy subdirectories
+            For Each subDir In dirInfo.GetDirectories()
+                Dim newDest = Path.Combine(destDir, subDir.Name)
+                Await CopyDirectory(subDir.FullName, newDest, ct, result, progressCallback)
+            Next
+
+        Catch ex As OperationCanceledException
+            result.Errors.Add("Canceled directory copy: " & ex.Message)
+
+        Catch ex As Exception
+            result.Errors.Add("Directory copy error: " & ex.Message)
+        End Try
+
+        Return result
+    End Function
+
+
+
+
+    Private Function CountAllDirectories(root As String) As Integer
+        Dim count As Integer = 1 ' include root
+        For Each d In Directory.GetDirectories(root, "*", SearchOption.AllDirectories)
+            count += 1
+        Next
+        Return count
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function IsRealFileSystemPath(path2check As String) As Boolean
         Try
@@ -8793,6 +9177,72 @@ Public Class Form1
 
 
 
+    'Private Sub ShowHelpPanelAnimated()
+
+    '    If HelpPanel.Visible AndAlso HelpPanel.Width > 0 Then
+    '        Return
+    '    End If
+
+    '    HelpPanel.Visible = True
+    '    HelpPanel.Width = 0
+
+    '    Dim targetWidth As Integer = 500
+    '    'Dim t As New Timer() With {.Interval = 15} ' slightly slower, smoother pacing
+
+    '    Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
+
+    '    '    AddHandler t.Tick,
+    '    'Sub()
+    '    '    Dim w = HelpPanel.Width
+    '    '    Dim remaining = targetWidth - w
+
+    '    '    ' Quadratic ease-out: fast at first, smooth at end
+    '    '    Dim stepSize As Integer = CInt(Math.Max(6, remaining * 0.22))
+
+    '    '    HelpPanel.Width = Math.Min(targetWidth, w + stepSize)
+
+    '    '    If HelpPanel.Width >= targetWidth Then
+    '    '        HelpPanel.Width = targetWidth
+    '    '        t.Stop()
+    '    '    End If
+    '    'End Sub
+
+    '    '    t.Start()
+
+    '    AddHandler t.Tick,
+    'Sub()
+    '    Dim w = HelpPanel.Width
+    '    Dim remaining = targetWidth - w
+    '    Dim stepSize As Integer = CInt(Math.Max(6, remaining * 0.22))
+
+    '    HelpPanel.Width = Math.Min(targetWidth, w + stepSize)
+
+    '    If HelpPanel.Width >= targetWidth Then
+    '        HelpPanel.Width = targetWidth
+    '        t.Stop()
+    '    End If
+    'End Sub
+
+    'End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Private Sub ConfigureTooltips()
 
         ' General tooltip settings
@@ -9528,12 +9978,67 @@ End Class
 '    End Property
 'End Class
 
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
+'    Public Property CopiedFilePaths As New List(Of String)
+
+'    Public ReadOnly Property Success As Boolean
+'        Get
+'            Return Errors.Count = 0
+'        End Get
+'    End Property
+'End Class
+
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
+'    Public Property CopiedFilePaths As New List(Of String)
+
+'    ' Progress pulse counter
+'    Public Property FilesProcessed As Integer
+'End Class
+
+
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
+'    Public Property CopiedFilePaths As New List(Of String)
+
+'    ' Progress pulse
+'    Public Property FilesProcessed As Integer
+
+'    ' Directory progress
+'    Public Property TotalDirectories As Integer
+'    Public Property DirectoriesStarted As Integer
+
+'    Public ReadOnly Property Success As Boolean
+'        Get
+'            Return Errors.Count = 0
+'        End Get
+'    End Property
+'End Class
+
+
+
+
 Public Class CopyResult
     Public Property FilesCopied As Integer
     Public Property FilesSkipped As Integer
     Public Property DirectoriesCreated As Integer
     Public Property Errors As New List(Of String)
     Public Property CopiedFilePaths As New List(Of String)
+
+    ' Progress pulse
+    Public Property FilesProcessed As Integer
+    Public Property TotalDirectories As Integer
+    Public Property DirectoriesStarted As Integer
 
     Public ReadOnly Property Success As Boolean
         Get
@@ -9551,9 +10056,27 @@ End Class
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
 ' The goal: Explorer‑grade behavior with learner‑friendly clarity.
 
+
+
+' How do you eat an elephant?
 ' One bite at a time.
 
 ' Maximum Effort.
