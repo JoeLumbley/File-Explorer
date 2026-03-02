@@ -31,7 +31,8 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
-Imports System.Windows
+
+
 
 Public Class Form1
 
@@ -2337,109 +2338,64 @@ Public Class Form1
 
 
 
+
     Private Async Sub HandleCopyCommand(parts As String())
 
-        ' ------------------------------------------------------------
-        ' Require: copy [source] [destination]
-        ' ------------------------------------------------------------
         If parts.Length <= 2 Then
             ShowStatus(StatusPad & IconDialog &
-               " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+           " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
             Exit Sub
         End If
 
-        ' ------------------------------------------------------------
-        ' Parse arguments
-        ' Source = everything except the last token
-        ' Destination = last token
-        ' ------------------------------------------------------------
         Dim source As String =
         String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
 
         Dim destinationRoot As String =
         parts(parts.Length - 1).Trim()
 
-        ' ------------------------------------------------------------
-        ' Validate source
-        ' ------------------------------------------------------------
         If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
             ShowStatus(StatusPad & IconError &
-               $" Copy failed: Source ""{source}"" does not exist. " &
-               "If the path contains spaces, enclose it in quotes.")
+           $" Copy failed: Source ""{source}"" does not exist. " &
+           "If the path contains spaces, enclose it in quotes.")
             Exit Sub
         End If
 
-        ' ------------------------------------------------------------
-        ' Validate destination root
-        ' ------------------------------------------------------------
         If Not Directory.Exists(destinationRoot) Then
             ShowStatus(StatusPad & IconError &
-               $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
-               "If the path contains spaces, enclose it in quotes.")
+           $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+           "If the path contains spaces, enclose it in quotes.")
             Exit Sub
         End If
 
-        '' ------------------------------------------------------------
-        '' Prevent copying a folder into itself or its own subtree
-        '' ------------------------------------------------------------
-        'If Directory.Exists(source) Then
-        '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
-        '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
-
-        '    If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
-        '        ShowStatus(StatusPad & IconError &
-        '           " Cannot copy a folder into itself or one of its subfolders.")
-        '        Exit Sub
-        '    End If
-        'End If
-
-
-        ' ------------------------------------------------------------
-        ' Prevent copying a folder into itself or its own subtree
-        ' ------------------------------------------------------------
         If IsCopyIntoSelf(source, destinationRoot) Then
             ShowStatus(StatusPad & IconError &
            " Cannot copy a folder into itself or one of its subfolders.")
             Exit Sub
         End If
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        ' ------------------------------------------------------------
-        ' Perform unified copy (always Copy, never Cut)
-        ' ------------------------------------------------------------
         copyCts = New CancellationTokenSource()
         Dim ct = copyCts.Token
 
         Dim result As CopyResult =
         Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
 
-        ' ------------------------------------------------------------
-        ' Report result
-        ' ------------------------------------------------------------
         If result.Success Then
             ShowStatus(StatusPad & IconCopy &
-               $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+           $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
         Else
             ShowStatus(StatusPad & IconError &
-               " Copy completed with errors. Some items could not be copied.")
+           " Copy completed with errors. Some items could not be copied.")
         End If
 
-        ' ------------------------------------------------------------
-        ' Restore address bar after CLI copy
-        ' ------------------------------------------------------------
+        ' --- Open HelpPanel with full report ---
+        HelpHeaderLabel.Text = "Copy Operation Report"
+        HelpTextBox.Text = BuildCopyReport(result)
+
+        If Not HelpPanel.Visible Then
+            ShowHelpPanelAnimated()
+        End If
+
+        FocusHelpText()
         RestoreAddressBar()
 
     End Sub
@@ -2450,28 +2406,317 @@ Public Class Form1
 
 
 
-    Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
-        ' ------------------------------------------------------------
-        ' Prevent copying a folder into itself or its own subtree
-        ' ------------------------------------------------------------
 
-        ' Only a folder can be copied into itself.
-        ' So files are always safe.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Async Sub HandleCopyCommand(parts As String())
+
+    '    ' ------------------------------------------------------------
+    '    ' Require: copy [source] [destination]
+    '    ' ------------------------------------------------------------
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '           " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Parse arguments
+    '    ' Source = everything except the last token
+    '    ' Destination = last token
+    '    ' ------------------------------------------------------------
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate source
+    '    ' ------------------------------------------------------------
+    '    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+    '        ShowStatus(StatusPad & IconError &
+    '           $" Copy failed: Source ""{source}"" does not exist. " &
+    '           "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate destination root
+    '    ' ------------------------------------------------------------
+    '    If Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '           $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+    '           "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    '' ------------------------------------------------------------
+    '    '' Prevent copying a folder into itself or its own subtree
+    '    '' ------------------------------------------------------------
+    '    'If Directory.Exists(source) Then
+    '    '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+    '    '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+    '    '    If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+    '    '        ShowStatus(StatusPad & IconError &
+    '    '           " Cannot copy a folder into itself or one of its subfolders.")
+    '    '        Exit Sub
+    '    '    End If
+    '    'End If
+
+
+    '    ' ------------------------------------------------------------
+    '    ' Prevent copying a folder into itself or its own subtree
+    '    ' ------------------------------------------------------------
+    '    If IsCopyIntoSelf(source, destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       " Cannot copy a folder into itself or one of its subfolders.")
+    '        Exit Sub
+    '    End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '    ' ------------------------------------------------------------
+    '    ' Perform unified copy (always Copy, never Cut)
+    '    ' ------------------------------------------------------------
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct)
+
+    '    '' ------------------------------------------------------------
+    '    '' Report result
+    '    '' ------------------------------------------------------------
+    '    'If result.Success Then
+    '    '    ShowStatus(StatusPad & IconCopy &
+    '    '       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    'Else
+    '    '    ShowStatus(StatusPad & IconError &
+    '    '       " Copy completed with errors. Some items could not be copied.")
+    '    'End If
+
+
+
+
+    '    ' ------------------------------------------------------------
+    '    ' Report result
+    '    ' ------------------------------------------------------------
+    '    If result.Success Then
+    '        ShowStatus(StatusPad & IconCopy &
+    '           $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '           " Copy completed with errors. Some items could not be copied.")
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Automatically open HelpPanel with detailed report
+    '    ' ------------------------------------------------------------
+    '    HelpHeaderLabel.Text = "Copy Operation Report"
+    '    HelpTextBox.Text = BuildCopyReport(result)
+
+    '    If Not HelpPanel.Visible Then
+    '        ShowHelpPanelAnimated()
+    '    End If
+
+    '    FocusHelpText()
+
+    '    ' ------------------------------------------------------------
+    '    ' Restore address bar after CLI copy
+    '    ' ------------------------------------------------------------
+    '    RestoreAddressBar()
+
+    'End Sub
+
+
+
+
+    'Private Function BuildCopyReport(result As CopyResult) As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine("Copy Operation Report")
+    '    sb.AppendLine("────────────────────────────")
+    '    sb.AppendLine()
+
+    '    If result.Success Then
+    '        sb.AppendLine($"Status: Success")
+    '        sb.AppendLine($"Files copied: {result.FilesCopied}")
+    '        sb.AppendLine($"Files skipped: {result.FilesSkipped}")
+    '    Else
+    '        sb.AppendLine("Status: Completed with errors")
+    '        sb.AppendLine($"Files copied: {result.FilesCopied}")
+    '        sb.AppendLine($"Files skipped: {result.FilesSkipped}")
+    '        sb.AppendLine()
+    '        sb.AppendLine("Some items could not be copied.")
+    '    End If
+
+    '    sb.AppendLine()
+    '    sb.AppendLine("Notes:")
+    '    sb.AppendLine("- Skipped files may already exist or be unchanged.")
+    '    sb.AppendLine("- Errors may occur due to permissions, locks, or invalid paths.")
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+    'Private Function BuildCopyReport(result As CopyResult) As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine("Copy Operation Report")
+    '    sb.AppendLine("────────────────────────────")
+    '    sb.AppendLine()
+
+    '    sb.AppendLine("Summary")
+    '    sb.AppendLine($"  Files copied:        {result.FilesCopied}")
+    '    sb.AppendLine($"  Files skipped:       {result.FilesSkipped}")
+    '    sb.AppendLine($"  Directories created: {result.DirectoriesCreated}")
+    '    sb.AppendLine()
+
+    '    If result.CopiedFilePaths.Count > 0 Then
+    '        sb.AppendLine("Copied Files:")
+    '        For Each path In result.CopiedFilePaths
+    '            sb.AppendLine("  • " & path)
+    '        Next
+    '        sb.AppendLine()
+    '    End If
+
+    '    If result.Errors.Count > 0 Then
+    '        sb.AppendLine("Errors:")
+    '        For Each Err In result.Errors
+    '            sb.AppendLine("  • " & Err())
+    '        Next
+    '        sb.AppendLine()
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+
+    Private Function BuildCopyReport(result As CopyResult) As String
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine("Copy Operation Report")
+        sb.AppendLine("────────────────────────────")
+        sb.AppendLine()
+
+        sb.AppendLine("Summary")
+        sb.AppendLine($"  Files copied:        {result.FilesCopied}")
+        sb.AppendLine($"  Files skipped:       {result.FilesSkipped}")
+        sb.AppendLine($"  Directories created: {result.DirectoriesCreated}")
+        sb.AppendLine()
+
+        If result.CopiedFilePaths.Count > 0 Then
+            sb.AppendLine("Copied Files:")
+            For Each path In result.CopiedFilePaths
+                sb.AppendLine("  • " & path)
+            Next
+            sb.AppendLine()
+        End If
+
+        'If result.Errors.Count > 0 Then
+        '    sb.AppendLine("Errors:")
+        '    For Each Err In result.Errors
+        '        sb.AppendLine("  • " & Err())   ' ← FIXED
+        '    Next
+        '    sb.AppendLine()
+        'End If
+
+        If result.Errors.Count > 0 Then
+            sb.AppendLine("Errors:")
+            For Each errMsg In result.Errors
+                sb.AppendLine("  • " & errMsg)
+            Next
+            sb.AppendLine()
+        End If
+
+        Return sb.ToString()
+    End Function
+
+
+    Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
         If Not Directory.Exists(source) Then
             Return False
         End If
 
-        ' Normalize both paths and enforce a trailing separator.
-        ' This prevents false positives such as C:\A matching C:\ABC.
         Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
                   Path.DirectorySeparatorChar
 
         Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
                    Path.DirectorySeparatorChar
 
-        ' Explorer-style, case-insensitive subtree check.
         Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
     End Function
+
+
+
+
+
+
+
+
+    'Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
+    '    ' ------------------------------------------------------------
+    '    ' Prevent copying a folder into itself or its own subtree
+    '    ' ------------------------------------------------------------
+
+    '    ' Only a folder can be copied into itself.
+    '    ' So files are always safe.
+    '    If Not Directory.Exists(source) Then
+    '        Return False
+    '    End If
+
+    '    ' Normalize both paths and enforce a trailing separator.
+    '    ' This prevents false positives such as C:\A matching C:\ABC.
+    '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
+    '              Path.DirectorySeparatorChar
+
+    '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
+    '               Path.DirectorySeparatorChar
+
+    '    ' Explorer-style, case-insensitive subtree check.
+    '    Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
 
 
     'Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
@@ -2965,31 +3210,31 @@ Public Class Form1
     End Function
 
 
-    Private Async Function PerformCopy(source As String, dest As String) As Task
+    'Private Async Function PerformCopy(source As String, dest As String) As Task
 
-        copyCts = New CancellationTokenSource()
-        Dim ct = copyCts.Token
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
 
-        Dim result As CopyResult =
-        Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, dest, isCut:=False, ct)
 
-        If result.Success Then
+    '    If result.Success Then
 
 
-            Dim navTarget As String = ResolveNavigationTarget(dest)
-            NavigateTo(navTarget)
+    '        Dim navTarget As String = ResolveNavigationTarget(dest)
+    '        NavigateTo(navTarget)
 
-            ShowStatus(StatusPad & IconCopy &
-                   $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '        ShowStatus(StatusPad & IconCopy &
+    '               $"  Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
 
-        Else
+    '    Else
 
-            ShowStatus(StatusPad & IconError &
-                   "  Copy completed with errors. Some items could not be copied.")
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Copy completed with errors. Some items could not be copied.")
 
-        End If
+    '    End If
 
-    End Function
+    'End Function
 
     Private Function ResolveNavigationTarget(path2Resolve As String) As String
         ' Returns the correct folder to navigate to after an operation.
@@ -4242,7 +4487,183 @@ Public Class Form1
 
     ' ------------------------------------------------------------
     ' Pure recursive directory copy
-    ' ------------------------------------------------------------
+    '    ' ------------------------------------------------------------
+    '    Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+    '        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '        If Not dirInfo.Exists Then
+    '            result.Errors.Add("Source directory not found: " & sourceDir)
+    '            Return result
+    '        End If
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' Create destination directory
+    '            Directory.CreateDirectory(destDir)
+    '            result.DirectoriesCreated += 1
+
+    '            ' Copy files in this directory
+    '            For Each srcFile In dirInfo.GetFiles()
+    '                ct.ThrowIfCancellationRequested()
+
+    '                Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+    '                ' Optional: keep this pure helper
+    '                If IsFileLocked(srcFile) Then
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
+    '                    Continue For
+    '                End If
+
+    '                Try
+    '                    Await Task.Run(Sub()
+    '                                       ct.ThrowIfCancellationRequested()
+    '                                       srcFile.CopyTo(targetFile, overwrite:=False)
+    '                                   End Sub, ct)
+
+    '                    result.FilesCopied += 1
+    '                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
+
+
+    '                Catch ex As OperationCanceledException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Canceled copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As IOException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As UnauthorizedAccessException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As Exception
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
+    '                End Try
+    '            Next
+
+    '            ' Copy subdirectories (sequential or parallel; here sequential for clarity)
+    '            For Each subDir In dirInfo.GetDirectories()
+    '                Dim newDest = Path.Combine(destDir, subDir.Name)
+    '                Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct)
+
+    '                result.FilesCopied += subResult.FilesCopied
+    '                result.FilesSkipped += subResult.FilesSkipped
+    '                result.DirectoriesCreated += subResult.DirectoriesCreated
+    '                result.Errors.AddRange(subResult.Errors)
+    '            Next
+
+    '        Catch ex As OperationCanceledException
+    '            result.Errors.Add("Canceled directory copy: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Directory copy error: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+    '    Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+    '        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '        If Not dirInfo.Exists Then
+    '            result.Errors.Add("Source directory not found: " & sourceDir)
+    '            Return result
+    '        End If
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' Create destination directory safely
+    '            Try
+    '                Directory.CreateDirectory(destDir)
+    '                result.DirectoriesCreated += 1
+    '            Catch ex As Exception
+    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+    '                Return result
+    '            End Try
+
+    '            ' Copy files in this directory
+    '            For Each srcFile In dirInfo.GetFiles()
+    '                ct.ThrowIfCancellationRequested()
+
+    '                Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+    '                If IsFileLocked(srcFile) Then
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
+    '                    Continue For
+    '                End If
+
+    '                Try
+    '                    Await Task.Run(Sub()
+    '                                       ct.ThrowIfCancellationRequested()
+    '                                       srcFile.CopyTo(targetFile, overwrite:=False)
+    '                                   End Sub, ct)
+
+    '                    result.FilesCopied += 1
+
+    '                Catch ex As OperationCanceledException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
+
+    '                Catch ex As IOException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As UnauthorizedAccessException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
+
+    '                Catch ex As Exception
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
+    '                End Try
+    '            Next
+
+    '            ' Copy subdirectories (sequential)
+    '            For Each subDir In dirInfo.GetDirectories()
+    '                Dim newDest = Path.Combine(destDir, subDir.Name)
+    '                Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct)
+
+    '                result.FilesCopied += subResult.FilesCopied
+    '                result.FilesSkipped += subResult.FilesSkipped
+    '                result.DirectoriesCreated += subResult.DirectoriesCreated
+    '                result.Errors.AddRange(subResult.Errors)
+    '            Next
+
+    '        Catch ex As OperationCanceledException
+    '            result.Errors.Add("Canceled directory copy: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Directory copy error: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+
+
+
     Public Async Function CopyDirectory(
     sourceDir As String,
     destDir As String,
@@ -4260,17 +4681,21 @@ Public Class Form1
         Try
             ct.ThrowIfCancellationRequested()
 
-            ' Create destination directory
-            Directory.CreateDirectory(destDir)
-            result.DirectoriesCreated += 1
+            ' Create destination directory safely
+            Try
+                Directory.CreateDirectory(destDir)
+                result.DirectoriesCreated += 1
+            Catch ex As Exception
+                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+                Return result
+            End Try
 
-            ' Copy files in this directory
+            ' Copy files
             For Each srcFile In dirInfo.GetFiles()
                 ct.ThrowIfCancellationRequested()
 
                 Dim targetFile = Path.Combine(destDir, srcFile.Name)
 
-                ' Optional: keep this pure helper
                 If IsFileLocked(srcFile) Then
                     result.FilesSkipped += 1
                     result.Errors.Add("Locked file skipped: " & srcFile.FullName)
@@ -4284,12 +4709,11 @@ Public Class Form1
                                    End Sub, ct)
 
                     result.FilesCopied += 1
-                    ShowStatus(StatusPad & IconCopy & " Copied file: " & targetFile)
-
+                    result.CopiedFilePaths.Add(targetFile)
 
                 Catch ex As OperationCanceledException
                     result.FilesSkipped += 1
-                    result.Errors.Add("Canceled copying file: " & srcFile.FullName & " - " & ex.Message)
+                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
 
                 Catch ex As IOException
                     result.FilesSkipped += 1
@@ -4297,7 +4721,7 @@ Public Class Form1
 
                 Catch ex As UnauthorizedAccessException
                     result.FilesSkipped += 1
-                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName & " - " & ex.Message)
+                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
 
                 Catch ex As Exception
                     result.FilesSkipped += 1
@@ -4305,7 +4729,7 @@ Public Class Form1
                 End Try
             Next
 
-            ' Copy subdirectories (sequential or parallel; here sequential for clarity)
+            ' Copy subdirectories
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
                 Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct)
@@ -4314,6 +4738,7 @@ Public Class Form1
                 result.FilesSkipped += subResult.FilesSkipped
                 result.DirectoriesCreated += subResult.DirectoriesCreated
                 result.Errors.AddRange(subResult.Errors)
+                result.CopiedFilePaths.AddRange(subResult.CopiedFilePaths)
             Next
 
         Catch ex As OperationCanceledException
@@ -4325,6 +4750,17 @@ Public Class Form1
 
         Return result
     End Function
+
+
+
+
+
+
+
+
+
+
+
 
     ' ------------------------------------------------------------
     ' Pure helper: detect locked files (no UI)
@@ -9079,11 +9515,25 @@ End Class
 ' ------------------------------------------------------------
 ' Unified result object for file and directory copy operations
 ' ------------------------------------------------------------
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
+
+'    Public ReadOnly Property Success As Boolean
+'        Get
+'            Return Errors.Count = 0
+'        End Get
+'    End Property
+'End Class
+
 Public Class CopyResult
     Public Property FilesCopied As Integer
     Public Property FilesSkipped As Integer
     Public Property DirectoriesCreated As Integer
     Public Property Errors As New List(Of String)
+    Public Property CopiedFilePaths As New List(Of String)
 
     Public ReadOnly Property Success As Boolean
         Get
@@ -9091,6 +9541,15 @@ Public Class CopyResult
         End Get
     End Property
 End Class
+
+
+
+
+
+
+
+
+
 
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
 ' The goal: Explorer‑grade behavior with learner‑friendly clarity.
