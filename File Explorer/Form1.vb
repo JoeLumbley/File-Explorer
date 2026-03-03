@@ -62,7 +62,7 @@ Public Class Form1
 
     Private imgArrows As New ImageList()
 
-    Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
+    'Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
 
     Private currentFolder As String = String.Empty
 
@@ -509,16 +509,165 @@ Public Class Form1
 
 
 
+    'Private CancelCopyButton As Button
+    'Private CancelCopyHost As ToolStripControlHost
+
+    'Private Sub InitStatusBar()
+
+    '    Dim statusStrip As New StatusStrip()
+
+    '    ' Set font to Segoe UI Symbol, 10pt
+    '    statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
+
+    '    ' Ensure lblStatus uses the same font
+    '    lblStatus.Font = statusStrip.Font
+
+    '    ' Add the status label
+    '    statusStrip.Items.Add(lblStatus)
+
+    '    ' --- Create Cancel button ---
+    '    CancelCopyButton = New Button() With {
+    '        .Text = "Cancel",
+    '        .AutoSize = True,
+    '        .Visible = False,      ' hidden until a copy starts
+    '        .Enabled = False
+    '    }
+
+    '    ' Wire the click event
+    '    AddHandler CancelCopyButton.Click,
+    '    Sub()
+    '        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+    '            copyCts.Cancel()
+    '            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+    '        End If
+    '    End Sub
+
+    '    ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
+    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
+    '    CancelCopyHost.Alignment = ToolStripItemAlignment.Right
+
+    '    ' Add the host to the status strip
+    '    statusStrip.Items.Add(CancelCopyHost)
+
+    '    ' Add the status strip to the form
+    '    Me.Controls.Add(statusStrip)
+
+    'End Sub
+
+
+
 
     'Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
 
 
 
+    'Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
+    'Private CancelCopyButton As Button
+    'Private CancelCopyHost As ToolStripControlHost
+
+    'Private Sub InitStatusBar()
+
+    '    Dim statusStrip As New StatusStrip()
+
+    '    ' Set font to Segoe UI Symbol, 10pt
+    '    statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
+
+    '    ' Ensure lblStatus uses the same font
+    '    lblStatus.Font = statusStrip.Font
+
+    '    ' Add the status label
+    '    statusStrip.Items.Add(lblStatus)
+
+    '    ' --- Create Cancel button ---
+    '    CancelCopyButton = New Button() With {
+    '    .Text = "Cancel",
+    '    .AutoSize = True,
+    '    .Visible = False,
+    '    .Enabled = False,
+    '    .FlatStyle = FlatStyle.System   ' blends naturally with StatusStrip
+    '}
+
+    '    ' Wire the click event
+    '    AddHandler CancelCopyButton.Click,
+    '    Sub()
+    '        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+    '            copyCts.Cancel()
+    '            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+    '        End If
+    '    End Sub
+
+    '    ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
+    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
+    '    CancelCopyHost.Alignment = ToolStripItemAlignment.Right
+
+    '    ' Add the host to the status strip
+    '    statusStrip.Items.Add(CancelCopyHost)
+
+    '    ' Add the status strip to the form
+    '    Me.Controls.Add(statusStrip)
+
+    '    ' --- Initialize the status clear timer once ---
+    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
+
+    'End Sub
 
 
 
+    Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
+    Private CancelCopyButton As Button
+    Private CancelCopyHost As ToolStripControlHost
+
+    Private Sub InitStatusBar()
+
+        Dim statusStrip As New StatusStrip()
+
+        ' Set font to Segoe UI Symbol, 10pt
+        statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
+
+        ' Ensure lblStatus uses the same font
+        lblStatus.Font = statusStrip.Font
+
+        ' Add the status label
+        statusStrip.Items.Add(lblStatus)
 
 
+
+        ' --- Create Cancel button ---
+        CancelCopyButton = New Button() With {
+        .Text = "Cancel",
+        .AutoSize = True,
+        .Enabled = False,
+        .FlatStyle = FlatStyle.System,   ' blends naturally with StatusStrip
+        .Visible = False      ' hidden until a copy starts
+    }
+
+        CancelCopyButton.Visible = False
+
+        ' Wire the click event
+        AddHandler CancelCopyButton.Click,
+        Sub()
+            If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+                copyCts.Cancel()
+                ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+            End If
+        End Sub
+
+        ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
+        CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
+        CancelCopyHost.Alignment = ToolStripItemAlignment.Right
+        CancelCopyHost.Visible = False
+
+
+        ' Add the host to the status strip
+        statusStrip.Items.Add(CancelCopyHost)
+
+        ' Add the status strip to the form
+        Me.Controls.Add(statusStrip)
+
+        ' Initialize the status clear timer once
+        AddHandler statusTimer.Tick, AddressOf ClearStatus
+
+    End Sub
 
 
 
@@ -619,6 +768,76 @@ Public Class Form1
     End Function
 
 
+    'Private Function HandleEscape(keyData As Keys) As Boolean
+
+    '    ' Only handle Escape here
+    '    If keyData <> Keys.Escape Then
+    '        Return False
+    '    End If
+
+    '    If _escapeDown Then Return True   ' swallow repeat
+    '    _escapeDown = True
+
+    '    ' ============================================
+    '    ' 1. Cancel rename mode (let ESC pass through)
+    '    ' ============================================
+    '    If _isRenaming Then
+    '        ' Do NOT swallow ESC — let the ListView's edit box receive it
+    '        Return False
+    '    End If
+
+    '    ' ============================================
+    '    ' 2. Close HelpPanel
+    '    ' ============================================
+    '    If HelpPanel.Visible Then
+    '        HelpPanel.Visible = False
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 3. Reset search mode
+    '    ' ============================================
+    '    If SearchIsActive() Then
+    '        txtAddressBar.Text = currentFolder
+    '        ResetSearchState()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 4. Reset address bar if focused
+    '    ' ============================================
+    '    If txtAddressBar.Focused Then
+    '        txtAddressBar.Text = currentFolder
+    '        ResetSearchState()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 5. Optional: clear file selection
+    '    ' ============================================
+    '    If lvFiles.SelectedItems.Count > 0 Then
+    '        lvFiles.SelectedItems.Clear()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 6. Nothing to do — swallow ESC
+    '    ' ============================================
+    '    Return True
+
+    'End Function
+
+
+
+
+
+
+
+
+
+
     Private Function HandleEscape(keyData As Keys) As Boolean
 
         ' Only handle Escape here
@@ -630,11 +849,19 @@ Public Class Form1
         _escapeDown = True
 
         ' ============================================
+        ' 0. Cancel active copy operation
+        ' ============================================
+        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+            copyCts.Cancel()
+            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+            Return True
+        End If
+
+        ' ============================================
         ' 1. Cancel rename mode (let ESC pass through)
         ' ============================================
         If _isRenaming Then
-            ' Do NOT swallow ESC — let the ListView's edit box receive it
-            Return False
+            Return False   ' let ListView's edit box receive ESC
         End If
 
         ' ============================================
@@ -679,6 +906,9 @@ Public Class Form1
         Return True
 
     End Function
+
+
+
 
 
     Private Function SearchIsActive() As Boolean
@@ -2426,6 +2656,213 @@ Public Class Form1
 
 
 
+    'Private Async Sub HandleCopyCommand(parts As String())
+
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '       " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       $" Copy failed: Source ""{source}"" does not exist. " &
+    '       "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    If Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+    '       "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    If IsCopyIntoSelf(source, destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       " Cannot copy a folder into itself or one of its subfolders.")
+    '        Exit Sub
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Dim processedCount As Integer = 0
+    '    Dim finishing As Boolean = False
+
+    '    Dim progressCallback As Action(Of CopyResult) =
+    '    Sub(r)
+    '        ' Only pulse for directory copies (TotalDirectories > 0)
+    '        If r.TotalDirectories <= 0 Then
+    '            Exit Sub
+    '        End If
+
+    '        processedCount = r.FilesProcessed
+
+    '        If Not finishing AndAlso r.DirectoriesStarted >= r.TotalDirectories Then
+    '            finishing = True
+    '        End If
+
+    '        If finishing Then
+    '            ShowStatus(StatusPad & IconCopy &
+    '                       $" Finishing up... {processedCount} file(s) processed so far.")
+    '        Else
+    '            ShowStatus(StatusPad & IconCopy &
+    '                       $" Copying... {processedCount} file(s) processed so far.")
+    '        End If
+    '    End Sub
+
+    '    ' Initial indication
+    '    ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct, progressCallback)
+
+    '    If result.Success Then
+    '        ShowStatus(StatusPad & IconCopy &
+    '           $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '           " Copy completed with errors. Some items could not be copied.")
+    '    End If
+
+    '    ' Refresh file list BEFORE opening HelpPanel
+    '    Await PopulateFiles(currentFolder)
+    '    UpdateTreeRoots()
+
+    '    ' --- Open HelpPanel with full report ---
+    '    HelpPanel.SuspendLayout()
+
+    '    HelpHeaderLabel.Text = "Copy Operation Report"
+    '    HelpTextBox.Text = BuildCopyReport(result)
+
+    '    If Not HelpPanel.Visible Then
+    '        ShowHelpPanelAnimated()
+    '    End If
+
+    '    HelpPanel.ResumeLayout()
+
+    '    FocusHelpText()
+    '    RestoreAddressBar()
+
+    'End Sub
+
+
+
+
+
+
+
+
+    'Private Async Sub HandleCopyCommand(parts As String())
+
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '       " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       $" Copy failed: Source ""{source}"" does not exist. " &
+    '       "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    If Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       $" Copy failed: Destination ""{destinationRoot}"" does not exist. " &
+    '       "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    If IsCopyIntoSelf(source, destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '       " Cannot copy a folder into itself or one of its subfolders.")
+    '        Exit Sub
+    '    End If
+
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Dim processedCount As Integer = 0
+    '    Dim finishing As Boolean = False
+
+    '    Dim progressCallback As Action(Of CopyResult) =
+    '    Sub(r)
+    '        If r.TotalDirectories <= 0 Then Exit Sub
+
+    '        processedCount = r.FilesProcessed
+
+    '        If Not finishing AndAlso r.DirectoriesStarted >= r.TotalDirectories Then
+    '            finishing = True
+    '        End If
+
+    '        'If finishing Then
+    '        '    ShowStatus(StatusPad & IconCopy &
+    '        '               $" Finishing up... {processedCount} file(s) processed so far.")
+    '        'Else
+    '        '    ShowStatus(StatusPad & IconCopy &
+    '        '               $" Copying... {processedCount} file(s) processed so far.")
+    '        'End If
+
+    '        Dim hint As String = "  Press ESC to cancel."
+
+    '        If finishing Then
+    '            ShowStatus(StatusPad & IconCopy &
+    '                       $" Finishing up... {processedCount} processed.{hint}")
+    '        Else
+    '            ShowStatus(StatusPad & IconCopy &
+    '                       $" Copying... {processedCount} processed.{hint}")
+    '        End If
+
+
+    '    End Sub
+
+    '    ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
+    '    Dim result As CopyResult =
+    '    Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct, progressCallback)
+
+    '    If result.Success Then
+    '        ShowStatus(StatusPad & IconCopy &
+    '       $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '       " Copy completed with errors. Some items could not be copied.")
+    '    End If
+
+    '    Await PopulateFiles(currentFolder)
+    '    UpdateTreeRoots()
+
+    '    HelpPanel.SuspendLayout()
+    '    HelpHeaderLabel.Text = "Copy Operation Report"
+    '    HelpTextBox.Text = BuildCopyReport(result)
+    '    HelpPanel.ResumeLayout()
+
+    '    If Not HelpPanel.Visible Then
+    '        ShowHelpPanelAnimated()
+    '    End If
+
+    '    RestoreAddressBar()
+
+    'End Sub
+
+
+
+
     Private Async Sub HandleCopyCommand(parts As String())
 
         If parts.Length <= 2 Then
@@ -2460,18 +2897,23 @@ Public Class Form1
             Exit Sub
         End If
 
+        ' ---------------------------------------------------------
+        ' Start cancellation token and show Cancel button
+        ' ---------------------------------------------------------
         copyCts = New CancellationTokenSource()
         Dim ct = copyCts.Token
+
+        CancelCopyHost.Visible = True
+
+        CancelCopyButton.Visible = True
+        CancelCopyButton.Enabled = True
 
         Dim processedCount As Integer = 0
         Dim finishing As Boolean = False
 
         Dim progressCallback As Action(Of CopyResult) =
         Sub(r)
-            ' Only pulse for directory copies (TotalDirectories > 0)
-            If r.TotalDirectories <= 0 Then
-                Exit Sub
-            End If
+            If r.TotalDirectories <= 0 Then Exit Sub
 
             processedCount = r.FilesProcessed
 
@@ -2479,78 +2921,53 @@ Public Class Form1
                 finishing = True
             End If
 
+            Dim hint As String = "  Press ESC to cancel."
+
             If finishing Then
                 ShowStatus(StatusPad & IconCopy &
-                           $" Finishing up... {processedCount} file(s) processed so far.")
+                           $" Finishing up... {processedCount} processed.{hint}")
             Else
                 ShowStatus(StatusPad & IconCopy &
-                           $" Copying... {processedCount} file(s) processed so far.")
+                           $" Copying... {processedCount} processed.{hint}")
             End If
         End Sub
 
-        ' Initial indication
         ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
 
         Dim result As CopyResult =
         Await CopyFileOrDirectoryUnified(source, destinationRoot, isCut:=False, ct, progressCallback)
 
-        'If result.Success Then
-        '    ShowStatus(StatusPad & IconCopy &
-        '   $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
-        'Else
-        '    ShowStatus(StatusPad & IconError &
-        '   " Copy completed with errors. Some items could not be copied.")
-        'End If
+        ' ---------------------------------------------------------
+        ' Hide Cancel button now that the operation is finished
+        ' ---------------------------------------------------------
+        CancelCopyHost.Visible = False
 
-        'Await PopulateFiles(currentFolder)
-
-
-        '' --- Open HelpPanel with full report ---
-        'HelpHeaderLabel.Text = "Copy Operation Report"
-        'HelpTextBox.Text = BuildCopyReport(result)
-
-        'If Not HelpPanel.Visible Then
-        '    ShowHelpPanelAnimated()
-        'End If
-
-        'FocusHelpText()
-        'RestoreAddressBar()
+        CancelCopyButton.Visible = False
+        CancelCopyButton.Enabled = False
 
         If result.Success Then
             ShowStatus(StatusPad & IconCopy &
-               $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
+           $" Copied {result.FilesCopied} file(s), {result.FilesSkipped} skipped.")
         Else
             ShowStatus(StatusPad & IconError &
-               " Copy completed with errors. Some items could not be copied.")
+           " Copy completed with errors. Some items could not be copied.")
         End If
 
         Await PopulateFiles(currentFolder)
+        UpdateTreeRoots()
 
-        ' --- Open HelpPanel with full report ---
         HelpPanel.SuspendLayout()
-
         HelpHeaderLabel.Text = "Copy Operation Report"
         HelpTextBox.Text = BuildCopyReport(result)
+        HelpPanel.ResumeLayout()
 
         If Not HelpPanel.Visible Then
             ShowHelpPanelAnimated()
         End If
 
-        HelpPanel.ResumeLayout()
-
-        FocusHelpText()
         RestoreAddressBar()
 
     End Sub
-
-
-
-
-
-
-
-
-
 
 
 
@@ -5550,24 +5967,54 @@ Public Class Form1
         Next
     End Sub
 
+    'Private Sub ShowStatus(message As String)
+    '    ' Check if lblStatus is not null
+    '    If lblStatus IsNot Nothing Then
+    '        ' Use the parent control's Invoke method
+    '        If lblStatus.GetCurrentParent.InvokeRequired Then
+    '            lblStatus.GetCurrentParent.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
+    '        Else
+    '            ' Update the ToolStripStatusLabel text
+    '            lblStatus.Text = message
+    '            statusTimer.Stop()
+    '            AddHandler statusTimer.Tick, AddressOf ClearStatus
+    '            statusTimer.Start()
+    '        End If
+    '    Else
+    '        ' Handle the case where lblStatus is not initialized
+    '        Debug.WriteLine("lblStatus control is not initialized.")
+    '    End If
+    'End Sub
+
+
     Private Sub ShowStatus(message As String)
-        ' Check if lblStatus is not null
-        If lblStatus IsNot Nothing Then
-            ' Use the parent control's Invoke method
-            If lblStatus.GetCurrentParent.InvokeRequired Then
-                lblStatus.GetCurrentParent.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
-            Else
-                ' Update the ToolStripStatusLabel text
-                lblStatus.Text = message
-                statusTimer.Stop()
-                AddHandler statusTimer.Tick, AddressOf ClearStatus
-                statusTimer.Start()
-            End If
-        Else
-            ' Handle the case where lblStatus is not initialized
+        If lblStatus Is Nothing Then
             Debug.WriteLine("lblStatus control is not initialized.")
+            Return
         End If
+
+        Dim parent = lblStatus.GetCurrentParent
+
+        If parent IsNot Nothing AndAlso parent.InvokeRequired Then
+            parent.Invoke(New Action(Of String)(AddressOf ShowStatus), message)
+            Return
+        End If
+
+        ' Update the status text
+        lblStatus.Text = message
+
+        ' Restart the auto-clear timer
+        statusTimer.Stop()
+        statusTimer.Start()
     End Sub
+
+
+
+
+
+
+
+
 
     Private Sub ClearStatus(sender As Object, e As EventArgs)
         lblStatus.Text = ""
@@ -9146,6 +9593,120 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub ShowHelpPanelAnimated()
+
+    '    ' Do NOT re‑animate if already open
+    '    If HelpPanel.Visible AndAlso HelpPanel.Width > 0 Then
+    '        Return
+    '    End If
+
+    '    HelpPanel.Visible = True
+    '    HelpPanel.Width = 0
+
+    '    Dim targetWidth As Integer = 500
+    '    Dim t As New System.Windows.Forms.Timer() With {.Interval = 10}
+
+    '    AddHandler t.Tick,
+    'Sub()
+    '    Dim remaining = targetWidth - HelpPanel.Width
+    '    Dim stepSize = Math.Max(4, remaining \ 5) ' easing
+
+    '    HelpPanel.Width += stepSize
+
+    '    If HelpPanel.Width >= targetWidth Then
+    '        HelpPanel.Width = targetWidth
+    '        t.Stop()
+    '    End If
+    'End Sub
+
+    '    t.Start()
+    'End Sub
+
+
+
+    'Private Sub ShowHelpPanelAnimated()
+
+    '    ' Do NOT re‑animate if already open
+    '    If HelpPanel.Visible AndAlso HelpPanel.Width > 0 Then
+    '        Return
+    '    End If
+
+    '    HelpPanel.Visible = True
+    '    HelpPanel.Width = 0
+
+    '    Dim targetWidth As Integer = 500
+    '    Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
+
+    '    AddHandler t.Tick,
+    'Sub()
+    '    Dim w = HelpPanel.Width
+    '    Dim remaining = targetWidth - w
+
+    '    ' Quadratic ease‑out
+    '    Dim stepSize As Integer = CInt(Math.Max(6, remaining * 0.22))
+
+    '    HelpPanel.Width = Math.Min(targetWidth, w + stepSize)
+
+    '    ' Animation finished
+    '    If HelpPanel.Width >= targetWidth Then
+    '        HelpPanel.Width = targetWidth
+    '        t.Stop()
+
+    '        ' Move focus HERE — after animation completes
+    '        FocusHelpText()
+    '    End If
+    'End Sub
+
+    '    t.Start()
+    'End Sub
+
+
+    'Private Sub ShowHelpPanelAnimated()
+
+    '    ' Do NOT re‑animate if already open
+    '    If HelpPanel.Visible AndAlso HelpPanel.Width > 0 Then
+    '        Return
+    '    End If
+
+    '    HelpPanel.Visible = True
+    '    HelpPanel.Width = 0
+
+    '    Dim targetWidth As Integer = 500
+    '    Dim targetOpacity As Integer = 0
+
+    '    Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
+
+    '    AddHandler t.Tick,
+    '    Sub()
+    '        Dim w = HelpPanel.Width
+    '        Dim remaining = targetWidth - w
+
+    '        Dim opacityStep As Integer = CInt(Math.Max(10, remaining * 0.5))
+
+
+    '        ' Quadratic ease‑out for native feel
+    '        Dim stepSize As Integer = CInt(Math.Max(6, remaining * 0.22))
+
+    '        HelpPanel.Width = Math.Min(targetWidth, w + stepSize)
+    '        'HelpPanel.BackColor = Color.FromArgb(Math.Min(targetOpacity, opacityStep), 245, 245, 245)
+    '        HelpPanel.BackColor = Color.Transparent
+
+
+    '        ' Animation finished
+    '        If HelpPanel.Width >= targetWidth Then
+    '            HelpPanel.Width = targetWidth
+    '            t.Stop()
+
+    '            ' Focus AFTER animation completes
+    '            FocusHelpText()
+    '        End If
+    '    End Sub
+
+    '    t.Start()
+    'End Sub
+
+
+
     Private Sub ShowHelpPanelAnimated()
 
         ' Do NOT re‑animate if already open
@@ -9157,20 +9718,27 @@ Public Class Form1
         HelpPanel.Width = 0
 
         Dim targetWidth As Integer = 500
-        Dim t As New System.Windows.Forms.Timer() With {.Interval = 10}
+        Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
 
         AddHandler t.Tick,
-    Sub()
-        Dim remaining = targetWidth - HelpPanel.Width
-        Dim stepSize = Math.Max(4, remaining \ 5) ' easing
+        Sub()
+            Dim w = HelpPanel.Width
+            Dim remaining = targetWidth - w
 
-        HelpPanel.Width += stepSize
+            ' Quadratic ease‑out for native feel
+            Dim stepSize As Integer = CInt(Math.Max(6, remaining * 0.22))
 
-        If HelpPanel.Width >= targetWidth Then
-            HelpPanel.Width = targetWidth
-            t.Stop()
-        End If
-    End Sub
+            HelpPanel.Width = Math.Min(targetWidth, w + stepSize)
+
+            ' Animation finished
+            If HelpPanel.Width >= targetWidth Then
+                HelpPanel.Width = targetWidth
+                t.Stop()
+
+                ' Focus AFTER animation completes
+                FocusHelpText()
+            End If
+        End Sub
 
         t.Start()
     End Sub
@@ -9244,21 +9812,21 @@ Public Class Form1
 
     End Sub
 
-    Private Sub InitStatusBar()
+    'Private Sub InitStatusBar()
 
-        Dim statusStrip As New StatusStrip()
+    '    Dim statusStrip As New StatusStrip()
 
-        ' Set font to Segoe UI Symbol, 9pt
-        statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
+    '    ' Set font to Segoe UI Symbol, 9pt
+    '    statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
 
-        ' If lblStatus should also use this font, set it explicitly
-        lblStatus.Font = statusStrip.Font
+    '    ' If lblStatus should also use this font, set it explicitly
+    '    lblStatus.Font = statusStrip.Font
 
-        statusStrip.Items.Add(lblStatus)
+    '    statusStrip.Items.Add(lblStatus)
 
-        Me.Controls.Add(statusStrip)
+    '    Me.Controls.Add(statusStrip)
 
-    End Sub
+    'End Sub
 
     Private Sub InitImageList()
 
