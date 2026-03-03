@@ -508,111 +508,6 @@ Public Class Form1
     Private Const UNPIN_ICON As String = ""
 
 
-
-    'Private CancelCopyButton As Button
-    'Private CancelCopyHost As ToolStripControlHost
-
-    'Private Sub InitStatusBar()
-
-    '    Dim statusStrip As New StatusStrip()
-
-    '    ' Set font to Segoe UI Symbol, 10pt
-    '    statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
-
-    '    ' Ensure lblStatus uses the same font
-    '    lblStatus.Font = statusStrip.Font
-
-    '    ' Add the status label
-    '    statusStrip.Items.Add(lblStatus)
-
-    '    ' --- Create Cancel button ---
-    '    CancelCopyButton = New Button() With {
-    '        .Text = "Cancel",
-    '        .AutoSize = True,
-    '        .Visible = False,      ' hidden until a copy starts
-    '        .Enabled = False
-    '    }
-
-    '    ' Wire the click event
-    '    AddHandler CancelCopyButton.Click,
-    '    Sub()
-    '        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
-    '            copyCts.Cancel()
-    '            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
-    '        End If
-    '    End Sub
-
-    '    ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
-    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
-    '    CancelCopyHost.Alignment = ToolStripItemAlignment.Right
-
-    '    ' Add the host to the status strip
-    '    statusStrip.Items.Add(CancelCopyHost)
-
-    '    ' Add the status strip to the form
-    '    Me.Controls.Add(statusStrip)
-
-    'End Sub
-
-
-
-
-    'Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
-
-
-
-    'Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
-    'Private CancelCopyButton As Button
-    'Private CancelCopyHost As ToolStripControlHost
-
-    'Private Sub InitStatusBar()
-
-    '    Dim statusStrip As New StatusStrip()
-
-    '    ' Set font to Segoe UI Symbol, 10pt
-    '    statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
-
-    '    ' Ensure lblStatus uses the same font
-    '    lblStatus.Font = statusStrip.Font
-
-    '    ' Add the status label
-    '    statusStrip.Items.Add(lblStatus)
-
-    '    ' --- Create Cancel button ---
-    '    CancelCopyButton = New Button() With {
-    '    .Text = "Cancel",
-    '    .AutoSize = True,
-    '    .Visible = False,
-    '    .Enabled = False,
-    '    .FlatStyle = FlatStyle.System   ' blends naturally with StatusStrip
-    '}
-
-    '    ' Wire the click event
-    '    AddHandler CancelCopyButton.Click,
-    '    Sub()
-    '        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
-    '            copyCts.Cancel()
-    '            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
-    '        End If
-    '    End Sub
-
-    '    ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
-    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
-    '    CancelCopyHost.Alignment = ToolStripItemAlignment.Right
-
-    '    ' Add the host to the status strip
-    '    statusStrip.Items.Add(CancelCopyHost)
-
-    '    ' Add the status strip to the form
-    '    Me.Controls.Add(statusStrip)
-
-    '    ' --- Initialize the status clear timer once ---
-    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
-
-    'End Sub
-
-
-
     Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
     Private CancelCopyButton As Button
     Private CancelCopyHost As ToolStripControlHost
@@ -630,16 +525,14 @@ Public Class Form1
         ' Add the status label
         statusStrip.Items.Add(lblStatus)
 
-
-
         ' --- Create Cancel button ---
         CancelCopyButton = New Button() With {
-        .Text = "Cancel",
-        .AutoSize = True,
-        .Enabled = False,
-        .FlatStyle = FlatStyle.System,   ' blends naturally with StatusStrip
-        .Visible = False      ' hidden until a copy starts
-    }
+            .Text = "Cancel",
+            .AutoSize = True,
+            .Enabled = False,
+            .FlatStyle = FlatStyle.System,   ' blends naturally with StatusStrip
+            .Visible = False      ' hidden until a copy starts
+        }
 
         CancelCopyButton.Visible = False
 
@@ -668,16 +561,6 @@ Public Class Form1
         AddHandler statusTimer.Tick, AddressOf ClearStatus
 
     End Sub
-
-
-
-
-
-
-
-
-
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -829,15 +712,6 @@ Public Class Form1
 
     'End Function
 
-
-
-
-
-
-
-
-
-
     Private Function HandleEscape(keyData As Keys) As Boolean
 
         ' Only handle Escape here
@@ -906,10 +780,6 @@ Public Class Form1
         Return True
 
     End Function
-
-
-
-
 
     Private Function SearchIsActive() As Boolean
         Return SearchResults.Count > 0 _
