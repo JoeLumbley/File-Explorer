@@ -138,6 +138,18 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 # Command Line Interface
 
+## **Command Line Interface Index**
+
+
+
+  - [Features Overview](#features-overview)
+  - [Commands](#commands)
+  - [Quoting Rules](#-quoting-rules-important)
+  - [Contextual Navigation](#-contextual-navigation)
+  - [Example Session](#-example-session)
+
+[ Table of Contents](#table-of-contents)
+
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
 
@@ -156,7 +168,7 @@ The CLI is designed to be:
 - **Beginner‑friendly** - helpful messages and examples  
 - **Powerful** - supports navigation, search, file operations, and more  
 
-[ Table of Contents](#table-of-contents)
+[Command Index](#command-index)
 
 ---
 
@@ -187,7 +199,7 @@ If a command doesn’t match a known keyword, the CLI checks:
 
 This makes the CLI feel natural and forgiving.
 
-[ Table of Contents](#table-of-contents)
+[Command Line Interface Index](#command-line-interface-index)
 
 ---
 
@@ -215,6 +227,8 @@ This makes the CLI feel natural and forgiving.
 - [`rename rn`](#-rename--rename-rn)  
 - [`shortcuts keys`](#-keyboard-shortcuts--shortcuts-keys)  
 - [`text txt`](#-create-text-file--text-txt)  
+
+[Command Line Interface Index](#command-line-interface-index)
 
 [ Table of Contents](#table-of-contents)
 
@@ -565,7 +579,7 @@ This applies to:
 
 The CLI will warn the user when quotes are required.
 
-[ Table of Contents](#table-of-contents)
+[Command Line Interface Index](#command-line-interface-index)
 
 ---
 
@@ -579,7 +593,7 @@ If the user enters something that is **not** a command:
 
 This makes the CLI feel natural and forgiving.
 
-[ Table of Contents](#table-of-contents)
+[Command Line Interface Index](#command-line-interface-index)
 
 ---
 
@@ -618,13 +632,7 @@ The File Explorer CLI provides:
 
 It’s a flexible, efficient alternative to the graphical interface - perfect for users who enjoy command‑driven workflows.
 
-
-[ Table of Contents](#table-of-contents)
-
-
-
-
-
+[Command Line Interface Index](#command-line-interface-index)
 
 
 
@@ -684,13 +692,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 - [Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
 
-
 - [Command Line Interface (CLI)](#command-line-interface)
-  - [Features Overview](#features-overview)
-  - [Commands](#commands)
-  - [Quoting Rules](#-quoting-rules-important)
-  - [Contextual Navigation](#-contextual-navigation)
-  - [Example Session](#-example-session)
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
 
@@ -4196,6 +4198,9 @@ End Sub
 # Keyboard Shortcuts
 
 The File Explorer supports a set of convenient keyboard shortcuts to speed up navigation and file operations. These shortcuts mirror familiar behaviors from traditional file managers, making the interface fast and intuitive.
+
+
+<img width="1266" height="733" alt="124" src="https://github.com/user-attachments/assets/e1538746-670c-4c2b-98d1-ec4c89319f88" />
 
 ---
 
