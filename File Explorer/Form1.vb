@@ -30,6 +30,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports System.Windows
 
 
 
@@ -452,7 +453,7 @@ Public Class Form1
     },
     {"pin",
         (
-            {$"pin"},
+            {"pin"},
             "pin [folder_path]",
             "Pin or unpin a folder.",
             {
@@ -494,6 +495,678 @@ Public Class Form1
         )
     }
 }
+
+
+
+    '    Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    {"cd",
+    '        (
+    '            Aliases:=New String() {"cd"},
+    '            Usage:="cd [directory]",
+    '            Description:="Change directory to the specified path.",
+    '            Examples:=New String() {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"copy",
+    '        (
+    '            Aliases:=New String() {"copy", "cp"},
+    '            Usage:="copy [source] [destination]",
+    '            Description:="Copy a file or folder to a destination folder.",
+    '            Examples:=New String() {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            }
+    '        )
+    '    },
+    '    {"delete",
+    '        (
+    '            Aliases:=New String() {"delete", "rm"},
+    '            Usage:="delete [file_or_directory]",
+    '            Description:="Delete a file or folder.",
+    '            Examples:=New String() {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"df",
+    '        (
+    '            Aliases:=New String() {"df"},
+    '            Usage:="df <drive_letter>:",
+    '            Description:="Display the available free space on the specified drive.",
+    '            Examples:=New String() {
+    '                "df C:",
+    '                "df D:",
+    '                "df E:"
+    '            }
+    '        )
+    '    },
+    '    {"drives",
+    '        (
+    '            Aliases:=New String() {"drives"},
+    '            Usage:="drives",
+    '            Description:="Show an overview of all drives, including free space bars.",
+    '            Examples:=New String() {
+    '                "drives"
+    '            }
+    '        )
+    '    },
+    '    {"exit",
+    '        (
+    '            Aliases:=New String() {
+    '                "exit", "quit", "close", "stop", "halt", "end",
+    '                "signout", "poweroff", "bye"
+    '            },
+    '            Usage:="exit",
+    '            Description:="Exit the application.",
+    '            Examples:=New String() {}
+    '        )
+    '    },
+    '    {"find",
+    '        (
+    '            Aliases:=New String() {"find", "search"},
+    '            Usage:="find [search_term]",
+    '            Description:="Search for files and folders in the current directory.",
+    '            Examples:=New String() {
+    '                "find document"
+    '            }
+    '        )
+    '    },
+    '    {"findnext",
+    '        (
+    '            Aliases:=New String() {"findnext", "searchnext", "next"},
+    '            Usage:="findnext",
+    '            Description:="Show the next search result from the previous search.",
+    '            Examples:=New String() {}
+    '        )
+    '    },
+    '    {"help",
+    '        (
+    '            Aliases:=New String() {"help", "commands", "?"},
+    '            Usage:="help [search_term]",
+    '            Description:="Show the full command list or jump to a specific command.",
+    '            Examples:=New String() {
+    '                "help",
+    '                "help cd",
+    '                "help copy"
+    '            }
+    '        )
+    '    },
+    '    {"man",
+    '        (
+    '            Aliases:=New String() {"man", "manual", "appmanual"},
+    '            Usage:="man [section]",
+    '            Description:="Show the full application manual or jump to a specific section.",
+    '            Examples:=New String() {
+    '                "man",
+    '                "man help",
+    '                "man commands",
+    '                "manual",
+    '                "appmanual"
+    '            }
+    '        )
+    '    },
+    '    {"mkdir",
+    '        (
+    '            Aliases:=New String() {"mkdir", "make", "md"},
+    '            Usage:="mkdir [directory_path]",
+    '            Description:="Create a new folder.",
+    '            Examples:=New String() {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            }
+    '        )
+    '    },
+    '    {"move",
+    '        (
+    '            Aliases:=New String() {"move", "mv"},
+    '            Usage:="move [source] [destination]",
+    '            Description:="Move a file or folder to a new location.",
+    '            Examples:=New String() {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            }
+    '        )
+    '    },
+    '    {"open",
+    '        (
+    '            Aliases:=New String() {"open"},
+    '            Usage:="open [file_or_directory]",
+    '            Description:="Open a file or navigate into a folder.",
+    '            Examples:=New String() {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"pin",
+    '        (
+    '            Aliases:=New String() {"pin"},
+    '            Usage:="pin [folder_path]",
+    '            Description:="Pin or unpin a folder.",
+    '            Examples:=New String() {
+    '                "pin C:\Projects",
+    '                "pin ""C:\My Documents""",
+    '                "pin"
+    '            }
+    '        )
+    '    },
+    '    {"rename",
+    '        (
+    '            Aliases:=New String() {"rename", "rn"},
+    '            Usage:="rename [source_path] [new_name]",
+    '            Description:="Rename a file or directory.",
+    '            Examples:=New String() {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            }
+    '        )
+    '    },
+    '    {"shortcuts",
+    '        (
+    '            Aliases:=New String() {"shortcuts", "keys"},
+    '            Usage:="shortcuts",
+    '            Description:="Show a list of all keyboard shortcuts.",
+    '            Examples:=New String() {
+    '                "shortcuts",
+    '                "keys"
+    '            }
+    '        )
+    '    },
+    '    {"text",
+    '        (
+    '            Aliases:=New String() {"text", "txt"},
+    '            Usage:="text [file_path]",
+    '            Description:="Create a new text file.",
+    '            Examples:=New String() {
+    '                "text ""C:\folder\example.txt"""
+    '            }
+    '        )
+    '    }
+    '}
+
+
+    '    Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    {"cd",
+    '        (
+    '            Aliases:=New String() {"cd"},
+    '            Usage:="cd [directory]",
+    '            Description:="Change directory to the specified path.",
+    '            Examples:=New String() {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"copy",
+    '        (
+    '            Aliases:=New String() {"copy", "cp"},
+    '            Usage:="copy [source] [destination]",
+    '            Description:="Copy a file or folder to a destination folder.",
+    '            Examples:=New String() {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            }
+    '        )
+    '    },
+    '    {"delete",
+    '        (
+    '            Aliases:=New String() {"delete", "rm"},
+    '            Usage:="delete [file_or_directory]",
+    '            Description:="Delete a file or folder.",
+    '            Examples:=New String() {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"df",
+    '        (
+    '            Aliases:=New String() {"df"},
+    '            Usage:="df <drive_letter>:",
+    '            Description:="Display the available free space on the specified drive.",
+    '            Examples:=New String() {
+    '                "df C:",
+    '                "df D:",
+    '                "df E:"
+    '            }
+    '        )
+    '    },
+    '    {"drives",
+    '        (
+    '            Aliases:=New String() {"drives"},
+    '            Usage:="drives",
+    '            Description:="Show an overview of all drives, including free space bars.",
+    '            Examples:=New String() {
+    '                "drives"
+    '            }
+    '        )
+    '    },
+    '    {"exit",
+    '        (
+    '            Aliases:=New String() {
+    '                "exit", "quit", "close", "stop", "halt", "end",
+    '                "signout", "poweroff", "bye"
+    '            },
+    '            Usage:="exit",
+    '            Description:="Exit the application.",
+    '            Examples:=New String() {}
+    '        )
+    '    },
+    '    {"find",
+    '        (
+    '            Aliases:=New String() {"find", "search"},
+    '            Usage:="find [search_term]",
+    '            Description:="Search for files and folders in the current directory.",
+    '            Examples:=New String() {
+    '                "find document"
+    '            }
+    '        )
+    '    },
+    '    {"findnext",
+    '        (
+    '            Aliases:=New String() {"findnext", "searchnext", "next"},
+    '            Usage:="findnext",
+    '            Description:="Show the next search result from the previous search.",
+    '            Examples:=New String() {}
+    '        )
+    '    },
+    '    {"help",
+    '        (
+    '            Aliases:=New String() {"help", "commands", "?"},
+    '            Usage:="help [search_term]",
+    '            Description:="Show the full command list or jump to a specific command.",
+    '            Examples:=New String() {
+    '                "help",
+    '                "help cd",
+    '                "help copy"
+    '            }
+    '        )
+    '    },
+    '    {"man",
+    '        (
+    '            Aliases:=New String() {"man", "manual", "appmanual"},
+    '            Usage:="man [section]",
+    '            Description:="Show the full application manual or jump to a specific section.",
+    '            Examples:=New String() {
+    '                "man",
+    '                "man help",
+    '                "man commands",
+    '                "manual",
+    '                "appmanual"
+    '            }
+    '        )
+    '    },
+    '    {"mkdir",
+    '        (
+    '            Aliases:=New String() {"mkdir", "make", "md"},
+    '            Usage:="mkdir [directory_path]",
+    '            Description:="Create a new folder.",
+    '            Examples:=New String() {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            }
+    '        )
+    '    },
+    '    {"move",
+    '        (
+    '            Aliases:=New String() {"move", "mv"},
+    '            Usage:="move [source] [destination]",
+    '            Description:="Move a file or folder to a new location.",
+    '            Examples:=New String() {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            }
+    '        )
+    '    },
+    '    {"open",
+    '        (
+    '            Aliases:=New String() {"open"},
+    '            Usage:="open [file_or_directory]",
+    '            Description:="Open a file or navigate into a folder.",
+    '            Examples:=New String() {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"pin",
+    '        (
+    '            Aliases:=New String() {"pin"},
+    '            Usage:="pin [folder_path]",
+    '            Description:="Pin or unpin a folder.",
+    '            Examples:=New String() {
+    '                "pin C:\Projects",
+    '                "pin ""C:\My Documents""",
+    '                "pin"
+    '            }
+    '        )
+    '    },
+    '    {"rename",
+    '        (
+    '            Aliases:=New String() {"rename", "rn"},
+    '            Usage:="rename [source_path] [new_name]",
+    '            Description:="Rename a file or directory.",
+    '            Examples:=New String() {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            }
+    '        )
+    '    },
+    '    {"shortcuts",
+    '        (
+    '            Aliases:=New String() {"shortcuts", "keys"},
+    '            Usage:="shortcuts",
+    '            Description:="Show a list of all keyboard shortcuts.",
+    '            Examples:=New String() {
+    '                "shortcuts",
+    '                "keys"
+    '            }
+    '        )
+    '    },
+    '    {"text",
+    '        (
+    '            Aliases:=New String() {"text", "txt"},
+    '            Usage:="text [file_path]",
+    '            Description:="Create a new text file.",
+    '            Examples:=New String() {
+    '                "text ""C:\folder\example.txt"""
+    '            }
+    '        )
+    '    }
+    '}
+
+
+
+
+
+
+
+
+
+
+    '    Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("cd",
+    '        (
+    '            Aliases:=New String() {"cd"},
+    '            Usage:="cd [directory]",
+    '            Description:="Change directory to the specified path.",
+    '            Examples:=New String() {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("copy",
+    '        (
+    '            Aliases:=New String() {"copy", "cp"},
+    '            Usage:="copy [source] [destination]",
+    '            Description:="Copy a file or folder to a destination folder.",
+    '            Examples:=New String() {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("delete",
+    '        (
+    '            Aliases:=New String() {"delete", "rm"},
+    '            Usage:="delete [file_or_directory]",
+    '            Description:="Delete a file or folder.",
+    '            Examples:=New String() {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("df",
+    '        (
+    '            Aliases:=New String() {"df"},
+    '            Usage:="df <drive_letter>:",
+    '            Description:="Display the available free space on the specified drive.",
+    '            Examples:=New String() {
+    '                "df C:",
+    '                "df D:",
+    '                "df E:"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("drives",
+    '        (
+    '            Aliases:=New String() {"drives"},
+    '            Usage:="drives",
+    '            Description:="Show an overview of all drives, including free space bars.",
+    '            Examples:=New String() {
+    '                "drives"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("exit",
+    '        (
+    '            Aliases:=New String() {
+    '                "exit", "quit", "close", "stop", "halt", "end",
+    '                "signout", "poweroff", "bye"
+    '            },
+    '            Usage:="exit",
+    '            Description:="Exit the application.",
+    '            Examples:=New String() {}
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("find",
+    '        (
+    '            Aliases:=New String() {"find", "search"},
+    '            Usage:="find [search_term]",
+    '            Description:="Search for files and folders in the current directory.",
+    '            Examples:=New String() {
+    '                "find document"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("findnext",
+    '        (
+    '            Aliases:=New String() {"findnext", "searchnext", "next"},
+    '            Usage:="findnext",
+    '            Description:="Show the next search result from the previous search.",
+    '            Examples:=New String() {}
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("help",
+    '        (
+    '            Aliases:=New String() {"help", "commands", "?"},
+    '            Usage:="help [search_term]",
+    '            Description:="Show the full command list or jump to a specific command.",
+    '            Examples:=New String() {
+    '                "help",
+    '                "help cd",
+    '                "help copy"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("man",
+    '        (
+    '            Aliases:=New String() {"man", "manual", "appmanual"},
+    '            Usage:="man [section]",
+    '            Description:="Show the full application manual or jump to a specific section.",
+    '            Examples:=New String() {
+    '                "man",
+    '                "man help",
+    '                "man commands",
+    '                "manual",
+    '                "appmanual"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("mkdir",
+    '        (
+    '            Aliases:=New String() {"mkdir", "make", "md"},
+    '            Usage:="mkdir [directory_path]",
+    '            Description:="Create a new folder.",
+    '            Examples:=New String() {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("move",
+    '        (
+    '            Aliases:=New String() {"move", "mv"},
+    '            Usage:="move [source] [destination]",
+    '            Description:="Move a file or folder to a new location.",
+    '            Examples:=New String() {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("open",
+    '        (
+    '            Aliases:=New String() {"open"},
+    '            Usage:="open [file_or_directory]",
+    '            Description:="Open a file or navigate into a folder.",
+    '            Examples:=New String() {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("pin",
+    '        (
+    '            Aliases:=New String() {"pin"},
+    '            Usage:="pin [folder_path]",
+    '            Description:="Pin or unpin a folder.",
+    '            Examples:=New String() {
+    '                "pin C:\Projects",
+    '                "pin ""C:\My Documents""",
+    '                "pin"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("rename",
+    '        (
+    '            Aliases:=New String() {"rename", "rn"},
+    '            Usage:="rename [source_path] [new_name]",
+    '            Description:="Rename a file or directory.",
+    '            Examples:=New String() {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("shortcuts",
+    '        (
+    '            Aliases:=New String() {"shortcuts", "keys"},
+    '            Usage:="shortcuts",
+    '            Description:="Show a list of all keyboard shortcuts.",
+    '            Examples:=New String() {
+    '                "shortcuts",
+    '                "keys"
+    '            }
+    '        )
+    '    ),
+    '    New KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))("text",
+    '        (
+    '            Aliases:=New String() {"text", "txt"},
+    '            Usage:="text [file_path]",
+    '            Description:="Create a new text file.",
+    '            Examples:=New String() {
+    '                "text ""C:\folder\example.txt"""
+    '            }
+    '        )
+    '    )
+    '}
+
+
+
+    '    Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    {"cd",
+    '        (Aliases:=New String() {"cd"},
+    '         Usage:="cd [directory]",
+    '         Description:="Change directory to the specified path.",
+    '         Examples:=New String() {"cd C:\", "cd ""C:\My Folder"""})},
+    '    {"copy",
+    '        (Aliases:=New String() {"copy", "cp"},
+    '         Usage:="copy [source] [destination]",
+    '         Description:="Copy a file or folder to a destination folder.",
+    '         Examples:=New String() {"copy C:\folderA\file.doc C:\folderB", "copy ""C:\folder A"" ""C:\folder B"""})},
+    '    {"delete",
+    '        (Aliases:=New String() {"delete", "rm"},
+    '         Usage:="delete [file_or_directory]",
+    '         Description:="Delete a file or folder.",
+    '         Examples:=New String() {"delete C:\file.txt", "delete ""C:\My Folder"""})},
+    '    {"df",
+    '        (Aliases:=New String() {"df"},
+    '         Usage:="df <drive_letter>:",
+    '         Description:="Display the available free space on the specified drive.",
+    '         Examples:=New String() {"df C:", "df D:", "df E:"})},
+    '    {"drives",
+    '        (Aliases:=New String() {"drives"},
+    '         Usage:="drives",
+    '         Description:="Show an overview of all drives, including free space bars.",
+    '         Examples:=New String() {"drives"})},
+    '    {"exit",
+    '        (Aliases:=New String() {"exit", "quit", "close", "stop", "halt", "end", "signout", "poweroff", "bye"},
+    '         Usage:="exit",
+    '         Description:="Exit the application.",
+    '         Examples:=New String() {})},
+    '    {"find",
+    '        (Aliases:=New String() {"find", "search"},
+    '         Usage:="find [search_term]",
+    '         Description:="Search for files and folders in the current directory.",
+    '         Examples:=New String() {"find document"})},
+    '    {"findnext",
+    '        (Aliases:=New String() {"findnext", "searchnext", "next"},
+    '         Usage:="findnext",
+    '         Description:="Show the next search result from the previous search.",
+    '         Examples:=New String() {})},
+    '    {"help",
+    '        (Aliases:=New String() {"help", "commands", "?"},
+    '         Usage:="help [search_term]",
+    '         Description:="Show the full command list or jump to a specific command.",
+    '         Examples:=New String() {"help", "help cd", "help copy"})},
+    '    {"man",
+    '        (Aliases:=New String() {"man", "manual", "appmanual"},
+    '         Usage:="man [section]",
+    '         Description:="Show the full application manual or jump to a specific section.",
+    '         Examples:=New String() {"man", "man help", "man commands", "manual", "appmanual"})},
+    '    {"mkdir",
+    '        (Aliases:=New String() {"mkdir", "make", "md"},
+    '         Usage:="mkdir [directory_path]",
+    '         Description:="Create a new folder.",
+    '         Examples:=New String() {"mkdir C:\newfolder", "make ""C:\My New Folder""", "md C:\anotherfolder"})},
+    '    {"move",
+    '        (Aliases:=New String() {"move", "mv"},
+    '         Usage:="move [source] [destination]",
+    '         Description:="Move a file or folder to a new location.",
+    '         Examples:=New String() {"move C:\folderA\file.doc C:\folderB\file.doc", "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""})},
+    '    {"open",
+    '        (Aliases:=New String() {"open"},
+    '         Usage:="open [file_or_directory]",
+    '         Description:="Open a file or navigate into a folder.",
+    '         Examples:=New String() {"open C:\folder\file.txt", "open ""C:\My Folder"""})},
+    '    {"pin",
+    '        (Aliases:=New String() {"pin"},
+    '         Usage:="pin [folder_path]",
+    '         Description:="Pin or unpin a folder.",
+    '         Examples:=New String() {"pin C:\Projects", "pin ""C:\My Documents""", "pin"})},
+    '    {"rename",
+    '        (Aliases:=New String() {"rename", "rn"},
+    '         Usage:="rename [source_path] [new_name]",
+    '         Description:="Rename a file or directory.",
+    '         Examples:=New String() {"rename ""C:\folder\oldname.txt"" ""newname.txt"""})},
+    '    {"shortcuts",
+    '        (Aliases:=New String() {"shortcuts", "keys"},
+    '         Usage:="shortcuts",
+    '         Description:="Show a list of all keyboard shortcuts.",
+    '         Examples:=New String() {"shortcuts", "keys"})},
+    '    {"text",
+    '    (Aliases:=New String() {"text", "txt"},
+    '     Usage:="text [file_path]",
+    '     Description:="Create a new text file.",
+    '     Examples:=New String() {"text ""C:\folder\example.txt"""})}
+    '})
 
 
     Private HelpHeaderLabel As Label
@@ -6103,6 +6776,107 @@ Public Class Form1
     '    Return sb.ToString()
     'End Function
 
+    'Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
+    '    Dim sb As New StringBuilder()
+    '    Dim list = If(entries, CommandHelp)
+
+    '    ' ---------------------------------------------------------
+    '    ' Navigation Hint (only for full help)
+    '    ' ---------------------------------------------------------
+    '    If entries Is Nothing Then
+    '        sb.AppendLine("Use help [command] to show help for a specific command.")
+    '        sb.AppendLine()
+
+    '        sb.AppendLine("Examples:")
+    '        sb.AppendLine("help cd")
+    '        sb.AppendLine("help copy")
+
+    '        sb.AppendLine()
+
+    '        ' -----------------------------------------------------
+    '        ' Command Index (Top for Discoverability)
+    '        ' -----------------------------------------------------
+    '        sb.AppendLine("Commands:")
+    '        For Each entry In CommandHelp
+    '            Dim aliases = entry.Value.Aliases
+    '            sb.AppendLine("  • " & String.Join(", ", aliases))
+    '        Next
+    '        sb.AppendLine()
+    '    End If
+
+    '    ' ---------------------------------------------------------
+    '    ' Command Entries
+    '    ' ---------------------------------------------------------
+    '    'For Each entry In list
+    '    '    Dim meta = entry.Value
+
+    '    '    ' Aliases (comma-separated)
+    '    '    sb.AppendLine(String.Join(", ", meta.Aliases))
+
+    '    '    ' Usage
+    '    '    sb.AppendLine(meta.Usage)
+
+    '    '    ' Description
+    '    '    sb.AppendLine("  " & meta.Description)
+
+    '    '    ' Examples (optional)
+    '    '    If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+    '    '        sb.AppendLine("  Examples:")
+    '    '        For Each ex In meta.Examples
+    '    '            sb.AppendLine("    " & ex)
+    '    '        Next
+    '    '    End If
+
+    '    '    sb.AppendLine()
+    '    'Next
+
+    '    ' ---------------------------------------------------------
+    '    ' Command Entries
+    '    ' ---------------------------------------------------------
+    '    Dim lastIndex = list.Count - 1
+    '    Dim currentIndex As Integer = 0
+
+    '    For Each entry In list
+    '        Dim meta = entry.Value
+
+    '        ' Aliases (comma-separated)
+    '        sb.AppendLine(String.Join(", ", meta.Aliases))
+
+    '        sb.AppendLine("")
+
+    '        ' Usage
+    '        sb.AppendLine(meta.Usage)
+
+    '        ' Description
+    '        sb.AppendLine("  " & meta.Description)
+
+    '        sb.AppendLine("")
+
+
+    '        ' Examples (optional)
+    '        If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
+    '            sb.AppendLine("  Examples:")
+    '            For Each ex In meta.Examples
+    '                sb.AppendLine("    " & ex)
+    '            Next
+    '        End If
+
+    '        ' Divider (only if not the last entry)
+    '        If currentIndex < lastIndex Then
+    '            sb.AppendLine("")
+
+    '            sb.AppendLine("────────────────────────────────────────")
+    '        End If
+
+    '        sb.AppendLine()
+    '        currentIndex += 1
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
     Private Function BuildHelpText(Optional entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing) As String
         Dim sb As New StringBuilder()
         Dim list = If(entries, CommandHelp)
@@ -6113,49 +6887,18 @@ Public Class Form1
         If entries Is Nothing Then
             sb.AppendLine("Use help [command] to show help for a specific command.")
             sb.AppendLine()
-
             sb.AppendLine("Examples:")
-            sb.AppendLine("help cd")
-            sb.AppendLine("help copy")
-
+            sb.AppendLine("  help cd")
+            sb.AppendLine("  help copy")
             sb.AppendLine()
-
-            ' -----------------------------------------------------
-            ' Command Index (Top for Discoverability)
-            ' -----------------------------------------------------
             sb.AppendLine("Commands:")
+
             For Each entry In CommandHelp
-                Dim aliases = entry.Value.Aliases
-                sb.AppendLine("  • " & String.Join(", ", aliases))
+                sb.AppendLine("  • " & String.Join(", ", entry.Value.Aliases))
             Next
+
             sb.AppendLine()
         End If
-
-        ' ---------------------------------------------------------
-        ' Command Entries
-        ' ---------------------------------------------------------
-        'For Each entry In list
-        '    Dim meta = entry.Value
-
-        '    ' Aliases (comma-separated)
-        '    sb.AppendLine(String.Join(", ", meta.Aliases))
-
-        '    ' Usage
-        '    sb.AppendLine(meta.Usage)
-
-        '    ' Description
-        '    sb.AppendLine("  " & meta.Description)
-
-        '    ' Examples (optional)
-        '    If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
-        '        sb.AppendLine("  Examples:")
-        '        For Each ex In meta.Examples
-        '            sb.AppendLine("    " & ex)
-        '        Next
-        '    End If
-
-        '    sb.AppendLine()
-        'Next
 
         ' ---------------------------------------------------------
         ' Command Entries
@@ -6166,45 +6909,38 @@ Public Class Form1
         For Each entry In list
             Dim meta = entry.Value
 
-            ' Aliases (comma-separated)
+            ' Aliases
             sb.AppendLine(String.Join(", ", meta.Aliases))
-
-            sb.AppendLine("")
+            sb.AppendLine()
 
             ' Usage
             sb.AppendLine(meta.Usage)
+            sb.AppendLine()
 
             ' Description
             sb.AppendLine("  " & meta.Description)
+            sb.AppendLine()
 
-            sb.AppendLine("")
-
-
-            ' Examples (optional)
+            ' Examples
             If meta.Examples IsNot Nothing AndAlso meta.Examples.Length > 0 Then
                 sb.AppendLine("  Examples:")
                 For Each ex In meta.Examples
                     sb.AppendLine("    " & ex)
                 Next
+                sb.AppendLine()
             End If
 
             ' Divider (only if not the last entry)
             If currentIndex < lastIndex Then
-                sb.AppendLine("")
-
                 sb.AppendLine("────────────────────────────────────────")
+                sb.AppendLine()
             End If
 
-            sb.AppendLine()
             currentIndex += 1
         Next
 
         Return sb.ToString()
     End Function
-
-
-
-
 
 
 
@@ -7457,87 +8193,476 @@ Public Class Form1
     End Sub
 
 
+    '    Private Sub HandleManualCommand(parts As String())
+    '        Try
+    '            HelpHeaderLabel.Text = "Manual"
+    '            HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '            'Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '            '' -----------------------------
+    '            '' 0. No argument → full manual
+    '            '' -----------------------------
+    '            'If String.IsNullOrEmpty(searchTerm) Then
+    '            '    ShowManualContent(BuildAppManualText())
+    '            '    Return
+    '            'End If
+
+    '            Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '            ' 0. No argument → full manual
+    '            If String.IsNullOrEmpty(searchTerm) Then
+    '                ShowManualContent(BuildAppManualText())
+    '                Return
+    '            End If
+
+    '            '    ' ⭐ Special case: man help / man commands
+    '            '    If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
+    '            'OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) _
+    '            'OrElse searchTerm.Equals("copy", StringComparison.OrdinalIgnoreCase) Then
+
+    '            '        HelpHeaderLabel.Text = "Command Reference"
+    '            '        HelpTextBox.Text = BuildHelpText()
+
+    '            '        If Not HelpPanel.Visible Then
+    '            '            ShowHelpPanelAnimated()
+    '            '        End If
+
+    '            '        FocusHelpText()
+    '            '        RestoreAddressBar()
+    '            '        Return
+    '            '    End If
+    '            ' ⭐ Special case: man help / man commands → full Command Reference
+    '            If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
+    'OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
+
+    '                HelpHeaderLabel.Text = "Command Reference"
+    '                HelpTextBox.Text = BuildHelpText()
+
+    '                If Not HelpPanel.Visible Then
+    '                    ShowHelpPanelAnimated()
+    '                End If
+
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            ' ⭐ Special case: man copy → open the copy command page
+    '            If searchTerm.Equals("copy", StringComparison.OrdinalIgnoreCase) Then
+    '                Dim entry = CommandHelp("copy")
+    '                HelpHeaderLabel.Text = "copy"
+    '                HelpTextBox.Text = BuildHelpText({entry})
+
+    '                If Not HelpPanel.Visible Then
+    '                    ShowHelpPanelAnimated()
+    '                End If
+
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+
+    '            Dim dict = BuildManualDictionary()
+    '            Dim aliases = ManualSectionAliases()
+
+
+
+
+    '            ' -----------------------------
+    '            ' 1. Alias match
+    '            ' -----------------------------
+    '            Dim realSection As String = Nothing
+    '            If aliases.TryGetValue(searchTerm, realSection) Then
+    '                ShowManualContent(RenderSection(realSection, dict(realSection)))
+    '                Return
+    '            End If
+
+    '            ' -----------------------------
+    '            ' 2. Exact match
+    '            ' -----------------------------
+    '            Dim exact = dict.Keys.
+    '            FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '            If exact IsNot Nothing Then
+    '                ShowManualContent(RenderSection(exact, dict(exact)))
+    '                Return
+    '            End If
+
+    '            ' -----------------------------
+    '            ' 3. Prefix match
+    '            ' -----------------------------
+    '            Dim prefix = dict.Keys.
+    '            FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '            If prefix IsNot Nothing Then
+    '                ShowManualContent(RenderSection(prefix, dict(prefix)))
+    '                Return
+    '            End If
+
+    '            ' -----------------------------
+    '            ' 4. Keyword search fallback
+    '            ' -----------------------------
+    '            Dim results = SearchManualDict(searchTerm)
+    '            ShowSearchResults(searchTerm, results)
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError &
+    '                   "  Failed to display manual: " & ex.Message)
+    '        Finally
+    '            RestoreAddressBar()
+    '        End Try
+    '    End Sub
+
+
+
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        ' ---------------------------------------------------------
+    '        ' 0. No argument → full manual
+    '        ' ---------------------------------------------------------
+    '        If String.IsNullOrEmpty(searchTerm) Then
+    '            ShowManualContent(BuildAppManualText())
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' ⭐ Special case: man help / man commands → full Command Reference
+    '        ' ---------------------------------------------------------
+    '        If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
+    '    OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
+
+    '            HelpHeaderLabel.Text = "Command Reference"
+    '            HelpTextBox.Text = BuildHelpText()
+
+    '            If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' ⭐ Special case: man copy → open the copy command page
+    '        ' ---------------------------------------------------------
+    '        If searchTerm.Equals("copy", StringComparison.OrdinalIgnoreCase) Then
+    '            Dim entry = CommandHelp("copy")
+
+    '            HelpHeaderLabel.Text = "copy"
+    '            HelpTextBox.Text = BuildHelpText({entry})
+
+    '            If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' Build manual dictionary + alias table
+    '        ' ---------------------------------------------------------
+    '        Dim dict = BuildManualDictionary()
+    '        Dim aliases = ManualSectionAliases()
+
+    '        ' ---------------------------------------------------------
+    '        ' 1. Alias match
+    '        ' ---------------------------------------------------------
+    '        Dim realSection As String = Nothing
+    '        If aliases.TryGetValue(searchTerm, realSection) Then
+    '            ShowManualContent(RenderSection(realSection, dict(realSection)))
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' 2. Exact match
+    '        ' ---------------------------------------------------------
+    '        Dim exact = dict.Keys.FirstOrDefault(
+    '        Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If exact IsNot Nothing Then
+    '            ShowManualContent(RenderSection(exact, dict(exact)))
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' 3. Prefix match
+    '        ' ---------------------------------------------------------
+    '        Dim prefix = dict.Keys.FirstOrDefault(
+    '        Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If prefix IsNot Nothing Then
+    '            ShowManualContent(RenderSection(prefix, dict(prefix)))
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' 4. Keyword search fallback
+    '        ' ---------------------------------------------------------
+    '        Dim results = SearchManualDict(searchTerm)
+    '        ShowSearchResults(searchTerm, results)
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    Finally
+    '        RestoreAddressBar()
+    '    End Try
+    'End Sub
+
+
+
+
+    'Private Sub HandleManualCommand(parts As String())
+    '    Try
+    '        HelpHeaderLabel.Text = "Manual"
+    '        HelpTextBox.Font = New Font("Segoe UI", 10)
+
+    '        Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
+
+    '        ' ---------------------------------------------------------
+    '        ' 0. No argument → full manual
+    '        ' ---------------------------------------------------------
+    '        If String.IsNullOrEmpty(searchTerm) Then
+    '            ShowManualContent(BuildAppManualText())
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' ⭐ Special case: man help / man commands → full Command Reference
+    '        ' ---------------------------------------------------------
+    '        If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
+    '    OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
+
+    '            HelpHeaderLabel.Text = "Command Reference"
+    '            HelpTextBox.Text = BuildHelpText()
+
+    '            If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        '' ---------------------------------------------------------
+    '        '' ⭐ Special case: man copy → open the copy command page
+    '        '' ---------------------------------------------------------
+    '        'If searchTerm.Equals("copy", StringComparison.OrdinalIgnoreCase) Then
+
+    '        '    Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
+    '        '    Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+    '        '    Dim terms = "copy"
+
+    '        '    ' Search for each term and aggregate results
+    '        '    For Each term In terms
+    '        '        filtered = filtered.Union(SearchHelp(term)).ToList()
+    '        '    Next
+
+    '        '    'Dim entry = CommandHelp("copy")
+
+    '        '    HelpHeaderLabel.Text = "copy"
+    '        '    HelpTextBox.Text = BuildHelpText(entries)
+
+    '        '    If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+    '        '    FocusHelpText()
+    '        '    RestoreAddressBar()
+    '        '    Return
+    '        'End If
+
+    '        ' ---------------------------------------------------------
+    '        ' ⭐ Automatic: man <command> → show that command’s help page
+    '        ' ---------------------------------------------------------
+    '        Dim cmdMatch = CommandHelp.
+    'FirstOrDefault(Function(kvp)
+    '                   Return kvp.Key.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) _
+    '                       OrElse kvp.Value.Aliases.Any(Function(a) a.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+    '               End Function)
+
+    '        If cmdMatch.Key IsNot Nothing Then
+    '            HelpHeaderLabel.Text = cmdMatch.Key
+    '            HelpTextBox.Text = BuildHelpText({cmdMatch})
+
+    '            If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+
+
+
+
+
+
+
+
+
+
+    '        ' ---------------------------------------------------------
+    '        ' Build manual dictionary + alias table
+    '        ' ---------------------------------------------------------
+    '        Dim dict = BuildManualDictionary()
+    '        Dim aliases = ManualSectionAliases()
+
+    '        ' ---------------------------------------------------------
+    '        ' 1. Alias match
+    '        ' ---------------------------------------------------------
+    '        Dim realSection As String = Nothing
+    '        If aliases.TryGetValue(searchTerm, realSection) Then
+    '            ShowManualContent(RenderSection(realSection, dict(realSection)))
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' 2. Exact match
+    '        ' ---------------------------------------------------------
+    '        Dim exact = dict.Keys.FirstOrDefault(
+    '        Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If exact IsNot Nothing Then
+    '            ShowManualContent(RenderSection(exact, dict(exact)))
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' 3. Prefix match
+    '        ' ---------------------------------------------------------
+    '        Dim prefix = dict.Keys.FirstOrDefault(
+    '        Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+
+    '        If prefix IsNot Nothing Then
+    '            ShowManualContent(RenderSection(prefix, dict(prefix)))
+    '            Return
+    '        End If
+
+    '        ' ---------------------------------------------------------
+    '        ' 4. Keyword search fallback
+    '        ' ---------------------------------------------------------
+    '        Dim results = SearchManualDict(searchTerm)
+    '        ShowSearchResults(searchTerm, results)
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Failed to display manual: " & ex.Message)
+    '    Finally
+    '        RestoreAddressBar()
+    '    End Try
+    'End Sub
+
+
+
+
+
+
+
     Private Sub HandleManualCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Manual"
-            HelpTextBox.Font = New Font("Segoe UI", 10)
-
-            'Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
-
-            '' -----------------------------
-            '' 0. No argument → full manual
-            '' -----------------------------
-            'If String.IsNullOrEmpty(searchTerm) Then
-            '    ShowManualContent(BuildAppManualText())
-            '    Return
-            'End If
+            HelpTextBox.Font = New Font("Segoe UI", 9)
 
             Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
+            ' ---------------------------------------------------------
             ' 0. No argument → full manual
+            ' ---------------------------------------------------------
             If String.IsNullOrEmpty(searchTerm) Then
                 ShowManualContent(BuildAppManualText())
                 Return
             End If
 
-            ' ⭐ Special case: man help / man commands
-            If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
-        OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
+            '    ' ---------------------------------------------------------
+            '    ' ⭐ Special case: man help / man commands → full Command Reference
+            '    ' ---------------------------------------------------------
+            '    If searchTerm.Equals("help", StringComparison.OrdinalIgnoreCase) _
+            'OrElse searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
+
+            '        HelpHeaderLabel.Text = "Command Reference"
+            '        HelpTextBox.Text = BuildHelpText()
+
+            '        If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+            '        FocusHelpText()
+            '        RestoreAddressBar()
+            '        Return
+            'End If
+
+
+            ' ---------------------------------------------------------
+            ' ⭐ Special case: man commands → full Command Reference
+            ' ---------------------------------------------------------
+            If searchTerm.Equals("commands", StringComparison.OrdinalIgnoreCase) Then
 
                 HelpHeaderLabel.Text = "Command Reference"
                 HelpTextBox.Text = BuildHelpText()
 
-                If Not HelpPanel.Visible Then
-                    ShowHelpPanelAnimated()
-                End If
-
+                If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
                 FocusHelpText()
                 RestoreAddressBar()
                 Return
             End If
 
 
+            ' ---------------------------------------------------------
+            ' ⭐ Automatic: man <command> → show that command’s help page
+            ' ---------------------------------------------------------
+            Dim cmdMatch = CommandHelp.
+            FirstOrDefault(Function(kvp)
+                               Return kvp.Key.Equals(searchTerm, StringComparison.OrdinalIgnoreCase) _
+                               OrElse kvp.Value.Aliases.Any(Function(a) a.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+                           End Function)
 
+            If cmdMatch.Key IsNot Nothing Then
+                HelpHeaderLabel.Text = $"Man: {cmdMatch.Key}"
+                HelpTextBox.Text = BuildHelpText({cmdMatch})
+
+                If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
+
+            ' ---------------------------------------------------------
+            ' Build manual dictionary + alias table
+            ' ---------------------------------------------------------
             Dim dict = BuildManualDictionary()
             Dim aliases = ManualSectionAliases()
 
-
-
-
-            ' -----------------------------
+            ' ---------------------------------------------------------
             ' 1. Alias match
-            ' -----------------------------
+            ' ---------------------------------------------------------
             Dim realSection As String = Nothing
             If aliases.TryGetValue(searchTerm, realSection) Then
                 ShowManualContent(RenderSection(realSection, dict(realSection)))
                 Return
             End If
 
-            ' -----------------------------
+            ' ---------------------------------------------------------
             ' 2. Exact match
-            ' -----------------------------
-            Dim exact = dict.Keys.
-            FirstOrDefault(Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
+            ' ---------------------------------------------------------
+            Dim exact = dict.Keys.FirstOrDefault(
+            Function(k) k.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
 
             If exact IsNot Nothing Then
                 ShowManualContent(RenderSection(exact, dict(exact)))
                 Return
             End If
 
-            ' -----------------------------
+            ' ---------------------------------------------------------
             ' 3. Prefix match
-            ' -----------------------------
-            Dim prefix = dict.Keys.
-            FirstOrDefault(Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
+            ' ---------------------------------------------------------
+            Dim prefix = dict.Keys.FirstOrDefault(
+            Function(k) k.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase))
 
             If prefix IsNot Nothing Then
                 ShowManualContent(RenderSection(prefix, dict(prefix)))
                 Return
             End If
 
-            ' -----------------------------
+            ' ---------------------------------------------------------
             ' 4. Keyword search fallback
-            ' -----------------------------
+            ' ---------------------------------------------------------
             Dim results = SearchManualDict(searchTerm)
             ShowSearchResults(searchTerm, results)
 
@@ -7548,6 +8673,16 @@ Public Class Form1
             RestoreAddressBar()
         End Try
     End Sub
+
+
+
+
+
+
+
+
+
+
 
     Private Sub ShowManualContent(text As String)
         HelpTextBox.Text = text
@@ -8683,6 +9818,13 @@ Public Class Form1
                 "  • Ctrl+C → Ctrl+V",
                 "  • Or run:  copy <source> <destination>",
                 "",
+                "  Copies a file or folder to a destination directory.",
+                "  Supports quoted paths and recursive folder copy.",
+                "",
+                "  Examples:",
+                "    copy C:\folderA\file.txt C:\folderB",
+                "    copy ""C:\folder A"" ""C:\folder B""",
+                "",
                 "Moving Files:",
                 "  • Drag and drop",
                 "  • Or run:  move <source> <destination>",
@@ -9020,10 +10162,11 @@ Public Class Form1
 
         ' File Operations
         AddAliases(map, "File Operations",
-        "files", "file ops", "ops", "operations",
-        "copy", "move", "rename", "delete",
-        "open", "openwith"
+        "files", "file ops", "ops", "operations"
     )
+
+
+
 
         ' Drive Tools
         AddAliases(map, "Drive Tools",
