@@ -4209,7 +4209,7 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 
 | Shortcut | Action |
 |---------|--------|
-| **Alt + ←** (or **Backspace**) | Go back to the previous folder |
+| **Alt + ←** | Go back to the previous folder |
 | **Alt + →** | Go forward to the next folder |
 | **Alt + ↑** | Move up one level (parent directory) |
 | **Alt + Home** | Go to the user profile folder |
