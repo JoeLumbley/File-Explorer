@@ -48,11 +48,13 @@ Public Class Form1
     Private cmsTree As New ContextMenuStrip()
 
     Dim mnuPin As New ToolStripMenuItem("Pin", Nothing, AddressOf Pin_Click) With {
-        .Name = "Pin"
+        .Name = "Pin to Easy Access",
+        .ShortcutKeyDisplayString = "Alt+P"
     }
 
     Dim mnuUnpin As New ToolStripMenuItem("Unpin", Nothing, AddressOf Unpin_Click) With {
-        .Name = "Unpin"
+        .Name = "Unpin from Easy Access",
+        .ShortcutKeyDisplayString = "Alt+P"
     }
 
     Private lblStatus As New ToolStripStatusLabel()
@@ -191,6 +193,7 @@ Public Class Form1
     Private _ctrlODown As Boolean = False
     Private _ctrlVDown As Boolean = False
     Private _ctrlXDown As Boolean = False
+    Private _ctrlPDown As Boolean = False
 
 
     ' ===========================
@@ -200,6 +203,7 @@ Public Class Form1
     Private _ctrlShiftEDown As Boolean = False
     Private _ctrlShiftNDown As Boolean = False
     Private _ctrlShiftTDown As Boolean = False
+    Private _ctrlShiftLDown As Boolean = False
 
 
     ' ===========================
@@ -735,6 +739,57 @@ Public Class Form1
     End Function
 
 
+    'Private Function HandleEnterKey(keyData As Keys) As Boolean
+
+    '    ' Only handle Enter here
+    '    If keyData <> Keys.Enter Then
+    '        _enterDown = False
+    '        Return False
+    '    End If
+
+    '    ' Swallow key repeat
+    '    If _enterDown Then Return True
+    '    _enterDown = True
+
+    '    ' ============================================
+    '    ' 1. Commit rename (let Enter pass through)
+    '    ' ============================================
+    '    If _isRenaming Then
+    '        ' Let the ListView's edit box receive Enter
+    '        Return False
+    '    End If
+
+    '    ' ============================================
+    '    ' 2. Address Bar execution
+    '    ' ============================================
+    '    If txtAddressBar.Focused Then
+    '        ExecuteCommand(txtAddressBar.Text.Trim())
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 3. TreeView toggle expand/collapse
+    '    ' ============================================
+    '    If tvFolders.Focused Then
+    '        ToggleExpandCollapse()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 4. File List open
+    '    ' ============================================
+    '    If lvFiles.Focused Then
+    '        OpenSelectedItem()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 5. Nothing to do
+    '    ' ============================================
+    '    Return False
+
+    'End Function
+
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
         ' Only handle Enter here
@@ -785,6 +840,13 @@ Public Class Form1
         Return False
 
     End Function
+
+
+
+
+
+
+
 
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
@@ -1428,15 +1490,310 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
+    '    Select Case e.KeyCode
+
+    '    ' ===========================
+    '    '   BASIC KEYS
+    '    ' ===========================
+    '        Case Keys.Enter
+    '            _enterDown = False
+
+    '        Case Keys.Tab
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftTabDown = False
+    '            Else
+    '                _tabDown = False
+    '            End If
+
+    '        Case Keys.Delete
+    '            _deleteDown = False
+
+    '        Case Keys.Escape
+    '            _escapeDown = False
+
+
+    '    ' ===========================
+    '    '   CTRL / CTRL+SHIFT SHORTCUTS
+    '    ' ===========================
+    '        Case Keys.A
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlADown = False
+    '            End If
+
+    '        Case Keys.C
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlCDown = False
+    '            ElseIf ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftCDown = False
+    '            End If
+
+    '        Case Keys.D
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlDDown = False
+    '            ElseIf ModifierKeys = Keys.Alt Then
+    '                _addressBarFocusDown = False
+    '            End If
+
+    '        Case Keys.E
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftEDown = False
+    '            End If
+
+    '        Case Keys.F
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlFDown = False
+    '            End If
+
+    '        Case Keys.N
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftNDown = False
+    '            End If
+
+    '        Case Keys.O
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlODown = False
+    '            End If
+
+    '        Case Keys.T
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftTDown = False
+    '            End If
+
+    '        Case Keys.V
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlVDown = False
+    '            End If
+
+    '        Case Keys.X
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlXDown = False
+    '            End If
+
+    '        Case Keys.P
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlPDown = False
+    '            End If
+
+    '        Case Keys.L
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftLDown = False
+    '            End If
+
+    '    ' ===========================
+    '    '   ALT NAVIGATION
+    '    ' ===========================
+    '        Case Keys.Home
+    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+    '        Case Keys.Left
+    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+    '        Case Keys.P
+    '            If ModifierKeys = Keys.Alt Then _altPDown = False
+
+    '        Case Keys.Right
+    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+    '        Case Keys.Up
+    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+
+    '    ' ===========================
+    '    '   FUNCTION KEYS
+    '    ' ===========================
+    '        Case Keys.F2
+    '            _f2Down = False
+
+    '        Case Keys.F3
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftF3Down = False
+    '            Else
+    '                _f3Down = False
+    '            End If
+
+    '        Case Keys.F5
+    '            _f5Down = False
+
+    '        Case Keys.F11
+    '            _f11Down = False
+
+
+    '    ' ===========================
+    '    '   ADDRESS BAR SHORTCUTS
+    '    ' ===========================
+    '        Case Keys.L
+    '            If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
+
+    '        Case Keys.F4
+    '            _addressBarFocusDown = False
+
+    '    End Select
+
+    'End Sub
+
+
+
+
+
+    'Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
+    '    Select Case e.KeyCode
+
+    '    ' ============================================================
+    '    '   BASIC KEYS
+    '    ' ============================================================
+    '        Case Keys.Delete
+    '            _deleteDown = False
+
+    '        Case Keys.Enter
+    '            _enterDown = False
+
+    '        Case Keys.Escape
+    '            _escapeDown = False
+
+    '        Case Keys.Tab
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftTabDown = False
+    '            Else
+    '                _tabDown = False
+    '            End If
+
+
+    '    ' ============================================================
+    '    '   CTRL / CTRL+SHIFT SHORTCUTS (Alphabetized by key)
+    '    ' ============================================================
+    '        Case Keys.A
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlADown = False
+    '            End If
+
+    '        Case Keys.C
+    '            Select Case ModifierKeys
+    '                Case Keys.Control
+    '                    _ctrlCDown = False
+    '                Case (Keys.Control Or Keys.Shift)
+    '                    _ctrlShiftCDown = False
+    '            End Select
+
+    '        Case Keys.D
+    '            Select Case ModifierKeys
+    '                Case Keys.Control
+    '                    _ctrlDDown = False
+    '                Case Keys.Alt
+    '                    _addressBarFocusDown = False
+    '            End Select
+
+    '        Case Keys.E
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftEDown = False
+    '            End If
+
+    '        Case Keys.F
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlFDown = False
+    '            End If
+
+    '        Case Keys.L
+    '            Select Case ModifierKeys
+    '                Case Keys.Control
+    '                    _addressBarFocusDown = False
+    '                Case (Keys.Control Or Keys.Shift)
+    '                    _ctrlShiftLDown = False
+    '            End Select
+
+    '        Case Keys.N
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftNDown = False
+    '            End If
+
+    '        Case Keys.O
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlODown = False
+    '            End If
+
+    '        Case Keys.P
+    '            Select Case ModifierKeys
+    '                Case Keys.Control
+    '                    _ctrlPDown = False
+    '                Case Keys.Alt
+    '                    _altPDown = False
+    '            End Select
+
+    '        Case Keys.T
+    '            If ModifierKeys = (Keys.Control Or Keys.Shift) Then
+    '                _ctrlShiftTDown = False
+    '            End If
+
+    '        Case Keys.V
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlVDown = False
+    '            End If
+
+    '        Case Keys.X
+    '            If ModifierKeys = Keys.Control Then
+    '                _ctrlXDown = False
+    '            End If
+
+
+    '    ' ============================================================
+    '    '   ALT NAVIGATION (Alphabetized)
+    '    ' ============================================================
+    '        Case Keys.Home
+    '            If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+    '        Case Keys.Left
+    '            If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+    '        Case Keys.Right
+    '            If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+    '        Case Keys.Up
+    '            If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+
+    '    ' ============================================================
+    '    '   FUNCTION KEYS (Alphabetized)
+    '    ' ============================================================
+    '        Case Keys.F2
+    '            _f2Down = False
+
+    '        Case Keys.F3
+    '            If ModifierKeys = Keys.Shift Then
+    '                _shiftF3Down = False
+    '            Else
+    '                _f3Down = False
+    '            End If
+
+    '        Case Keys.F4
+    '            _addressBarFocusDown = False
+
+    '        Case Keys.F5
+    '            _f5Down = False
+
+    '        Case Keys.F11
+    '            _f11Down = False
+
+    '    End Select
+
+    'End Sub
+
     Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
 
         Select Case e.KeyCode
 
-        ' ===========================
+        ' ============================================================
         '   BASIC KEYS
-        ' ===========================
+        ' ============================================================
+            Case Keys.Delete
+                _deleteDown = False
+
             Case Keys.Enter
                 _enterDown = False
+
+            Case Keys.Escape
+                _escapeDown = False
 
             Case Keys.Tab
                 If ModifierKeys = Keys.Shift Then
@@ -1445,82 +1802,75 @@ Public Class Form1
                     _tabDown = False
                 End If
 
-            Case Keys.Delete
-                _deleteDown = False
 
-            Case Keys.Escape
-                _escapeDown = False
-
-
-        ' ===========================
-        '   CTRL / CTRL+SHIFT SHORTCUTS
-        ' ===========================
+        ' ============================================================
+        '   CTRL / CTRL+SHIFT SHORTCUTS (Alphabetized by key)
+        ' ============================================================
             Case Keys.A
-                If ModifierKeys = Keys.Control Then
-                    _ctrlADown = False
-                End If
+                If ModifierKeys = Keys.Control Then _ctrlADown = False
 
             Case Keys.C
-                If ModifierKeys = Keys.Control Then
-                    _ctrlCDown = False
-                ElseIf ModifierKeys = (Keys.Control Or Keys.Shift) Then
-                    _ctrlShiftCDown = False
-                End If
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _ctrlCDown = False
+                    Case (Keys.Control Or Keys.Shift)
+                        _ctrlShiftCDown = False
+                End Select
 
             Case Keys.D
-                If ModifierKeys = Keys.Control Then
-                    _ctrlDDown = False
-                ElseIf ModifierKeys = Keys.Alt Then
-                    _addressBarFocusDown = False
-                End If
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _ctrlDDown = False
+                    Case Keys.Alt
+                        _addressBarFocusDown = False
+                End Select
 
             Case Keys.E
-                If ModifierKeys = (Keys.Control Or Keys.Shift) Then
-                    _ctrlShiftEDown = False
-                End If
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
 
             Case Keys.F
-                If ModifierKeys = Keys.Control Then
-                    _ctrlFDown = False
-                End If
+                If ModifierKeys = Keys.Control Then _ctrlFDown = False
+
+            Case Keys.L
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _addressBarFocusDown = False
+                    Case (Keys.Control Or Keys.Shift)
+                        _ctrlShiftLDown = False
+                End Select
 
             Case Keys.N
-                If ModifierKeys = (Keys.Control Or Keys.Shift) Then
-                    _ctrlShiftNDown = False
-                End If
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
 
             Case Keys.O
-                If ModifierKeys = Keys.Control Then
-                    _ctrlODown = False
-                End If
+                If ModifierKeys = Keys.Control Then _ctrlODown = False
+
+            Case Keys.P
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _ctrlPDown = False
+                    Case Keys.Alt
+                        _altPDown = False
+                End Select
 
             Case Keys.T
-                If ModifierKeys = (Keys.Control Or Keys.Shift) Then
-                    _ctrlShiftTDown = False
-                End If
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
 
             Case Keys.V
-                If ModifierKeys = Keys.Control Then
-                    _ctrlVDown = False
-                End If
+                If ModifierKeys = Keys.Control Then _ctrlVDown = False
 
             Case Keys.X
-                If ModifierKeys = Keys.Control Then
-                    _ctrlXDown = False
-                End If
+                If ModifierKeys = Keys.Control Then _ctrlXDown = False
 
 
-        ' ===========================
-        '   ALT NAVIGATION
-        ' ===========================
+        ' ============================================================
+        '   ALT NAVIGATION (Alphabetized)
+        ' ============================================================
             Case Keys.Home
                 If ModifierKeys = Keys.Alt Then _altHomeDown = False
 
             Case Keys.Left
                 If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-            Case Keys.P
-                If ModifierKeys = Keys.Alt Then _altPDown = False
 
             Case Keys.Right
                 If ModifierKeys = Keys.Alt Then _altRightDown = False
@@ -1529,9 +1879,9 @@ Public Class Form1
                 If ModifierKeys = Keys.Alt Then _altUpDown = False
 
 
-        ' ===========================
-        '   FUNCTION KEYS
-        ' ===========================
+        ' ============================================================
+        '   FUNCTION KEYS (Alphabetized)
+        ' ============================================================
             Case Keys.F2
                 _f2Down = False
 
@@ -1542,25 +1892,22 @@ Public Class Form1
                     _f3Down = False
                 End If
 
+            Case Keys.F4
+                _addressBarFocusDown = False
+
             Case Keys.F5
                 _f5Down = False
 
             Case Keys.F11
                 _f11Down = False
 
-
-        ' ===========================
-        '   ADDRESS BAR SHORTCUTS
-        ' ===========================
-            Case Keys.L
-                If ModifierKeys = Keys.Control Then _addressBarFocusDown = False
-
-            Case Keys.F4
-                _addressBarFocusDown = False
-
         End Select
 
     End Sub
+
+
+
+
 
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
@@ -1641,15 +1988,229 @@ Public Class Form1
         ShowSearchHud()
     End Sub
 
+    'Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
+
+
+    '    ' ============================================
+    '    '   HELP DRAWER CONTEXT — LET RICHTEXTBOX HANDLE SHORTCUTS
+    '    ' ============================================
+    '    If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
+    '        Select Case keyData
+
+    '            Case (Keys.Control Or Keys.C)
+    '                _ctrlCDown = False
+    '                HelpTextBox.Copy()
+    '                Return True
+
+    '            Case (Keys.Control Or Keys.V)
+    '                _ctrlVDown = False
+    '                HelpTextBox.Paste()
+    '                Return True
+
+    '            Case (Keys.Control Or Keys.X)
+    '                _ctrlXDown = False
+    '                HelpTextBox.Cut()
+    '                Return True
+
+    '            Case (Keys.Control Or Keys.A)
+    '                _ctrlADown = False
+    '                HelpTextBox.SelectAll()
+    '                Return True
+
+    '                'Case (Keys.Control Or Keys.P)
+    '                '    If _ctrlPDown Then Return True
+    '                '    _ctrlPDown = True
+
+    '                '    CopyFilePath_Click(sender, EventArgs.Empty)
+    '                '    Return True
+
+    '        End Select
+
+    '        ' Let other keys fall through normally
+    '        Return False
+    '    End If
+
+
+    '    Try
+    '        If Not GlobalShortcutsAllowed() Then
+    '            Return False
+    '        End If
+
+    '        Select Case keyData
+
+    '        ' ===========================
+    '        '   CTRL + O  (Open)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.O)
+    '                If _ctrlODown Then Return True
+    '                _ctrlODown = True
+
+    '                OpenSelectedOrStartCommand()
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + E  (Expand one level)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.Shift Or Keys.E)
+    '                If _ctrlShiftEDown Then Return True
+    '                _ctrlShiftEDown = True
+
+    '                ExpandOneLevel()
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + C  (Copy Path)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.Shift Or Keys.C)
+    '                If _ctrlShiftCDown Then Return True
+    '                _ctrlShiftCDown = True
+
+    '                CopyFilePath_Click(sender, EventArgs.Empty)
+
+    '                'CollapseOneLevel()
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + N  (New folder)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.Shift Or Keys.N)
+    '                If _ctrlShiftNDown Then Return True
+    '                _ctrlShiftNDown = True
+
+    '                NewFolder_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + T  (New text file)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.Shift Or Keys.T)
+    '                If _ctrlShiftTDown Then Return True
+    '                _ctrlShiftTDown = True
+
+    '                NewTextFile_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   F2 (Rename)
+    '        ' ===========================
+    '            Case Keys.F2
+    '                If _f2Down Then Return True
+    '                _f2Down = True
+
+    '                RenameFile_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + C (Copy)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.C)
+    '                If _ctrlCDown Then Return True
+    '                _ctrlCDown = True
+
+    '                CopySelected_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + V (Paste)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.V)
+    '                If _ctrlVDown Then Return True
+    '                _ctrlVDown = True
+
+    '                PasteSelected_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + X (Cut)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.X)
+    '                If _ctrlXDown Then Return True
+    '                _ctrlXDown = True
+
+    '                CutSelected_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + A (Select all)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.A)
+    '                If _ctrlADown Then Return True
+    '                _ctrlADown = True
+
+    '                SelectAllItems()
+    '                lvFiles.Focus()
+    '                Return True
+
+
+    '        ' ===========================
+    '        '   CTRL + D  OR  DELETE  (Delete)
+    '        ' ===========================
+    '            Case (Keys.Control Or Keys.D)
+    '                If _ctrlDDown Then Return True
+    '                _ctrlDDown = True
+
+    '                Delete_Click(sender, EventArgs.Empty)
+    '                Return True
+
+    '            Case Keys.Delete
+    '                If _deleteDown Then Return True
+    '                _deleteDown = True
+
+    '                Delete_Click(sender, EventArgs.Empty)
+    '                Return True
+
+
+
+
+    '            'Case (Keys.Control Or Keys.P)
+    '            '    If _ctrlPDown Then Return True
+    '            '    _ctrlPDown = True
+
+    '            '    CopyFilePath_Click(sender, EventArgs.Empty)
+    '            '    Return True
+
+    '        ' ===========================
+    '        '   CTRL + SHIFT + L  (Collapse one level)
+    '        ' ===========================
+
+    '            Case (Keys.Control Or Keys.Shift Or Keys.L)
+    '                If _ctrlShiftLDown Then Return True
+    '                _ctrlShiftLDown = True
+    '                CollapseOneLevel()
+    '                Return True
+
+
+    '        End Select
+
+    '    Catch ex As Exception
+    '        MessageBox.Show(
+    '        "An error occurred: " & ex.Message,
+    '        "Error",
+    '        MessageBoxButtons.OK,
+    '        MessageBoxIcon.Error
+    '    )
+    '    End Try
+
+    '    Return False
+    'End Function
+
+
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
 
-
-        ' ============================================
-        '   HELP DRAWER CONTEXT — LET RICHTEXTBOX HANDLE SHORTCUTS
-        ' ============================================
+        ' ============================================================
+        '   HELP DRAWER — LET RICHTEXTBOX HANDLE ITS OWN SHORTCUTS
+        ' ============================================================
         If HelpPanel.Visible AndAlso HelpTextBox.Focused Then
             Select Case keyData
-
                 Case (Keys.Control Or Keys.C)
                     _ctrlCDown = False
                     HelpTextBox.Copy()
@@ -1669,14 +2230,15 @@ Public Class Form1
                     _ctrlADown = False
                     HelpTextBox.SelectAll()
                     Return True
-
             End Select
 
-            ' Let other keys fall through normally
             Return False
         End If
 
 
+        ' ============================================================
+        '   MAIN SHORTCUTS
+        ' ============================================================
         Try
             If Not GlobalShortcutsAllowed() Then
                 Return False
@@ -1684,132 +2246,130 @@ Public Class Form1
 
             Select Case keyData
 
-            ' ===========================
+            ' ---------------------------
             '   CTRL + O  (Open)
-            ' ===========================
+            ' ---------------------------
                 Case (Keys.Control Or Keys.O)
                     If _ctrlODown Then Return True
                     _ctrlODown = True
-
                     OpenSelectedOrStartCommand()
                     Return True
 
 
-            ' ===========================
-            '   CTRL + SHIFT + E  (Expand one level)
-            ' ===========================
+            ' ---------------------------
+            '   CTRL + SHIFT + E (Expand)
+            ' ---------------------------
                 Case (Keys.Control Or Keys.Shift Or Keys.E)
                     If _ctrlShiftEDown Then Return True
                     _ctrlShiftEDown = True
-
                     ExpandOneLevel()
                     Return True
 
 
-            ' ===========================
-            '   CTRL + SHIFT + C  (Collapse one level)
-            ' ===========================
+            ' ---------------------------
+            '   CTRL + SHIFT + C (Copy Path)
+            ' ---------------------------
                 Case (Keys.Control Or Keys.Shift Or Keys.C)
                     If _ctrlShiftCDown Then Return True
                     _ctrlShiftCDown = True
-
-                    CollapseOneLevel()
+                    CopyFilePath_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
-            '   CTRL + SHIFT + N  (New folder)
-            ' ===========================
+            ' ---------------------------
+            '   CTRL + SHIFT + N (New Folder)
+            ' ---------------------------
                 Case (Keys.Control Or Keys.Shift Or Keys.N)
                     If _ctrlShiftNDown Then Return True
                     _ctrlShiftNDown = True
-
                     NewFolder_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
-            '   CTRL + SHIFT + T  (New text file)
-            ' ===========================
+            ' ---------------------------
+            '   CTRL + SHIFT + T (New Text File)
+            ' ---------------------------
                 Case (Keys.Control Or Keys.Shift Or Keys.T)
                     If _ctrlShiftTDown Then Return True
                     _ctrlShiftTDown = True
-
                     NewTextFile_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
+            ' ---------------------------
             '   F2 (Rename)
-            ' ===========================
+            ' ---------------------------
                 Case Keys.F2
                     If _f2Down Then Return True
                     _f2Down = True
-
                     RenameFile_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
+            ' ---------------------------
             '   CTRL + C (Copy)
-            ' ===========================
+            ' ---------------------------
                 Case (Keys.Control Or Keys.C)
                     If _ctrlCDown Then Return True
                     _ctrlCDown = True
-
                     CopySelected_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
+            ' ---------------------------
             '   CTRL + V (Paste)
-            ' ===========================
+            ' ---------------------------
                 Case (Keys.Control Or Keys.V)
                     If _ctrlVDown Then Return True
                     _ctrlVDown = True
-
                     PasteSelected_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
+            ' ---------------------------
             '   CTRL + X (Cut)
-            ' ===========================
+            ' ---------------------------
                 Case (Keys.Control Or Keys.X)
                     If _ctrlXDown Then Return True
                     _ctrlXDown = True
-
                     CutSelected_Click(sender, EventArgs.Empty)
                     Return True
 
 
-            ' ===========================
-            '   CTRL + A (Select all)
-            ' ===========================
+            ' ---------------------------
+            '   CTRL + A (Select All)
+            ' ---------------------------
                 Case (Keys.Control Or Keys.A)
                     If _ctrlADown Then Return True
                     _ctrlADown = True
-
                     SelectAllItems()
                     lvFiles.Focus()
                     Return True
 
 
-            ' ===========================
-            '   CTRL + D  OR  DELETE  (Delete)
-            ' ===========================
+            ' ---------------------------
+            '   CTRL + D / DELETE (Delete)
+            ' ---------------------------
                 Case (Keys.Control Or Keys.D)
                     If _ctrlDDown Then Return True
                     _ctrlDDown = True
-
                     Delete_Click(sender, EventArgs.Empty)
                     Return True
 
                 Case Keys.Delete
                     If _deleteDown Then Return True
                     _deleteDown = True
-
                     Delete_Click(sender, EventArgs.Empty)
+                    Return True
+
+
+            ' ---------------------------
+            '   CTRL + SHIFT + L (Collapse)
+            ' ---------------------------
+                Case (Keys.Control Or Keys.Shift Or Keys.L)
+                    If _ctrlShiftLDown Then Return True
+                    _ctrlShiftLDown = True
+                    CollapseOneLevel()
                     Return True
 
             End Select
@@ -1825,6 +2385,11 @@ Public Class Form1
 
         Return False
     End Function
+
+
+
+
+
 
     Private Sub ExecuteCommand(command As String)
 
@@ -6297,7 +6862,7 @@ Public Class Form1
     Private Sub HandleShortcutsCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Keyboard Shortcuts"
-            HelpTextBox.Font = New Font("Segoe UI", 10, FontStyle.Regular)
+            HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
 
             Dim text As String = BuildShortcutsHelp()
 
@@ -6548,7 +7113,7 @@ Public Class Form1
     Private Sub HandleManualCommand(parts As String())
         Try
             HelpHeaderLabel.Text = "Manual"
-            HelpTextBox.Font = New Font("Segoe UI", 9)
+            HelpTextBox.Font = New Font("Segoe UI", 11)
 
             Dim searchTerm As String = String.Join(" ", parts.Skip(1)).Trim()
 
@@ -6763,9 +7328,477 @@ Public Class Form1
     ' ============================================================
     '  BuildManualDictionary
     ' ============================================================
+    'Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
+
+    '    Dim sections As New Dictionary(Of String, String()) From {
+    '    {
+    '        "Introduction",
+    '        {
+    '            "File Explorer is a simple, fast, and user‑friendly file management",
+    '            "application designed to make navigating, organizing, and manipulating",
+    '            "files intuitive for all users. It combines a clean graphical interface",
+    '            "with a powerful built‑in Command Line Interface (CLI) for users who",
+    '            "prefer keyboard‑driven workflows.",
+    '            "",
+    '            "The application is designed around clarity, predictability, and emotional",
+    '            "safety. Whether you prefer clicking, typing, or shortcut‑driven workflows,",
+    '            "File Explorer adapts to your style."
+    '        }
+    '    },
+    '    {
+    '        "Getting Started",
+    '        {
+    '            "You can clone the File Explorer project directly inside Visual Studio.",
+    '            "This is the recommended method.",
+    '            "",
+    '            "1. Open Visual Studio",
+    '            "   Launch Visual Studio (2019, 2022, or later).",
+    '            "",
+    '            "2. Access the Clone Repository Feature",
+    '            "   From the Start Window:",
+    '            "     • Click ""Clone a repository""",
+    '            "",
+    '            "   If a project is already open:",
+    '            "     • Go to File → Clone Repository...",
+    '            "",
+    '            "   Both options open the same cloning dialog.",
+    '            "",
+    '            "3. Enter the GitHub Repository URL",
+    '            "   In the ""Repository Location"" box, enter:",
+    '            "     https://github.com/JoeLumbley/File-Explorer.git",
+    '            "",
+    '            "   Visual Studio will suggest a local folder where the project will be cloned.",
+    '            "   You may change this location if you prefer.",
+    '            "",
+    '            "4. Click ""Clone""",
+    '            "   Visual Studio will:",
+    '            "     • Download the repository",
+    '            "     • Create a local working copy",
+    '            "     • Detect the solution file",
+    '            "     • Prompt you to open it",
+    '            "",
+    '            "5. Open the Solution",
+    '            "   After cloning, Visual Studio will display:",
+    '            "     File Explorer.sln",
+    '            "",
+    '            "   Click ""Open"" to load the VB.NET WinForms project.",
+    '            "",
+    '            "6. Build and Run the Application",
+    '            "   To run the application:",
+    '            "     • Press F5",
+    '            "     • Or click the Start button",
+    '            "",
+    '            "   Visual Studio will build the project automatically if needed.",
+    '            "",
+    '            "   To build manually:",
+    '            "     • Go to Build → Build Solution",
+    '            "     • Or press Ctrl+Shift+B",
+    '            "",
+    '            "7. Troubleshooting Tips",
+    '            "   • Ensure you have an active internet connection when cloning.",
+    '            "   • Restart Visual Studio if it becomes unresponsive during cloning.",
+    '            "   • If dependencies are missing, right‑click the solution and select ""Restore NuGet Packages"".",
+    '            "   • If build errors occur, review the Error List or Output window for details.",
+    '            "   • Make sure the "".NET Desktop Development"" workload is installed.",
+    '            "",
+    '            "Summary:",
+    '            "   Visual Studio → Clone a repository",
+    '            "   Paste the GitHub URL",
+    '            "   Click Clone",
+    '            "   Open File Explorer.sln",
+    '            "   Press F5 to run"
+    '        }
+    '    },
+    '    {
+    '        "Features",
+    '        {
+    '            "Graphical Interface:",
+    '            "  • Browse directories using a tree view and list view.",
+    '            "  • Perform file operations such as copy, move, delete, and rename.",
+    '            "  • Use cut, copy, and paste for file and folder management.",
+    '            "  • Access context menus for quick actions.",
+    '            "  • Navigate backward and forward through history.",
+    '            "  • View file type icons and real‑time status updates.",
+    '            "",
+    '            "Integrated Command Line Interface (CLI):",
+    '            "  • Fast directory navigation (cd).",
+    '            "  • File operations (copy, move, delete, rename).",
+    '            "  • Create text files (text, txt).",
+    '            "  • Search and cycle results (find, findnext).",
+    '            "  • Type a path to open it directly.",
+    '            "  • Supports quoted paths with spaces.",
+    '            "  • Helpful usage messages and error feedback.",
+    '            "  • Built‑in help system with full documentation.",
+    '            "",
+    '            "The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best."
+    '        }
+    '    },
+    '    {
+    '        "Using the App",
+    '        {
+    '            "File Explorer is designed as a space for deliberate practice and student‑driven growth.",
+    '            "By breaking a complex system into understandable pieces, learners can study how real applications work and rebuild them with intention.",
+    '            "",
+    '            "This project is small enough to grasp, but rich enough to teach:",
+    '            "  • Decomposition and naming",
+    '            "  • Event flow and UI state management",
+    '            "  • Predictable, user‑centered design",
+    '            "",
+    '            "The goal is to provide a foundation learners can extend, reshape, and eventually outgrow as they build their own tools."
+    '        }
+    '    },
+    '    {
+    '        "Why I’m Creating File Explorer",
+    '        {
+    '            "File Explorer began as a personal exploration into how file managers work under the hood.",
+    '            "We use them every day, but rarely think about the engineering behind navigation history, sorting, context menus, clipboard operations, and folder trees.",
+    '            "",
+    '            "Re‑creating these features has been a practical way to study:",
+    '            "  • System I/O",
+    '            "  • UI design",
+    '            "  • Event handling",
+    '            "  • Performance considerations",
+    '            "",
+    '            "This project is not meant to replace Windows Explorer.",
+    '            "Instead, it serves as a learning environment—a place to experiment, break things, fix them, and understand why they work."
+    '        }
+    '    },
+    '    {
+    '        "What I Hope Learners Get From This",
+    '        {
+    '            "This project is designed for learners at all levels.",
+    '            "",
+    '            "What you can gain:",
+    '            "",
+    '            "• A clearer understanding of how file systems are accessed and managed.",
+    '            "• Insight into building a real Windows Forms application.",
+    '            "• Practical examples of organizing and structuring a larger project.",
+    '            "• Confidence to modify, extend, or build your own tools.",
+    '            "• An appreciation for the subtle engineering challenges behind everyday software.",
+    '            "",
+    '            "Re‑creating something familiar is one of the most effective ways to deepen your understanding."
+    '        }
+    '    },
+    '    {
+    '        "File Operations",
+    '        {
+    '            "Creating a Folder:",
+    '            "  • Click ""New Folder""",
+    '            "  • Press Ctrl+Shift+N",
+    '            "  • Or run:  mkdir <folder>",
+    '            "",
+    '            "Renaming:",
+    '            "  • Select an item and press F2",
+    '            "  • Or run:  rename <old> <new>",
+    '            "",
+    '            "Copying Files:",
+    '            "  • Ctrl+C → Ctrl+V",
+    '            "  • Or run:  copy <source> <destination>",
+    '            "",
+    '            "  Copies a file or folder to a destination directory.",
+    '            "  Supports quoted paths and recursive folder copy.",
+    '            "",
+    '            "  Examples:",
+    '            "    copy C:\folderA\file.txt C:\folderB",
+    '            "    copy ""C:\folder A"" ""C:\folder B""",
+    '            "",
+    '            "Moving Files:",
+    '            "  • Drag and drop",
+    '            "  • Or run:  move <source> <destination>",
+    '            "",
+    '            "Deleting Files:",
+    '            "  • Press Delete",
+    '            "  • Or run:  delete <path>",
+    '            "",
+    '            "Opening Files:",
+    '            "  • Press Enter",
+    '            "  • Or run:  open <path>",
+    '            "",
+    '            "Open With:",
+    '            "  • openwith notepad file.txt",
+    '            "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+    '        }
+    '    },
+    '    {
+    '        "Search",
+    '        {
+    '            "Starting a Search:",
+    '            "  • Press Ctrl+F",
+    '            "  • Or run:  find <term>",
+    '            "",
+    '            "Navigating Results:",
+    '            "  • F3 — next result",
+    '            "  • Shift+F3 — previous result",
+    '            "",
+    '            "Resetting Search:",
+    '            "  • Press Esc"
+    '        }
+    '    },
+    '    {
+    '        "Keyboard Shortcuts",
+    '        {
+    '            "Navigation:",
+    '            "  Alt+Left       Back",
+    '            "  Alt+Right      Forward",
+    '            "  Alt+Up         Parent folder",
+    '            "  Alt+Home       User folder",
+    '            "  F11            Full screen",
+    '            "",
+    '            "Address Bar:",
+    '            "  Ctrl+L         Focus",
+    '            "  Alt+D          Focus",
+    '            "  F4             Focus",
+    '            "  Esc            Reset",
+    '            "",
+    '            "Search:",
+    '            "  Ctrl+F         Find",
+    '            "  F3             Next",
+    '            "  Shift+F3       Previous",
+    '            "",
+    '            "Focus Navigation:",
+    '            "  Tab            Cycle forward",
+    '            "  Shift+Tab      Cycle backward",
+    '            "",
+    '            "File Operations:",
+    '            "  Enter          Open",
+    '            "  F2             Rename",
+    '            "  Delete         Delete",
+    '            "  Ctrl+Shift+N   New folder",
+    '            "",
+    '            "Pinning:",
+    '            "  Alt+P          Pin/unpin",
+    '            "",
+    '            "Refresh:",
+    '            "  F5             Refresh current folder"
+    '        }
+    '    },
+    '    {
+    '        "Command Line Interface (CLI)",
+    '        {
+    '            "The Command Line Interface (CLI) is an integrated text‑based command system inside File Explorer.",
+    '            "It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.",
+    '            "",
+    '            "The CLI is designed to be:",
+    '            "  • Fast — no menus, no dialogs.",
+    '            "  • Predictable — clear rules and consistent behavior.",
+    '            "  • Beginner‑friendly — helpful messages and examples.",
+    '            "  • Powerful — supports navigation, search, file operations, and more.",
+    '            "",
+    '            "If a command doesn't match a known keyword, the CLI checks:",
+    '            "  • Is it a folder? → Navigate to it.",
+    '            "  • Is it a file? → Open it.",
+    '            "  • Otherwise → Unknown command.",
+    '            "",
+    '            "This makes the CLI feel natural and forgiving."
+    '        }
+    '    },
+    '    {
+    '        "Commands",
+    '        {
+    '            "Below is the complete list of supported commands, including syntax, descriptions, and examples.",
+    '            "",
+    '            "mkdir (make):",
+    '            "  Usage: mkdir [directory_path]",
+    '            "  Creates a new folder.",
+    '            "",
+    '            "  Examples:",
+    '            "    mkdir C:\newfolder",
+    '            "    make ""C:\My New Folder""",
+    '            "",
+    '            "pin:",
+    '            "  Usage: pin [path]",
+    '            "  Pins or unpins a folder in Easy Access. Acts as a toggle.",
+    '            "",
+    '            "  Examples:",
+    '            "    pin C:\Docs",
+    '            "    pin ""C:\My Folder""",
+    '            "    pin",
+    '            "",
+    '            "copy:",
+    '            "  Usage: copy [source] [destination]",
+    '            "  Copies a file or folder to a destination directory.",
+    '            "",
+    '            "  Examples:",
+    '            "    copy C:\folderA\file.txt C:\folderB",
+    '            "    copy ""C:\folder A"" ""C:\folder B""",
+    '            "",
+    '            "move:",
+    '            "  Usage: move [source] [destination]",
+    '            "  Moves a file or folder to a new location.",
+    '            "",
+    '            "  Examples:",
+    '            "    move C:\folderA\file.txt C:\folderB\file.txt",
+    '            "    move ""C:\folder A\file.txt"" ""C:\folder B\renamed.txt""",
+    '            "",
+    '            "delete (rm):",
+    '            "  Usage: delete [path]",
+    '            "  Deletes a file or folder.",
+    '            "",
+    '            "  Examples:",
+    '            "    delete C:\file.txt",
+    '            "    rm ""C:\My Folder""",
+    '            "",
+    '            "rename (rn):",
+    '            "  Usage: rename [old] [new]",
+    '            "  Renames a file or folder.",
+    '            "",
+    '            "  Examples:",
+    '            "    rename ""C:\old.txt"" ""new.txt""",
+    '            "",
+    '            "open:",
+    '            "  Usage: open [path]",
+    '            "  Opens a file or navigates into a folder.",
+    '            "",
+    '            "  Examples:",
+    '            "    open C:\folder\file.txt",
+    '            "",
+    '            "text (txt):",
+    '            "  Usage: text [path]",
+    '            "  Creates a new text file.",
+    '            "",
+    '            "  Examples:",
+    '            "    text ""C:\folder\example.txt""",
+    '            "",
+    '            "find (search):",
+    '            "  Usage: find [term]",
+    '            "  Searches the current folder for matching items.",
+    '            "",
+    '            "  Example:",
+    '            "    find report",
+    '            "",
+    '            "findnext (searchnext, next):",
+    '            "  Usage: findnext",
+    '            "  Moves to the next search result.",
+    '            "",
+    '            "df:",
+    '            "  Usage: df [drive]",
+    '            "  Shows free space for a specific drive.",
+    '            "",
+    '            "  Example:",
+    '            "    df C:",
+    '            "",
+    '            "drives:",
+    '            "  Usage: drives",
+    '            "  Shows all drives with graphical usage bars.",
+    '            "",
+    '            "cd:",
+    '            "  Usage: cd [path]",
+    '            "  Changes the current directory.",
+    '            "  Examples:",
+    '            "    cd C:\Projects",
+    '            "    cd ""C:\My Folder""",
+    '            "",
+    '            "help (commands, ?):",
+    '            "  Usage: help [command]",
+    '            "  Shows help for commands or lists all commands.",
+    '            "",
+    '            "  Examples:",
+    '            "    help",
+    '            "    help cd",
+    '            "",
+    '            "man (manual, appmanual):",
+    '            "  Usage: man [section]",
+    '            "  Opens the app manual or jumps to a specific section.",
+    '            "",
+    '            "Examples:",
+    '            "  man",
+    '            "  man help        (opens the Command Reference)",
+    '            "  man commands    (opens the Command Reference)",
+    '            "  manual",
+    '            "  appmanual",
+    '            "",
+    '            "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
+    '            "  Usage: exit",
+    '            "  Exits the application."
+    '        }
+    '    },
+    '    {
+    '        "Drive Tools",
+    '        {
+    '            "df:",
+    '            "  Shows free space for a specific drive.",
+    '            "    df C:",
+    '            "",
+    '            "drives:",
+    '            "  Shows all drives with graphical usage bars.",
+    '            "    drives"
+    '        }
+    '    },
+    '    {
+    '        "Pinning System",
+    '        {
+    '            "Pin any folder:",
+    '            "  pin C:\Projects",
+    '            "  pin",
+    '            "",
+    '            "Pinned folders appear in the sidebar and persist across sessions."
+    '        }
+    '    },
+    '    {
+    '        "Manual & Help System",
+    '        {
+    '            "",
+    '            "help (commands, ?):",
+    '            "  Usage: help [command]",
+    '            "  Shows help for commands or lists all commands.",
+    '            "",
+    '            "Examples:",
+    '            "  help",
+    '            "  help cd",
+    '            "  help copy",
+    '            "",
+    '            "man (manual, appmanual):",
+    '            "  Usage: man [section]",
+    '            "  Opens the app manual or jumps to a specific section.",
+    '            "",
+    '            "Examples:",
+    '            "  man",
+    '            "  man help        (opens the Command Reference)",
+    '            "  man commands    (opens the Command Reference)",
+    '            "  manual",
+    '            "  appmanual"
+    '        }
+    '    }
+    '}
+
+    '    Return sections.ToDictionary(
+    '    Function(kvp) kvp.Key,
+    '    Function(kvp) kvp.Value.ToList()
+    ')
+
+    'End Function
+
+
+
+
+
+
     Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
 
         Dim sections As New Dictionary(Of String, String()) From {
+        {
+            "Table of Contents",
+            {
+                "Use man [section] to jump directly to any part of the manual.",
+                "",
+                "Sections:",
+                "  • Introduction",
+                "  • Getting Started",
+                "  • Using the App",
+                "  • Why I’m Creating File Explorer",
+                "  • What I Hope Learners Get From This",
+                "  • Features",
+                "  • File Operations",
+                "  • Search",
+                "  • Keyboard Shortcuts",
+                "  • Command Line Interface (CLI)",
+                "  • Commands",
+                "  • Drive Tools",
+                "  • Pinning System",
+                "  • Manual & Help System",
+                ""
+            }
+        },
         {
             "Introduction",
             {
@@ -6796,52 +7829,78 @@ Public Class Form1
                 "   If a project is already open:",
                 "     • Go to File → Clone Repository...",
                 "",
-                "   Both options open the same cloning dialog.",
-                "",
                 "3. Enter the GitHub Repository URL",
                 "   In the ""Repository Location"" box, enter:",
                 "     https://github.com/JoeLumbley/File-Explorer.git",
                 "",
-                "   Visual Studio will suggest a local folder where the project will be cloned.",
-                "   You may change this location if you prefer.",
-                "",
                 "4. Click ""Clone""",
-                "   Visual Studio will:",
-                "     • Download the repository",
-                "     • Create a local working copy",
-                "     • Detect the solution file",
-                "     • Prompt you to open it",
+                "   Visual Studio will download the repository and detect the solution.",
                 "",
                 "5. Open the Solution",
-                "   After cloning, Visual Studio will display:",
-                "     File Explorer.sln",
-                "",
-                "   Click ""Open"" to load the VB.NET WinForms project.",
+                "   Click ""Open"" to load File Explorer.sln.",
                 "",
                 "6. Build and Run the Application",
-                "   To run the application:",
-                "     • Press F5",
-                "     • Or click the Start button",
-                "",
-                "   Visual Studio will build the project automatically if needed.",
-                "",
-                "   To build manually:",
-                "     • Go to Build → Build Solution",
-                "     • Or press Ctrl+Shift+B",
+                "   • Press F5",
+                "   • Or click the Start button",
                 "",
                 "7. Troubleshooting Tips",
-                "   • Ensure you have an active internet connection when cloning.",
-                "   • Restart Visual Studio if it becomes unresponsive during cloning.",
-                "   • If dependencies are missing, right‑click the solution and select ""Restore NuGet Packages"".",
-                "   • If build errors occur, review the Error List or Output window for details.",
-                "   • Make sure the "".NET Desktop Development"" workload is installed.",
+                "   • Ensure you have an active internet connection.",
+                "   • Restart Visual Studio if cloning hangs.",
+                "   • Restore NuGet packages if dependencies are missing.",
+                "   • Ensure the "".NET Desktop Development"" workload is installed.",
                 "",
                 "Summary:",
-                "   Visual Studio → Clone a repository",
-                "   Paste the GitHub URL",
-                "   Click Clone",
-                "   Open File Explorer.sln",
-                "   Press F5 to run"
+                "   Visual Studio → Clone → Paste URL → Clone → Open → F5"
+            }
+        },
+        {
+            "Using the App",
+            {
+                "File Explorer is designed as a space for deliberate practice and student‑driven growth.",
+                "By breaking a complex system into understandable pieces, learners can study how real",
+                "applications work and rebuild them with intention.",
+                "",
+                "This project is small enough to grasp, but rich enough to teach:",
+                "  • Decomposition and naming",
+                "  • Event flow and UI state management",
+                "  • Predictable, user‑centered design",
+                "",
+                "The goal is to provide a foundation learners can extend, reshape, and eventually outgrow",
+                "as they build their own tools."
+            }
+        },
+        {
+            "Why I’m Creating File Explorer",
+            {
+                "File Explorer began as a personal exploration into how file managers work under the hood.",
+                "We use them every day, but rarely think about the engineering behind navigation history,",
+                "sorting, context menus, clipboard operations, and folder trees.",
+                "",
+                "Re‑creating these features has been a practical way to study:",
+                "  • System I/O",
+                "  • UI design",
+                "  • Event handling",
+                "  • Performance considerations",
+                "",
+                "This project is not meant to replace Windows Explorer.",
+                "Instead, it serves as a learning environment—a place to experiment, break things, fix them,",
+                "and understand why they work."
+            }
+        },
+        {
+            "What I Hope Learners Get From This",
+            {
+                "This project is designed for learners at all levels.",
+                "",
+                "What you can gain:",
+                "",
+                "• A clearer understanding of how file systems are accessed and managed.",
+                "• Insight into building a real Windows Forms application.",
+                "• Practical examples of organizing and structuring a larger project.",
+                "• Confidence to modify, extend, or build your own tools.",
+                "• An appreciation for the subtle engineering challenges behind everyday software.",
+                "",
+                "Re‑creating something familiar is one of the most effective ways to deepen your understanding."
             }
         },
         {
@@ -6869,52 +7928,6 @@ Public Class Form1
             }
         },
         {
-            "Using the App",
-            {
-                "File Explorer is designed as a space for deliberate practice and student‑driven growth.",
-                "By breaking a complex system into understandable pieces, learners can study how real applications work and rebuild them with intention.",
-                "",
-                "This project is small enough to grasp, but rich enough to teach:",
-                "  • Decomposition and naming",
-                "  • Event flow and UI state management",
-                "  • Predictable, user‑centered design",
-                "",
-                "The goal is to provide a foundation learners can extend, reshape, and eventually outgrow as they build their own tools."
-            }
-        },
-        {
-            "Why I’m Creating File Explorer",
-            {
-                "File Explorer began as a personal exploration into how file managers work under the hood.",
-                "We use them every day, but rarely think about the engineering behind navigation history, sorting, context menus, clipboard operations, and folder trees.",
-                "",
-                "Re‑creating these features has been a practical way to study:",
-                "  • System I/O",
-                "  • UI design",
-                "  • Event handling",
-                "  • Performance considerations",
-                "",
-                "This project is not meant to replace Windows Explorer.",
-                "Instead, it serves as a learning environment—a place to experiment, break things, fix them, and understand why they work."
-            }
-        },
-        {
-            "What I Hope Learners Get From This",
-            {
-                "This project is designed for learners at all levels.",
-                "",
-                "What you can gain:",
-                "",
-                "• A clearer understanding of how file systems are accessed and managed.",
-                "• Insight into building a real Windows Forms application.",
-                "• Practical examples of organizing and structuring a larger project.",
-                "• Confidence to modify, extend, or build your own tools.",
-                "• An appreciation for the subtle engineering challenges behind everyday software.",
-                "",
-                "Re‑creating something familiar is one of the most effective ways to deepen your understanding."
-            }
-        },
-        {
             "File Operations",
             {
                 "Creating a Folder:",
@@ -6930,12 +7943,17 @@ Public Class Form1
                 "  • Ctrl+C → Ctrl+V",
                 "  • Or run:  copy <source> <destination>",
                 "",
-                "  Copies a file or folder to a destination directory.",
-                "  Supports quoted paths and recursive folder copy.",
+                "Cutting Files:",
+                "  • Press Ctrl+X",
                 "",
-                "  Examples:",
-                "    copy C:\folderA\file.txt C:\folderB",
-                "    copy ""C:\folder A"" ""C:\folder B""",
+                "Pasting Files:",
+                "  • Press Ctrl+V",
+                "",
+                "Selecting All:",
+                "  • Press Ctrl+A",
+                "",
+                "Copying File or Folder Path:",
+                "  • Press Ctrl+Shift+C",
                 "",
                 "Moving Files:",
                 "  • Drag and drop",
@@ -6943,15 +7961,14 @@ Public Class Form1
                 "",
                 "Deleting Files:",
                 "  • Press Delete",
+                "  • Press Ctrl+D",
                 "  • Or run:  delete <path>",
                 "",
                 "Opening Files:",
                 "  • Press Enter",
+                "  • Press Ctrl+O",
                 "  • Or run:  open <path>",
-                "",
-                "Open With:",
-                "  • openwith notepad file.txt",
-                "  • openwith ""C:\Path\To\App.exe"" ""C:\file.txt"""
+                ""
             }
         },
         {
@@ -6962,211 +7979,273 @@ Public Class Form1
                 "  • Or run:  find <term>",
                 "",
                 "Navigating Results:",
-                "  • F3 — next result",
-                "  • Shift+F3 — previous result",
+                "  • F3          Next result",
+                "  • Shift+F3    Previous result",
                 "",
                 "Resetting Search:",
-                "  • Press Esc"
+                "  • Press Esc",
+                "",
+                "Notes:",
+                "  • Search highlights matches in the File List.",
+                "  • Results cycle through visible items.",
+                "  • Search terms support partial matches."
             }
         },
         {
             "Keyboard Shortcuts",
             {
                 "Navigation:",
-                "  Alt+Left       Back",
-                "  Alt+Right      Forward",
-                "  Alt+Up         Parent folder",
-                "  Alt+Home       User folder",
-                "  F11            Full screen",
+                "  Alt+Left (or Backspace)   Back",
+                "  Alt+Right                 Forward",
+                "  Alt+Up                    Parent folder",
+                "  Alt+Home                  User folder",
+                "  F11                       Full screen",
                 "",
                 "Address Bar:",
-                "  Ctrl+L         Focus",
-                "  Alt+D          Focus",
-                "  F4             Focus",
-                "  Esc            Reset",
+                "  Ctrl+L                    Focus",
+                "  Alt+D                     Focus",
+                "  F4                        Focus",
+                "  Esc                       Reset",
                 "",
                 "Search:",
-                "  Ctrl+F         Find",
-                "  F3             Next",
-                "  Shift+F3       Previous",
+                "  Ctrl+F                    Start search",
+                "  F3                        Next result",
+                "  Shift+F3                  Previous result",
                 "",
                 "Focus Navigation:",
-                "  Tab            Cycle forward",
-                "  Shift+Tab      Cycle backward",
+                "  Tab                       Cycle forward",
+                "  Shift+Tab                 Cycle backward",
                 "",
                 "File Operations:",
-                "  Enter          Open",
-                "  F2             Rename",
-                "  Delete         Delete",
-                "  Ctrl+Shift+N   New folder",
+                "  Enter                     Open selected item (File List)",
+                "  Ctrl+O                    Open selected item or run an 'open' command",
+                "  F2                        Rename",
+                "  Delete                    Delete",
+                "  Ctrl+D                    Delete",
+                "  Ctrl+C                    Copy",
+                "  Ctrl+V                    Paste",
+                "  Ctrl+X                    Cut",
+                "  Ctrl+A                    Select all",
+                "  Ctrl+Shift+N              New folder",
+                "  Ctrl+Shift+T              New text file",
+                "  Ctrl+Shift+C              Copy file or folder path",
+                "",
+                "TreeView Navigation:",
+                "  Enter                     Expand or collapse selected folder",
+                "  Left Arrow                Collapse folder, or move to parent",
+                "  Right Arrow               Expand folder, or move to first child",
+                "  Up Arrow                  Move to previous folder",
+                "  Down Arrow                Move to next folder",
+                "  Home                      Jump to first root folder",
+                "  End                       Jump to last visible folder",
+                "  Page Up                   Scroll up through folders",
+                "  Page Down                 Scroll down through folders",
+                "  Ctrl+Shift+E              Expand one level",
+                "  Ctrl+Shift+L              Collapse one level",
                 "",
                 "Pinning:",
-                "  Alt+P          Pin/unpin",
+                "  Alt+P                     Pin or unpin current folder",
                 "",
                 "Refresh:",
-                "  F5             Refresh current folder"
+                "  F5                        Refresh current folder",
+                "",
+                "Help Drawer (Text Editing):",
+                "  Ctrl+C                    Copy text",
+                "  Ctrl+V                    Paste text",
+                "  Ctrl+X                    Cut text",
+                "  Ctrl+A                    Select all text",
+                ""
             }
         },
         {
             "Command Line Interface (CLI)",
             {
-                "The Command Line Interface (CLI) is an integrated text‑based command system inside File Explorer.",
-                "It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.",
+                "The integrated Command Line Interface gives you fast, keyboard-driven control over",
+                "navigation and file operations. It is designed to be predictable, forgiving, and",
+                "beginner-friendly, with clear usage messages and error feedback.",
                 "",
-                "The CLI is designed to be:",
-                "  • Fast — no menus, no dialogs.",
-                "  • Predictable — clear rules and consistent behavior.",
-                "  • Beginner‑friendly — helpful messages and examples.",
-                "  • Powerful — supports navigation, search, file operations, and more.",
-                "",
-                "If a command doesn't match a known keyword, the CLI checks:",
-                "  • Is it a folder? → Navigate to it.",
-                "  • Is it a file? → Open it.",
-                "  • Otherwise → Unknown command.",
-                "",
-                "This makes the CLI feel natural and forgiving."
-            }
-        },
-        {
-            "Commands",
-            {
-                "Below is the complete list of supported commands, including syntax, descriptions, and examples.",
-                "",
-                "mkdir (make):",
-                "  Usage: mkdir [directory_path]",
-                "  Creates a new folder.",
-                "",
-                "  Examples:",
-                "    mkdir C:\newfolder",
-                "    make ""C:\My New Folder""",
-                "",
-                "pin:",
-                "  Usage: pin [path]",
-                "  Pins or unpins a folder in Easy Access. Acts as a toggle.",
-                "",
-                "  Examples:",
-                "    pin C:\Docs",
-                "    pin ""C:\My Folder""",
-                "    pin",
-                "",
-                "copy:",
-                "  Usage: copy [source] [destination]",
-                "  Copies a file or folder to a destination directory.",
-                "",
-                "  Examples:",
-                "    copy C:\folderA\file.txt C:\folderB",
-                "    copy ""C:\folder A"" ""C:\folder B""",
-                "",
-                "move:",
-                "  Usage: move [source] [destination]",
-                "  Moves a file or folder to a new location.",
-                "",
-                "  Examples:",
-                "    move C:\folderA\file.txt C:\folderB\file.txt",
-                "    move ""C:\folder A\file.txt"" ""C:\folder B\renamed.txt""",
-                "",
-                "delete (rm):",
-                "  Usage: delete [path]",
-                "  Deletes a file or folder.",
-                "",
-                "  Examples:",
-                "    delete C:\file.txt",
-                "    rm ""C:\My Folder""",
-                "",
-                "rename (rn):",
-                "  Usage: rename [old] [new]",
-                "  Renames a file or folder.",
-                "",
-                "  Examples:",
-                "    rename ""C:\old.txt"" ""new.txt""",
-                "",
-                "open:",
-                "  Usage: open [path]",
-                "  Opens a file or navigates into a folder.",
-                "",
-                "  Examples:",
-                "    open C:\folder\file.txt",
-                "",
-                "text (txt):",
-                "  Usage: text [path]",
-                "  Creates a new text file.",
-                "",
-                "  Examples:",
-                "    text ""C:\folder\example.txt""",
-                "",
-                "find (search):",
-                "  Usage: find [term]",
-                "  Searches the current folder for matching items.",
-                "",
-                "  Example:",
-                "    find report",
-                "",
-                "findnext (searchnext, next):",
-                "  Usage: findnext",
-                "  Moves to the next search result.",
-                "",
-                "df:",
-                "  Usage: df [drive]",
-                "  Shows free space for a specific drive.",
-                "",
-                "  Example:",
-                "    df C:",
-                "",
-                "drives:",
-                "  Usage: drives",
-                "  Shows all drives with graphical usage bars.",
-                "",
-                "cd:",
-                "  Usage: cd [path]",
-                "  Changes the current directory.",
-                "  Examples:",
-                "    cd C:\Projects",
-                "    cd ""C:\My Folder""",
-                "",
-                "help (commands, ?):",
-                "  Usage: help [command]",
-                "  Shows help for commands or lists all commands.",
-                "",
-                "  Examples:",
-                "    help",
-                "    help cd",
-                "",
-                "man (manual, appmanual):",
-                "  Usage: man [section]",
-                "  Opens the app manual or jumps to a specific section.",
+                "Features:",
+                "  • Navigate directories quickly using commands like cd and back.",
+                "  • Perform file operations such as copy, move, delete, and rename.",
+                "  • Create text files using text or txt.",
+                "  • Search for files using find and cycle results with findnext.",
+                "  • Type a full path to open it directly.",
+                "  • Supports quoted paths with spaces.",
+                "  • Provides helpful usage messages when commands are incomplete or incorrect.",
                 "",
                 "Examples:",
-                "  man",
-                "  man help        (opens the Command Reference)",
-                "  man commands    (opens the Command Reference)",
-                "  manual",
-                "  appmanual",
+                "  cd C:\Users\Joseph\Documents",
+                "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
+                "  delete ""C:\Temp\old.txt""",
+                "  text ""notes.txt""",
                 "",
-                "exit (quit, close, stop, halt, end, signout, poweroff, bye, terminate):",
-                "  Usage: exit",
-                "  Exits the application."
+                "The CLI is fully integrated with the GUI, so actions",
+                "performed in one are reflected immediately in",
+                "the other."
             }
         },
-        {
-            "Drive Tools",
-            {
-                "df:",
-                "  Shows free space for a specific drive.",
-                "    df C:",
-                "",
-                "drives:",
-                "  Shows all drives with graphical usage bars.",
-                "    drives"
-            }
-        },
-        {
+{
+    "Commands",
+    {
+        "The CLI supports a variety of commands for navigation,",
+        "file operations, searching, drive inspection, and pinning.",
+        "All commands are designed to be predictable, forgiving,",
+        "and emotionally safe for beginners.",
+        "",
+        "Navigation:",
+        "  cd <path>            Change directory.",
+        "  back                      Go to previous folder.",
+        "  forward                 Go to next folder.",
+        "  up                         Go to parent folder.",
+        "",
+        "File Operations:",
+        "  copy <source> <dest>      Copy a file or folder.",
+        "  move <source> <dest>     Move a file or folder.",
+        "  delete <path>                    Delete a file or folder.",
+        "  rename <old> <new>       Rename a file or folder.",
+        "  mkdir <folder>                  Create a new folder.",
+        "  text <file>                          Create a new text file.",
+        "  txt <file>                            Alias for text.",
+        "",
+        "Opening:",
+        "  open <path>          Open a file or folder.",
+        "",
+        "Search:",
+        "  find <term>           Search for items in the current folder.",
+        "  findnext                  Jump to the next search result.",
+        "",
+        "Drive Tools:",
+        "  drives                    Show all ready drives with free space,",
+        "                                total size, and a usage bar.",
+        "  df <drive>            Show free space for a specific drive.",
+        "",
+        "Pinning:",
+        "  pin <path>           Pin or unpin a folder in Easy Access.",
+        "",
+        "Help:",
+        "  man                      Show the manual.",
+        "  man <section>    Jump to a specific manual section.",
+        "",
+        "Examples:",
+        "  cd C:\Users\Joseph\Documents",
+        "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
+        "  delete ""C:\Temp\old.txt""",
+        "  df C:"
+    }
+},
+{
+    "Drive Tools",
+    {
+        "",
+        "Drive Tools provide quick access to information about",
+        "your system's drives. You can view available drives,",
+        "their labels, free space, and usage bars.",
+        "",
+        "Commands:",
+        "  drives            Shows all drives free space, size, and usage.",
+        "  df <drive>    Shows free space for a specific drive.",
+        "",
+        "drives",
+        "",
+        "Shows all available drives with free space, total size, and",
+        "a usage bar. This gives you a clear overview of your",
+        "storage layout at a glance.",
+        "",
+        "Usage:",
+        "  drives",
+        "",
+        "Features:",
+        "  • Lists all ready drives.",
+        "  • Shows volume label.",
+        "  • Shows free space and total size.",
+        "  • Includes a 20-character usage bar for",
+        "    quick visual scanning.",
+        "",
+        "Example Output:",
+        "  ⏹ used   ⬜ free",
+        "",
+        "  C:\ - Windows",
+        "        68.51 GB free of 237.47 GB",
+        "        ⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜",
+        "",
+        "  D:\ - Back Up 2021",
+        "         1.15 TB free of 1.82 TB",
+        "        ⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
+        "",
+        "Notes:",
+        "  • Drives are sorted alphabetically for predictability.",
+        "  • Empty volume labels appear as (no label).",
+        "",
+        "df",
+        "",
+        "Shows free space for a specific drive. This is a quick,",
+        "focused version of the drives command, ideal for checking",
+        "a single drive at a glance.",
+        "",
+        "Usage:",
+        "  df <drive_letter>:",
+        "",
+        "Examples:",
+        "  df C:",
+        "  df D:",
+        "",
+        "Behavior:",
+        "  • Accepts C, C:, or C:\ formats.",
+        "  • Shows a short usage bar (8 characters) for",
+        "    quick scanning.",
+        "  • Displays free space and total size.",
+        "",
+        "Example Output:",
+        "  C:\   ⏹⏹⏹⬜⬜⬜⬜⬜   68.51 GB free of 237.47 GB",
+        "",
+        "Notes:",
+        "  • If the drive is not ready, an error message is shown.",
+        "  • The df command is designed to be forgiving and",
+        "    beginner-friendly.",
+        ""
+    }
+},
+{
             "Pinning System",
             {
-                "Pin any folder:",
-                "  pin C:\Projects",
-                "  pin",
                 "",
-                "Pinned folders appear in the sidebar and persist across sessions."
+                "The Pinning System lets you keep important folders in",
+                "the Easy Access list.",
+                "",
+                "Features:",
+                "  • Pin or unpin any non-special folder.",
+                "  • Prevents pinning system folders such as Documents, ",
+                "     Desktop, Downloads, Music, Pictures, and Videos.",
+                "  • Uses a unified pin engine shared by the GUI, CLI, and",
+                "     keyboard shortcuts.",
+                "  • Maintains pinned folders even if the target folder is",
+                "     temporarily missing.",
+                "  • Prevents duplicate pinned entries by normalizing paths.",
+                "",
+                "Usage:",
+                "  • Right-click a folder and choose ""Pin"" or ""Unpin"".",
+                "  • Press Alt+P to toggle pin state for the current folder.",
+                "  • Run:  pin <path>",
+                "",
+                "Examples:",
+                "  pin C:\Projects",
+                "  pin ""C:\My Folder""",
+                "",
+                "Behavior:",
+                "  • Pinning adds the folder to the Easy Access list.",
+                "  • Unpinning removes it from the list.",
+                "  • The system updates all UI elements immediately.",
+                "  • The pinned state is synchronized across the GUI, CLI,",
+                "    and keyboard engine.",
+                "",
+                "Notes:",
+                "  • Special system folders cannot be pinned.",
+                "  • The pin command uses toggle behavior.",
+                "    If a folder is pinned, it becomes unpinned.",
+                "    If it is unpinned, it becomes pinned.",
+                "  • The system ensures emotionally safe, predictable",
+                "    behavior at all times.",
+                ""
             }
         },
         {
@@ -7186,12 +8265,34 @@ Public Class Form1
                 "  Usage: man [section]",
                 "  Opens the app manual or jumps to a specific section.",
                 "",
+                "Behavior:",
+                "  • man                          Opens the full manual.",
+                "  • man <section>        Jumps to a manual section.",
+                "  • man help                 Opens the Command Reference.",
+                "  • man commands      Opens the Command Reference.",
+                "",
+                "Supported aliases:",
+                "  manual",
+                "  appmanual",
+                "",
                 "Examples:",
                 "  man",
-                "  man help        (opens the Command Reference)",
-                "  man commands    (opens the Command Reference)",
+                "  man keyboard",
+                "  man search",
+                "  man help",
+                "  man commands",
                 "  manual",
-                "  appmanual"
+                "  appmanual",
+                "",
+                "Notes:",
+                "  • Section names are matched case‑insensitively.",
+                "  • Prefix matching is supported",
+                "    (e.g., 'man key' → Keyboard Shortcuts).",
+                "  • If no section matches, the manual shows a",
+                "    friendly error message.",
+                "  • The manual viewer supports scrolling, search,",
+                "    and text selection.",
+                ""
             }
         }
     }
@@ -7202,6 +8303,24 @@ Public Class Form1
     )
 
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7408,6 +8527,264 @@ Public Class Form1
     End Function
 
 
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' ------------------------------------------------------------
+    '    ' Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Alt + ←           Go back")
+    '    sb.AppendLine("  Alt + →           Go forward")
+    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
+    '    sb.AppendLine("  Alt + Home        Go to user profile folder")
+    '    sb.AppendLine("  F11               Toggle full screen")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Address Bar
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Address Bar")
+    '    sb.AppendLine("===========")
+    '    sb.AppendLine("  Ctrl + L          Focus address bar")
+    '    sb.AppendLine("  Alt + D           Focus address bar")
+    '    sb.AppendLine("  F4                Focus address bar")
+    '    sb.AppendLine("  Esc               Reset address bar")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Search
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Ctrl + F          Start search")
+    '    sb.AppendLine("  F3                Find next")
+    '    sb.AppendLine("  Shift + F3        Find previous")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Focus Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Focus Navigation")
+    '    sb.AppendLine("================")
+    '    sb.AppendLine("  Tab               Cycle focus forward")
+    '    sb.AppendLine("  Shift + Tab       Cycle focus backward")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' File Operations
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Enter             Open selected item")
+    '    sb.AppendLine("  F2                Rename selected item")
+    '    sb.AppendLine("  Delete            Delete selected item")
+    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Pinning
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Pinning")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Alt + P           Pin or unpin current folder")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Refresh
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Refresh")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  F5                Refresh current folder")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' ------------------------------------------------------------
+    '    ' Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Alt + ←           Go back")
+    '    sb.AppendLine("  Alt + →           Go forward")
+    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
+    '    sb.AppendLine("  Alt + Home        Go to user profile folder")
+    '    sb.AppendLine("  F11               Toggle full screen")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Address Bar
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Address Bar")
+    '    sb.AppendLine("===========")
+    '    sb.AppendLine("  Ctrl + L          Focus address bar")
+    '    sb.AppendLine("  Alt + D           Focus address bar")
+    '    sb.AppendLine("  F4                Focus address bar")
+    '    sb.AppendLine("  Esc               Reset address bar")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Search
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Ctrl + F          Start search")
+    '    sb.AppendLine("  F3                Find next")
+    '    sb.AppendLine("  Shift + F3        Find previous")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Focus Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Focus Navigation")
+    '    sb.AppendLine("================")
+    '    sb.AppendLine("  Tab               Cycle focus forward")
+    '    sb.AppendLine("  Shift + Tab       Cycle focus backward")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' File Operations
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Enter             Open selected item")
+    '    sb.AppendLine("  F2                Rename selected item")
+    '    sb.AppendLine("  Delete            Delete selected item")
+    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Pinning
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Pinning")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Alt + P           Toggle pin (pin or unpin current folder)")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Refresh
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Refresh")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  F5                Refresh current folder")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' ------------------------------------------------------------
+    '    ' Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Alt + ←           Go back")
+    '    sb.AppendLine("  Alt + →           Go forward")
+    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
+    '    sb.AppendLine("  Alt + Home        Go to user profile folder")
+    '    sb.AppendLine("  F11               Toggle full screen")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Address Bar
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Address Bar")
+    '    sb.AppendLine("===========")
+    '    sb.AppendLine("  Ctrl + L          Focus address bar")
+    '    sb.AppendLine("  Alt + D           Focus address bar")
+    '    sb.AppendLine("  F4                Focus address bar")
+    '    sb.AppendLine("  Esc               Reset address bar")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Search
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Ctrl + F          Start search")
+    '    sb.AppendLine("  F3                Find next")
+    '    sb.AppendLine("  Shift + F3        Find previous")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Focus Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Focus Navigation")
+    '    sb.AppendLine("================")
+    '    sb.AppendLine("  Tab               Cycle focus forward")
+    '    sb.AppendLine("  Shift + Tab       Cycle focus backward")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' File Operations
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Enter             Open selected item")
+    '    sb.AppendLine("  Ctrl + O          Open selected item / run command")
+    '    sb.AppendLine("  F2                Rename selected item")
+    '    sb.AppendLine("  Delete            Delete selected item")
+    '    sb.AppendLine("  Ctrl + D          Delete selected item")
+    '    sb.AppendLine("  Ctrl + C          Copy")
+    '    sb.AppendLine("  Ctrl + V          Paste")
+    '    sb.AppendLine("  Ctrl + X          Cut")
+    '    sb.AppendLine("  Ctrl + A          Select all")
+    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+    '    sb.AppendLine("  Ctrl + Shift + T  Create new text file")
+    '    sb.AppendLine("  Ctrl + Shift + C  Copy file/folder path")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Tree Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Tree Navigation")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Ctrl + Shift + E  Expand one level")
+    '    sb.AppendLine("  Ctrl + Shift + L  Collapse one level")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Pinning
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Pinning")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Alt + P           Toggle pin (pin or unpin current folder)")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Refresh
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Refresh")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  F5                Refresh current folder")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Help Drawer (Text Editing)
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Help Drawer (Text Editing)")
+    '    sb.AppendLine("==========================")
+    '    sb.AppendLine("  Ctrl + C          Copy text")
+    '    sb.AppendLine("  Ctrl + V          Paste text")
+    '    sb.AppendLine("  Ctrl + X          Cut text")
+    '    sb.AppendLine("  Ctrl + A          Select all text")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
     Private Function BuildShortcutsHelp() As String
         Dim sb As New Text.StringBuilder()
 
@@ -7458,10 +8835,36 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("File Operations")
         sb.AppendLine("===============")
-        sb.AppendLine("  Enter             Open selected item")
+        sb.AppendLine("  Enter             Open selected item (File List)")
+        sb.AppendLine("  Ctrl + O          Open selected item / run command")
         sb.AppendLine("  F2                Rename selected item")
         sb.AppendLine("  Delete            Delete selected item")
+        sb.AppendLine("  Ctrl + D          Delete selected item")
+        sb.AppendLine("  Ctrl + C          Copy")
+        sb.AppendLine("  Ctrl + V          Paste")
+        sb.AppendLine("  Ctrl + X          Cut")
+        sb.AppendLine("  Ctrl + A          Select all")
         sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+        sb.AppendLine("  Ctrl + Shift + T  Create new text file")
+        sb.AppendLine("  Ctrl + Shift + C  Copy file/folder path")
+        sb.AppendLine()
+
+        ' ------------------------------------------------------------
+        ' TreeView Navigation
+        ' ------------------------------------------------------------
+        sb.AppendLine("TreeView Navigation")
+        sb.AppendLine("===================")
+        sb.AppendLine("  Enter             Expand or collapse selected folder")
+        sb.AppendLine("  Left Arrow        Collapse folder, or move to parent")
+        sb.AppendLine("  Right Arrow       Expand folder, or move to first child")
+        sb.AppendLine("  Up Arrow          Move to previous folder")
+        sb.AppendLine("  Down Arrow        Move to next folder")
+        sb.AppendLine("  Home              Jump to first root folder")
+        sb.AppendLine("  End               Jump to last visible folder")
+        sb.AppendLine("  Page Up           Scroll up through folders")
+        sb.AppendLine("  Page Down         Scroll down through folders")
+        sb.AppendLine("  Ctrl + Shift + E  Expand one level")
+        sb.AppendLine("  Ctrl + Shift + L  Collapse one level")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -7469,7 +8872,7 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Pinning")
         sb.AppendLine("=======")
-        sb.AppendLine("  Alt + P           Pin or unpin current folder")
+        sb.AppendLine("  Alt + P           Toggle pin (pin or unpin current folder)")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -7480,8 +8883,102 @@ Public Class Form1
         sb.AppendLine("  F5                Refresh current folder")
         sb.AppendLine()
 
+        ' ------------------------------------------------------------
+        ' Help Drawer (Text Editing)
+        ' ------------------------------------------------------------
+        sb.AppendLine("Help Drawer (Text Editing)")
+        sb.AppendLine("==========================")
+        sb.AppendLine("  Ctrl + C          Copy text")
+        sb.AppendLine("  Ctrl + V          Paste text")
+        sb.AppendLine("  Ctrl + X          Cut text")
+        sb.AppendLine("  Ctrl + A          Select all text")
+        sb.AppendLine()
+
         Return sb.ToString()
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub ShowDriveOverview()
+    '    HelpHeaderLabel.Text = "Drive Overview"
+
+    '    HelpTextBox.Clear()
+    '    HelpTextBox.Font = New Font("Segoe UI", 13, FontStyle.Regular)
+    '    HelpTextBox.AppendText(Environment.NewLine)
+
+
+    '    For Each di In DriveInfo.GetDrives()
+    '        If di.IsReady Then
+
+    '            Dim used = di.TotalSize - di.AvailableFreeSpace
+    '            Dim bar = BuildUsageBar(used, di.TotalSize, 20)
+
+    '            HelpTextBox.AppendText(
+    '            $"  {di.Name} - {di.VolumeLabel}" & Environment.NewLine &
+    '            $"  {FormatSize(di.AvailableFreeSpace)} free of {FormatSize(di.TotalSize)}" & Environment.NewLine &
+    '            $"  {bar}" & Environment.NewLine & Environment.NewLine
+    '        )
+
+    '        End If
+    '    Next
+
+    '    ShowHelpPanelAnimated()
+    '    FocusHelpText()
+
+    'End Sub
+    'Private Sub ShowDriveOverview()
+    '    HelpHeaderLabel.Text = "Drive Overview"
+
+    '    HelpTextBox.Clear()
+    '    HelpTextBox.Font = New Font("Segoe UI", 13, FontStyle.Regular)
+    '    HelpTextBox.AppendText(Environment.NewLine)
+
+    '    ' Gather drives in alphabetical order for predictability
+    '    Dim drives = DriveInfo.GetDrives().
+    '             Where(Function(d) d.IsReady).
+    '             OrderBy(Function(d) d.Name)
+
+    '    For Each di In drives
+
+    '        Dim label = If(String.IsNullOrWhiteSpace(di.VolumeLabel),
+    '                   "(no label)",
+    '                   di.VolumeLabel)
+
+    '        Dim used = di.TotalSize - di.AvailableFreeSpace
+    '        Dim bar = BuildUsageBar(used, di.TotalSize, 20)
+
+    '        '' Aligned sizes for easier scanning
+    '        'Dim freeStr = FormatSize(di.AvailableFreeSpace).PadLeft(12)
+    '        'Dim totalStr = FormatSize(di.TotalSize).PadLeft(12)
+
+
+    '        Dim freeStr = FormatSize(di.AvailableFreeSpace)
+    '        Dim totalStr = FormatSize(di.TotalSize)
+
+    '        HelpTextBox.AppendText(
+    '        $"  {di.Name} - {label}" & Environment.NewLine &
+    '        $"  {freeStr} free of {totalStr}" & Environment.NewLine &
+    '        $"  {bar}" & Environment.NewLine & Environment.NewLine
+    '    )
+    '    Next
+
+    '    ShowHelpPanelAnimated()
+    '    FocusHelpText()
+    'End Sub
+
 
 
     Private Sub ShowDriveOverview()
@@ -7489,28 +8986,87 @@ Public Class Form1
 
         HelpTextBox.Clear()
         HelpTextBox.Font = New Font("Segoe UI", 13, FontStyle.Regular)
+        'HelpTextBox.AppendText(Environment.NewLine)
+
+        ' Legend for usage bar
+        HelpTextBox.AppendText("  ⏹ used  ⬜ free" & Environment.NewLine)
         HelpTextBox.AppendText(Environment.NewLine)
 
+        ' Gather drives in alphabetical order for predictability
+        Dim drives = DriveInfo.GetDrives().
+                 Where(Function(d) d.IsReady).
+                 OrderBy(Function(d) d.Name)
 
-        For Each di In DriveInfo.GetDrives()
-            If di.IsReady Then
+        For Each di In drives
 
-                Dim used = di.TotalSize - di.AvailableFreeSpace
-                Dim bar = BuildUsageBar(used, di.TotalSize, 20)
+            Dim label = If(String.IsNullOrWhiteSpace(di.VolumeLabel),
+                       "(no label)",
+                       di.VolumeLabel)
 
-                HelpTextBox.AppendText(
-                $"  {di.Name} - {di.VolumeLabel}" & Environment.NewLine &
-                $"  {FormatSize(di.AvailableFreeSpace)} free of {FormatSize(di.TotalSize)}" & Environment.NewLine &
-                $"  {bar}" & Environment.NewLine & Environment.NewLine
-            )
+            Dim used = di.TotalSize - di.AvailableFreeSpace
+            Dim bar = BuildUsageBar(used, di.TotalSize, 20)
 
-            End If
+            Dim freeStr = FormatSize(di.AvailableFreeSpace)
+            Dim totalStr = FormatSize(di.TotalSize)
+
+            HelpTextBox.AppendText(
+            $"  {di.Name} - {label}" & Environment.NewLine &
+            $"  {freeStr} free of {totalStr}" & Environment.NewLine &
+            $"  {bar}" & Environment.NewLine & Environment.NewLine
+        )
         Next
 
         ShowHelpPanelAnimated()
         FocusHelpText()
-
     End Sub
+
+
+
+
+    'Private Sub ShowDriveOverview()
+    '    HelpHeaderLabel.Text = "Drive Overview"
+
+    '    HelpTextBox.Clear()
+    '    HelpTextBox.Font = New Font("Segoe UI", 13, FontStyle.Regular)
+    '    HelpTextBox.AppendText(Environment.NewLine)
+
+    '    ' Legend for usage bar
+    '    HelpTextBox.AppendText("  Legend: ⏹ = used space,  ⬜ = free space" & Environment.NewLine)
+    '    HelpTextBox.AppendText(Environment.NewLine)
+
+    '    ' Gather drives in alphabetical order for predictability
+    '    Dim drives = DriveInfo.GetDrives().
+    '             Where(Function(d) d.IsReady).
+    '             OrderBy(Function(d) d.Name)
+
+    '    For Each di In drives
+
+    '        Dim label = If(String.IsNullOrWhiteSpace(di.VolumeLabel),
+    '                   "(no label)",
+    '                   di.VolumeLabel)
+
+    '        Dim driveType = di.DriveType.ToString()
+
+    '        Dim used = di.TotalSize - di.AvailableFreeSpace
+    '        Dim bar = BuildUsageBar(used, di.TotalSize, 20)
+
+    '        Dim freeStr = FormatSize(di.AvailableFreeSpace)
+    '        Dim totalStr = FormatSize(di.TotalSize)
+
+    '        HelpTextBox.AppendText(
+    '        $"  {di.Name} - {label} ({driveType})" & Environment.NewLine &
+    '        $"  {freeStr} free of {totalStr}" & Environment.NewLine &
+    '        $"  {bar}" & Environment.NewLine & Environment.NewLine
+    '    )
+    '    Next
+
+    '    ShowHelpPanelAnimated()
+    '    FocusHelpText()
+    'End Sub
+
+
+
+
 
 
     Private Sub HandleOpenCommand(parts As String())
@@ -7829,29 +9385,128 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub InitContextMenu()
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
+    '        .Name = "Open",
+    '        .ShortcutKeyDisplayString = "Ctrl+O"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Unpin From Easy Access", Nothing, AddressOf UnpinFromFiles_Click) With {
+    '        .Name = "Unpin"
+    '    })
+
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Pin To Easy Access", Nothing, AddressOf PinFromFiles_Click) With {
+    '        .Name = "Pin"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Home Folder", Nothing,
+    '        Sub() GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+    '    ) With {
+    '        .Name = "HomeFolder",
+    '        .ShortcutKeyDisplayString = "Alt+Home"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
+    '        .Name = "NewFolder",
+    '        .ShortcutKeyDisplayString = "Ctrl+Shift+N"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("New Text File", Nothing, AddressOf NewTextFile_Click) With {
+    '        .Name = "NewTextFile",
+    '        .ShortcutKeyDisplayString = "Ctrl+Shift+T"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
+    '        .Name = "Cut",
+    '        .ShortcutKeyDisplayString = "Ctrl+X"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Copy", Nothing, AddressOf CopySelected_Click) With {
+    '        .Name = "Copy",
+    '        .ShortcutKeyDisplayString = "Ctrl+C"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Paste", Nothing, AddressOf PasteSelected_Click) With {
+    '        .Name = "Paste",
+    '        .ShortcutKeyDisplayString = "Ctrl+V"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
+    '        .Name = "Rename",
+    '        .ShortcutKeyDisplayString = "F2"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Delete", Nothing, AddressOf Delete_Click) With {
+    '        .Name = "Delete",
+    '        .ShortcutKeyDisplayString = "Delete"
+    '    })
+
+    '    'cmsFiles.Items.Add(New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
+    '    '    .Name = "CopyPath",
+    '    '    .ShortcutKeyDisplayString = "Ctrl+P"
+    '    '})
+
+
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
+    '        .Name = "CopyPath",
+    '        .ShortcutKeyDisplayString = "Ctrl+Shift+C"
+    '    })
+
+    '    cmsFiles.Items.Add(New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
+    '        .Name = "FullScreen",
+    '        .ShortcutKeyDisplayString = "F11"
+    '    })
+
+    '    lvFiles.ContextMenuStrip = cmsFiles
+
+    '    cmsTree.Items.Add(mnuPin)
+    '    cmsTree.Items.Add(mnuUnpin)
+
+    '    tvFolders.ContextMenuStrip = cmsTree
+
+    'End Sub
+
+
+
     Private Sub InitContextMenu()
 
+        ' 1) Primary action
         cmsFiles.Items.Add(New ToolStripMenuItem("Open", Nothing, AddressOf Open_Click) With {
             .Name = "Open",
             .ShortcutKeyDisplayString = "Ctrl+O"
         })
 
-        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin From Easy Access", Nothing, AddressOf UnpinFromFiles_Click) With {
-            .Name = "Unpin"
+        '    ' 2) Pinning (Explorer places Pin before Unpin)
+        '    cmsFiles.Items.Add(New ToolStripMenuItem("Pin to Easy Access", Nothing, AddressOf PinFromFiles_Click) With {
+        '    .Name = "Pin"
+        '})
+
+        '    cmsFiles.Items.Add(New ToolStripMenuItem("Unpin from Easy Access", Nothing, AddressOf UnpinFromFiles_Click) With {
+        '    .Name = "Unpin"
+        '})
+
+        cmsFiles.Items.Add(New ToolStripMenuItem("Pin to Easy Access", Nothing, AddressOf PinFromFiles_Click) With {
+            .Name = "Pin",
+            .ShortcutKeyDisplayString = "Alt+P"
         })
 
-
-        cmsFiles.Items.Add(New ToolStripMenuItem("Pin To Easy Access", Nothing, AddressOf PinFromFiles_Click) With {
-            .Name = "Pin"
+        cmsFiles.Items.Add(New ToolStripMenuItem("Unpin from Easy Access", Nothing, AddressOf UnpinFromFiles_Click) With {
+            .Name = "Unpin",
+            .ShortcutKeyDisplayString = "Alt+P"
         })
 
+        ' 3) Navigation / Location
         cmsFiles.Items.Add(New ToolStripMenuItem("Home Folder", Nothing,
             Sub() GoToFolderOrOpenFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-        ) With {
-            .Name = "HomeFolder",
-            .ShortcutKeyDisplayString = "Alt+Home"
+            ) With {
+                .Name = "HomeFolder",
+                .ShortcutKeyDisplayString = "Alt+Home"
         })
 
+        ' 4) New items
         cmsFiles.Items.Add(New ToolStripMenuItem("New Folder", Nothing, AddressOf NewFolder_Click) With {
             .Name = "NewFolder",
             .ShortcutKeyDisplayString = "Ctrl+Shift+N"
@@ -7862,6 +9517,7 @@ Public Class Form1
             .ShortcutKeyDisplayString = "Ctrl+Shift+T"
         })
 
+        ' 5) Clipboard group
         cmsFiles.Items.Add(New ToolStripMenuItem("Cut", Nothing, AddressOf CutSelected_Click) With {
             .Name = "Cut",
             .ShortcutKeyDisplayString = "Ctrl+X"
@@ -7877,6 +9533,7 @@ Public Class Form1
             .ShortcutKeyDisplayString = "Ctrl+V"
         })
 
+        ' 6) Rename / Delete
         cmsFiles.Items.Add(New ToolStripMenuItem("Rename", Nothing, AddressOf RenameFile_Click) With {
             .Name = "Rename",
             .ShortcutKeyDisplayString = "F2"
@@ -7887,17 +9544,21 @@ Public Class Form1
             .ShortcutKeyDisplayString = "Delete"
         })
 
+        ' 7) Path-level commands
         cmsFiles.Items.Add(New ToolStripMenuItem("Copy Path", Nothing, AddressOf CopyFilePath_Click) With {
             .Name = "CopyPath",
-            .ShortcutKeyDisplayString = "Ctrl+P"
+            .ShortcutKeyDisplayString = "Ctrl+Shift+C"
         })
 
+        ' 8) Window / View
         cmsFiles.Items.Add(New ToolStripMenuItem("Full-Screen", Nothing, AddressOf ToggleFullScreen) With {
             .Name = "FullScreen",
             .ShortcutKeyDisplayString = "F11"
         })
 
         lvFiles.ContextMenuStrip = cmsFiles
+
+
 
         cmsTree.Items.Add(mnuPin)
         cmsTree.Items.Add(mnuUnpin)
