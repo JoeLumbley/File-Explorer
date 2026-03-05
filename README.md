@@ -4193,12 +4193,13 @@ End Sub
 
 
 
+
+
 ---
 
 # Keyboard Shortcuts
 
 The File Explorer supports a set of convenient keyboard shortcuts to speed up navigation and file operations. These shortcuts mirror familiar behaviors from traditional file managers, making the interface fast and intuitive.
-
 
 <img width="1266" height="733" alt="124" src="https://github.com/user-attachments/assets/e1538746-670c-4c2b-98d1-ec4c89319f88" />
 
@@ -4208,13 +4209,12 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 
 | Shortcut | Action |
 |---------|--------|
-| **Alt + ←** (or **Backspace**) | Go back to the previous folder |
+| **Alt + ←** | Go back to the previous folder |
 | **Alt + →** | Go forward to the next folder |
 | **Alt + ↑** | Move up one level (parent directory) |
+| **Alt + Home** | Go to the user profile folder |
 | **Ctrl + L** (or **Alt + D**, **F4**) | Focus/select the address bar |
 | **F11** | Toggle full‑screen mode |
-
----
 
 ---
 
@@ -4222,33 +4222,59 @@ The File Explorer supports a set of convenient keyboard shortcuts to speed up na
 
 | Shortcut | Action |
 |---------|--------|
+| **Enter** | Open selected item (File List) |
+| **Ctrl + O** | Open selected item or run an `open` command |
 | **F2** | Rename the selected file or folder |
 | **Ctrl + Shift + N** | Create a new folder |
 | **Ctrl + Shift + T** | Create a new text file |
-| **Ctrl + O** | Open the selected file or folder or start an `open` command |
 | **Ctrl + C** | Copy selected items |
 | **Ctrl + V** | Paste items |
 | **Ctrl + X** | Cut selected items |
 | **Ctrl + A** | Select all items |
-| **Ctrl + Shift + E** | Expand the selected folder or drive |
-| **Ctrl + Shift + C** | Collapse the selected folder or drive |
-| **Ctrl + D** (or **Delete**) | Delete selected item to the Recycle Bin |
----
-
-## 🔍 Searching & Viewing
-
-| Shortcut | Action |
-|---------|--------|
-| **Ctrl + F** | Start a search in the current folder |
-| **F3**  | Select the next search result. |
+| **Ctrl + Shift + C** | Copy file or folder path |
+| **Ctrl + D** (or **Delete**) | Delete selected item |
 | **F5** | Refresh the current folder view |
 
 ---
 
+## 🌲 TreeView Navigation
 
+| Shortcut | Action |
+|---------|--------|
+| **Enter** | Expand or collapse the selected folder |
+| **Left Arrow** | Collapse folder, or move to parent |
+| **Right Arrow** | Expand folder, or move to first child |
+| **Up Arrow** | Move to previous folder |
+| **Down Arrow** | Move to next folder |
+| **Home** | Jump to first root folder |
+| **End** | Jump to last visible folder |
+| **Page Up** | Scroll up through folders |
+| **Page Down** | Scroll down through folders |
+| **Ctrl + Shift + E** | Expand one level |
+| **Ctrl + Shift + L** | Collapse one level |
 
+---
 
+## 🔍 Searching
 
+| Shortcut | Action |
+|---------|--------|
+| **Ctrl + F** | Start a search in the current folder |
+| **F3** | Select the next search result |
+| **Shift + F3** | Select the previous search result |
+
+---
+
+## 📝 Help Drawer (Text Editing)
+
+| Shortcut | Action |
+|---------|--------|
+| **Ctrl + C** | Copy text |
+| **Ctrl + V** | Paste text |
+| **Ctrl + X** | Cut text |
+| **Ctrl + A** | Select all text |
+
+---
 
 
 
