@@ -7902,19 +7902,25 @@ Public Class Form1
                 "• A clearer understanding of how file systems are accessed",
                 "  and managed.",
                 "• Insight into building a real Windows Forms application.",
-                "• Practical examples of organizing and structuring a larger project.",
+                "• Practical examples of organizing and structuring a",
+                "   larger project.",
                 "• Confidence to modify, extend, or build your own tools.",
-                "• An appreciation for the subtle engineering challenges behind everyday software.",
+                "• An appreciation for the subtle engineering challenges",
+                "   behind everyday software.",
                 "",
-                "Re-creating something familiar is one of the most effective ways to deepen your understanding."
+                "Re-creating something familiar is one of the most effective",
+                "ways to deepen your understanding.",
+                ""
             }
         },
         {
             "Features",
             {
+                "",
                 "Graphical Interface:",
                 "  • Browse directories using a tree view and list view.",
-                "  • Perform file operations such as copy, move, delete, and rename.",
+                "  • Perform file operations such as copy, move, delete, and",
+                "     rename.",
                 "  • Use cut, copy, and paste for file and folder management.",
                 "  • Access context menus for quick actions.",
                 "  • Navigate backward and forward through history.",
@@ -7930,12 +7936,15 @@ Public Class Form1
                 "  • Helpful usage messages and error feedback.",
                 "  • Built-in help system with full documentation.",
                 "",
-                "The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best."
+                "The GUI and CLI work together seamlessly, giving users the",
+                "freedom to choose the workflow that suits them best.",
+                ""
             }
         },
         {
             "File Operations",
             {
+                "",
                 "Creating a Folder:",
                 "  • Click ""New Folder""",
                 "  • Press Ctrl+Shift+N",
@@ -7980,12 +7989,13 @@ Public Class Form1
         {
             "Search",
             {
+                "",
                 "Starting a Search:",
                 "  • Press Ctrl+F",
                 "  • Or run:  find <term>",
                 "",
                 "Navigating Results:",
-                "  • F3          Next result",
+                "  • F3              Next result",
                 "  • Shift+F3    Previous result",
                 "",
                 "Resetting Search:",
@@ -7994,18 +8004,20 @@ Public Class Form1
                 "Notes:",
                 "  • Search highlights matches in the File List.",
                 "  • Results cycle through visible items.",
-                "  • Search terms support partial matches."
+                "  • Search terms support partial matches.",
+                ""
             }
         },
         {
             "Keyboard Shortcuts",
             {
+                "",
                 "Navigation:",
-                "  Alt+Left (or Backspace)   Back",
+                "  Alt+Left                   Back",
                 "  Alt+Right                 Forward",
-                "  Alt+Up                    Parent folder",
-                "  Alt+Home                  User folder",
-                "  F11                       Full screen",
+                "  Alt+Up                     Parent folder",
+                "  Alt+Home                User folder",
+                "  F11                            Full screen",
                 "",
                 "Address Bar:",
                 "  Ctrl+L                    Focus",
@@ -8057,8 +8069,6 @@ Public Class Form1
                 "",
                 "Help Drawer (Text Editing):",
                 "  Ctrl+C                    Copy text",
-                "  Ctrl+V                    Paste text",
-                "  Ctrl+X                    Cut text",
                 "  Ctrl+A                    Select all text",
                 ""
             }
