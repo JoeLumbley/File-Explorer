@@ -555,7 +555,7 @@ Public Class Form1
         ' Highest‑priority, context‑sensitive actions
         If HandleEscape(keyData) Then Return True
         If HandleEnterKey(keyData) Then Return True
-        'If HandleAddressBarShortcuts(keyData) Then Return True
+
         If HandleAddressBarFocusShortcuts(keyData) Then Return True
 
         ' Focus navigation (Shift+Tab before Tab)
@@ -7779,13 +7779,10 @@ Public Class Form1
         {
             "Table of Contents",
             {
-                "Use man [section] to jump directly to any part of the manual.",
-                "",
-                "Sections:",
                 "  • Introduction",
                 "  • Getting Started",
                 "  • Using the App",
-                "  • Why I’m Creating File Explorer",
+                "  • Why I'm Creating File Explorer",
                 "  • What I Hope Learners Get From This",
                 "  • Features",
                 "  • File Operations",
@@ -7802,14 +7799,14 @@ Public Class Form1
         {
             "Introduction",
             {
-                "File Explorer is a simple, fast, and user‑friendly file management",
+                "File Explorer is a simple, fast, and user-friendly file management",
                 "application designed to make navigating, organizing, and manipulating",
                 "files intuitive for all users. It combines a clean graphical interface",
-                "with a powerful built‑in Command Line Interface (CLI) for users who",
-                "prefer keyboard‑driven workflows.",
+                "with a powerful built-in Command Line Interface (CLI) for users who",
+                "prefer keyboard-driven workflows.",
                 "",
                 "The application is designed around clarity, predictability, and emotional",
-                "safety. Whether you prefer clicking, typing, or shortcut‑driven workflows,",
+                "safety. Whether you prefer clicking, typing, or shortcut-driven workflows,",
                 "File Explorer adapts to your style."
             }
         },
@@ -7856,27 +7853,27 @@ Public Class Form1
         {
             "Using the App",
             {
-                "File Explorer is designed as a space for deliberate practice and student‑driven growth.",
+                "File Explorer is designed as a space for deliberate practice and student-driven growth.",
                 "By breaking a complex system into understandable pieces, learners can study how real",
                 "applications work and rebuild them with intention.",
                 "",
                 "This project is small enough to grasp, but rich enough to teach:",
                 "  • Decomposition and naming",
                 "  • Event flow and UI state management",
-                "  • Predictable, user‑centered design",
+                "  • Predictable, user-centered design",
                 "",
                 "The goal is to provide a foundation learners can extend, reshape, and eventually outgrow",
                 "as they build their own tools."
             }
         },
         {
-            "Why I’m Creating File Explorer",
+            "Why I'm Creating File Explorer",
             {
                 "File Explorer began as a personal exploration into how file managers work under the hood.",
                 "We use them every day, but rarely think about the engineering behind navigation history,",
                 "sorting, context menus, clipboard operations, and folder trees.",
                 "",
-                "Re‑creating these features has been a practical way to study:",
+                "Re-creating these features has been a practical way to study:",
                 "  • System I/O",
                 "  • UI design",
                 "  • Event handling",
@@ -7900,7 +7897,7 @@ Public Class Form1
                 "• Confidence to modify, extend, or build your own tools.",
                 "• An appreciation for the subtle engineering challenges behind everyday software.",
                 "",
-                "Re‑creating something familiar is one of the most effective ways to deepen your understanding."
+                "Re-creating something familiar is one of the most effective ways to deepen your understanding."
             }
         },
         {
@@ -7912,7 +7909,7 @@ Public Class Form1
                 "  • Use cut, copy, and paste for file and folder management.",
                 "  • Access context menus for quick actions.",
                 "  • Navigate backward and forward through history.",
-                "  • View file type icons and real‑time status updates.",
+                "  • View file type icons and real-time status updates.",
                 "",
                 "Integrated Command Line Interface (CLI):",
                 "  • Fast directory navigation (cd).",
@@ -7922,7 +7919,7 @@ Public Class Form1
                 "  • Type a path to open it directly.",
                 "  • Supports quoted paths with spaces.",
                 "  • Helpful usage messages and error feedback.",
-                "  • Built‑in help system with full documentation.",
+                "  • Built-in help system with full documentation.",
                 "",
                 "The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best."
             }
@@ -8080,132 +8077,132 @@ Public Class Form1
                 "  text ""notes.txt""",
                 "",
                 "The CLI is fully integrated with the GUI, so actions",
-                "performed in one are reflected immediately in",
-                "the other."
+                "performed in one are reflected immediately",
+                "in the other."
             }
         },
-{
-    "Commands",
-    {
-        "The CLI supports a variety of commands for navigation,",
-        "file operations, searching, drive inspection, and pinning.",
-        "All commands are designed to be predictable, forgiving,",
-        "and emotionally safe for beginners.",
-        "",
-        "Navigation:",
-        "  cd <path>            Change directory.",
-        "  back                      Go to previous folder.",
-        "  forward                 Go to next folder.",
-        "  up                         Go to parent folder.",
-        "",
-        "File Operations:",
-        "  copy <source> <dest>      Copy a file or folder.",
-        "  move <source> <dest>     Move a file or folder.",
-        "  delete <path>                    Delete a file or folder.",
-        "  rename <old> <new>       Rename a file or folder.",
-        "  mkdir <folder>                  Create a new folder.",
-        "  text <file>                          Create a new text file.",
-        "  txt <file>                            Alias for text.",
-        "",
-        "Opening:",
-        "  open <path>          Open a file or folder.",
-        "",
-        "Search:",
-        "  find <term>           Search for items in the current folder.",
-        "  findnext                  Jump to the next search result.",
-        "",
-        "Drive Tools:",
-        "  drives                    Show all ready drives with free space,",
-        "                                total size, and a usage bar.",
-        "  df <drive>            Show free space for a specific drive.",
-        "",
-        "Pinning:",
-        "  pin <path>           Pin or unpin a folder in Easy Access.",
-        "",
-        "Help:",
-        "  man                      Show the manual.",
-        "  man <section>    Jump to a specific manual section.",
-        "",
-        "Examples:",
-        "  cd C:\Users\Joseph\Documents",
-        "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
-        "  delete ""C:\Temp\old.txt""",
-        "  df C:"
-    }
-},
-{
-    "Drive Tools",
-    {
-        "",
-        "Drive Tools provide quick access to information about",
-        "your system's drives. You can view available drives,",
-        "their labels, free space, and usage bars.",
-        "",
-        "Commands:",
-        "  drives            Shows all drives free space, size, and usage.",
-        "  df <drive>    Shows free space for a specific drive.",
-        "",
-        "drives",
-        "",
-        "Shows all available drives with free space, total size, and",
-        "a usage bar. This gives you a clear overview of your",
-        "storage layout at a glance.",
-        "",
-        "Usage:",
-        "  drives",
-        "",
-        "Features:",
-        "  • Lists all ready drives.",
-        "  • Shows volume label.",
-        "  • Shows free space and total size.",
-        "  • Includes a 20-character usage bar for",
-        "    quick visual scanning.",
-        "",
-        "Example Output:",
-        "  ⏹ used   ⬜ free",
-        "",
-        "  C:\ - Windows",
-        "        68.51 GB free of 237.47 GB",
-        "        ⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜",
-        "",
-        "  D:\ - Back Up 2021",
-        "         1.15 TB free of 1.82 TB",
-        "        ⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
-        "",
-        "Notes:",
-        "  • Drives are sorted alphabetically for predictability.",
-        "  • Empty volume labels appear as (no label).",
-        "",
-        "df",
-        "",
-        "Shows free space for a specific drive. This is a quick,",
-        "focused version of the drives command, ideal for checking",
-        "a single drive at a glance.",
-        "",
-        "Usage:",
-        "  df <drive_letter>:",
-        "",
-        "Examples:",
-        "  df C:",
-        "  df D:",
-        "",
-        "Behavior:",
-        "  • Accepts C, C:, or C:\ formats.",
-        "  • Shows a short usage bar (8 characters) for",
-        "    quick scanning.",
-        "  • Displays free space and total size.",
-        "",
-        "Example Output:",
-        "  C:\   ⏹⏹⏹⬜⬜⬜⬜⬜   68.51 GB free of 237.47 GB",
-        "",
-        "Notes:",
-        "  • If the drive is not ready, an error message is shown.",
-        "  • The df command is designed to be forgiving and",
-        "    beginner-friendly.",
-        ""
-    }
-},
-{
+        {
+            "Commands",
+            {
+                "The CLI supports a variety of commands for navigation,",
+                "file operations, searching, drive inspection, and pinning.",
+                "All commands are designed to be predictable, forgiving,",
+                "and emotionally safe for beginners.",
+                "",
+                "Navigation:",
+                "  cd <path>            Change directory.",
+                "  back                      Go to previous folder.",
+                "  forward                 Go to next folder.",
+                "  up                         Go to parent folder.",
+                "",
+                "File Operations:",
+                "  copy <source> <dest>      Copy a file or folder.",
+                "  move <source> <dest>     Move a file or folder.",
+                "  delete <path>                    Delete a file or folder.",
+                "  rename <old> <new>       Rename a file or folder.",
+                "  mkdir <folder>                  Create a new folder.",
+                "  text <file>                          Create a new text file.",
+                "  txt <file>                            Alias for text.",
+                "",
+                "Opening:",
+                "  open <path>          Open a file or folder.",
+                "",
+                "Search:",
+                "  find <term>           Search for items in the current folder.",
+                "  findnext                  Jump to the next search result.",
+                "",
+                "Drive Tools:",
+                "  drives                    Show all ready drives with free space,",
+                "                                total size, and a usage bar.",
+                "  df <drive>            Show free space for a specific drive.",
+                "",
+                "Pinning:",
+                "  pin <path>           Pin or unpin a folder in Easy Access.",
+                "",
+                "Help:",
+                "  man                      Show the manual.",
+                "  man <section>    Jump to a specific manual section.",
+                "",
+                "Examples:",
+                "  cd C:\Users\Joseph\Documents",
+                "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
+                "  delete ""C:\Temp\old.txt""",
+                "  df C:"
+            }
+        },
+        {
+            "Drive Tools",
+            {
+                "",
+                "Drive Tools provide quick access to information about",
+                "your system's drives. You can view available drives,",
+                "their labels, free space, and usage bars.",
+                "",
+                "Commands:",
+                "  drives            Shows all drives free space, size, and usage.",
+                "  df <drive>    Shows free space for a specific drive.",
+                "",
+                "drives",
+                "",
+                "Shows all available drives with free space, total size, and",
+                "a usage bar. This gives you a clear overview of your",
+                "storage layout at a glance.",
+                "",
+                "Usage:",
+                "  drives",
+                "",
+                "Features:",
+                "  • Lists all ready drives.",
+                "  • Shows volume label.",
+                "  • Shows free space and total size.",
+                "  • Includes a 20-character usage bar for",
+                "    quick visual scanning.",
+                "",
+                "Example Output:",
+                "  ⏹ used   ⬜ free",
+                "",
+                "  C:\ - Windows",
+                "        68.51 GB free of 237.47 GB",
+                "        ⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜",
+                "",
+                "  D:\ - Back Up 2021",
+                "         1.15 TB free of 1.82 TB",
+                "        ⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
+                "",
+                "Notes:",
+                "  • Drives are sorted alphabetically for predictability.",
+                "  • Empty volume labels appear as (no label).",
+                "",
+                "df",
+                "",
+                "Shows free space for a specific drive. This is a quick,",
+                "focused version of the drives command, ideal for checking",
+                "a single drive at a glance.",
+                "",
+                "Usage:",
+                "  df <drive_letter>:",
+                "",
+                "Examples:",
+                "  df C:",
+                "  df D:",
+                "",
+                "Behavior:",
+                "  • Accepts C, C:, or C:\ formats.",
+                "  • Shows a short usage bar (8 characters) for",
+                "    quick scanning.",
+                "  • Displays free space and total size.",
+                "",
+                "Example Output:",
+                "  C:\   ⏹⏹⏹⬜⬜⬜⬜⬜   68.51 GB free of 237.47 GB",
+                "",
+                "Notes:",
+                "  • If the drive is not ready, an error message is shown.",
+                "  • The df command is designed to be forgiving and",
+                "    beginner-friendly.",
+                ""
+            }
+        },
+        {
             "Pinning System",
             {
                 "",
@@ -8325,6 +8322,79 @@ Public Class Form1
 
 
 
+    '' ============================================================
+    ''  BuildAppManualText
+    '' ============================================================
+    'Private Function BuildAppManualText() As String
+    '    Dim dict = BuildManualDictionary()
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' Navigation hint
+    '    sb.AppendLine("Use man [section] to jump to a section.")
+    '    sb.AppendLine()
+
+    '    ' Table of Contents
+    '    'sb.AppendLine("Table of Contents")
+    '    'For Each key In dict.Keys.OrderBy(Function(k) k)
+    '    '    sb.AppendLine("  • " & key)
+    '    'Next
+    '    'sb.AppendLine()
+
+
+    '    sb.AppendLine("Table of Contents")
+    '    For Each key In dict.Keys
+    '        sb.AppendLine("  • " & key)
+    '    Next
+    '    sb.AppendLine()
+
+
+    '    ' Sections
+    '    For Each key In dict.Keys
+    '        sb.AppendLine(key)
+    '        For Each line In dict(key)
+    '            sb.AppendLine(line)
+    '        Next
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+
+
+    ' ============================================================
+    '  BuildAppManualText
+    ' ============================================================
+    'Private Function BuildAppManualText() As String
+    '    Dim dict = BuildManualDictionary()
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' Navigation hint
+    '    sb.AppendLine("Use man [section] to jump to a section.")
+    '    sb.AppendLine()
+
+    '    ' Table of Contents (sorted for predictability)
+    '    sb.AppendLine("Table of Contents")
+    '    For Each key In dict.Keys.OrderBy(Function(k) k)
+    '        sb.AppendLine("  • " & key)
+    '    Next
+    '    sb.AppendLine()
+
+    '    ' Sections (also sorted for predictability)
+    '    For Each key In dict.Keys.OrderBy(Function(k) k)
+    '        sb.AppendLine(key)
+    '        For Each line In dict(key)
+    '            sb.AppendLine(line)
+    '        Next
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
     ' ============================================================
     '  BuildAppManualText
     ' ============================================================
@@ -8336,22 +8406,14 @@ Public Class Form1
         sb.AppendLine("Use man [section] to jump to a section.")
         sb.AppendLine()
 
-        ' Table of Contents
+        '' Table of Contents (in insertion order)
         'sb.AppendLine("Table of Contents")
-        'For Each key In dict.Keys.OrderBy(Function(k) k)
+        'For Each key In dict.Keys
         '    sb.AppendLine("  • " & key)
         'Next
         'sb.AppendLine()
 
-
-        sb.AppendLine("Table of Contents")
-        For Each key In dict.Keys
-            sb.AppendLine("  • " & key)
-        Next
-        sb.AppendLine()
-
-
-        ' Sections
+        ' Sections (in insertion order)
         For Each key In dict.Keys
             sb.AppendLine(key)
             For Each line In dict(key)
@@ -8362,6 +8424,7 @@ Public Class Form1
 
         Return sb.ToString()
     End Function
+
 
 
 
