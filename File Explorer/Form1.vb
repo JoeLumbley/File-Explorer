@@ -6628,6 +6628,236 @@ Public Class Form1
     End Function
 
 
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' ------------------------------------------------------------
+    '    ' Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Alt + ←           Go back")
+    '    sb.AppendLine("  Alt + →           Go forward")
+    '    sb.AppendLine("  Alt + ↑           Go to parent folder")
+    '    sb.AppendLine("  Alt + Home        Go to user profile folder")
+    '    sb.AppendLine("  F11               Toggle full screen")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Address Bar
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Address Bar")
+    '    sb.AppendLine("===========")
+    '    sb.AppendLine("  Ctrl + L          Focus address bar")
+    '    sb.AppendLine("  Alt + D           Focus address bar")
+    '    sb.AppendLine("  F4                Focus address bar")
+    '    sb.AppendLine("  Esc               Reset address bar")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Search
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Ctrl + F          Start search")
+    '    sb.AppendLine("  F3                Find next")
+    '    sb.AppendLine("  Shift + F3        Find previous")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Focus Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Focus Navigation")
+    '    sb.AppendLine("================")
+    '    sb.AppendLine("  Tab               Cycle focus forward")
+    '    sb.AppendLine("  Shift + Tab       Cycle focus backward")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' File Operations
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Enter             Open selected item (File List)")
+    '    sb.AppendLine("  Ctrl + O          Open selected item / run command")
+    '    sb.AppendLine("  F2                Rename selected item")
+    '    sb.AppendLine("  Delete            Delete selected item")
+    '    sb.AppendLine("  Ctrl + D          Delete selected item")
+    '    sb.AppendLine("  Ctrl + C          Copy")
+    '    sb.AppendLine("  Ctrl + V          Paste")
+    '    sb.AppendLine("  Ctrl + X          Cut")
+    '    sb.AppendLine("  Ctrl + A          Select all")
+    '    sb.AppendLine("  Ctrl + Shift + N  Create new folder")
+    '    sb.AppendLine("  Ctrl + Shift + T  Create new text file")
+    '    sb.AppendLine("  Ctrl + Shift + C  Copy file/folder path")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' TreeView Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("TreeView Navigation")
+    '    sb.AppendLine("===================")
+    '    sb.AppendLine("  Enter             Expand or collapse selected folder")
+    '    sb.AppendLine("  Left Arrow        Collapse folder, or move to parent")
+    '    sb.AppendLine("  Right Arrow       Expand folder, or move to first child")
+    '    sb.AppendLine("  Up Arrow          Move to previous folder")
+    '    sb.AppendLine("  Down Arrow        Move to next folder")
+    '    sb.AppendLine("  Home              Jump to first root folder")
+    '    sb.AppendLine("  End               Jump to last visible folder")
+    '    sb.AppendLine("  Page Up           Scroll up through folders")
+    '    sb.AppendLine("  Page Down         Scroll down through folders")
+    '    sb.AppendLine("  Ctrl + Shift + E  Expand one level")
+    '    sb.AppendLine("  Ctrl + Shift + L  Collapse one level")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Pinning
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Pinning")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Alt + P           Toggle pin (pin or unpin current folder)")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Refresh
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Refresh")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  F5                Refresh current folder")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Help Drawer (Text Editing)
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Help Drawer (Text Editing)")
+    '    sb.AppendLine("==========================")
+    '    sb.AppendLine("  Ctrl + C          Copy text")
+    '    sb.AppendLine("  Ctrl + V          Paste text")
+    '    sb.AppendLine("  Ctrl + X          Cut text")
+    '    sb.AppendLine("  Ctrl + A          Select all text")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
+    'Private Function BuildShortcutsHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    ' ------------------------------------------------------------
+    '    ' Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Navigation")
+    '    sb.AppendLine("==========")
+    '    sb.AppendLine("  Go back                         - Alt + ←")
+    '    sb.AppendLine("  Go forward                      - Alt + →")
+    '    sb.AppendLine("  Go to parent folder             - Alt + ↑")
+    '    sb.AppendLine("  Go to user profile folder       - Alt + Home")
+    '    sb.AppendLine("  Toggle full screen              - F11")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Address Bar
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Address Bar")
+    '    sb.AppendLine("===========")
+    '    sb.AppendLine("  Focus address bar               - Ctrl + L")
+    '    sb.AppendLine("  Focus address bar               - Alt + D")
+    '    sb.AppendLine("  Focus address bar               - F4")
+    '    sb.AppendLine("  Reset address bar               - Esc")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Search
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Search")
+    '    sb.AppendLine("======")
+    '    sb.AppendLine("  Start search                    - Ctrl + F")
+    '    sb.AppendLine("  Find next                       - F3")
+    '    sb.AppendLine("  Find previous                   - Shift + F3")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Focus Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Focus Navigation")
+    '    sb.AppendLine("================")
+    '    sb.AppendLine("  Cycle focus forward             - Tab")
+    '    sb.AppendLine("  Cycle focus backward            - Shift + Tab")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' File Operations
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("File Operations")
+    '    sb.AppendLine("===============")
+    '    sb.AppendLine("  Open selected item (File List)  - Enter")
+    '    sb.AppendLine("  Open item / run command         - Ctrl + O")
+    '    sb.AppendLine("  Rename selected item            - F2")
+    '    sb.AppendLine("  Delete selected item            - Delete")
+    '    sb.AppendLine("  Delete selected item            - Ctrl + D")
+    '    sb.AppendLine("  Copy                            - Ctrl + C")
+    '    sb.AppendLine("  Paste                           - Ctrl + V")
+    '    sb.AppendLine("  Cut                             - Ctrl + X")
+    '    sb.AppendLine("  Select all                      - Ctrl + A")
+    '    sb.AppendLine("  Create new folder               - Ctrl + Shift + N")
+    '    sb.AppendLine("  Create new text file            - Ctrl + Shift + T")
+    '    sb.AppendLine("  Copy file/folder path           - Ctrl + Shift + C")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' TreeView Navigation
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("TreeView Navigation")
+    '    sb.AppendLine("===================")
+    '    sb.AppendLine("  Expand/collapse folder          - Enter")
+    '    sb.AppendLine("  Collapse or go to parent        - Left Arrow")
+    '    sb.AppendLine("  Expand or go to first child     - Right Arrow")
+    '    sb.AppendLine("  Move to previous folder         - Up Arrow")
+    '    sb.AppendLine("  Move to next folder             - Down Arrow")
+    '    sb.AppendLine("  Jump to first root folder       - Home")
+    '    sb.AppendLine("  Jump to last visible folder     - End")
+    '    sb.AppendLine("  Scroll up through folders       - Page Up")
+    '    sb.AppendLine("  Scroll down through folders     - Page Down")
+    '    sb.AppendLine("  Expand one level                - Ctrl + Shift + E")
+    '    sb.AppendLine("  Collapse one level              - Ctrl + Shift + L")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Pinning
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Pinning")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Toggle pin                      - Alt + P")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Refresh
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Refresh")
+    '    sb.AppendLine("=======")
+    '    sb.AppendLine("  Refresh current folder          - F5")
+    '    sb.AppendLine()
+
+    '    ' ------------------------------------------------------------
+    '    ' Help Drawer (Text Editing)
+    '    ' ------------------------------------------------------------
+    '    sb.AppendLine("Help Drawer (Text Editing)")
+    '    sb.AppendLine("==========================")
+    '    sb.AppendLine("  Copy text                       - Ctrl + C")
+    '    sb.AppendLine("  Paste text                      - Ctrl + V")
+    '    sb.AppendLine("  Cut text                        - Ctrl + X")
+    '    sb.AppendLine("  Select all text                 - Ctrl + A")
+    '    sb.AppendLine()
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+
     Private Function BuildShortcutsHelp() As String
         Dim sb As New Text.StringBuilder()
 
@@ -6636,11 +6866,11 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Navigation")
         sb.AppendLine("==========")
-        sb.AppendLine("  Alt + ←           Go back")
-        sb.AppendLine("  Alt + →           Go forward")
-        sb.AppendLine("  Alt + ↑           Go to parent folder")
-        sb.AppendLine("  Alt + Home        Go to user profile folder")
-        sb.AppendLine("  F11               Toggle full screen")
+        sb.AppendLine("  Go back - Alt + ←")
+        sb.AppendLine("  Go forward - Alt + →")
+        sb.AppendLine("  Go to parent folder - Alt + ↑")
+        sb.AppendLine("  Go to user profile folder - Alt + Home")
+        sb.AppendLine("  Toggle full screen - F11")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6648,10 +6878,10 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Address Bar")
         sb.AppendLine("===========")
-        sb.AppendLine("  Ctrl + L          Focus address bar")
-        sb.AppendLine("  Alt + D           Focus address bar")
-        sb.AppendLine("  F4                Focus address bar")
-        sb.AppendLine("  Esc               Reset address bar")
+        sb.AppendLine("  Focus address bar - Ctrl + L")
+        sb.AppendLine("  Focus address bar - Alt + D")
+        sb.AppendLine("  Focus address bar - F4")
+        sb.AppendLine("  Reset address bar - Esc")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6659,9 +6889,9 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Search")
         sb.AppendLine("======")
-        sb.AppendLine("  Ctrl + F          Start search")
-        sb.AppendLine("  F3                Find next")
-        sb.AppendLine("  Shift + F3        Find previous")
+        sb.AppendLine("  Start search - Ctrl + F")
+        sb.AppendLine("  Find next - F3")
+        sb.AppendLine("  Find previous - Shift + F3")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6669,8 +6899,8 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Focus Navigation")
         sb.AppendLine("================")
-        sb.AppendLine("  Tab               Cycle focus forward")
-        sb.AppendLine("  Shift + Tab       Cycle focus backward")
+        sb.AppendLine("  Cycle focus forward - Tab")
+        sb.AppendLine("  Cycle focus backward - Shift + Tab")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6678,18 +6908,18 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("File Operations")
         sb.AppendLine("===============")
-        sb.AppendLine("  Enter             Open selected item (File List)")
-        sb.AppendLine("  Ctrl + O          Open selected item / run command")
-        sb.AppendLine("  F2                Rename selected item")
-        sb.AppendLine("  Delete            Delete selected item")
-        sb.AppendLine("  Ctrl + D          Delete selected item")
-        sb.AppendLine("  Ctrl + C          Copy")
-        sb.AppendLine("  Ctrl + V          Paste")
-        sb.AppendLine("  Ctrl + X          Cut")
-        sb.AppendLine("  Ctrl + A          Select all")
-        sb.AppendLine("  Ctrl + Shift + N  Create new folder")
-        sb.AppendLine("  Ctrl + Shift + T  Create new text file")
-        sb.AppendLine("  Ctrl + Shift + C  Copy file/folder path")
+        sb.AppendLine("  Open selected item (File List) - Enter")
+        sb.AppendLine("  Open selected item / run command - Ctrl + O")
+        sb.AppendLine("  Rename selected item - F2")
+        sb.AppendLine("  Delete selected item - Delete")
+        sb.AppendLine("  Delete selected item - Ctrl + D")
+        sb.AppendLine("  Copy - Ctrl + C")
+        sb.AppendLine("  Paste - Ctrl + V")
+        sb.AppendLine("  Cut - Ctrl + X")
+        sb.AppendLine("  Select all - Ctrl + A")
+        sb.AppendLine("  Create new folder - Ctrl + Shift + N")
+        sb.AppendLine("  Create new text file - Ctrl + Shift + T")
+        sb.AppendLine("  Copy file/folder path - Ctrl + Shift + C")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6697,17 +6927,17 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("TreeView Navigation")
         sb.AppendLine("===================")
-        sb.AppendLine("  Enter             Expand or collapse selected folder")
-        sb.AppendLine("  Left Arrow        Collapse folder, or move to parent")
-        sb.AppendLine("  Right Arrow       Expand folder, or move to first child")
-        sb.AppendLine("  Up Arrow          Move to previous folder")
-        sb.AppendLine("  Down Arrow        Move to next folder")
-        sb.AppendLine("  Home              Jump to first root folder")
-        sb.AppendLine("  End               Jump to last visible folder")
-        sb.AppendLine("  Page Up           Scroll up through folders")
-        sb.AppendLine("  Page Down         Scroll down through folders")
-        sb.AppendLine("  Ctrl + Shift + E  Expand one level")
-        sb.AppendLine("  Ctrl + Shift + L  Collapse one level")
+        sb.AppendLine("  Expand or collapse selected folder - Enter")
+        sb.AppendLine("  Collapse folder or move to parent - Left Arrow")
+        sb.AppendLine("  Expand folder or move to first child - Right Arrow")
+        sb.AppendLine("  Move to previous folder - Up Arrow")
+        sb.AppendLine("  Move to next folder - Down Arrow")
+        sb.AppendLine("  Jump to first root folder - Home")
+        sb.AppendLine("  Jump to last visible folder - End")
+        sb.AppendLine("  Scroll up through folders - Page Up")
+        sb.AppendLine("  Scroll down through folders - Page Down")
+        sb.AppendLine("  Expand one level - Ctrl + Shift + E")
+        sb.AppendLine("  Collapse one level - Ctrl + Shift + L")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6715,7 +6945,7 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Pinning")
         sb.AppendLine("=======")
-        sb.AppendLine("  Alt + P           Toggle pin (pin or unpin current folder)")
+        sb.AppendLine("  Toggle pin - Alt + P")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6723,7 +6953,7 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Refresh")
         sb.AppendLine("=======")
-        sb.AppendLine("  F5                Refresh current folder")
+        sb.AppendLine("  Refresh current folder - F5")
         sb.AppendLine()
 
         ' ------------------------------------------------------------
@@ -6731,14 +6961,16 @@ Public Class Form1
         ' ------------------------------------------------------------
         sb.AppendLine("Help Drawer (Text Editing)")
         sb.AppendLine("==========================")
-        sb.AppendLine("  Ctrl + C          Copy text")
-        sb.AppendLine("  Ctrl + V          Paste text")
-        sb.AppendLine("  Ctrl + X          Cut text")
-        sb.AppendLine("  Ctrl + A          Select all text")
+        sb.AppendLine("  Copy text - Ctrl + C")
+        sb.AppendLine("  Select all text - Ctrl + A")
         sb.AppendLine()
 
         Return sb.ToString()
     End Function
+
+
+
+
 
 
     Private Sub ShowDriveOverview()
