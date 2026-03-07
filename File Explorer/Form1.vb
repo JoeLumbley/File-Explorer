@@ -573,6 +573,422 @@ Public Class Form1
     End Function
 
 
+    Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+
+        Select Case e.KeyCode
+
+        ' ============================================================
+        '   BASIC KEYS
+        ' ============================================================
+            Case Keys.Delete
+                _deleteDown = False
+
+            Case Keys.Enter
+                _enterDown = False
+
+            Case Keys.Escape
+                _escapeDown = False
+
+            Case Keys.Tab
+                If ModifierKeys = Keys.Shift Then
+                    _shiftTabDown = False
+                Else
+                    _tabDown = False
+                End If
+
+
+        ' ============================================================
+        '   CTRL / CTRL+SHIFT SHORTCUTS (Alphabetized by key)
+        ' ============================================================
+            Case Keys.A
+                If ModifierKeys = Keys.Control Then _ctrlADown = False
+
+            Case Keys.C
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _ctrlCDown = False
+                    Case (Keys.Control Or Keys.Shift)
+                        _ctrlShiftCDown = False
+                End Select
+
+            Case Keys.D
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _ctrlDDown = False
+                    Case Keys.Alt
+                        _addressBarFocusDown = False
+                End Select
+
+            Case Keys.E
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
+
+            Case Keys.F
+                If ModifierKeys = Keys.Control Then _ctrlFDown = False
+
+            Case Keys.L
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _addressBarFocusDown = False
+                    Case (Keys.Control Or Keys.Shift)
+                        _ctrlShiftLDown = False
+                End Select
+
+            Case Keys.N
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
+
+            Case Keys.O
+                If ModifierKeys = Keys.Control Then _ctrlODown = False
+
+            Case Keys.P
+                Select Case ModifierKeys
+                    Case Keys.Control
+                        _ctrlPDown = False
+                    Case Keys.Alt
+                        _altPDown = False
+                End Select
+
+            Case Keys.T
+                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
+
+            Case Keys.V
+                If ModifierKeys = Keys.Control Then _ctrlVDown = False
+
+            Case Keys.X
+                If ModifierKeys = Keys.Control Then _ctrlXDown = False
+
+
+        ' ============================================================
+        '   ALT NAVIGATION (Alphabetized)
+        ' ============================================================
+            Case Keys.Home
+                If ModifierKeys = Keys.Alt Then _altHomeDown = False
+
+            Case Keys.Left
+                If ModifierKeys = Keys.Alt Then _altLeftDown = False
+
+            Case Keys.Right
+                If ModifierKeys = Keys.Alt Then _altRightDown = False
+
+            Case Keys.Up
+                If ModifierKeys = Keys.Alt Then _altUpDown = False
+
+
+        ' ============================================================
+        '   FUNCTION KEYS (Alphabetized)
+        ' ============================================================
+            Case Keys.F2
+                _f2Down = False
+
+            Case Keys.F3
+                If ModifierKeys = Keys.Shift Then
+                    _shiftF3Down = False
+                Else
+                    _f3Down = False
+                End If
+
+            Case Keys.F4
+                _addressBarFocusDown = False
+
+            Case Keys.F5
+                _f5Down = False
+
+            Case Keys.F11
+                _f11Down = False
+
+        End Select
+
+    End Sub
+
+
+
+    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
+        Handles tvFolders.BeforeExpand
+
+        ExpandNode_LazyLoad(e.Node)
+
+    End Sub
+
+    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) _
+        Handles tvFolders.AfterSelect
+
+        NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
+
+        UpdateAllUIStates()
+
+    End Sub
+
+    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
+        Handles tvFolders.BeforeCollapse
+
+        ' Set collapsed icon
+        e.Node.StateImageIndex = 0   ' ▶ collapsed
+
+    End Sub
+
+    Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
+        Handles tvFolders.MouseDown
+
+        If e.Button <> MouseButtons.Right Then Exit Sub
+
+        Dim info = tvFolders.HitTest(e.Location)
+
+        If info.Node Is Nothing Then
+            tvFolders.ContextMenuStrip = Nothing
+            Exit Sub
+        End If
+
+        tvFolders.SelectedNode = info.Node
+
+        If IsTreeNodePinnable(info.Node) Then
+            tvFolders.ContextMenuStrip = cmsTree
+            UpdateTreeContextMenu(info.Node)
+        Else
+            tvFolders.ContextMenuStrip = Nothing
+        End If
+    End Sub
+
+    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
+        Handles tvFolders.NodeMouseClick
+
+        If e.Button = MouseButtons.Left Then
+            Dim info = tvFolders.HitTest(e.Location)
+
+            If info.Location = TreeViewHitTestLocations.StateImage Then
+                tvFolders.BeginUpdate()
+                If e.Node.IsExpanded Then e.Node.Collapse() Else e.Node.Expand()
+                tvFolders.EndUpdate()
+            End If
+        End If
+    End Sub
+
+
+    Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
+    Handles lvFiles.ItemSelectionChanged
+        UpdateFileListPinState()
+        UpdatePinButtonState()
+        UpdateEditButtonsAndMenus()
+        UpdateFileButtonsAndMenus()
+    End Sub
+
+    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
+        Handles lvFiles.ItemActivate
+        ' The ItemActivate event is raised when the user double-clicks an item or
+        ' presses the Enter key when an item is selected.
+
+        If lvFiles.SelectedItems().Count = 0 Then Exit Sub
+
+
+        ' Validate selection
+        If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
+            ShowStatus(StatusPad & IconError & " The selected item isn't a file or folder and can't be opened.")
+            Exit Sub
+        End If
+
+        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
+
+    End Sub
+
+    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
+        Handles lvFiles.BeforeLabelEdit
+
+        _isRenaming = True
+
+
+        Dim item As ListViewItem = lvFiles.Items(e.Item)
+        Dim fullPath As String = CStr(item.Tag)
+
+        ' Rule 1: Path must exist
+        If Not PathExists(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " The selected item doesn't exist and cannot be renamed.")
+            Exit Sub
+        End If
+
+        ' Rule 2: Protected items cannot be renamed
+        If IsProtectedPathOrFolder(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconProtect & " This item is protected and cannot be renamed.")
+            Exit Sub
+        End If
+
+        ' Rule 3: User must have rename permission
+        Dim parentDir As String
+        If Directory.Exists(fullPath) Then
+            ' Item is a folder → check write access ON the folder
+            parentDir = fullPath
+        Else
+            ' Item is a file → check write access on its parent directory
+            parentDir = Path.GetDirectoryName(fullPath)
+        End If
+
+        If Not HasWriteAccess(parentDir) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " This location does not allow renaming.")
+            Exit Sub
+        End If
+
+        ' Rule 4: Item must not be locked or otherwise unrenamable
+        If Not CanRenameItem(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " This item is currently in use and cannot be renamed.")
+            Exit Sub
+        End If
+
+
+        ' Rule 5: Item must be a real filesystem path
+        If Not IsRealFileSystemPath(fullPath) Then
+            e.CancelEdit = True
+            ShowStatus(StatusPad & IconError & " This item cannot be renamed.")
+            Exit Sub
+        End If
+
+    End Sub
+
+    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) _
+        Handles lvFiles.ColumnClick
+
+        If e.Column = _lastColumn Then
+            _lastOrder = If(_lastOrder = SortOrder.Ascending,
+                        SortOrder.Descending,
+                        SortOrder.Ascending)
+        Else
+            _lastColumn = e.Column
+            _lastOrder = SortOrder.Ascending
+        End If
+
+        UpdateColumnHeaders(e.Column, _lastOrder)
+
+        lvFiles.ListViewItemSorter =
+        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
+
+        lvFiles.Sort()
+
+    End Sub
+
+    Private Sub lvFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim info = lvFiles.HitTest(e.Location)
+            ' If not clicking an item, cancel the context menu
+            If info.Item Is Nothing Then
+                lvFiles.ContextMenuStrip = Nothing
+            Else
+                lvFiles.ContextMenuStrip = cmsFiles
+            End If
+        End If
+
+    End Sub
+
+
+    Private Sub btnBack_Click(sender As Object, e As EventArgs) _
+        Handles btnBack.Click
+
+        NavigateBackward_Click()
+
+    End Sub
+
+    Private Sub btnForward_Click(sender As Object, e As EventArgs) _
+        Handles btnForward.Click
+
+        NavigateForward_Click()
+
+    End Sub
+
+    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) _
+        Handles btnRefresh.Click
+
+        NavigateTo(currentFolder, recordHistory:=False)
+
+        UpdateTreeRoots()
+
+    End Sub
+
+    Private Sub bntHome_Click(sender As Object, e As EventArgs) _
+        Handles bntHome.Click
+
+        ' Go to user's home directory
+        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
+
+        UpdateNavButtons()
+
+    End Sub
+
+    Private Sub btnGo_Click(sender As Object, e As EventArgs) _
+        Handles btnGo.Click
+
+        ExecuteCommand(txtAddressBar.Text.Trim)
+
+    End Sub
+
+
+    Private Sub btnPin_Click(sender As Object, e As EventArgs) _
+    Handles btnPin.Click
+
+        Dim target = ResolvePinnableTarget()
+        If target Is Nothing Then Exit Sub
+
+        TryPinOrUnpin(target)
+    End Sub
+
+
+    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
+        Handles btnNewFolder.Click
+
+        NewFolder_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) _
+        Handles btnNewTextFile.Click
+
+        NewTextFile_Click(sender, e)
+
+    End Sub
+
+
+    Private Sub btnCut_Click(sender As Object, e As EventArgs) _
+        Handles btnCut.Click
+
+        CutSelected_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnCopy_Click(sender As Object, e As EventArgs) _
+        Handles btnCopy.Click
+
+        CopySelected_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnPaste_Click(sender As Object, e As EventArgs) _
+        Handles btnPaste.Click
+
+        PasteSelected_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnRename_Click(sender As Object, e As EventArgs) _
+        Handles btnRename.Click
+
+        RenameFile_Click(sender, e)
+
+    End Sub
+
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) _
+        Handles btnDelete.Click
+
+        Delete_Click(sender, e)
+
+    End Sub
+
+
+
+
+
+
+
+
+
     Private Function HandleAddressBarFocusShortcuts(keyData As Keys) As Boolean
 
         ' ============================================================
@@ -1078,285 +1494,14 @@ Public Class Form1
         Return True
     End Function
 
-    Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
-        Handles tvFolders.BeforeExpand
 
-        ExpandNode_LazyLoad(e.Node)
 
-    End Sub
 
-    Private Sub tvFolders_AfterSelect(sender As Object, e As TreeViewEventArgs) _
-        Handles tvFolders.AfterSelect
 
-        NavigateToSelectedFolderTreeView_AfterSelect(sender, e)
 
-        UpdateAllUIStates()
 
-    End Sub
 
-    Private Sub tvFolders_BeforeCollapse(sender As Object, e As TreeViewCancelEventArgs) _
-        Handles tvFolders.BeforeCollapse
 
-        ' Set collapsed icon
-        e.Node.StateImageIndex = 0   ' ▶ collapsed
-
-    End Sub
-
-    Private Sub tvFolders_MouseDown(sender As Object, e As MouseEventArgs) _
-        Handles tvFolders.MouseDown
-
-        If e.Button <> MouseButtons.Right Then Exit Sub
-
-        Dim info = tvFolders.HitTest(e.Location)
-
-        If info.Node Is Nothing Then
-            tvFolders.ContextMenuStrip = Nothing
-            Exit Sub
-        End If
-
-        tvFolders.SelectedNode = info.Node
-
-        If IsTreeNodePinnable(info.Node) Then
-            tvFolders.ContextMenuStrip = cmsTree
-            UpdateTreeContextMenu(info.Node)
-        Else
-            tvFolders.ContextMenuStrip = Nothing
-        End If
-    End Sub
-
-    Private Sub tvFolders_NodeMouseClick(sender As Object, e As TreeNodeMouseClickEventArgs) _
-        Handles tvFolders.NodeMouseClick
-
-        If e.Button = MouseButtons.Left Then
-            Dim info = tvFolders.HitTest(e.Location)
-
-            If info.Location = TreeViewHitTestLocations.StateImage Then
-                tvFolders.BeginUpdate()
-                If e.Node.IsExpanded Then e.Node.Collapse() Else e.Node.Expand()
-                tvFolders.EndUpdate()
-            End If
-        End If
-    End Sub
-
-
-    Private Sub lvFiles_ItemSelectionChanged(sender As Object, e As ListViewItemSelectionChangedEventArgs) _
-    Handles lvFiles.ItemSelectionChanged
-        UpdateFileListPinState()
-        UpdatePinButtonState()
-        UpdateEditButtonsAndMenus()
-        UpdateFileButtonsAndMenus()
-    End Sub
-
-    Private Sub lvFiles_ItemActivate(sender As Object, e As EventArgs) _
-        Handles lvFiles.ItemActivate
-        ' The ItemActivate event is raised when the user double-clicks an item or
-        ' presses the Enter key when an item is selected.
-
-        If lvFiles.SelectedItems().Count = 0 Then Exit Sub
-
-
-        ' Validate selection
-        If Not PathExists(CStr(lvFiles.SelectedItems(0).Tag)) Then
-            ShowStatus(StatusPad & IconError & " The selected item isn't a file or folder and can't be opened.")
-            Exit Sub
-        End If
-
-        GoToFolderOrOpenFile_EnterKeyDownOrDoubleClick()
-
-    End Sub
-
-    Private Sub lvFiles_BeforeLabelEdit(sender As Object, e As LabelEditEventArgs) _
-        Handles lvFiles.BeforeLabelEdit
-
-        _isRenaming = True
-
-
-        Dim item As ListViewItem = lvFiles.Items(e.Item)
-        Dim fullPath As String = CStr(item.Tag)
-
-        ' Rule 1: Path must exist
-        If Not PathExists(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconError & " The selected item doesn't exist and cannot be renamed.")
-            Exit Sub
-        End If
-
-        ' Rule 2: Protected items cannot be renamed
-        If IsProtectedPathOrFolder(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconProtect & " This item is protected and cannot be renamed.")
-            Exit Sub
-        End If
-
-        ' Rule 3: User must have rename permission
-        Dim parentDir As String
-        If Directory.Exists(fullPath) Then
-            ' Item is a folder → check write access ON the folder
-            parentDir = fullPath
-        Else
-            ' Item is a file → check write access on its parent directory
-            parentDir = Path.GetDirectoryName(fullPath)
-        End If
-
-        If Not HasWriteAccess(parentDir) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconError & " This location does not allow renaming.")
-            Exit Sub
-        End If
-
-        ' Rule 4: Item must not be locked or otherwise unrenamable
-        If Not CanRenameItem(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconError & " This item is currently in use and cannot be renamed.")
-            Exit Sub
-        End If
-
-
-        ' Rule 5: Item must be a real filesystem path
-        If Not IsRealFileSystemPath(fullPath) Then
-            e.CancelEdit = True
-            ShowStatus(StatusPad & IconError & " This item cannot be renamed.")
-            Exit Sub
-        End If
-
-    End Sub
-
-    Private Sub lvFiles_ColumnClick(sender As Object, e As ColumnClickEventArgs) _
-        Handles lvFiles.ColumnClick
-
-        If e.Column = _lastColumn Then
-            _lastOrder = If(_lastOrder = SortOrder.Ascending,
-                        SortOrder.Descending,
-                        SortOrder.Ascending)
-        Else
-            _lastColumn = e.Column
-            _lastOrder = SortOrder.Ascending
-        End If
-
-        UpdateColumnHeaders(e.Column, _lastOrder)
-
-        lvFiles.ListViewItemSorter =
-        New ListViewItemComparer(_lastColumn, _lastOrder, ColumnTypes)
-
-        lvFiles.Sort()
-
-    End Sub
-
-    Private Sub lvFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseDown
-
-        If e.Button = MouseButtons.Right Then
-            Dim info = lvFiles.HitTest(e.Location)
-            ' If not clicking an item, cancel the context menu
-            If info.Item Is Nothing Then
-                lvFiles.ContextMenuStrip = Nothing
-            Else
-                lvFiles.ContextMenuStrip = cmsFiles
-            End If
-        End If
-
-    End Sub
-
-
-    Private Sub btnBack_Click(sender As Object, e As EventArgs) _
-        Handles btnBack.Click
-
-        NavigateBackward_Click()
-
-    End Sub
-
-    Private Sub btnForward_Click(sender As Object, e As EventArgs) _
-        Handles btnForward.Click
-
-        NavigateForward_Click()
-
-    End Sub
-
-    Private Sub btnRefresh_Click(sender As Object, e As EventArgs) _
-        Handles btnRefresh.Click
-
-        NavigateTo(currentFolder, recordHistory:=False)
-
-        UpdateTreeRoots()
-
-    End Sub
-
-    Private Sub bntHome_Click(sender As Object, e As EventArgs) _
-        Handles bntHome.Click
-
-        ' Go to user's home directory
-        NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), True)
-
-        UpdateNavButtons()
-
-    End Sub
-
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) _
-        Handles btnGo.Click
-
-        ExecuteCommand(txtAddressBar.Text.Trim)
-
-    End Sub
-
-
-    Private Sub btnPin_Click(sender As Object, e As EventArgs) _
-    Handles btnPin.Click
-
-        Dim target = ResolvePinnableTarget()
-        If target Is Nothing Then Exit Sub
-
-        TryPinOrUnpin(target)
-    End Sub
-
-
-    Private Sub btnNewFolder_Click(sender As Object, e As EventArgs) _
-        Handles btnNewFolder.Click
-
-        NewFolder_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnNewTextFile_Click(sender As Object, e As EventArgs) _
-        Handles btnNewTextFile.Click
-
-        NewTextFile_Click(sender, e)
-
-    End Sub
-
-
-    Private Sub btnCut_Click(sender As Object, e As EventArgs) _
-        Handles btnCut.Click
-
-        CutSelected_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnCopy_Click(sender As Object, e As EventArgs) _
-        Handles btnCopy.Click
-
-        CopySelected_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnPaste_Click(sender As Object, e As EventArgs) _
-        Handles btnPaste.Click
-
-        PasteSelected_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnRename_Click(sender As Object, e As EventArgs) _
-        Handles btnRename.Click
-
-        RenameFile_Click(sender, e)
-
-    End Sub
-
-    Private Sub btnDelete_Click(sender As Object, e As EventArgs) _
-        Handles btnDelete.Click
-
-        Delete_Click(sender, e)
-
-    End Sub
 
 
     Private Sub ResetSearchState()
@@ -1373,131 +1518,7 @@ Public Class Form1
     End Sub
 
 
-    Private Sub Form1_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
 
-        Select Case e.KeyCode
-
-        ' ============================================================
-        '   BASIC KEYS
-        ' ============================================================
-            Case Keys.Delete
-                _deleteDown = False
-
-            Case Keys.Enter
-                _enterDown = False
-
-            Case Keys.Escape
-                _escapeDown = False
-
-            Case Keys.Tab
-                If ModifierKeys = Keys.Shift Then
-                    _shiftTabDown = False
-                Else
-                    _tabDown = False
-                End If
-
-
-        ' ============================================================
-        '   CTRL / CTRL+SHIFT SHORTCUTS (Alphabetized by key)
-        ' ============================================================
-            Case Keys.A
-                If ModifierKeys = Keys.Control Then _ctrlADown = False
-
-            Case Keys.C
-                Select Case ModifierKeys
-                    Case Keys.Control
-                        _ctrlCDown = False
-                    Case (Keys.Control Or Keys.Shift)
-                        _ctrlShiftCDown = False
-                End Select
-
-            Case Keys.D
-                Select Case ModifierKeys
-                    Case Keys.Control
-                        _ctrlDDown = False
-                    Case Keys.Alt
-                        _addressBarFocusDown = False
-                End Select
-
-            Case Keys.E
-                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftEDown = False
-
-            Case Keys.F
-                If ModifierKeys = Keys.Control Then _ctrlFDown = False
-
-            Case Keys.L
-                Select Case ModifierKeys
-                    Case Keys.Control
-                        _addressBarFocusDown = False
-                    Case (Keys.Control Or Keys.Shift)
-                        _ctrlShiftLDown = False
-                End Select
-
-            Case Keys.N
-                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftNDown = False
-
-            Case Keys.O
-                If ModifierKeys = Keys.Control Then _ctrlODown = False
-
-            Case Keys.P
-                Select Case ModifierKeys
-                    Case Keys.Control
-                        _ctrlPDown = False
-                    Case Keys.Alt
-                        _altPDown = False
-                End Select
-
-            Case Keys.T
-                If ModifierKeys = (Keys.Control Or Keys.Shift) Then _ctrlShiftTDown = False
-
-            Case Keys.V
-                If ModifierKeys = Keys.Control Then _ctrlVDown = False
-
-            Case Keys.X
-                If ModifierKeys = Keys.Control Then _ctrlXDown = False
-
-
-        ' ============================================================
-        '   ALT NAVIGATION (Alphabetized)
-        ' ============================================================
-            Case Keys.Home
-                If ModifierKeys = Keys.Alt Then _altHomeDown = False
-
-            Case Keys.Left
-                If ModifierKeys = Keys.Alt Then _altLeftDown = False
-
-            Case Keys.Right
-                If ModifierKeys = Keys.Alt Then _altRightDown = False
-
-            Case Keys.Up
-                If ModifierKeys = Keys.Alt Then _altUpDown = False
-
-
-        ' ============================================================
-        '   FUNCTION KEYS (Alphabetized)
-        ' ============================================================
-            Case Keys.F2
-                _f2Down = False
-
-            Case Keys.F3
-                If ModifierKeys = Keys.Shift Then
-                    _shiftF3Down = False
-                Else
-                    _f3Down = False
-                End If
-
-            Case Keys.F4
-                _addressBarFocusDown = False
-
-            Case Keys.F5
-                _f5Down = False
-
-            Case Keys.F11
-                _f11Down = False
-
-        End Select
-
-    End Sub
 
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
