@@ -4486,7 +4486,7 @@ Public Class Form1
 
             ' Divider (only if not the last entry)
             If currentIndex < lastIndex Then
-                sb.AppendLine("────────────────────────────────────────")
+                sb.AppendLine("────────────────────────────────────────────────────────")
                 sb.AppendLine()
             End If
 
