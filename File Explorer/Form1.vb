@@ -7148,7 +7148,7 @@ Public Class Form1
         HelpPanel.Visible = True
         HelpPanel.Width = 0
 
-        Dim targetWidth As Integer = 500
+        Dim targetWidth As Integer = 675
         Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
 
         AddHandler t.Tick,
