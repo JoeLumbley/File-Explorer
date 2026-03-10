@@ -3156,47 +3156,6 @@ Public Class Form1
     'End Sub
 
 
-
-    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
-
-    '    If _clipboardPaths Is Nothing OrElse _clipboardPaths.Count = 0 Then
-    '        ShowStatus(StatusPad & IconError & " Paste failed: No items in clipboard.")
-    '        Exit Sub
-    '    End If
-
-    '    Dim destDir As String = GetPasteDestination()
-    '    If destDir Is Nothing Then
-    '        ShowStatus(StatusPad & IconError & " Paste failed: Destination is not writable.")
-    '        Exit Sub
-    '    End If
-
-    '    Dim (items, summary) =
-    '    Await RunCopyOrCutOperation(_clipboardPaths, destDir, _clipboardIsCut, CopyUIContext.Paste)
-
-    '    _clipboardPaths = Nothing
-    '    _clipboardIsCut = False
-
-    '    Await PopulateFiles(destDir)
-
-    '    If items.Count = 0 Then
-    '        ShowStatus(StatusPad & IconWarning & " Nothing was pasted.")
-    '    ElseIf items.Count = 1 Then
-    '        ShowStatus(StatusPad & IconPaste &
-    '               $" Pasted: {Path.GetFileName(items(0))}")
-    '    Else
-    '        ShowStatus(StatusPad & IconPaste &
-    '               $" Pasted {items.Count} items.")
-    '    End If
-
-    '    SelectItemsInListView(items)
-    '    lvFiles.Focus()
-    '    ResetCutVisuals()
-    '    UpdateAllUIStates()
-
-    'End Sub
-
-
-
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
         If _clipboardPaths Is Nothing OrElse _clipboardPaths.Count = 0 Then
@@ -3236,37 +3195,6 @@ Public Class Form1
         UpdateAllUIStates()
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Sub SelectItemsInListView(paths As List(Of String))
