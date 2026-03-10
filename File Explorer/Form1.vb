@@ -7595,6 +7595,8 @@ Public Class Form1
 
         ' Add the status label
         statusStrip.Items.Add(lblStatus)
+        statusStrip.AutoSize = False
+        statusStrip.Height = 25
 
         ' --- Create Cancel button ---
         CancelCopyButton = New Button() With {
