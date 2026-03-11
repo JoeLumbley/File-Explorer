@@ -93,7 +93,7 @@ Public Class Form1
     Private IconDialog As String = ""
     Private IconSuccess As String = ""
     Private IconOpen As String = ""
-    Private IconCopy As String = ""
+    Private IconCopy As String = ""
     Private IconPaste As String = ""
     Private IconProtect As String = ""
     Private IconNavigate As String = ""
@@ -7588,7 +7588,7 @@ Public Class Form1
         Dim statusStrip As New StatusStrip()
 
         ' Set font to Segoe UI Symbol, 10pt
-        statusStrip.Font = New Font("Segoe UI Symbol", 10.0F, FontStyle.Regular)
+        statusStrip.Font = New Font("Segoe UI Symbol", 11.0F, FontStyle.Regular)
 
         ' Ensure lblStatus uses the same font
         lblStatus.Font = statusStrip.Font
@@ -7698,7 +7698,6 @@ Public Class Form1
         tvFolders.ShowPlusMinus = False
         tvFolders.StateImageList = imgArrows   ' Index 0 = ▶, Index 1 = ▼, Index 2 = no arrow
 
-        'tvFolders.Font = New Font("Segoe s", 15.0F, FontStyle.Regular)
         tvFolders.Font = New Font("Segoe UI Symbol", 12.0F, FontStyle.Regular)
 
     End Sub
