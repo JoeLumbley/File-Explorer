@@ -516,6 +516,7 @@ Public Class Form1
 
 
     Public Enum CopyUIContext
+        None
         CLI
         Paste
     End Enum
@@ -1032,6 +1033,76 @@ Public Class Form1
 
 
 
+    'Private Function HandleEscape(keyData As Keys) As Boolean
+
+    '    ' Only handle Escape here
+    '    If keyData <> Keys.Escape Then
+    '        Return False
+    '    End If
+
+    '    If _escapeDown Then Return True   ' swallow repeat
+    '    _escapeDown = True
+
+    '    ' ============================================
+    '    ' 0. Cancel active copy operation
+    '    ' ============================================
+    '    If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+    '        copyCts.Cancel()
+    '        ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 1. Cancel rename mode (let ESC pass through)
+    '    ' ============================================
+    '    If _isRenaming Then
+    '        Return False   ' let ListView's edit box receive ESC
+    '    End If
+
+    '    ' ============================================
+    '    ' 2. Close HelpPanel
+    '    ' ============================================
+    '    If HelpPanel.Visible Then
+    '        HelpPanel.Visible = False
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 3. Reset search mode
+    '    ' ============================================
+    '    If SearchIsActive() Then
+    '        txtAddressBar.Text = currentFolder
+    '        ResetSearchState()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 4. Reset address bar if focused
+    '    ' ============================================
+    '    If txtAddressBar.Focused Then
+    '        txtAddressBar.Text = currentFolder
+    '        ResetSearchState()
+    '        PlaceCaretAtEndOfAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 5. Optional: clear file selection
+    '    ' ============================================
+    '    If lvFiles.SelectedItems.Count > 0 Then
+    '        lvFiles.SelectedItems.Clear()
+    '        Return True
+    '    End If
+
+    '    ' ============================================
+    '    ' 6. Nothing to do — swallow ESC
+    '    ' ============================================
+    '    Return True
+
+    'End Function
+
+
     Private Function HandleEscape(keyData As Keys) As Boolean
 
         ' Only handle Escape here
@@ -1042,14 +1113,62 @@ Public Class Form1
         If _escapeDown Then Return True   ' swallow repeat
         _escapeDown = True
 
+        '' ============================================
+        '' 0. Cancel active copy operation
+        '' ============================================
+        'If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+        '    copyCts.Cancel()
+        '    ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+
+        '    ' Close HelpPanel immediately (Explorer-like)
+        '    If HelpPanel.Visible Then
+        '        HelpPanel.Visible = False
+        '    End If
+
+        '    Return True
+        'End If
+
+
+
+
+
+
         ' ============================================
         ' 0. Cancel active copy operation
         ' ============================================
         If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
             copyCts.Cancel()
             ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+
+            If HelpPanel.Visible Then
+                HelpPanel.Visible = False
+            End If
+
             Return True
         End If
+
+        ' ============================================
+        ' 0b. Cancellation already in progress
+        ' ============================================
+        If copyCts IsNot Nothing AndAlso copyCts.IsCancellationRequested Then
+            ' Close HelpPanel if visible
+            If HelpPanel.Visible Then
+                HelpPanel.Visible = False
+                Return True
+            End If
+
+            ' Swallow ESC during cancellation
+            Return True
+        End If
+
+
+
+
+
+
+
+
+
 
         ' ============================================
         ' 1. Cancel rename mode (let ESC pass through)
@@ -1100,6 +1219,31 @@ Public Class Form1
         Return True
 
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function SearchIsActive() As Boolean
         Return SearchResults.Count > 0 _
@@ -2075,11 +2219,61 @@ Public Class Form1
 
     'End Sub
 
+    'Private Async Sub HandleCopyCommand(parts As String())
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate arguments
+    '    ' ------------------------------------------------------------
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '               " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    ' ------------------------------------------------------------
+    '    ' Run unified copy engine
+    '    ' ------------------------------------------------------------
+    '    Dim result = Await RunCopyOrCutOperation(
+    '    New List(Of String) From {source},
+    '    destinationRoot,
+    '    isCut:=False,
+    '    CopyUIContext.CLI
+    ')
+
+    '    Dim items = result.Results
+    '    Dim summary = result.Summary
+
+    '    ' ------------------------------------------------------------
+    '    ' Status summary
+    '    ' ------------------------------------------------------------
+    '    If summary IsNot Nothing Then
+    '        If summary.Success Then
+    '            ShowStatus(StatusPad & IconCopy &
+    '                   $" Copied {summary.FilesCopied} file(s), {summary.FilesSkipped} skipped.")
+    '        Else
+    '            ShowStatus(StatusPad & IconError &
+    '                   " Copy completed with errors. Some items could not be copied.")
+    '        End If
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Refresh UI
+    '    ' ------------------------------------------------------------
+    '    Await PopulateFiles(currentFolder)
+    '    UpdateTreeRoots()
+    '    RestoreAddressBar()
+
+    'End Sub
+
+
     Private Async Sub HandleCopyCommand(parts As String())
 
-        ' ------------------------------------------------------------
-        ' Validate arguments
-        ' ------------------------------------------------------------
         If parts.Length <= 2 Then
             ShowStatus(StatusPad & IconDialog &
                    " Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
@@ -2092,9 +2286,6 @@ Public Class Form1
         Dim destinationRoot As String =
         parts(parts.Length - 1).Trim()
 
-        ' ------------------------------------------------------------
-        ' Run unified copy engine
-        ' ------------------------------------------------------------
         Dim result = Await RunCopyOrCutOperation(
         New List(Of String) From {source},
         destinationRoot,
@@ -2105,22 +2296,16 @@ Public Class Form1
         Dim items = result.Results
         Dim summary = result.Summary
 
-        ' ------------------------------------------------------------
-        ' Status summary
-        ' ------------------------------------------------------------
-        If summary IsNot Nothing Then
-            If summary.Success Then
-                ShowStatus(StatusPad & IconCopy &
-                       $" Copied {summary.FilesCopied} file(s), {summary.FilesSkipped} skipped.")
-            Else
-                ShowStatus(StatusPad & IconError &
-                       " Copy completed with errors. Some items could not be copied.")
-            End If
+        If summary.WasCanceled Then
+            ShowStatus(StatusPad & IconWarning & " Copy canceled.")
+        ElseIf summary.Success Then
+            ShowStatus(StatusPad & IconCopy &
+                   $" Copied {summary.FilesCopied} file(s), {summary.FilesSkipped} skipped.")
+        Else
+            ShowStatus(StatusPad & IconError &
+                   " Copy completed with errors. Some items could not be copied.")
         End If
 
-        ' ------------------------------------------------------------
-        ' Refresh UI
-        ' ------------------------------------------------------------
         Await PopulateFiles(currentFolder)
         UpdateTreeRoots()
         RestoreAddressBar()
@@ -2162,6 +2347,487 @@ Public Class Form1
 
 
 
+    '    Private Async Function RunCopyOrCutOperation(
+    '    sources As List(Of String),
+    '    destinationRoot As String,
+    '    isCut As Boolean,
+    '    context As CopyUIContext
+    ') As Task(Of (Results As List(Of String), Summary As CopyResult))
+
+    '        Dim pastedItems As New List(Of String)
+
+    '        ' ------------------------------------------------------------
+    '        ' Validate destination
+    '        ' ------------------------------------------------------------
+    '        If destinationRoot Is Nothing OrElse Not Directory.Exists(destinationRoot) Then
+    '            ShowStatus(StatusPad & IconError & " Destination does not exist or is not writable.")
+    '            Return (pastedItems, Nothing)
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' Validate each source
+    '        ' ------------------------------------------------------------
+    '        For Each src In sources
+    '            If Not (File.Exists(src) OrElse Directory.Exists(src)) Then
+    '                ShowStatus(StatusPad & IconError &
+    '                       $" Source '{src}' does not exist.")
+    '                Return (pastedItems, Nothing)
+    '            End If
+
+    '            If IsCopyIntoSelf(src, destinationRoot) Then
+    '                ShowStatus(StatusPad & IconError &
+    '                       $" Cannot copy '{Path.GetFileName(src)}' into itself or a subfolder.")
+    '                Return (pastedItems, Nothing)
+    '            End If
+    '        Next
+
+    '        ' ------------------------------------------------------------
+    '        ' Cancellation + UI
+    '        ' ------------------------------------------------------------
+    '        copyCts = New CancellationTokenSource()
+    '        Dim ct = copyCts.Token
+
+    '        Dim processedCount As Integer = 0
+    '        Dim finishing As Boolean = False
+
+    '        Dim progressCallback As Action(Of CopyResult) =
+    '        Sub(r)
+    '            If r.TotalDirectories <= 0 Then Exit Sub
+
+    '            processedCount = r.FilesProcessed
+
+    '            If Not finishing AndAlso r.DirectoriesStarted >= r.TotalDirectories Then
+    '                finishing = True
+    '            End If
+
+    '            Dim hint As String = If(context = CopyUIContext.CLI,
+    '                                    "  Press ESC to cancel.",
+    '                                    "")
+
+    '            If finishing Then
+    '                ShowStatus(StatusPad & IconCopy &
+    '                           $" Finishing up... {processedCount} processed.{hint}")
+    '            Else
+    '                ShowStatus(StatusPad & IconCopy &
+    '                           $" Copying... {processedCount} processed.{hint}")
+    '            End If
+    '        End Sub
+
+    '        '' ------------------------------------------------------------
+    '        '' CLI-only Cancel button
+    '        '' ------------------------------------------------------------
+    '        'If context = CopyUIContext.CLI Then
+    '        '    CancelCopyHost.Visible = True
+    '        '    CancelCopyButton.Visible = True
+    '        '    CancelCopyButton.Enabled = True
+    '        'End If
+
+    '        ' 
+    '        If context = CopyUIContext.CLI OrElse context = CopyUIContext.Paste Then
+    '            CancelCopyHost.Visible = True
+    '            CancelCopyButton.Visible = True
+    '            CancelCopyButton.Enabled = True
+    '        End If
+
+    '        ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
+    '        ' ------------------------------------------------------------
+    '        ' Perform the operation
+    '        ' ------------------------------------------------------------
+    '        Dim finalSummary As New CopyResult()
+
+    '        Try
+    '            For Each src In sources
+    '                ct.ThrowIfCancellationRequested()
+
+    '                Dim result As CopyResult =
+    '                Await CopyFileOrDirectoryUnified(src, destinationRoot, isCut, ct, progressCallback)
+
+    '                finalSummary.Append(result)
+
+    '                If result.Success Then
+    '                    Dim finalTarget = Path.Combine(destinationRoot, Path.GetFileName(src))
+    '                    pastedItems.Add(finalTarget)
+    '                End If
+    '            Next
+
+    '            ' ------------------------------------------------------------
+    '            ' CUT → delete originals
+    '            ' ------------------------------------------------------------
+    '            If isCut Then
+    '                For Each p In sources
+    '                    Try
+    '                        If File.Exists(p) Then
+    '                            File.Delete(p)
+    '                        ElseIf Directory.Exists(p) Then
+    '                            Directory.Delete(p, True)
+    '                        End If
+    '                    Catch ex As Exception
+    '                        ShowStatus(StatusPad & IconWarning &
+    '                               $" Could not delete original: {p}")
+    '                    End Try
+    '                Next
+    '            End If
+
+    '        Catch ex As OperationCanceledException
+    '            ShowStatus(StatusPad & IconWarning & " Operation canceled.")
+    '            Return (pastedItems, finalSummary)
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError & " Operation failed: " & ex.Message)
+    '            Return (pastedItems, finalSummary)
+
+    '        Finally
+    '            ' Hide cancel button for CLI
+    '            If context = CopyUIContext.CLI Then
+    '                CancelCopyHost.Visible = False
+    '                CancelCopyButton.Visible = False
+    '                CancelCopyButton.Enabled = False
+    '            End If
+    '        End Try
+
+    '        ' ------------------------------------------------------------
+    '        ' Build HelpPanel report (both CLI and Paste)
+    '        ' ------------------------------------------------------------
+    '        HelpPanel.SuspendLayout()
+    '        HelpHeaderLabel.Text = If(isCut, "Move Operation Report", "Copy Operation Report")
+    '        HelpTextBox.Text = BuildCopyReport(finalSummary)
+    '        HelpPanel.ResumeLayout()
+
+    '        If Not HelpPanel.Visible Then
+    '            ShowHelpPanelAnimated()
+    '        End If
+
+    '        Return (pastedItems, finalSummary)
+    '    End Function
+
+
+
+
+    'Private Async Function RunCopyOrCutOperation(
+    '    sources As List(Of String),
+    '    destinationRoot As String,
+    '    isCut As Boolean,
+    '    context As CopyUIContext
+    ') As Task(Of (Results As List(Of String), Summary As CopyResult))
+
+    '    Dim pastedItems As New List(Of String)
+
+    '    ' ------------------------------------------------------------
+    '    ' Determine whether this context should show a Cancel button
+    '    ' ------------------------------------------------------------
+    '    Dim showCancel As Boolean =
+    '    (context = CopyUIContext.CLI OrElse context = CopyUIContext.Paste)
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate destination
+    '    ' ------------------------------------------------------------
+    '    If destinationRoot Is Nothing OrElse Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError & " Destination does not exist or is not writable.")
+    '        Return (pastedItems, Nothing)
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate each source
+    '    ' ------------------------------------------------------------
+    '    For Each src In sources
+    '        If Not (File.Exists(src) OrElse Directory.Exists(src)) Then
+    '            ShowStatus(StatusPad & IconError &
+    '                   $" Source '{src}' does not exist.")
+    '            Return (pastedItems, Nothing)
+    '        End If
+
+    '        If IsCopyIntoSelf(src, destinationRoot) Then
+    '            ShowStatus(StatusPad & IconError &
+    '                   $" Cannot copy '{Path.GetFileName(src)}' into itself or a subfolder.")
+    '            Return (pastedItems, Nothing)
+    '        End If
+    '    Next
+
+    '    ' ------------------------------------------------------------
+    '    ' Cancellation + UI
+    '    ' ------------------------------------------------------------
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    Dim processedCount As Integer = 0
+    '    Dim finishing As Boolean = False
+
+    '    Dim progressCallback As Action(Of CopyResult) =
+    '    Sub(r)
+    '        If r.TotalDirectories <= 0 Then Exit Sub
+
+    '        processedCount = r.FilesProcessed
+
+    '        If Not finishing AndAlso r.DirectoriesStarted >= r.TotalDirectories Then
+    '            finishing = True
+    '        End If
+
+    '        Dim hint As String = If(context = CopyUIContext.CLI,
+    '                                "  Press ESC to cancel.",
+    '                                "")
+
+    '        If finishing Then
+    '            ShowStatus(StatusPad & IconCopy &
+    '                       $" Finishing up... {processedCount} processed.{hint}")
+    '        Else
+    '            ShowStatus(StatusPad & IconCopy &
+    '                       $" Copying... {processedCount} processed.{hint}")
+    '        End If
+    '    End Sub
+
+    '    ' ------------------------------------------------------------
+    '    ' Show Cancel button if appropriate
+    '    ' ------------------------------------------------------------
+    '    If showCancel Then
+    '        CancelCopyHost.Visible = True
+    '        CancelCopyButton.Visible = True
+    '        CancelCopyButton.Enabled = True
+    '    End If
+
+    '    ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
+    '    ' ------------------------------------------------------------
+    '    ' Perform the operation
+    '    ' ------------------------------------------------------------
+    '    Dim finalSummary As New CopyResult()
+
+    '    Try
+    '        For Each src In sources
+    '            ct.ThrowIfCancellationRequested()
+
+    '            Dim result As CopyResult =
+    '            Await CopyFileOrDirectoryUnified(src, destinationRoot, isCut, ct, progressCallback)
+
+    '            finalSummary.Append(result)
+
+    '            If result.Success Then
+    '                Dim finalTarget = Path.Combine(destinationRoot, Path.GetFileName(src))
+    '                pastedItems.Add(finalTarget)
+    '            End If
+    '        Next
+
+    '        ' ------------------------------------------------------------
+    '        ' CUT → delete originals
+    '        ' ------------------------------------------------------------
+    '        If isCut Then
+    '            For Each p In sources
+    '                Try
+    '                    If File.Exists(p) Then
+    '                        File.Delete(p)
+    '                    ElseIf Directory.Exists(p) Then
+    '                        Directory.Delete(p, True)
+    '                    End If
+    '                Catch ex As Exception
+    '                    ShowStatus(StatusPad & IconWarning &
+    '                           $" Could not delete original: {p}")
+    '                End Try
+    '            Next
+    '        End If
+
+    '    Catch ex As OperationCanceledException
+    '        ShowStatus(StatusPad & IconWarning & " Operation canceled.")
+    '        Return (pastedItems, finalSummary)
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Operation failed: " & ex.Message)
+    '        Return (pastedItems, finalSummary)
+
+    '    Finally
+    '        ' ------------------------------------------------------------
+    '        ' Hide Cancel button if this context used it
+    '        ' ------------------------------------------------------------
+    '        If showCancel Then
+    '            CancelCopyHost.Visible = False
+    '            CancelCopyButton.Visible = False
+    '            CancelCopyButton.Enabled = False
+    '        End If
+    '    End Try
+
+    '    ' ------------------------------------------------------------
+    '    ' Build HelpPanel report (both CLI and Paste)
+    '    ' ------------------------------------------------------------
+    '    HelpPanel.SuspendLayout()
+    '    HelpHeaderLabel.Text = If(isCut, "Move Operation Report", "Copy Operation Report")
+    '    HelpTextBox.Text = BuildCopyReport(finalSummary)
+    '    HelpPanel.ResumeLayout()
+
+    '    If Not HelpPanel.Visible Then
+    '        ShowHelpPanelAnimated()
+    '    End If
+
+    '    Return (pastedItems, finalSummary)
+    'End Function
+
+
+
+
+    '    Private Async Function RunCopyOrCutOperation(
+    '    sources As List(Of String),
+    '    destinationRoot As String,
+    '    isCut As Boolean,
+    '    context As CopyUIContext
+    ') As Task(Of (Results As List(Of String), Summary As CopyResult))
+
+    '        Dim pastedItems As New List(Of String)
+
+    '        ' ------------------------------------------------------------
+    '        ' Determine whether this context should show a Cancel button
+    '        ' ------------------------------------------------------------
+    '        Dim showCancel As Boolean =
+    '        (context = CopyUIContext.CLI OrElse context = CopyUIContext.Paste)
+
+    '        ' ------------------------------------------------------------
+    '        ' Validate destination
+    '        ' ------------------------------------------------------------
+    '        If destinationRoot Is Nothing OrElse Not Directory.Exists(destinationRoot) Then
+    '            ShowStatus(StatusPad & IconError & " Destination does not exist or is not writable.")
+    '            Return (pastedItems, Nothing)
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' Validate each source
+    '        ' ------------------------------------------------------------
+    '        For Each src In sources
+    '            If Not (File.Exists(src) OrElse Directory.Exists(src)) Then
+    '                ShowStatus(StatusPad & IconError &
+    '                       $" Source '{src}' does not exist.")
+    '                Return (pastedItems, Nothing)
+    '            End If
+
+    '            If IsCopyIntoSelf(src, destinationRoot) Then
+    '                ShowStatus(StatusPad & IconError &
+    '                       $" Cannot copy '{Path.GetFileName(src)}' into itself or a subfolder.")
+    '                Return (pastedItems, Nothing)
+    '            End If
+    '        Next
+
+    '        ' ------------------------------------------------------------
+    '        ' Cancellation + UI
+    '        ' ------------------------------------------------------------
+    '        copyCts = New CancellationTokenSource()
+    '        Dim ct = copyCts.Token
+
+    '        Dim processedCount As Integer = 0
+    '        Dim finishing As Boolean = False
+
+    '        Dim progressCallback As Action(Of CopyResult) =
+    '        Sub(r)
+    '            If r.TotalDirectories <= 0 Then Exit Sub
+
+    '            processedCount = r.FilesProcessed
+
+    '            If Not finishing AndAlso r.DirectoriesStarted >= r.TotalDirectories Then
+    '                finishing = True
+    '            End If
+
+    '            Dim hint As String = If(context = CopyUIContext.CLI,
+    '                                    "  Press ESC to cancel.",
+    '                                    "")
+
+    '            If finishing Then
+    '                ShowStatus(StatusPad & IconCopy &
+    '                           $" Finishing up... {processedCount} processed.{hint}")
+    '            Else
+    '                ShowStatus(StatusPad & IconCopy &
+    '                           $" Copying... {processedCount} processed.{hint}")
+    '            End If
+    '        End Sub
+
+    '        ' ------------------------------------------------------------
+    '        ' Show Cancel button if appropriate
+    '        ' ------------------------------------------------------------
+    '        If showCancel Then
+    '            CancelCopyHost.Visible = True
+    '            CancelCopyButton.Visible = True
+    '            CancelCopyButton.Enabled = True
+    '        End If
+
+    '        ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
+
+    '        ' ------------------------------------------------------------
+    '        ' Perform the operation
+    '        ' ------------------------------------------------------------
+    '        Dim finalSummary As New CopyResult()
+
+    '        Try
+    '            For Each src In sources
+    '                ct.ThrowIfCancellationRequested()
+
+    '                Dim result As CopyResult =
+    '                Await CopyFileOrDirectoryUnified(src, destinationRoot, isCut, ct, progressCallback)
+
+    '                finalSummary.Append(result)
+
+    '                If result.Success Then
+    '                    Dim finalTarget = Path.Combine(destinationRoot, Path.GetFileName(src))
+    '                    pastedItems.Add(finalTarget)
+    '                End If
+    '            Next
+
+    '            ' ------------------------------------------------------------
+    '            ' CUT → delete originals
+    '            ' ------------------------------------------------------------
+    '            If isCut Then
+    '                For Each p In sources
+    '                    Try
+    '                        If File.Exists(p) Then
+    '                            File.Delete(p)
+    '                        ElseIf Directory.Exists(p) Then
+    '                            Directory.Delete(p, True)
+    '                        End If
+    '                    Catch ex As Exception
+    '                        ShowStatus(StatusPad & IconWarning &
+    '                               $" Could not delete original: {p}")
+    '                    End Try
+    '                Next
+    '            End If
+
+    '        Catch ex As OperationCanceledException
+    '            finalSummary.WasCanceled = True
+    '            ShowStatus(StatusPad & IconWarning & " Operation canceled.")
+    '            Return (pastedItems, finalSummary)
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError & " Operation failed: " & ex.Message)
+    '            Return (pastedItems, finalSummary)
+
+    '        Finally
+    '            ' ------------------------------------------------------------
+    '            ' Hide Cancel button if this context used it
+    '            ' ------------------------------------------------------------
+    '            If showCancel Then
+    '                CancelCopyHost.Visible = False
+    '                CancelCopyButton.Visible = False
+    '                CancelCopyButton.Enabled = False
+    '            End If
+    '        End Try
+
+    '        ' ------------------------------------------------------------
+    '        ' Build HelpPanel report (cancellation-aware)
+    '        ' ------------------------------------------------------------
+    '        HelpPanel.SuspendLayout()
+
+    '        If finalSummary.WasCanceled Then
+    '            HelpHeaderLabel.Text = "Operation Canceled"
+    '            HelpTextBox.Text =
+    '            "The operation was canceled before completion." & Environment.NewLine &
+    '            Environment.NewLine &
+    '            BuildCopyReport(finalSummary)
+    '        Else
+    '            HelpHeaderLabel.Text = If(isCut, "Move Operation Report", "Copy Operation Report")
+    '            HelpTextBox.Text = BuildCopyReport(finalSummary)
+    '        End If
+
+    '        HelpPanel.ResumeLayout()
+
+    '        If Not HelpPanel.Visible Then
+    '            ShowHelpPanelAnimated()
+    '        End If
+
+    '        Return (pastedItems, finalSummary)
+    '    End Function
+
 
 
 
@@ -2173,6 +2839,13 @@ Public Class Form1
 ) As Task(Of (Results As List(Of String), Summary As CopyResult))
 
         Dim pastedItems As New List(Of String)
+        Dim finalSummary As New CopyResult()
+
+        ' ------------------------------------------------------------
+        ' Determine whether this context should show a Cancel button
+        ' ------------------------------------------------------------
+        Dim showCancel As Boolean =
+        (context = CopyUIContext.CLI OrElse context = CopyUIContext.Paste)
 
         ' ------------------------------------------------------------
         ' Validate destination
@@ -2232,9 +2905,9 @@ Public Class Form1
         End Sub
 
         ' ------------------------------------------------------------
-        ' CLI-only Cancel button
+        ' Show Cancel button if appropriate
         ' ------------------------------------------------------------
-        If context = CopyUIContext.CLI Then
+        If showCancel Then
             CancelCopyHost.Visible = True
             CancelCopyButton.Visible = True
             CancelCopyButton.Enabled = True
@@ -2245,8 +2918,6 @@ Public Class Form1
         ' ------------------------------------------------------------
         ' Perform the operation
         ' ------------------------------------------------------------
-        Dim finalSummary As New CopyResult()
-
         Try
             For Each src In sources
                 ct.ThrowIfCancellationRequested()
@@ -2262,10 +2933,10 @@ Public Class Form1
                 End If
             Next
 
-            ' ------------------------------------------------------------
+            ' --------------------------------------------------------
             ' CUT → delete originals
-            ' ------------------------------------------------------------
-            If isCut Then
+            ' --------------------------------------------------------
+            If isCut AndAlso Not finalSummary.WasCanceled Then
                 For Each p In sources
                     Try
                         If File.Exists(p) Then
@@ -2281,16 +2952,17 @@ Public Class Form1
             End If
 
         Catch ex As OperationCanceledException
+            finalSummary.WasCanceled = True
             ShowStatus(StatusPad & IconWarning & " Operation canceled.")
-            Return (pastedItems, finalSummary)
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Operation failed: " & ex.Message)
-            Return (pastedItems, finalSummary)
 
         Finally
-            ' Hide cancel button for CLI
-            If context = CopyUIContext.CLI Then
+            ' --------------------------------------------------------
+            ' Hide Cancel button if this context used it
+            ' --------------------------------------------------------
+            If showCancel Then
                 CancelCopyHost.Visible = False
                 CancelCopyButton.Visible = False
                 CancelCopyButton.Enabled = False
@@ -2298,11 +2970,21 @@ Public Class Form1
         End Try
 
         ' ------------------------------------------------------------
-        ' Build HelpPanel report (both CLI and Paste)
+        ' Build HelpPanel report (always, cancellation-aware)
         ' ------------------------------------------------------------
         HelpPanel.SuspendLayout()
-        HelpHeaderLabel.Text = If(isCut, "Move Operation Report", "Copy Operation Report")
-        HelpTextBox.Text = BuildCopyReport(finalSummary)
+
+        If finalSummary.WasCanceled Then
+            HelpHeaderLabel.Text = "Operation Canceled"
+            HelpTextBox.Text =
+            "The operation was canceled before completion." & Environment.NewLine &
+            Environment.NewLine &
+            BuildCopyReport(finalSummary)
+        Else
+            HelpHeaderLabel.Text = If(isCut, "Move Operation Report", "Copy Operation Report")
+            HelpTextBox.Text = BuildCopyReport(finalSummary)
+        End If
+
         HelpPanel.ResumeLayout()
 
         If Not HelpPanel.Visible Then
@@ -2311,21 +2993,6 @@ Public Class Form1
 
         Return (pastedItems, finalSummary)
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3156,6 +3823,87 @@ Public Class Form1
     'End Sub
 
 
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+    '    If _clipboardPaths Is Nothing OrElse _clipboardPaths.Count = 0 Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No items in clipboard.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim destDir As String = GetPasteDestination()
+    '    If destDir Is Nothing Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Destination is not writable.")
+    '        Exit Sub
+    '    End If
+
+    '    ' --- Correct VB tuple usage ---
+    '    Dim result = Await RunCopyOrCutOperation(_clipboardPaths, destDir, _clipboardIsCut, CopyUIContext.Paste)
+    '    Dim items = result.Results
+    '    Dim summary = result.Summary
+
+    '    _clipboardPaths = Nothing
+    '    _clipboardIsCut = False
+
+    '    Await PopulateFiles(destDir)
+
+    '    If items.Count = 0 Then
+    '        ShowStatus(StatusPad & IconWarning & " Nothing was pasted.")
+    '    ElseIf items.Count = 1 Then
+    '        ShowStatus(StatusPad & IconPaste &
+    '               $" Pasted: {Path.GetFileName(items(0))}")
+    '    Else
+    '        ShowStatus(StatusPad & IconPaste &
+    '               $" Pasted {items.Count} items.")
+    '    End If
+
+    '    SelectItemsInListView(items)
+    '    lvFiles.Focus()
+    '    ResetCutVisuals()
+    '    UpdateAllUIStates()
+
+    'End Sub
+
+    'Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
+
+    '    If _clipboardPaths Is Nothing OrElse _clipboardPaths.Count = 0 Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: No items in clipboard.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim destDir As String = GetPasteDestination()
+    '    If destDir Is Nothing Then
+    '        ShowStatus(StatusPad & IconError & " Paste failed: Destination is not writable.")
+    '        Exit Sub
+    '    End If
+
+    '    Dim result = Await RunCopyOrCutOperation(_clipboardPaths, destDir, _clipboardIsCut, CopyUIContext.Paste)
+    '    Dim items = result.Results
+    '    Dim summary = result.Summary
+
+    '    _clipboardPaths = Nothing
+    '    _clipboardIsCut = False
+
+    '    Await PopulateFiles(destDir)
+
+    '    If summary.WasCanceled Then
+    '        ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+    '    ElseIf items.Count = 0 Then
+    '        ShowStatus(StatusPad & IconWarning & " Nothing was pasted.")
+    '    ElseIf items.Count = 1 Then
+    '        ShowStatus(StatusPad & IconPaste &
+    '               $" Pasted: {Path.GetFileName(items(0))}")
+    '    Else
+    '        ShowStatus(StatusPad & IconPaste &
+    '               $" Pasted {items.Count} items.")
+    '    End If
+
+    '    SelectItemsInListView(items)
+    '    lvFiles.Focus()
+    '    ResetCutVisuals()
+    '    UpdateAllUIStates()
+
+    'End Sub
+
     Private Async Sub PasteSelected_Click(sender As Object, e As EventArgs)
 
         If _clipboardPaths Is Nothing OrElse _clipboardPaths.Count = 0 Then
@@ -3169,7 +3917,6 @@ Public Class Form1
             Exit Sub
         End If
 
-        ' --- Correct VB tuple usage ---
         Dim result = Await RunCopyOrCutOperation(_clipboardPaths, destDir, _clipboardIsCut, CopyUIContext.Paste)
         Dim items = result.Results
         Dim summary = result.Summary
@@ -3179,7 +3926,10 @@ Public Class Form1
 
         Await PopulateFiles(destDir)
 
-        If items.Count = 0 Then
+        ' --- Correct cancellation-aware ordering ---
+        If summary.WasCanceled Then
+            ShowStatus(StatusPad & IconWarning & " Paste canceled.")
+        ElseIf items.Count = 0 Then
             ShowStatus(StatusPad & IconWarning & " Nothing was pasted.")
         ElseIf items.Count = 1 Then
             ShowStatus(StatusPad & IconPaste &
@@ -3195,6 +3945,21 @@ Public Class Form1
         UpdateAllUIStates()
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub SelectItemsInListView(paths As List(Of String))
@@ -3219,6 +3984,88 @@ Public Class Form1
         End If
 
     End Sub
+
+
+    '    Public Async Function CopyFileOrDirectoryUnified(
+    '    source As String,
+    '    destinationRoot As String,
+    '    isCut As Boolean,
+    '    ct As CancellationToken,
+    '    Optional progressCallback As Action(Of CopyResult) = Nothing
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            If Not Directory.Exists(destinationRoot) Then
+    '                Throw New DirectoryNotFoundException(
+    '                "destinationRoot must be a folder: " & destinationRoot)
+    '            End If
+
+    '            Dim isFile As Boolean = File.Exists(source)
+    '            Dim isDir As Boolean = Directory.Exists(source)
+
+    '            If Not (isFile OrElse isDir) Then
+    '                result.Errors.Add("Source does not exist.")
+    '                Return result
+    '            End If
+
+    '            ' Prevent folder → itself
+    '            If isDir Then
+    '                Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+    '                Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+    '                If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+    '                    result.Errors.Add("Cannot copy a folder into itself or its subfolders.")
+    '                    Return result
+    '                End If
+    '            End If
+
+    '            Dim baseName = Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar))
+    '            Dim initialTarget = Path.Combine(destinationRoot, baseName)
+    '            Dim finalTarget As String = initialTarget
+
+    '            If Not isCut Then
+    '                finalTarget = ResolveDestinationPathWithAutoRename(initialTarget, isDir)
+    '            End If
+
+    '            If isFile Then
+    '                ' No progress pulse for single-file copy
+    '                result = Await CopyFile(source, finalTarget, ct)
+    '            Else
+    '                ' Pre-count directories for accurate "finishing up" pulse
+    '                result.TotalDirectories = CountAllDirectories(source)
+    '                result = Await CopyDirectory(source, finalTarget, ct, result, progressCallback)
+    '            End If
+
+    '            If isCut AndAlso result.Success Then
+    '                Try
+    '                    If isFile Then
+    '                        File.Delete(source)
+    '                    Else
+    '                        Directory.Delete(source, True)
+    '                    End If
+    '                Catch ex As Exception
+    '                    result.Errors.Add("Cut completed, but failed to delete original: " & ex.Message)
+    '                End Try
+    '            End If
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Copy failed: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+
+
+
 
 
     Public Async Function CopyFileOrDirectoryUnified(
@@ -3267,10 +4114,8 @@ Public Class Form1
             End If
 
             If isFile Then
-                ' No progress pulse for single-file copy
                 result = Await CopyFile(source, finalTarget, ct)
             Else
-                ' Pre-count directories for accurate "finishing up" pulse
                 result.TotalDirectories = CountAllDirectories(source)
                 result = Await CopyDirectory(source, finalTarget, ct, result, progressCallback)
             End If
@@ -3287,6 +4132,9 @@ Public Class Form1
                 End Try
             End If
 
+        Catch ex As OperationCanceledException
+            Throw   ' let the orchestrator set WasCanceled
+
         Catch ex As Exception
             result.Errors.Add("Copy failed: " & ex.Message)
         End Try
@@ -3294,12 +4142,163 @@ Public Class Form1
         Return result
     End Function
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '    Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken,
+    '    result As CopyResult,
+    '    Optional progressCallback As Action(Of CopyResult) = Nothing
+    ') As Task(Of CopyResult)
+
+    '        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '        If Not dirInfo.Exists Then
+    '            result.Errors.Add("Source directory not found: " & sourceDir)
+    '            Return result
+    '        End If
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' Mark this directory as started
+    '            result.DirectoriesStarted += 1
+    '            progressCallback?.Invoke(result)
+
+    '            ' Create destination directory safely
+    '            Try
+    '                Directory.CreateDirectory(destDir)
+    '                result.DirectoriesCreated += 1
+    '            Catch ex As Exception
+    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+    '                Return result
+    '            End Try
+
+    '            ' Copy files in this directory
+    '            For Each srcFile In dirInfo.GetFiles()
+    '                ct.ThrowIfCancellationRequested()
+
+    '                Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+    '                If IsFileLocked(srcFile) Then
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
+    '                    result.FilesProcessed += 1
+    '                    progressCallback?.Invoke(result)
+    '                    Continue For
+    '                End If
+
+    '                Try
+    '                    Await Task.Run(Sub()
+    '                                       ct.ThrowIfCancellationRequested()
+    '                                       srcFile.CopyTo(targetFile, overwrite:=False)
+    '                                   End Sub, ct)
+
+    '                    result.FilesCopied += 1
+    '                    result.CopiedFilePaths.Add(targetFile)
+
+    '                Catch ex As OperationCanceledException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
+
+    '                Catch ex As IOException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As UnauthorizedAccessException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
+
+    '                Catch ex As Exception
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
+    '                End Try
+
+    '                ' File processed (success or failure)
+    '                result.FilesProcessed += 1
+    '                progressCallback?.Invoke(result)
+    '            Next
+
+    '            ' Copy subdirectories
+    '            For Each subDir In dirInfo.GetDirectories()
+    '                Dim newDest = Path.Combine(destDir, subDir.Name)
+    '                Await CopyDirectory(subDir.FullName, newDest, ct, result, progressCallback)
+    '            Next
+
+    '        Catch ex As OperationCanceledException
+    '            result.Errors.Add("Canceled directory copy: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Directory copy error: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
     Public Async Function CopyDirectory(
     sourceDir As String,
     destDir As String,
     ct As CancellationToken,
     result As CopyResult,
-    Optional progressCallback As Action(Of CopyResult) = Nothing
+    progressCallback As Action(Of CopyResult)
 ) As Task(Of CopyResult)
 
         Dim dirInfo As New DirectoryInfo(sourceDir)
@@ -3312,11 +4311,7 @@ Public Class Form1
         Try
             ct.ThrowIfCancellationRequested()
 
-            ' Mark this directory as started
-            result.DirectoriesStarted += 1
-            progressCallback?.Invoke(result)
-
-            ' Create destination directory safely
+            ' Create destination directory
             Try
                 Directory.CreateDirectory(destDir)
                 result.DirectoriesCreated += 1
@@ -3325,7 +4320,7 @@ Public Class Form1
                 Return result
             End Try
 
-            ' Copy files in this directory
+            ' Copy files
             For Each srcFile In dirInfo.GetFiles()
                 ct.ThrowIfCancellationRequested()
 
@@ -3334,8 +4329,6 @@ Public Class Form1
                 If IsFileLocked(srcFile) Then
                     result.FilesSkipped += 1
                     result.Errors.Add("Locked file skipped: " & srcFile.FullName)
-                    result.FilesProcessed += 1
-                    progressCallback?.Invoke(result)
                     Continue For
                 End If
 
@@ -3349,8 +4342,7 @@ Public Class Form1
                     result.CopiedFilePaths.Add(targetFile)
 
                 Catch ex As OperationCanceledException
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
+                    Throw   ' bubble up to orchestrator
 
                 Catch ex As IOException
                     result.FilesSkipped += 1
@@ -3365,7 +4357,7 @@ Public Class Form1
                     result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
                 End Try
 
-                ' File processed (success or failure)
+                ' Progress pulse
                 result.FilesProcessed += 1
                 progressCallback?.Invoke(result)
             Next
@@ -3373,11 +4365,15 @@ Public Class Form1
             ' Copy subdirectories
             For Each subDir In dirInfo.GetDirectories()
                 Dim newDest = Path.Combine(destDir, subDir.Name)
-                Await CopyDirectory(subDir.FullName, newDest, ct, result, progressCallback)
+
+                result.DirectoriesStarted += 1
+                progressCallback?.Invoke(result)
+
+                Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct, result, progressCallback)
             Next
 
         Catch ex As OperationCanceledException
-            result.Errors.Add("Canceled directory copy: " & ex.Message)
+            Throw   ' bubble up to orchestrator
 
         Catch ex As Exception
             result.Errors.Add("Directory copy error: " & ex.Message)
@@ -3385,6 +4381,23 @@ Public Class Form1
 
         Return result
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function CountAllDirectories(root As String) As Integer
         Dim count As Integer = 1 ' include root
@@ -4133,7 +5146,46 @@ Public Class Form1
 
     ' ------------------------------------------------------------
     ' Pure file copy
-    ' ------------------------------------------------------------
+    '    ' ------------------------------------------------------------
+    '    Public Async Function CopyFile(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            Await Task.Run(Sub()
+    '                               ct.ThrowIfCancellationRequested()
+    '                               IO.File.Copy(source, destination, overwrite:=False)
+    '                           End Sub, ct)
+
+    '            result.FilesCopied = 1
+
+    '        Catch ex As OperationCanceledException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Canceled: " & ex.Message)
+
+    '        Catch ex As IOException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("I/O error copying file: " & source & " → " & destination & " - " & ex.Message)
+
+    '        Catch ex As UnauthorizedAccessException
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Unauthorized copying file: " & source & " - " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.FilesSkipped = 1
+    '            result.Errors.Add("Copy failed for file: " & source & " - " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
     Public Async Function CopyFile(
     source As String,
     destination As String,
@@ -4153,8 +5205,7 @@ Public Class Form1
             result.FilesCopied = 1
 
         Catch ex As OperationCanceledException
-            result.FilesSkipped = 1
-            result.Errors.Add("Canceled: " & ex.Message)
+            Throw   ' bubble up to orchestrator
 
         Catch ex As IOException
             result.FilesSkipped = 1
@@ -4172,92 +5223,205 @@ Public Class Form1
         Return result
     End Function
 
-    Public Async Function CopyDirectory(
-    sourceDir As String,
-    destDir As String,
-    ct As CancellationToken
-) As Task(Of CopyResult)
 
-        Dim result As New CopyResult()
-        Dim dirInfo As New DirectoryInfo(sourceDir)
 
-        If Not dirInfo.Exists Then
-            result.Errors.Add("Source directory not found: " & sourceDir)
-            Return result
-        End If
 
-        Try
-            ct.ThrowIfCancellationRequested()
 
-            ' Create destination directory safely
-            Try
-                Directory.CreateDirectory(destDir)
-                result.DirectoriesCreated += 1
-            Catch ex As Exception
-                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
-                Return result
-            End Try
 
-            ' Copy files
-            For Each srcFile In dirInfo.GetFiles()
-                ct.ThrowIfCancellationRequested()
 
-                Dim targetFile = Path.Combine(destDir, srcFile.Name)
 
-                If IsFileLocked(srcFile) Then
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
-                    Continue For
-                End If
 
-                Try
-                    Await Task.Run(Sub()
-                                       ct.ThrowIfCancellationRequested()
-                                       srcFile.CopyTo(targetFile, overwrite:=False)
-                                   End Sub, ct)
 
-                    result.FilesCopied += 1
-                    result.CopiedFilePaths.Add(targetFile)
 
-                Catch ex As OperationCanceledException
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
+    '    Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
 
-                Catch ex As IOException
-                    result.FilesSkipped += 1
-                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+    '        Dim result As New CopyResult()
+    '        Dim dirInfo As New DirectoryInfo(sourceDir)
 
-                Catch ex As UnauthorizedAccessException
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
+    '        If Not dirInfo.Exists Then
+    '            result.Errors.Add("Source directory not found: " & sourceDir)
+    '            Return result
+    '        End If
 
-                Catch ex As Exception
-                    result.FilesSkipped += 1
-                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
-                End Try
-            Next
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
 
-            ' Copy subdirectories
-            For Each subDir In dirInfo.GetDirectories()
-                Dim newDest = Path.Combine(destDir, subDir.Name)
-                Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct)
+    '            ' Create destination directory safely
+    '            Try
+    '                Directory.CreateDirectory(destDir)
+    '                result.DirectoriesCreated += 1
+    '            Catch ex As Exception
+    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+    '                Return result
+    '            End Try
 
-                result.FilesCopied += subResult.FilesCopied
-                result.FilesSkipped += subResult.FilesSkipped
-                result.DirectoriesCreated += subResult.DirectoriesCreated
-                result.Errors.AddRange(subResult.Errors)
-                result.CopiedFilePaths.AddRange(subResult.CopiedFilePaths)
-            Next
+    '            ' Copy files
+    '            For Each srcFile In dirInfo.GetFiles()
+    '                ct.ThrowIfCancellationRequested()
 
-        Catch ex As OperationCanceledException
-            result.Errors.Add("Canceled directory copy: " & ex.Message)
+    '                Dim targetFile = Path.Combine(destDir, srcFile.Name)
 
-        Catch ex As Exception
-            result.Errors.Add("Directory copy error: " & ex.Message)
-        End Try
+    '                If IsFileLocked(srcFile) Then
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
+    '                    Continue For
+    '                End If
 
-        Return result
-    End Function
+    '                Try
+    '                    Await Task.Run(Sub()
+    '                                       ct.ThrowIfCancellationRequested()
+    '                                       srcFile.CopyTo(targetFile, overwrite:=False)
+    '                                   End Sub, ct)
+
+    '                    result.FilesCopied += 1
+    '                    result.CopiedFilePaths.Add(targetFile)
+
+    '                Catch ex As OperationCanceledException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Canceled copying file: " & srcFile.FullName)
+
+    '                Catch ex As IOException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As UnauthorizedAccessException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
+
+    '                Catch ex As Exception
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
+    '                End Try
+    '            Next
+
+    '            ' Copy subdirectories
+    '            For Each subDir In dirInfo.GetDirectories()
+    '                Dim newDest = Path.Combine(destDir, subDir.Name)
+    '                Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct)
+
+    '                result.FilesCopied += subResult.FilesCopied
+    '                result.FilesSkipped += subResult.FilesSkipped
+    '                result.DirectoriesCreated += subResult.DirectoriesCreated
+    '                result.Errors.AddRange(subResult.Errors)
+    '                result.CopiedFilePaths.AddRange(subResult.CopiedFilePaths)
+    '            Next
+
+    '        Catch ex As OperationCanceledException
+    '            result.Errors.Add("Canceled directory copy: " & ex.Message)
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Directory copy error: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+    '    Public Async Function CopyDirectory(
+    '    sourceDir As String,
+    '    destDir As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
+
+    '        Dim result As New CopyResult()
+    '        Dim dirInfo As New DirectoryInfo(sourceDir)
+
+    '        If Not dirInfo.Exists Then
+    '            result.Errors.Add("Source directory not found: " & sourceDir)
+    '            Return result
+    '        End If
+
+    '        Try
+    '            ct.ThrowIfCancellationRequested()
+
+    '            ' Create destination directory
+    '            Try
+    '                Directory.CreateDirectory(destDir)
+    '                result.DirectoriesCreated += 1
+    '            Catch ex As Exception
+    '                result.Errors.Add("Failed to create directory: " & destDir & " - " & ex.Message)
+    '                Return result
+    '            End Try
+
+    '            ' Copy files
+    '            For Each srcFile In dirInfo.GetFiles()
+    '                ct.ThrowIfCancellationRequested()
+
+    '                Dim targetFile = Path.Combine(destDir, srcFile.Name)
+
+    '                If IsFileLocked(srcFile) Then
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Locked file skipped: " & srcFile.FullName)
+    '                    Continue For
+    '                End If
+
+    '                Try
+    '                    Await Task.Run(Sub()
+    '                                       ct.ThrowIfCancellationRequested()
+    '                                       srcFile.CopyTo(targetFile, overwrite:=False)
+    '                                   End Sub, ct)
+
+    '                    result.FilesCopied += 1
+    '                    result.CopiedFilePaths.Add(targetFile)
+
+    '                Catch ex As OperationCanceledException
+    '                    Throw   ' bubble up to orchestrator
+
+    '                Catch ex As IOException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("I/O error copying file: " & srcFile.FullName & " - " & ex.Message)
+
+    '                Catch ex As UnauthorizedAccessException
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Unauthorized copying file: " & srcFile.FullName)
+
+    '                Catch ex As Exception
+    '                    result.FilesSkipped += 1
+    '                    result.Errors.Add("Copy failed for file: " & srcFile.FullName & " - " & ex.Message)
+    '                End Try
+    '            Next
+
+    '            ' Copy subdirectories
+    '            For Each subDir In dirInfo.GetDirectories()
+    '                Dim newDest = Path.Combine(destDir, subDir.Name)
+    '                Dim subResult = Await CopyDirectory(subDir.FullName, newDest, ct)
+
+    '                result.FilesCopied += subResult.FilesCopied
+    '                result.FilesSkipped += subResult.FilesSkipped
+    '                result.DirectoriesCreated += subResult.DirectoriesCreated
+    '                result.Errors.AddRange(subResult.Errors)
+    '                result.CopiedFilePaths.AddRange(subResult.CopiedFilePaths)
+    '            Next
+
+    '        Catch ex As OperationCanceledException
+    '            Throw   ' bubble up to orchestrator
+
+    '        Catch ex As Exception
+    '            result.Errors.Add("Directory copy error: " & ex.Message)
+    '        End Try
+
+    '        Return result
+    '    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ' ------------------------------------------------------------
     ' Pure helper: detect locked files (no UI)
@@ -7583,33 +8747,170 @@ Public Class Form1
 
 
 
+    'Private Sub InitStatusBar()
+
+    '    Dim statusStrip As New StatusStrip()
+
+    '    ' Set font to Segoe UI Symbol, 10pt
+    '    statusStrip.Font = New Font("Segoe UI Symbol", 11.0F, FontStyle.Regular)
+
+    '    ' Ensure lblStatus uses the same font
+    '    lblStatus.Font = statusStrip.Font
+
+    '    ' Add the status label
+    '    statusStrip.Items.Add(lblStatus)
+
+    '    ' Disable autosize so we can control height
+    '    statusStrip.AutoSize = False
+
+    '    ' Base height at 100% zoom
+    '    Dim baseHeight As Integer = 25
+
+    '    ' Scale based on OS DPI
+    '    Dim scale As Double = Me.DeviceDpi / 96.0
+    '    statusStrip.Height = CInt(baseHeight * scale)
+
+    '    ' --- Create Cancel button ---
+    '    CancelCopyButton = New Button() With {
+    '        .Text = "Cancel",
+    '        .AutoSize = True,
+    '        .Enabled = False,
+    '        .FlatStyle = FlatStyle.System,   ' blends naturally with StatusStrip
+    '        .Visible = False      ' hidden until a copy starts
+    '    }
+
+    '    CancelCopyButton.Visible = False
+
+    '    ' Wire the click event
+    '    AddHandler CancelCopyButton.Click,
+    '    Sub()
+    '        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+    '            copyCts.Cancel()
+    '            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+    '        End If
+    '    End Sub
+
+    '    ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
+    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
+    '    CancelCopyHost.Alignment = ToolStripItemAlignment.Right
+    '    CancelCopyHost.Visible = False
+
+
+    '    ' Add the host to the status strip
+    '    statusStrip.Items.Add(CancelCopyHost)
+
+    '    ' Add the status strip to the form
+    '    Me.Controls.Add(statusStrip)
+
+    '    ' Initialize the status clear timer once
+    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
+
+    'End Sub
+
+
+
+
+    'Private Sub InitStatusBar()
+
+    '    Dim statusStrip As New StatusStrip()
+
+    '    ' Set font to Segoe UI Symbol, 11pt
+    '    statusStrip.Font = New Font("Segoe UI Symbol", 11.0F, FontStyle.Regular)
+    '    lblStatus.Font = statusStrip.Font
+
+    '    ' Add the status label
+    '    statusStrip.Items.Add(lblStatus)
+
+    '    ' Disable autosize so we can control height
+    '    statusStrip.AutoSize = False
+
+    '    ' Base height at 100% zoom
+    '    Dim baseHeight As Integer = 25
+
+    '    ' Scale based on OS DPI
+    '    Dim scale As Double = Me.DeviceDpi / 96.0
+    '    Dim scaledHeight As Integer = CInt(baseHeight * scale)
+
+    '    statusStrip.Height = scaledHeight
+
+    '    ' --- Create Cancel button ---
+    '    CancelCopyButton = New Button() With {
+    '        .Text = "Cancel",
+    '        .AutoSize = True,
+    '        .Enabled = False,
+    '        .FlatStyle = FlatStyle.System,
+    '        .Visible = False
+    '    }
+
+    '    ' Vertically center the button inside the scaled StatusStrip
+    '    CancelCopyButton.Margin = New Padding(0, (scaledHeight - CancelCopyButton.Height) \ 2, 0, 0)
+
+    '    AddHandler CancelCopyButton.Click,
+    '        Sub()
+    '            If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
+    '                copyCts.Cancel()
+    '                ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
+    '            End If
+    '        End Sub
+
+    '    ' Host the button inside the StatusStrip
+    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton) With {
+    '        .Alignment = ToolStripItemAlignment.Right,
+    '        .Visible = False
+    '    }
+
+    '    statusStrip.Items.Add(CancelCopyHost)
+
+    '    ' Add the status strip to the form
+    '    Me.Controls.Add(statusStrip)
+
+    '    ' Initialize the status clear timer once
+    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
+
+    'End Sub
+
+
+
+
     Private Sub InitStatusBar()
 
         Dim statusStrip As New StatusStrip()
 
-        ' Set font to Segoe UI Symbol, 10pt
+        ' Set font to Segoe UI Symbol, 11pt
         statusStrip.Font = New Font("Segoe UI Symbol", 11.0F, FontStyle.Regular)
-
-        ' Ensure lblStatus uses the same font
         lblStatus.Font = statusStrip.Font
 
         ' Add the status label
         statusStrip.Items.Add(lblStatus)
+
+        ' Disable autosize so we can control height
         statusStrip.AutoSize = False
-        statusStrip.Height = 25
+
+        ' Base height at 100% zoom
+        Dim baseHeight As Integer = 25
+
+        ' Scale based on OS DPI
+        Dim scale As Double = Me.DeviceDpi / 96.0
+        Dim scaledHeight As Integer = CInt(baseHeight * scale)
+
+        statusStrip.Height = scaledHeight
 
         ' --- Create Cancel button ---
         CancelCopyButton = New Button() With {
-            .Text = "Cancel",
-            .AutoSize = True,
-            .Enabled = False,
-            .FlatStyle = FlatStyle.System,   ' blends naturally with StatusStrip
-            .Visible = False      ' hidden until a copy starts
-        }
+        .Text = "Cancel",
+        .AutoSize = True,
+        .Enabled = False,
+        .FlatStyle = FlatStyle.System,
+        .Visible = False
+    }
 
-        CancelCopyButton.Visible = False
+        ' Center AFTER layout (WinForms must measure the button first)
+        AddHandler statusStrip.Layout,
+        Sub()
+            CancelCopyButton.Margin =
+                New Padding(0, (scaledHeight - CancelCopyButton.Height) \ 2, 0, 0)
+        End Sub
 
-        ' Wire the click event
         AddHandler CancelCopyButton.Click,
         Sub()
             If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
@@ -7618,13 +8919,12 @@ Public Class Form1
             End If
         End Sub
 
-        ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
-        CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
-        CancelCopyHost.Alignment = ToolStripItemAlignment.Right
-        CancelCopyHost.Visible = False
+        ' Host the button inside the StatusStrip
+        CancelCopyHost = New ToolStripControlHost(CancelCopyButton) With {
+        .Alignment = ToolStripItemAlignment.Right,
+        .Visible = False
+    }
 
-
-        ' Add the host to the status strip
         statusStrip.Items.Add(CancelCopyHost)
 
         ' Add the status strip to the form
@@ -7634,6 +8934,41 @@ Public Class Form1
         AddHandler statusTimer.Tick, AddressOf ClearStatus
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub ConfigureTooltips()
 
@@ -8437,6 +9772,54 @@ End Class
 
 
 
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
+'    Public Property CopiedFilePaths As New List(Of String)
+
+'    ' Progress pulse
+'    Public Property FilesProcessed As Integer
+'    Public Property TotalDirectories As Integer
+'    Public Property DirectoriesStarted As Integer
+
+'    'Public ReadOnly Property Success As Boolean
+'    '    Get
+'    '        Return Errors.Count = 0
+'    '    End Get
+'    'End Property
+
+'    Public ReadOnly Property Success As Boolean
+'        Get
+'            Return Errors.Count = 0 AndAlso Not WasCanceled
+'        End Get
+'    End Property
+
+'    Public Property WasCanceled As Boolean
+
+'    Public Sub Append(other As CopyResult)
+'        If other Is Nothing Then Exit Sub
+
+'        Me.FilesCopied += other.FilesCopied
+'        Me.FilesSkipped += other.FilesSkipped
+'        Me.DirectoriesCreated += other.DirectoriesCreated
+
+'        Me.FilesProcessed += other.FilesProcessed
+'        Me.TotalDirectories += other.TotalDirectories
+'        Me.DirectoriesStarted += other.DirectoriesStarted
+
+'        If other.CopiedFilePaths IsNot Nothing Then
+'            Me.CopiedFilePaths.AddRange(other.CopiedFilePaths)
+'        End If
+
+'        If other.Errors IsNot Nothing AndAlso other.Errors.Count > 0 Then
+'            Me.Errors.AddRange(other.Errors)
+'        End If
+'    End Sub
+'End Class
+
+
 Public Class CopyResult
     Public Property FilesCopied As Integer
     Public Property FilesSkipped As Integer
@@ -8449,9 +9832,12 @@ Public Class CopyResult
     Public Property TotalDirectories As Integer
     Public Property DirectoriesStarted As Integer
 
+    ' Cancellation flag
+    Public Property WasCanceled As Boolean
+
     Public ReadOnly Property Success As Boolean
         Get
-            Return Errors.Count = 0
+            Return Errors.Count = 0 AndAlso Not WasCanceled
         End Get
     End Property
 
@@ -8475,9 +9861,6 @@ Public Class CopyResult
         End If
     End Sub
 End Class
-
-
-
 
 
 
