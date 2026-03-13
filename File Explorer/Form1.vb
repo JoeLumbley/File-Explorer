@@ -8886,9 +8886,6 @@ Public Class Form1
     '    t.Start()
     'End Sub
 
-
-
-
     Private Sub ShowHelpPanelAnimated()
 
         ' Do NOT re‑animate if already open
@@ -8930,10 +8927,6 @@ Public Class Form1
 
         t.Start()
     End Sub
-
-
-
-
 
     'Private Sub InitStatusBar()
 
@@ -8995,9 +8988,6 @@ Public Class Form1
 
     'End Sub
 
-
-
-
     'Private Sub InitStatusBar()
 
     '    Dim statusStrip As New StatusStrip()
@@ -9056,9 +9046,6 @@ Public Class Form1
     '    AddHandler statusTimer.Tick, AddressOf ClearStatus
 
     'End Sub
-
-
-
 
     Private Sub InitStatusBar()
 
