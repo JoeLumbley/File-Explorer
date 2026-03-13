@@ -3343,30 +3343,72 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
+    'Private Function TryHandleDirectPath(input As String) As Boolean
+
+    '    ' --- URL detection ---
+    '    If IsLikelyUrl(input) Then
+    '        OpenUrlInDefaultBrowser(input)
+    '        RestoreAddressBar()
+    '        Return True
+    '    End If
+
+    '    ' --- Folder path ---
+    '    If Directory.Exists(input) Then
+    '        NavigateTo(input)
+    '        Return True
+    '    End If
+
+    '    ' --- File path ---
+    '    If File.Exists(input) Then
+    '        OpenFileWithDefaultApp(input)
+    '        RestoreAddressBar()
+    '        Return True
+    '    End If
+
+    '    Return False
+    'End Function
+
+
     Private Function TryHandleDirectPath(input As String) As Boolean
+        If String.IsNullOrWhiteSpace(input) Then Return False
 
-        ' --- URL detection ---
-        If IsLikelyUrl(input) Then
-            OpenUrlInDefaultBrowser(input)
-            RestoreAddressBar()
-            Return True
-        End If
+        Dim trimmed = input.Trim()
 
-        ' --- Folder path ---
-        If Directory.Exists(input) Then
-            NavigateTo(input)
-            Return True
-        End If
-
-        ' --- File path ---
-        If File.Exists(input) Then
-            OpenFileWithDefaultApp(input)
+        ' Let the SafeLaunchEngine decide what this is.
+        If SafeLaunch(trimmed) Then
             RestoreAddressBar()
             Return True
         End If
 
         Return False
     End Function
+
+    Private Function SafeLaunch(input As String) As Boolean
+        ' 1. URL?
+        If IsUrl(input) Then
+            LaunchUrl(input)
+            Return True
+        End If
+
+        ' 2. Folder?
+        If Directory.Exists(input) Then
+            NavigateTo(input)
+            Return True
+        End If
+
+        ' 3. File?
+        If File.Exists(input) Then
+            LaunchFile(input)
+            Return True
+        End If
+
+        ' 4. Not launchable
+        Return False
+    End Function
+
+
+
+
 
     Private Function IsLikelyUrl(text As String) As Boolean
         If String.IsNullOrWhiteSpace(text) Then Return False
@@ -3376,19 +3418,110 @@ Public Class Form1
     End Function
 
 
-    Private Sub OpenUrlInDefaultBrowser(url As String)
-        Try
-            Dim psi As New ProcessStartInfo(url) With {
-            .UseShellExecute = True
-        }
+    'Public Sub SafeLaunch(input As String)
+    '    If String.IsNullOrWhiteSpace(input) Then
+    '        ShowStatus(StatusPad & IconError & " Nothing to open.")
+    '        Return
+    '    End If
 
+    '    ' Normalize
+    '    Dim trimmed = input.Trim()
+
+    '    ' 1. URL?
+    '    If IsUrl(trimmed) Then
+    '        LaunchUrl(trimmed)
+    '        Return
+    '    End If
+
+    '    ' 2. File path?
+    '    If IsLikelyFilePath(trimmed) Then
+    '        LaunchFile(trimmed)
+    '        Return
+    '    End If
+
+    '    ' 3. Unknown input
+    '    ShowStatus(StatusPad & IconError & $" Cannot open: ""{trimmed}""")
+    'End Sub
+
+    Private Function IsUrl(text As String) As Boolean
+        Dim uri As Uri = Nothing
+        If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then Return False
+
+        ' Only allow http/https for emotional safety
+        Return uri.Scheme = Uri.UriSchemeHttp OrElse uri.Scheme = Uri.UriSchemeHttps
+    End Function
+
+    Private Function IsLikelyFilePath(text As String) As Boolean
+        ' Reject anything containing :// (likely a URL or protocol)
+        If text.Contains("://") Then Return False
+
+        ' Basic heuristic: must contain a slash or backslash
+        Return text.Contains("\") OrElse text.Contains("/")
+    End Function
+
+
+    Private Function ValidateFilePath(path As String) As Boolean
+        If Not File.Exists(path) Then
+            ShowStatus(StatusPad & IconError & " File not found.")
+            Return False
+        End If
+
+        ' Prevent opening directories
+        If Directory.Exists(path) Then
+            ShowStatus(StatusPad & IconError & " Cannot open a folder as a file.")
+            Return False
+        End If
+
+        Return True
+    End Function
+
+    Private Sub LaunchUrl(url As String)
+        Try
+            Dim psi As New ProcessStartInfo(url) With {.UseShellExecute = True}
             Process.Start(psi)
+
             ShowStatus(StatusPad & IconOpen & $"  Opening URL: {url}")
 
         Catch ex As Exception
             ShowStatus(StatusPad & IconError & " Cannot open URL: " & ex.Message)
         End Try
     End Sub
+
+    Private Sub LaunchFile(filePath As String)
+        If Not ValidateFilePath(filePath) Then Return
+
+        Try
+            Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
+            Process.Start(psi)
+
+            Dim name = IO.Path.GetFileNameWithoutExtension(filePath)
+            ShowStatus(StatusPad & IconOpen & $"  Opened:   ""{name}""")
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+        End Try
+    End Sub
+
+
+
+
+
+
+
+
+    'Private Sub OpenUrlInDefaultBrowser(url As String)
+    '    Try
+    '        Dim psi As New ProcessStartInfo(url) With {
+    '        .UseShellExecute = True
+    '    }
+
+    '        Process.Start(psi)
+    '        ShowStatus(StatusPad & IconOpen & $"  Opening URL: {url}")
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Cannot open URL: " & ex.Message)
+    '    End Try
+    'End Sub
 
     Private Sub PinOrUnpin(path As String)
         TogglePin(path)
@@ -3482,21 +3615,45 @@ Public Class Form1
     End Sub
 
 
-    Private Sub HandleOpenPath(path As String)
+    'Private Sub HandleOpenPath(path As String)
 
-        If IO.File.Exists(path) Then
-            OpenFileWithDefaultApp(path)
+    '    If IO.File.Exists(path) Then
+    '        OpenFileWithDefaultApp(path)
+    '        RestoreAddressBar()
+    '        Return
+    '    End If
+
+    '    If Directory.Exists(path) Then
+    '        NavigateTo(path)
+    '        Return
+    '    End If
+
+    '    ShowStatus(StatusPad & IconError & "  Path not found: " & path)
+
+    'End Sub
+
+
+
+
+    Private Sub HandleOpenPath(path As String)
+        If String.IsNullOrWhiteSpace(path) Then
+            ShowStatus(StatusPad & IconError & "  Path not found.")
+            Return
+        End If
+
+        Dim trimmed = path.Trim()
+
+        ' Let the SafeLaunchEngine decide what this is.
+        If SafeLaunch(trimmed) Then
             RestoreAddressBar()
             Return
         End If
 
-        If Directory.Exists(path) Then
-            NavigateTo(path)
-            Return
-        End If
-
-        ShowStatus(StatusPad & IconError & "  Path not found: " & path)
-
+        ' If SafeLaunch returns False, it means:
+        ' - Not a URL
+        ' - Not a folder
+        ' - Not a file
+        ShowStatus(StatusPad & IconError & $"  Path not found: {trimmed}")
     End Sub
 
 
@@ -5479,24 +5636,49 @@ Public Class Form1
 
     End Sub
 
-    Private Sub GoToFolderOrOpenFile(FileOrFolder As String)
-        ' Navigate to folder or open file.
+    'Private Sub GoToFolderOrOpenFile(FileOrFolder As String)
+    '    ' Navigate to folder or open file.
 
-        ' If folder exists, go there
-        If Directory.Exists(FileOrFolder) Then
+    '    ' If folder exists, go there
+    '    If Directory.Exists(FileOrFolder) Then
 
-            NavigateTo(FileOrFolder, True)
+    '        NavigateTo(FileOrFolder, True)
 
-            ' If file exists, open it
-        ElseIf IO.File.Exists(FileOrFolder) Then
+    '        ' If file exists, open it
+    '    ElseIf IO.File.Exists(FileOrFolder) Then
 
-            OpenFileWithDefaultApp(FileOrFolder)
+    '        OpenFileWithDefaultApp(FileOrFolder)
 
-        Else
-            ShowStatus(StatusPad & IconWarning & " Path does not exist: " & FileOrFolder)
+    '    Else
+    '        ShowStatus(StatusPad & IconWarning & " Path does not exist: " & FileOrFolder)
+    '    End If
+
+    'End Sub
+
+
+    Private Sub GoToFolderOrOpenFile(path As String)
+        If String.IsNullOrWhiteSpace(path) Then
+            ShowStatus(StatusPad & IconWarning & " Path does not exist.")
+            Return
         End If
 
+        Dim trimmed = path.Trim()
+
+        ' Delegate to the unified SafeLaunchEngine
+        If SafeLaunch(trimmed) Then
+            Return
+        End If
+
+        ' If SafeLaunch returns False, nothing matched
+        ShowStatus(StatusPad & IconWarning & $" Path does not exist: {trimmed}")
     End Sub
+
+
+
+
+
+
+
 
     Private Sub OpenSelectedOrStartCommand()
 
@@ -8644,14 +8826,20 @@ Public Class Form1
         .ScrollBars = RichTextBoxScrollBars.Both,
         .Height = 300
     }
+        '    AddHandler HelpTextBox.LinkClicked,
+        'Sub(sender, e)
+        '    Try
+        '        Process.Start(New ProcessStartInfo(e.LinkText) With {.UseShellExecute = True})
+        '    Catch ex As Exception
+        '        MessageBox.Show("Failed to open link: " & ex.Message)
+        '    End Try
+        'End Sub
+
+
         AddHandler HelpTextBox.LinkClicked,
-    Sub(sender, e)
-        Try
-            Process.Start(New ProcessStartInfo(e.LinkText) With {.UseShellExecute = True})
-        Catch ex As Exception
-            MessageBox.Show("Failed to open link: " & ex.Message)
-        End Try
-    End Sub
+            Sub(sender, e)
+                SafeLaunch(e.LinkText)
+            End Sub
 
         scrollPanel.Controls.Add(HelpTextBox)
         HelpPanel.Controls.Add(scrollPanel)
