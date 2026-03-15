@@ -1909,7 +1909,6 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
-
     Private Sub HandlePinCommand(parts As String())
 
         ' Explicit path
@@ -2158,7 +2157,6 @@ Public Class Form1
 
     'End Sub
 
-
     Private Async Sub HandleCopyCommand(parts As String())
 
         If parts.Length <= 2 Then
@@ -2198,41 +2196,6 @@ Public Class Form1
         RestoreAddressBar()
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     '    Private Async Function RunCopyOrCutOperation(
     '    sources As List(Of String),
@@ -2715,9 +2678,6 @@ Public Class Form1
     '        Return (pastedItems, finalSummary)
     '    End Function
 
-
-
-
     Private Async Function RunCopyOrCutOperation(
     sources As List(Of String),
     destinationRoot As String,
@@ -2880,22 +2840,6 @@ Public Class Form1
 
         Return (pastedItems, finalSummary)
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Function BuildCopyReport(result As CopyResult) As String
         Dim sb As New Text.StringBuilder()
@@ -3293,10 +3237,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
-
-
     Private Function IsLikelyUrl(text As String) As Boolean
         If String.IsNullOrWhiteSpace(text) Then Return False
 
@@ -3346,7 +3286,6 @@ Public Class Form1
         Return text.Contains("\") OrElse text.Contains("/")
     End Function
 
-
     Private Function ValidateFilePath(path As String) As Boolean
         If Not File.Exists(path) Then
             ShowStatus(StatusPad & IconError & " File not found.")
@@ -3389,13 +3328,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-
-
-
-
-
-
     'Private Sub OpenUrlInDefaultBrowser(url As String)
     '    Try
     '        Dim psi As New ProcessStartInfo(url) With {
@@ -3419,7 +3351,6 @@ Public Class Form1
     Private Function ParseSource(parts As String()) As String
         Return String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
     End Function
-
 
     Private Function ParseDestination(parts As String()) As String
         If parts.Length < 2 Then
@@ -3518,9 +3449,6 @@ Public Class Form1
     '    ShowStatus(StatusPad & IconError & "  Path not found: " & path)
 
     'End Sub
-
-
-
 
     Private Sub HandleOpenPath(path As String)
         If String.IsNullOrWhiteSpace(path) Then
@@ -3990,22 +3918,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Sub SelectItemsInListView(paths As List(Of String))
 
         If lvFiles Is Nothing OrElse paths Is Nothing Then Exit Sub
@@ -4103,15 +4015,6 @@ Public Class Form1
     '        Return result
     '    End Function
 
-
-
-
-
-
-
-
-
-
     Public Async Function CopyFileOrDirectoryUnified(
     source As String,
     destinationRoot As String,
@@ -4185,63 +4088,6 @@ Public Class Form1
 
         Return result
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     '    Public Async Function CopyDirectory(
     '    sourceDir As String,
@@ -4336,7 +4182,6 @@ Public Class Form1
     '    End Function
 
 
-
     Public Async Function CopyDirectory(
     sourceDir As String,
     destDir As String,
@@ -4425,23 +4270,6 @@ Public Class Form1
 
         Return result
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Function CountAllDirectories(root As String) As Integer
         Dim count As Integer = 1 ' include root
@@ -5267,16 +5095,6 @@ Public Class Form1
         Return result
     End Function
 
-
-
-
-
-
-
-
-
-
-
     '    Public Async Function CopyDirectory(
     '    sourceDir As String,
     '    destDir As String,
@@ -5452,21 +5270,6 @@ Public Class Form1
     '        Return result
     '    End Function
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     ' ------------------------------------------------------------
     ' Pure helper: detect locked files (no UI)
     ' ------------------------------------------------------------
@@ -5559,13 +5362,6 @@ Public Class Form1
         ' If SafeLaunch returns False, nothing matched
         ShowStatus(StatusPad & IconWarning & $" Path does not exist: {trimmed}")
     End Sub
-
-
-
-
-
-
-
 
     Private Sub OpenSelectedOrStartCommand()
 
@@ -8090,8 +7886,6 @@ Public Class Form1
     End Function
 
 
-
-
     ' ============================================================
     '  ManualSectionAliases
     ' ============================================================
@@ -8448,9 +8242,6 @@ Public Class Form1
     '    Return sb.ToString()
     'End Function
 
-
-
-
     Private Function BuildShortcutsHelp() As String
         Dim sb As New Text.StringBuilder()
 
@@ -8561,11 +8352,6 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-
-
-
-
-
     Private Sub ShowDriveOverview()
         HelpHeaderLabel.Text = "Drive Overview"
 
@@ -8604,10 +8390,6 @@ Public Class Form1
         ShowHelpPanelAnimated()
         FocusHelpText()
     End Sub
-
-
-
-
 
     Private Sub HandleOpenCommand(parts As String())
         Try
@@ -8996,41 +8778,6 @@ Public Class Form1
         AddHandler statusTimer.Tick, AddressOf ClearStatus
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub ConfigureTooltips()
 
