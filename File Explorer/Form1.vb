@@ -9002,6 +9002,12 @@ Public Class Form1
 
         TestValidateNotCopyingIntoSelf()
 
+
+        TestSafeLaunchEngine()
+
+
+
+
         Debug.WriteLine("All tests executed.")
 
     End Sub
@@ -9368,6 +9374,215 @@ Public Class Form1
 
     End Sub
 
+
+    ' ============================================================
+    '  SafeLaunchEngine Tests
+    ' ============================================================
+
+    Private Sub TestSafeLaunchEngine()
+        Test_SafeLaunch_ValidHttpUrl()
+        Test_SafeLaunch_ValidHttpsUrl()
+        Test_SafeLaunch_RejectsNonHttpProtocols()
+        Test_SafeLaunch_RejectsMalformedUrl()
+
+        Test_SafeLaunch_FolderPath()
+        Test_SafeLaunch_FilePath()
+
+        Test_SafeLaunch_InvalidPath()
+        Test_SafeLaunch_EmptyInput()
+
+        Test_SafeLaunch_UrlPriorityOverFile()
+    End Sub
+
+
+    Private Sub Test_SafeLaunch_ValidHttpUrl()
+        Debug.WriteLine("→ Testing SafeLaunch: valid http URL")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch("http://example.com")
+
+        AssertTrue(result, "http URL should be accepted")
+        AssertTrue(r.LastAction = "Url", "Expected URL launch action")
+        AssertTrue(r.LastTarget = "http://example.com", "URL target mismatch")
+
+        Debug.WriteLine("✓ http URL test passed")
+    End Sub
+
+
+    Private Sub Test_SafeLaunch_ValidHttpsUrl()
+        Debug.WriteLine("→ Testing SafeLaunch: valid https URL")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch("https://example.com")
+
+        AssertTrue(result, "https URL should be accepted")
+        AssertTrue(r.LastAction = "Url", "Expected URL launch action")
+
+        Debug.WriteLine("✓ https URL test passed")
+    End Sub
+
+
+    Private Sub Test_SafeLaunch_RejectsNonHttpProtocols()
+        Debug.WriteLine("→ Testing SafeLaunch: reject non-http protocols")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch("file:///C:/Windows/System32")
+
+        AssertFalse(result, "Non-http protocols should be rejected")
+        AssertTrue(r.LastAction Is Nothing, "No launch action should occur")
+
+        Debug.WriteLine("✓ Non-http protocol rejection passed")
+    End Sub
+
+
+
+    Private Sub Test_SafeLaunch_RejectsMalformedUrl()
+        Debug.WriteLine("→ Testing SafeLaunch: malformed URL")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch("ht!tp://bad")
+
+        AssertFalse(result, "Malformed URLs should be rejected")
+
+        Debug.WriteLine("✓ Malformed URL test passed")
+    End Sub
+
+
+    Private Sub Test_SafeLaunch_FolderPath()
+        Debug.WriteLine("→ Testing SafeLaunch: folder path")
+
+        Dim folder As String = IO.Path.GetTempPath()
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch(folder)
+
+        AssertTrue(result, "Existing folder should be accepted")
+        AssertTrue(r.LastAction = "Folder", "Expected folder navigation")
+        AssertTrue(r.LastTarget = folder, "Folder target mismatch")
+
+        Debug.WriteLine("✓ Folder path test passed")
+    End Sub
+
+
+
+    Private Sub Test_SafeLaunch_FilePath()
+        Debug.WriteLine("→ Testing SafeLaunch: file path")
+
+        Dim file As String = IO.Path.GetTempFileName()
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch(file)
+
+        AssertTrue(result, "Existing file should be accepted")
+        AssertTrue(r.LastAction = "File", "Expected file launch")
+        AssertTrue(r.LastTarget = file, "File target mismatch")
+
+        Debug.WriteLine("✓ File path test passed")
+    End Sub
+
+
+
+
+    Private Sub Test_SafeLaunch_InvalidPath()
+        Debug.WriteLine("→ Testing SafeLaunch: invalid path")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch("Z:\this\does\not\exist")
+
+        AssertFalse(result, "Nonexistent paths should be rejected")
+        AssertTrue(r.LastAction Is Nothing, "No launch action should occur")
+
+        Debug.WriteLine("✓ Invalid path test passed")
+    End Sub
+
+
+
+
+
+    Private Sub Test_SafeLaunch_EmptyInput()
+        Debug.WriteLine("→ Testing SafeLaunch: empty input")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        Dim result = engine.SafeLaunch("")
+
+        AssertFalse(result, "Empty input should be rejected")
+
+        Debug.WriteLine("✓ Empty input test passed")
+    End Sub
+
+
+
+
+
+
+    Private Sub Test_SafeLaunch_UrlPriorityOverFile()
+        Debug.WriteLine("→ Testing SafeLaunch: URL priority over file")
+
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(r)
+
+        ' Looks like a file but is actually a URL
+        Dim result = engine.SafeLaunch("http://example.com/file.txt")
+
+        AssertTrue(result, "URL should be accepted")
+        AssertTrue(r.LastAction = "Url", "URL should take priority over file detection")
+
+        Debug.WriteLine("✓ URL priority test passed")
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Private Sub AssertTrue(condition As Boolean, message As String)
         Debug.Assert(condition, message)
     End Sub
@@ -9675,10 +9890,71 @@ End Class
 
 
 
+Public Class LaunchRecorder
+    Public LastAction As String = Nothing
+    Public LastTarget As String = Nothing
+
+    Public Sub Record(action As String, target As String)
+        LastAction = action
+        LastTarget = target
+    End Sub
+End Class
+
+
+Public Class SafeLaunchEngine
+
+    Private ReadOnly _recorder As LaunchRecorder
+
+    Public Sub New(recorder As LaunchRecorder)
+        _recorder = recorder
+    End Sub
+
+    Public Function SafeLaunch(input As String) As Boolean
+        If String.IsNullOrWhiteSpace(input) Then
+            Return False
+        End If
+
+        Dim trimmed = input.Trim()
+
+        ' 1. URL?
+        If IsUrl(trimmed) Then
+            _recorder.Record("Url", trimmed)
+            Return True
+        End If
+
+        ' 2. Folder?
+        If IO.Directory.Exists(trimmed) Then
+            _recorder.Record("Folder", trimmed)
+            Return True
+        End If
+
+        ' 3. File?
+        If IO.File.Exists(trimmed) Then
+            _recorder.Record("File", trimmed)
+            Return True
+        End If
+
+        Return False
+    End Function
+
+    Private Function IsUrl(text As String) As Boolean
+        Dim uri As Uri = Nothing
+        If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then
+            Return False
+        End If
+
+        ' Strict whitelist
+        Return uri.Scheme = Uri.UriSchemeHttp OrElse uri.Scheme = Uri.UriSchemeHttps
+    End Function
 
 
 
 
+
+
+
+
+End Class
 
 
 
