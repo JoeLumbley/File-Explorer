@@ -521,12 +521,6 @@ Public Class Form1
         Paste
     End Enum
 
-
-
-
-
-
-
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -712,8 +706,6 @@ Public Class Form1
 
     End Sub
 
-
-
     Private Sub tvFolders_BeforeExpand(sender As Object, e As TreeViewCancelEventArgs) _
         Handles tvFolders.BeforeExpand
 
@@ -878,21 +870,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub lvFiles_MouseDown(sender As Object, e As MouseEventArgs) Handles lvFiles.MouseDown
-
-    '    If e.Button = MouseButtons.Right Then
-    '        Dim info = lvFiles.HitTest(e.Location)
-    '        '' If not clicking an item, cancel the context menu
-    '        'If info.Item Is Nothing Then
-    '        '    lvFiles.ContextMenuStrip = Nothing
-    '        'Else
-    '        '    lvFiles.ContextMenuStrip = cmsFiles
-    '        'End If
-    '    End If
-
-    'End Sub
-
-
     Private Sub btnBack_Click(sender As Object, e As EventArgs) _
         Handles btnBack.Click
 
@@ -994,14 +971,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
     Private Function HandleAddressBarFocusShortcuts(keyData As Keys) As Boolean
 
         ' ============================================================
@@ -1030,8 +999,6 @@ Public Class Form1
 
         Return False
     End Function
-
-
 
     'Private Function HandleEscape(keyData As Keys) As Boolean
 
@@ -1102,7 +1069,6 @@ Public Class Form1
 
     'End Function
 
-
     Private Function HandleEscape(keyData As Keys) As Boolean
 
         ' Only handle Escape here
@@ -1112,26 +1078,6 @@ Public Class Form1
 
         If _escapeDown Then Return True   ' swallow repeat
         _escapeDown = True
-
-        '' ============================================
-        '' 0. Cancel active copy operation
-        '' ============================================
-        'If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
-        '    copyCts.Cancel()
-        '    ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
-
-        '    ' Close HelpPanel immediately (Explorer-like)
-        '    If HelpPanel.Visible Then
-        '        HelpPanel.Visible = False
-        '    End If
-
-        '    Return True
-        'End If
-
-
-
-
-
 
         ' ============================================
         ' 0. Cancel active copy operation
@@ -1160,15 +1106,6 @@ Public Class Form1
             ' Swallow ESC during cancellation
             Return True
         End If
-
-
-
-
-
-
-
-
-
 
         ' ============================================
         ' 1. Cancel rename mode (let ESC pass through)
@@ -1220,37 +1157,10 @@ Public Class Form1
 
     End Function
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Function SearchIsActive() As Boolean
         Return SearchResults.Count > 0 _
         OrElse Not String.Equals(txtAddressBar.Text.Trim(), currentFolder, StringComparison.OrdinalIgnoreCase)
     End Function
-
-
 
     Private Function HandleEnterKey(keyData As Keys) As Boolean
 
@@ -1302,7 +1212,6 @@ Public Class Form1
         Return False
 
     End Function
-
 
     Private Function HandleTabNavigation(keyData As Keys) As Boolean
 
@@ -1365,7 +1274,6 @@ Public Class Form1
         Return handled
 
     End Function
-
 
     Private Function HandleShiftTabNavigation(keyData As Keys) As Boolean
 
@@ -1641,7 +1549,6 @@ Public Class Form1
         Return True
     End Function
 
-
     Private Function HandleF3Previous() As Boolean
         If _shiftF3Down Then Return True
         _shiftF3Down = True
@@ -1649,16 +1556,6 @@ Public Class Form1
         HandleFindPreviousCommand()
         Return True
     End Function
-
-
-
-
-
-
-
-
-
-
 
     Private Sub ResetSearchState()
 
@@ -1672,9 +1569,6 @@ Public Class Form1
         RestoreBackground()
 
     End Sub
-
-
-
 
     Private Sub UpdateAllUIStates()
         UpdatePinButtonState()
@@ -1701,7 +1595,6 @@ Public Class Form1
         Return True
     End Function
 
-
     Private Function FocusTreeView() As Boolean
         tvFolders.Focus()
 
@@ -1715,7 +1608,6 @@ Public Class Form1
         Return True
     End Function
 
-
     Private Function FocusAddressBar() As Boolean
         txtAddressBar.Focus()
         PlaceCaretAtEndOfAddressBar()
@@ -1726,7 +1618,6 @@ Public Class Form1
     Private Function GlobalShortcutsAllowed() As Boolean
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
     End Function
-
 
     Private Sub HandleFindPreviousCommand()
 
@@ -1754,7 +1645,6 @@ Public Class Form1
 
         ShowSearchHud()
     End Sub
-
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
 
@@ -1938,8 +1828,6 @@ Public Class Form1
         Return False
     End Function
 
-
-
     Private Sub ExecuteCommand(command As String)
 
         Dim parts = ParseCommandLine(command)
@@ -1972,7 +1860,6 @@ Public Class Form1
         Select(Function(m) m.Value.Trim(""""c)).
         ToArray()
     End Function
-
 
     Private Sub HandleRenameCommand(parts As String())
         If parts.Length <= 2 Then
