@@ -30,6 +30,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports File_Explorer.Explorer.Interop.Shell
 Imports Windows.Data.Json
 
 
@@ -63,6 +64,9 @@ Public Class Form1
     Private imgList As New ImageList()
 
     Private imgArrows As New ImageList()
+
+    Private ImageListSmall As New ImageList()
+
 
     Private currentFolder As String = String.Empty
 
@@ -3463,17 +3467,91 @@ Public Class Form1
     ' LISTVIEW ITEM BUILDERS
     ' ============================================================
 
+    'Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
+    '    Dim item As New ListViewItem(di.Name)
+
+    '    item.SubItems.Add("Folder")
+    '    item.SubItems.Add("") ' No size
+    '    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = di.FullName
+    '    item.ImageKey = "Folder"
+
+    '    Return item
+    'End Function
+
+
     Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
         Dim item As New ListViewItem(di.Name)
 
         item.SubItems.Add("Folder")
-        item.SubItems.Add("") ' No size
+        item.SubItems.Add("")
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
-        item.ImageKey = "Folder"
+
+        ' Real Explorer icon
+        Dim icon = ShellInterop.GetIconForPath(di.FullName, ShellInterop.IconSize.Small)
+
+        If icon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey(di.FullName) Then
+                imgList.Images.Add(di.FullName, icon)
+            End If
+            item.ImageKey = di.FullName
+        Else
+            item.ImageKey = "Folder"
+        End If
 
         Return item
     End Function
+
+    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+    '    Dim item As New ListViewItem(fi.Name)
+
+    '    Dim ext = fi.Extension.ToLowerInvariant()
+    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '    item.SubItems.Add(category)
+    '    item.SubItems.Add(FormatSize(fi.Length))
+    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = fi.FullName
+
+    '    item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+
+    '    Return item
+    'End Function
+
+
+
+    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+    '    Dim item As New ListViewItem(fi.Name)
+
+    '    Dim ext = fi.Extension.ToLowerInvariant()
+    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '    item.SubItems.Add(category)
+    '    item.SubItems.Add(FormatSize(fi.Length))
+    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = fi.FullName
+
+    '    ' --- ICON EXTRACTION ---
+    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
+
+    '    If icon IsNot Nothing Then
+    '        If Not ImageListSmall.Images.ContainsKey(fi.FullName) Then
+    '            ImageListSmall.Images.Add(fi.FullName, icon)
+    '        End If
+    '        item.ImageKey = fi.FullName
+    '    Else
+    '        item.ImageKey = "Documents" ' fallback
+    '    End If
+
+    '    Return item
+    'End Function
+
+
+
+
+
+
 
     Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
         Dim item As New ListViewItem(fi.Name)
@@ -3486,10 +3564,39 @@ Public Class Form1
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
 
-        item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+        ' Real Explorer icon
+        Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
+
+        If icon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey(fi.FullName) Then
+                imgList.Images.Add(fi.FullName, icon)
+            End If
+            item.ImageKey = fi.FullName
+        Else
+            item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+        End If
 
         Return item
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ' ============================================================
     ' VALIDATION HELPERS
@@ -4786,67 +4893,226 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
+    'Private Sub UpdateTreeRoots()
+    '    ' Update the TreeView with current drives and special folders at the top level.
+
+    '    tvFolders.BeginUpdate()
+
+    '    ' Clear existing nodes and add new ones for:
+    '    tvFolders.Nodes.Clear()
+
+    '    ' --- Easy Access node ---
+    '    Dim easyAccessNode As New TreeNode("Easy Access") With {
+    '        .ImageKey = "EasyAccess",
+    '        .SelectedImageKey = "EasyAccess",
+    '        .StateImageIndex = 0   ' ▶ collapsed
+    '    }
+
+    '    ' Define special folders
+    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
+    '        ("Documents", Environment.SpecialFolder.MyDocuments),
+    '        ("Music", Environment.SpecialFolder.MyMusic),
+    '        ("Pictures", Environment.SpecialFolder.MyPictures),
+    '        ("Videos", Environment.SpecialFolder.MyVideos),
+    '        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+    '        ("Desktop", Environment.SpecialFolder.Desktop)
+    '    }
+
+    '    For Each sf In specialFolders
+    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
+
+    '        ' Handle Downloads manually
+    '        If sf.Item1 = "Downloads" Then
+    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
+    '        End If
+
+    '        If Directory.Exists(specialFolderPath) Then
+
+    '            Dim node As New TreeNode(sf.Item1) With {
+    '                .Tag = specialFolderPath,
+    '                .ImageKey = sf.Item1,
+    '                .SelectedImageKey = sf.Item1
+    '            }
+
+    '            If HasSubdirectories(specialFolderPath) Then
+    '                node.Nodes.Add("Loading...")
+    '                node.StateImageIndex = 0   ' ▶ collapsed
+    '            Else
+    '                node.StateImageIndex = 2  ' no arrow
+    '            End If
+
+    '            easyAccessNode.Nodes.Add(node)
+    '        End If
+    '    Next
+
+    '    ' --- User Easy Access entries ---
+    '    Dim userEntries = LoadEasyAccessEntries()
+
+    '    For Each entry In userEntries
+    '        Dim node As New TreeNode(entry.Name) With {
+    '            .Tag = entry.Path,
+    '            .ImageKey = "Folder",
+    '            .SelectedImageKey = "Folder"
+    '        }
+
+    '        If HasSubdirectories(entry.Path) Then
+    '            node.Nodes.Add("Loading...")
+    '            node.StateImageIndex = 0
+    '        Else
+    '            node.StateImageIndex = 2
+    '        End If
+
+    '        easyAccessNode.Nodes.Add(node)
+    '    Next
+
+    '    ' Add Easy Access to tree
+    '    tvFolders.Nodes.Add(easyAccessNode)
+
+    '    ' Expand Easy Access and update arrow
+    '    easyAccessNode.Expand()
+    '    easyAccessNode.StateImageIndex = 1   ' ▼ expanded
+
+    '    ' --- Drives ---
+    '    For Each di In DriveInfo.GetDrives()
+    '        If di.IsReady Then
+    '            Try
+    '                'Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
+    '                Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
+
+    '                Dim totalSpace As String = FormatSize(di.TotalSize)
+
+
+    '                Dim used = di.TotalSize - di.AvailableFreeSpace
+    '                Dim bar = BuildUsageBar(used, di.TotalSize, 4)
+
+
+
+    '                Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
+
+    '                Dim rootNode As New TreeNode(displayText) With {
+    '                    .Tag = di.RootDirectory.FullName
+    '                }
+
+    '                If di.DriveType = DriveType.CDRom Then
+    '                    rootNode.ImageKey = "Optical"
+    '                    rootNode.SelectedImageKey = "Optical"
+    '                Else
+    '                    rootNode.ImageKey = "Drive"
+    '                    rootNode.SelectedImageKey = "Drive"
+    '                End If
+
+    '                If HasSubdirectories(di.RootDirectory.FullName) Then
+    '                    rootNode.Nodes.Add("Loading...")
+    '                    rootNode.StateImageIndex = 0   ' ▶ collapsed
+    '                Else
+    '                    rootNode.StateImageIndex = 2  ' no arrow
+    '                End If
+
+    '                tvFolders.Nodes.Add(rootNode)
+
+    '            Catch ex As IOException
+    '                Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
+    '            Catch ex As UnauthorizedAccessException
+    '                Debug.WriteLine($"Access denied to drive {di.Name}: {ex.Message}")
+    '            Catch ex As Exception
+    '                Debug.WriteLine($"Unexpected error with drive {di.Name}: {ex.Message}")
+    '            End Try
+    '        Else
+    '            Debug.WriteLine($"Drive {di.Name} is not ready.")
+    '        End If
+    '    Next
+
+    '    tvFolders.EndUpdate()
+
+    'End Sub
+
+
+
     Private Sub UpdateTreeRoots()
-        ' Update the TreeView with current drives and special folders at the top level.
-
         tvFolders.BeginUpdate()
-
-        ' Clear existing nodes and add new ones for:
         tvFolders.Nodes.Clear()
 
-        ' --- Easy Access node ---
+        ' ============================================================
+        ' EASY ACCESS ROOT
+        ' ============================================================
         Dim easyAccessNode As New TreeNode("Easy Access") With {
-            .ImageKey = "EasyAccess",
-            .SelectedImageKey = "EasyAccess",
-            .StateImageIndex = 0   ' ▶ collapsed
-        }
+        .ImageKey = "EasyAccess",
+        .SelectedImageKey = "EasyAccess",
+        .StateImageIndex = 0
+    }
 
-        ' Define special folders
+        ' Special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
-            ("Documents", Environment.SpecialFolder.MyDocuments),
-            ("Music", Environment.SpecialFolder.MyMusic),
-            ("Pictures", Environment.SpecialFolder.MyPictures),
-            ("Videos", Environment.SpecialFolder.MyVideos),
-            ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
-            ("Desktop", Environment.SpecialFolder.Desktop)
-        }
+        ("Documents", Environment.SpecialFolder.MyDocuments),
+        ("Music", Environment.SpecialFolder.MyMusic),
+        ("Pictures", Environment.SpecialFolder.MyPictures),
+        ("Videos", Environment.SpecialFolder.MyVideos),
+        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+        ("Desktop", Environment.SpecialFolder.Desktop)
+    }
 
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
 
-            ' Handle Downloads manually
+            ' Fix Downloads path
             If sf.Item1 = "Downloads" Then
                 specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
             End If
 
             If Directory.Exists(specialFolderPath) Then
-
                 Dim node As New TreeNode(sf.Item1) With {
-                    .Tag = specialFolderPath,
-                    .ImageKey = sf.Item1,
-                    .SelectedImageKey = sf.Item1
-                }
+                .Tag = specialFolderPath
+            }
 
+                ' --- Real Explorer icon ---
+                Dim icon = ShellInterop.GetIconForPath(specialFolderPath, ShellInterop.IconSize.Small)
+
+                If icon IsNot Nothing Then
+                    If Not imgList.Images.ContainsKey(specialFolderPath) Then
+                        imgList.Images.Add(specialFolderPath, icon)
+                    End If
+                    node.ImageKey = specialFolderPath
+                    node.SelectedImageKey = specialFolderPath
+                Else
+                    node.ImageKey = sf.Item1
+                    node.SelectedImageKey = sf.Item1
+                End If
+
+                ' Expand arrow logic
                 If HasSubdirectories(specialFolderPath) Then
                     node.Nodes.Add("Loading...")
-                    node.StateImageIndex = 0   ' ▶ collapsed
+                    node.StateImageIndex = 0
                 Else
-                    node.StateImageIndex = 2  ' no arrow
+                    node.StateImageIndex = 2
                 End If
 
                 easyAccessNode.Nodes.Add(node)
             End If
         Next
 
-        ' --- User Easy Access entries ---
+        ' ============================================================
+        ' USER EASY ACCESS ENTRIES
+        ' ============================================================
         Dim userEntries = LoadEasyAccessEntries()
 
         For Each entry In userEntries
             Dim node As New TreeNode(entry.Name) With {
-                .Tag = entry.Path,
-                .ImageKey = "Folder",
-                .SelectedImageKey = "Folder"
-            }
+            .Tag = entry.Path
+        }
+
+            ' --- Real Explorer icon ---
+            Dim icon = ShellInterop.GetIconForPath(entry.Path, ShellInterop.IconSize.Small)
+
+            If icon IsNot Nothing Then
+                If Not imgList.Images.ContainsKey(entry.Path) Then
+                    imgList.Images.Add(entry.Path, icon)
+                End If
+                node.ImageKey = entry.Path
+                node.SelectedImageKey = entry.Path
+            Else
+                node.ImageKey = "Folder"
+                node.SelectedImageKey = "Folder"
+            End If
 
             If HasSubdirectories(entry.Path) Then
                 node.Nodes.Add("Loading...")
@@ -4858,65 +5124,61 @@ Public Class Form1
             easyAccessNode.Nodes.Add(node)
         Next
 
-        ' Add Easy Access to tree
         tvFolders.Nodes.Add(easyAccessNode)
-
-        ' Expand Easy Access and update arrow
         easyAccessNode.Expand()
-        easyAccessNode.StateImageIndex = 1   ' ▼ expanded
+        easyAccessNode.StateImageIndex = 1
 
-        ' --- Drives ---
+        ' ============================================================
+        ' DRIVES
+        ' ============================================================
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-                    'Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
                     Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
-
-                    Dim totalSpace As String = FormatSize(di.TotalSize)
-
-
                     Dim used = di.TotalSize - di.AvailableFreeSpace
                     Dim bar = BuildUsageBar(used, di.TotalSize, 4)
-
-
 
                     Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
 
                     Dim rootNode As New TreeNode(displayText) With {
-                        .Tag = di.RootDirectory.FullName
-                    }
+                    .Tag = di.RootDirectory.FullName
+                }
 
-                    If di.DriveType = DriveType.CDRom Then
-                        rootNode.ImageKey = "Optical"
-                        rootNode.SelectedImageKey = "Optical"
+                    ' --- Real Explorer drive icon ---
+                    Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
+
+                    If driveIcon IsNot Nothing Then
+                        If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+                            imgList.Images.Add(di.RootDirectory.FullName, driveIcon)
+                        End If
+                        rootNode.ImageKey = di.RootDirectory.FullName
+                        rootNode.SelectedImageKey = di.RootDirectory.FullName
                     Else
-                        rootNode.ImageKey = "Drive"
-                        rootNode.SelectedImageKey = "Drive"
+                        If di.DriveType = DriveType.CDRom Then
+                            rootNode.ImageKey = "Optical"
+                            rootNode.SelectedImageKey = "Optical"
+                        Else
+                            rootNode.ImageKey = "Drive"
+                            rootNode.SelectedImageKey = "Drive"
+                        End If
                     End If
 
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         rootNode.Nodes.Add("Loading...")
-                        rootNode.StateImageIndex = 0   ' ▶ collapsed
+                        rootNode.StateImageIndex = 0
                     Else
-                        rootNode.StateImageIndex = 2  ' no arrow
+                        rootNode.StateImageIndex = 2
                     End If
 
                     tvFolders.Nodes.Add(rootNode)
 
-                Catch ex As IOException
-                    Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
-                Catch ex As UnauthorizedAccessException
-                    Debug.WriteLine($"Access denied to drive {di.Name}: {ex.Message}")
                 Catch ex As Exception
-                    Debug.WriteLine($"Unexpected error with drive {di.Name}: {ex.Message}")
+                    Debug.WriteLine($"Drive error {di.Name}: {ex.Message}")
                 End Try
-            Else
-                Debug.WriteLine($"Drive {di.Name} is not ready.")
             End If
         Next
 
         tvFolders.EndUpdate()
-
     End Sub
 
     Private Function GetFolderDisplayName(folderPath As String) As String
