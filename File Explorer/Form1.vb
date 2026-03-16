@@ -3488,7 +3488,7 @@ Public Class Form1
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
 
-        ' Real Explorer icon
+        ' Shell icons
         Dim icon = ShellInterop.GetIconForPath(di.FullName, ShellInterop.IconSize.Small)
 
         If icon IsNot Nothing Then
@@ -3564,7 +3564,7 @@ Public Class Form1
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
 
-        ' Real Explorer icon
+        ' Shell icons
         Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
 
         If icon IsNot Nothing Then
