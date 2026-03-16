@@ -30,6 +30,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports Windows.Data.Json
 
 
 Public Class Form1
@@ -89,10 +90,10 @@ Public Class Form1
 
     ' Icons for status messages
     ' These require a font that supports these glyphs, such as Segoe MDL2 Assets or similar.
-    Private IconError As String = ""
+    Public IconError As String = ""
     Private IconDialog As String = ""
     Private IconSuccess As String = ""
-    Private IconOpen As String = ""
+    Public IconOpen As String = ""
     Private IconCopy As String = ""
     Private IconPaste As String = ""
     Private IconProtect As String = ""
@@ -162,7 +163,7 @@ Public Class Form1
         {".lnk", "Shortcut"}
     }
 
-    Dim StatusPad As String = New String(" "c, 2)
+    Public StatusPad As String = New String(" "c, 2)
 
     Private copyCts As CancellationTokenSource
 
@@ -521,8 +522,8 @@ Public Class Form1
         Paste
     End Enum
 
-    Dim r As New LaunchRecorder
-    Dim engine As New SafeLaunchEngine(r)
+    'Dim r As New LaunchRecorder
+    Dim engine As New SafeLaunchEngine(Me)
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -3773,7 +3774,7 @@ Public Class Form1
     End Function
 
 
-    Private Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
+    Public Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
 
@@ -4163,7 +4164,7 @@ Public Class Form1
     End Sub
 
 
-    Private Sub ShowStatus(message As String)
+    Public Sub ShowStatus(message As String)
         If lblStatus Is Nothing Then
             Debug.WriteLine("lblStatus control is not initialized.")
             Return
@@ -6752,42 +6753,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Sub ShowHelpPanelAnimated()
-
-    '    ' Do NOT re‑animate if already open
-    '    If HelpPanel.Visible AndAlso HelpPanel.Width > 0 Then
-    '        Return
-    '    End If
-
-    '    HelpPanel.Visible = True
-    '    HelpPanel.Width = 0
-
-    '    Dim targetWidth As Integer = 500
-    '    Dim t As New System.Windows.Forms.Timer() With {.Interval = 15}
-
-    '    AddHandler t.Tick,
-    '    Sub()
-    '        Dim w = HelpPanel.Width
-    '        Dim remaining = targetWidth - w
-
-    '        ' Quadratic ease‑out for native feel
-    '        Dim stepSize As Integer = CInt(Math.Max(6, remaining * 0.22))
-
-    '        HelpPanel.Width = Math.Min(targetWidth, w + stepSize)
-
-    '        ' Animation finished
-    '        If HelpPanel.Width >= targetWidth Then
-    '            HelpPanel.Width = targetWidth
-    '            t.Stop()
-
-    '            ' Focus AFTER animation completes
-    '            FocusHelpText()
-    '        End If
-    '    End Sub
-
-    '    t.Start()
-    'End Sub
-
     Private Sub ShowHelpPanelAnimated()
 
         ' Do NOT re‑animate if already open
@@ -6829,125 +6794,6 @@ Public Class Form1
 
         t.Start()
     End Sub
-
-    'Private Sub InitStatusBar()
-
-    '    Dim statusStrip As New StatusStrip()
-
-    '    ' Set font to Segoe UI Symbol, 10pt
-    '    statusStrip.Font = New Font("Segoe UI Symbol", 11.0F, FontStyle.Regular)
-
-    '    ' Ensure lblStatus uses the same font
-    '    lblStatus.Font = statusStrip.Font
-
-    '    ' Add the status label
-    '    statusStrip.Items.Add(lblStatus)
-
-    '    ' Disable autosize so we can control height
-    '    statusStrip.AutoSize = False
-
-    '    ' Base height at 100% zoom
-    '    Dim baseHeight As Integer = 25
-
-    '    ' Scale based on OS DPI
-    '    Dim scale As Double = Me.DeviceDpi / 96.0
-    '    statusStrip.Height = CInt(baseHeight * scale)
-
-    '    ' --- Create Cancel button ---
-    '    CancelCopyButton = New Button() With {
-    '        .Text = "Cancel",
-    '        .AutoSize = True,
-    '        .Enabled = False,
-    '        .FlatStyle = FlatStyle.System,   ' blends naturally with StatusStrip
-    '        .Visible = False      ' hidden until a copy starts
-    '    }
-
-    '    CancelCopyButton.Visible = False
-
-    '    ' Wire the click event
-    '    AddHandler CancelCopyButton.Click,
-    '    Sub()
-    '        If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
-    '            copyCts.Cancel()
-    '            ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
-    '        End If
-    '    End Sub
-
-    '    ' Wrap the button in a ToolStripControlHost so it can live in the StatusStrip
-    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton)
-    '    CancelCopyHost.Alignment = ToolStripItemAlignment.Right
-    '    CancelCopyHost.Visible = False
-
-
-    '    ' Add the host to the status strip
-    '    statusStrip.Items.Add(CancelCopyHost)
-
-    '    ' Add the status strip to the form
-    '    Me.Controls.Add(statusStrip)
-
-    '    ' Initialize the status clear timer once
-    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
-
-    'End Sub
-
-    'Private Sub InitStatusBar()
-
-    '    Dim statusStrip As New StatusStrip()
-
-    '    ' Set font to Segoe UI Symbol, 11pt
-    '    statusStrip.Font = New Font("Segoe UI Symbol", 11.0F, FontStyle.Regular)
-    '    lblStatus.Font = statusStrip.Font
-
-    '    ' Add the status label
-    '    statusStrip.Items.Add(lblStatus)
-
-    '    ' Disable autosize so we can control height
-    '    statusStrip.AutoSize = False
-
-    '    ' Base height at 100% zoom
-    '    Dim baseHeight As Integer = 25
-
-    '    ' Scale based on OS DPI
-    '    Dim scale As Double = Me.DeviceDpi / 96.0
-    '    Dim scaledHeight As Integer = CInt(baseHeight * scale)
-
-    '    statusStrip.Height = scaledHeight
-
-    '    ' --- Create Cancel button ---
-    '    CancelCopyButton = New Button() With {
-    '        .Text = "Cancel",
-    '        .AutoSize = True,
-    '        .Enabled = False,
-    '        .FlatStyle = FlatStyle.System,
-    '        .Visible = False
-    '    }
-
-    '    ' Vertically center the button inside the scaled StatusStrip
-    '    CancelCopyButton.Margin = New Padding(0, (scaledHeight - CancelCopyButton.Height) \ 2, 0, 0)
-
-    '    AddHandler CancelCopyButton.Click,
-    '        Sub()
-    '            If copyCts IsNot Nothing AndAlso Not copyCts.IsCancellationRequested Then
-    '                copyCts.Cancel()
-    '                ShowStatus(StatusPad & IconError & " Canceling copy... please wait.")
-    '            End If
-    '        End Sub
-
-    '    ' Host the button inside the StatusStrip
-    '    CancelCopyHost = New ToolStripControlHost(CancelCopyButton) With {
-    '        .Alignment = ToolStripItemAlignment.Right,
-    '        .Visible = False
-    '    }
-
-    '    statusStrip.Items.Add(CancelCopyHost)
-
-    '    ' Add the status strip to the form
-    '    Me.Controls.Add(statusStrip)
-
-    '    ' Initialize the status clear timer once
-    '    AddHandler statusTimer.Tick, AddressOf ClearStatus
-
-    'End Sub
 
     Private Sub InitStatusBar()
 
@@ -7631,8 +7477,8 @@ Public Class Form1
     Private Sub Test_SafeLaunch_ValidHttpUrl()
         Debug.WriteLine("→ Testing SafeLaunch: valid http URL")
 
-        'Dim r As New LaunchRecorder
-        'Dim engine As New SafeLaunchEngine(r)
+        Dim r As New LaunchRecorder
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch("http://example.com")
 
@@ -7648,7 +7494,7 @@ Public Class Form1
         Debug.WriteLine("→ Testing SafeLaunch: valid https URL")
 
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch("https://example.com")
 
@@ -7663,7 +7509,7 @@ Public Class Form1
         Debug.WriteLine("→ Testing SafeLaunch: reject non-http protocols")
 
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch("file:///C:/Windows/System32")
 
@@ -7679,7 +7525,7 @@ Public Class Form1
         Debug.WriteLine("→ Testing SafeLaunch: malformed URL")
 
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch("ht!tp://bad")
 
@@ -7694,7 +7540,7 @@ Public Class Form1
 
         Dim folder As String = IO.Path.GetTempPath()
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch(folder)
 
@@ -7705,14 +7551,12 @@ Public Class Form1
         Debug.WriteLine("✓ Folder path test passed")
     End Sub
 
-
-
     Private Sub Test_SafeLaunch_FilePath()
         Debug.WriteLine("→ Testing SafeLaunch: file path")
 
         Dim file As String = IO.Path.GetTempFileName()
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch(file)
 
@@ -7723,14 +7567,11 @@ Public Class Form1
         Debug.WriteLine("✓ File path test passed")
     End Sub
 
-
-
-
     Private Sub Test_SafeLaunch_InvalidPath()
         Debug.WriteLine("→ Testing SafeLaunch: invalid path")
 
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch("Z:\this\does\not\exist")
 
@@ -7740,15 +7581,11 @@ Public Class Form1
         Debug.WriteLine("✓ Invalid path test passed")
     End Sub
 
-
-
-
-
     Private Sub Test_SafeLaunch_EmptyInput()
         Debug.WriteLine("→ Testing SafeLaunch: empty input")
 
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         Dim result = engine.SafeLaunch("")
 
@@ -7757,16 +7594,11 @@ Public Class Form1
         Debug.WriteLine("✓ Empty input test passed")
     End Sub
 
-
-
-
-
-
     Private Sub Test_SafeLaunch_UrlPriorityOverFile()
         Debug.WriteLine("→ Testing SafeLaunch: URL priority over file")
 
         Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        Dim engine As New SafeLaunchEngine(Me, r)
 
         ' Looks like a file but is actually a URL
         Dim result = engine.SafeLaunch("http://example.com/file.txt")
@@ -7776,45 +7608,6 @@ Public Class Form1
 
         Debug.WriteLine("✓ URL priority test passed")
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub AssertTrue(condition As Boolean, message As String)
         Debug.Assert(condition, message)
@@ -7942,141 +7735,6 @@ Public Class ListViewItemComparer
 
 End Class
 
-' ------------------------------------------------------------
-' Unified result object for file and directory copy operations
-' ------------------------------------------------------------
-'Public Class CopyResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-
-'    Public ReadOnly Property Success As Boolean
-'        Get
-'            Return Errors.Count = 0
-'        End Get
-'    End Property
-'End Class
-
-'Public Class CopyResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-'    Public Property CopiedFilePaths As New List(Of String)
-
-'    Public ReadOnly Property Success As Boolean
-'        Get
-'            Return Errors.Count = 0
-'        End Get
-'    End Property
-'End Class
-
-'Public Class CopyResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-'    Public Property CopiedFilePaths As New List(Of String)
-
-'    ' Progress pulse counter
-'    Public Property FilesProcessed As Integer
-'End Class
-
-
-'Public Class CopyResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-'    Public Property CopiedFilePaths As New List(Of String)
-
-'    ' Progress pulse
-'    Public Property FilesProcessed As Integer
-
-'    ' Directory progress
-'    Public Property TotalDirectories As Integer
-'    Public Property DirectoriesStarted As Integer
-
-'    Public ReadOnly Property Success As Boolean
-'        Get
-'            Return Errors.Count = 0
-'        End Get
-'    End Property
-'End Class
-
-
-
-
-'Public Class CopyResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-'    Public Property CopiedFilePaths As New List(Of String)
-
-'    ' Progress pulse
-'    Public Property FilesProcessed As Integer
-'    Public Property TotalDirectories As Integer
-'    Public Property DirectoriesStarted As Integer
-
-'    Public ReadOnly Property Success As Boolean
-'        Get
-'            Return Errors.Count = 0
-'        End Get
-'    End Property
-'End Class
-
-
-
-'Public Class CopyResult
-'    Public Property FilesCopied As Integer
-'    Public Property FilesSkipped As Integer
-'    Public Property DirectoriesCreated As Integer
-'    Public Property Errors As New List(Of String)
-'    Public Property CopiedFilePaths As New List(Of String)
-
-'    ' Progress pulse
-'    Public Property FilesProcessed As Integer
-'    Public Property TotalDirectories As Integer
-'    Public Property DirectoriesStarted As Integer
-
-'    'Public ReadOnly Property Success As Boolean
-'    '    Get
-'    '        Return Errors.Count = 0
-'    '    End Get
-'    'End Property
-
-'    Public ReadOnly Property Success As Boolean
-'        Get
-'            Return Errors.Count = 0 AndAlso Not WasCanceled
-'        End Get
-'    End Property
-
-'    Public Property WasCanceled As Boolean
-
-'    Public Sub Append(other As CopyResult)
-'        If other Is Nothing Then Exit Sub
-
-'        Me.FilesCopied += other.FilesCopied
-'        Me.FilesSkipped += other.FilesSkipped
-'        Me.DirectoriesCreated += other.DirectoriesCreated
-
-'        Me.FilesProcessed += other.FilesProcessed
-'        Me.TotalDirectories += other.TotalDirectories
-'        Me.DirectoriesStarted += other.DirectoriesStarted
-
-'        If other.CopiedFilePaths IsNot Nothing Then
-'            Me.CopiedFilePaths.AddRange(other.CopiedFilePaths)
-'        End If
-
-'        If other.Errors IsNot Nothing AndAlso other.Errors.Count > 0 Then
-'            Me.Errors.AddRange(other.Errors)
-'        End If
-'    End Sub
-'End Class
-
-
 Public Class CopyResult
     Public Property FilesCopied As Integer
     Public Property FilesSkipped As Integer
@@ -8119,10 +7777,6 @@ Public Class CopyResult
     End Sub
 End Class
 
-
-
-
-
 Public Class LaunchRecorder
     Public LastAction As String = Nothing
     Public LastTarget As String = Nothing
@@ -8133,12 +7787,61 @@ Public Class LaunchRecorder
     End Sub
 End Class
 
+'Public Class SafeLaunchEngine
+
+'    Private ReadOnly _recorder As LaunchRecorder
+
+'    Public Sub New(recorder As LaunchRecorder)
+'        _recorder = recorder
+'    End Sub
+
+'    Public Function SafeLaunch(input As String) As Boolean
+'        If String.IsNullOrWhiteSpace(input) Then
+'            Return False
+'        End If
+
+'        Dim trimmed = input.Trim()
+
+'        ' 1. URL?
+'        If IsUrl(trimmed) Then
+'            _recorder.Record("Url", trimmed)
+'            Return True
+'        End If
+
+'        ' 2. Folder?
+'        If IO.Directory.Exists(trimmed) Then
+'            _recorder.Record("Folder", trimmed)
+'            Return True
+'        End If
+
+'        ' 3. File?
+'        If IO.File.Exists(trimmed) Then
+'            _recorder.Record("File", trimmed)
+'            Return True
+'        End If
+
+'        Return False
+'    End Function
+
+'    Private Function IsUrl(text As String) As Boolean
+'        Dim uri As Uri = Nothing
+'        If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then
+'            Return False
+'        End If
+
+'        ' Strict whitelist
+'        Return uri.Scheme = Uri.UriSchemeHttp OrElse uri.Scheme = Uri.UriSchemeHttps
+'    End Function
+
+'End Class
 
 Public Class SafeLaunchEngine
 
-    Private ReadOnly _recorder As LaunchRecorder
+    Private ReadOnly _owner As Form1
+    Private ReadOnly _recorder As LaunchRecorder   ' Optional for tests
 
-    Public Sub New(recorder As LaunchRecorder)
+    Public Sub New(owner As Form1, Optional recorder As LaunchRecorder = Nothing)
+        _owner = owner
         _recorder = recorder
     End Sub
 
@@ -8147,49 +7850,98 @@ Public Class SafeLaunchEngine
             Return False
         End If
 
-        Dim trimmed = input.Trim()
+        Dim path = input.Trim()
 
-        ' 1. URL?
-        If IsUrl(trimmed) Then
-            _recorder.Record("Url", trimmed)
-            Return True
+        ' 1. URL
+        If IsSafeUrl(path) Then
+            Return LaunchUrl(path)
         End If
 
-        ' 2. Folder?
-        If IO.Directory.Exists(trimmed) Then
-            _recorder.Record("Folder", trimmed)
-            Return True
+        ' 2. Folder
+        If Directory.Exists(path) Then
+            Return LaunchFolder(path)
         End If
 
-        ' 3. File?
-        If IO.File.Exists(trimmed) Then
-            _recorder.Record("File", trimmed)
-            Return True
+        ' 3. File
+        If File.Exists(path) Then
+            Return LaunchFile(path)
         End If
 
         Return False
     End Function
 
-    Private Function IsUrl(text As String) As Boolean
+    ' ---------------------------------------------------------
+    '  Launchers
+    ' ---------------------------------------------------------
+
+    Private Function LaunchUrl(url As String) As Boolean
+        If _recorder IsNot Nothing Then
+            _recorder.Record("Url", url)
+            Return True
+        End If
+
+        Try
+            Dim psi As New ProcessStartInfo(url) With {.UseShellExecute = True}
+            Process.Start(psi)
+
+            _owner.ShowStatus(_owner.StatusPad & _owner.IconOpen & $"  Opening URL: {url}")
+            Return True
+
+        Catch ex As Exception
+            _owner.ShowStatus(_owner.StatusPad & _owner.IconError & " Cannot open URL: " & ex.Message)
+            Return False
+        End Try
+    End Function
+
+    Private Function LaunchFolder(path As String) As Boolean
+        If _recorder IsNot Nothing Then
+            _recorder.Record("Folder", path)
+            Return True
+        End If
+
+        _owner.NavigateTo(path)
+        Return True
+    End Function
+
+    Private Function LaunchFile(filePath As String) As Boolean
+        If _recorder IsNot Nothing Then
+            _recorder.Record("File", filePath)
+            Return True
+        End If
+
+        Try
+            Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
+            Process.Start(psi)
+
+            Dim name = Path.GetFileNameWithoutExtension(filePath)
+            _owner.ShowStatus(_owner.StatusPad & _owner.IconOpen & $"  Opened:   ""{name}""")
+            Return True
+
+        Catch ex As Exception
+            _owner.ShowStatus(_owner.StatusPad & _owner.IconError & " Cannot open: " & ex.Message)
+            Return False
+        End Try
+    End Function
+
+    ' ---------------------------------------------------------
+    '  URL Validation
+    ' ---------------------------------------------------------
+    Private Function IsSafeUrl(text As String) As Boolean
         Dim uri As Uri = Nothing
+
         If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then
             Return False
         End If
 
-        ' Strict whitelist
-        Return uri.Scheme = Uri.UriSchemeHttp OrElse uri.Scheme = Uri.UriSchemeHttps
+        Select Case uri.Scheme
+            Case Uri.UriSchemeHttp, Uri.UriSchemeHttps
+                Return True
+            Case Else
+                Return False
+        End Select
     End Function
 
-
-
-
-
-
-
-
 End Class
-
-
 
 
 
