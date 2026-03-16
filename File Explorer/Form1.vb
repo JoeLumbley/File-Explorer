@@ -521,6 +521,28 @@ Public Class Form1
         Paste
     End Enum
 
+    Dim r As New LaunchRecorder
+    Dim engine As New SafeLaunchEngine(r)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -3206,7 +3228,7 @@ Public Class Form1
         Dim trimmed = input.Trim()
 
         ' Let the SafeLaunchEngine decide what this is.
-        If SafeLaunch(trimmed) Then
+        If engine.SafeLaunch(trimmed) Then
             RestoreAddressBar()
             Return True
         End If
@@ -3214,35 +3236,38 @@ Public Class Form1
         Return False
     End Function
 
-    Private Function SafeLaunch(input As String) As Boolean
-        ' 1. URL?
-        If IsUrl(input) Then
-            LaunchUrl(input)
-            Return True
-        End If
 
-        ' 2. Folder?
-        If Directory.Exists(input) Then
-            NavigateTo(input)
-            Return True
-        End If
 
-        ' 3. File?
-        If File.Exists(input) Then
-            LaunchFile(input)
-            Return True
-        End If
 
-        ' 4. Not launchable
-        Return False
-    End Function
+    'Private Function SafeLaunch(input As String) As Boolean
+    '    ' 1. URL?
+    '    If IsUrl(input) Then
+    '        LaunchUrl(input)
+    '        Return True
+    '    End If
 
-    Private Function IsLikelyUrl(text As String) As Boolean
-        If String.IsNullOrWhiteSpace(text) Then Return False
+    '    ' 2. Folder?
+    '    If Directory.Exists(input) Then
+    '        NavigateTo(input)
+    '        Return True
+    '    End If
 
-        Return text.StartsWith("http://", StringComparison.OrdinalIgnoreCase) _
-        OrElse text.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-    End Function
+    '    ' 3. File?
+    '    If File.Exists(input) Then
+    '        LaunchFile(input)
+    '        Return True
+    '    End If
+
+    '    ' 4. Not launchable
+    '    Return False
+    'End Function
+
+    'Private Function IsLikelyUrl(text As String) As Boolean
+    '    If String.IsNullOrWhiteSpace(text) Then Return False
+
+    '    Return text.StartsWith("http://", StringComparison.OrdinalIgnoreCase) _
+    '    OrElse text.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+    'End Function
 
 
     'Public Sub SafeLaunch(input As String)
@@ -3270,21 +3295,21 @@ Public Class Form1
     '    ShowStatus(StatusPad & IconError & $" Cannot open: ""{trimmed}""")
     'End Sub
 
-    Private Function IsUrl(text As String) As Boolean
-        Dim uri As Uri = Nothing
-        If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then Return False
+    'Private Function IsUrl(text As String) As Boolean
+    '    Dim uri As Uri = Nothing
+    '    If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then Return False
 
-        ' Only allow http/https for emotional safety
-        Return uri.Scheme = Uri.UriSchemeHttp OrElse uri.Scheme = Uri.UriSchemeHttps
-    End Function
+    '    ' Only allow http/https for emotional safety
+    '    Return uri.Scheme = Uri.UriSchemeHttp OrElse uri.Scheme = Uri.UriSchemeHttps
+    'End Function
 
-    Private Function IsLikelyFilePath(text As String) As Boolean
-        ' Reject anything containing :// (likely a URL or protocol)
-        If text.Contains("://") Then Return False
+    'Private Function IsLikelyFilePath(text As String) As Boolean
+    '    ' Reject anything containing :// (likely a URL or protocol)
+    '    If text.Contains("://") Then Return False
 
-        ' Basic heuristic: must contain a slash or backslash
-        Return text.Contains("\") OrElse text.Contains("/")
-    End Function
+    '    ' Basic heuristic: must contain a slash or backslash
+    '    Return text.Contains("\") OrElse text.Contains("/")
+    'End Function
 
     Private Function ValidateFilePath(path As String) As Boolean
         If Not File.Exists(path) Then
@@ -3301,32 +3326,32 @@ Public Class Form1
         Return True
     End Function
 
-    Private Sub LaunchUrl(url As String)
-        Try
-            Dim psi As New ProcessStartInfo(url) With {.UseShellExecute = True}
-            Process.Start(psi)
+    'Private Sub LaunchUrl(url As String)
+    '    Try
+    '        Dim psi As New ProcessStartInfo(url) With {.UseShellExecute = True}
+    '        Process.Start(psi)
 
-            ShowStatus(StatusPad & IconOpen & $"  Opening URL: {url}")
+    '        ShowStatus(StatusPad & IconOpen & $"  Opening URL: {url}")
 
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Cannot open URL: " & ex.Message)
-        End Try
-    End Sub
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Cannot open URL: " & ex.Message)
+    '    End Try
+    'End Sub
 
-    Private Sub LaunchFile(filePath As String)
-        If Not ValidateFilePath(filePath) Then Return
+    'Private Sub LaunchFile(filePath As String)
+    '    If Not ValidateFilePath(filePath) Then Return
 
-        Try
-            Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
-            Process.Start(psi)
+    '    Try
+    '        Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
+    '        Process.Start(psi)
 
-            Dim name = IO.Path.GetFileNameWithoutExtension(filePath)
-            ShowStatus(StatusPad & IconOpen & $"  Opened:   ""{name}""")
+    '        Dim name = IO.Path.GetFileNameWithoutExtension(filePath)
+    '        ShowStatus(StatusPad & IconOpen & $"  Opened:   ""{name}""")
 
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
-        End Try
-    End Sub
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+    '    End Try
+    'End Sub
 
     'Private Sub OpenUrlInDefaultBrowser(url As String)
     '    Try
@@ -3342,11 +3367,11 @@ Public Class Form1
     '    End Try
     'End Sub
 
-    Private Sub PinOrUnpin(path As String)
-        TogglePin(path)
-        Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
-        ShowStatus($"{state}: ""{path}""")
-    End Sub
+    'Private Sub PinOrUnpin(path As String)
+    '    TogglePin(path)
+    '    Dim state As String = If(IsPinned(path), "Pinned", "Unpinned")
+    '    ShowStatus($"{state}: ""{path}""")
+    'End Sub
 
     Private Function ParseSource(parts As String()) As String
         Return String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
@@ -3420,10 +3445,10 @@ Public Class Form1
 
     End Function
 
-    Private Sub ShowUsageCopy()
-        ShowStatus(StatusPad & IconDialog &
-               "  Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
-    End Sub
+    'Private Sub ShowUsageCopy()
+    '    ShowStatus(StatusPad & IconDialog &
+    '           "  Usage: copy [source] [destination]  Example: copy ""C:\A B"" ""C:\C D""")
+    'End Sub
 
     Private Sub OpenSelectedItem()
         ' Is a file or folder selected?
@@ -3459,7 +3484,7 @@ Public Class Form1
         Dim trimmed = path.Trim()
 
         ' Let the SafeLaunchEngine decide what this is.
-        If SafeLaunch(trimmed) Then
+        If engine.SafeLaunch(trimmed) Then
             RestoreAddressBar()
             Return
         End If
@@ -3492,26 +3517,26 @@ Public Class Form1
 
     End Sub
 
-    Private Sub OpenFileWithDefaultApp(filePath As String)
-        ' Open file with default application.
+    'Private Sub OpenFileWithDefaultApp(filePath As String)
+    '    ' Open file with default application.
 
-        Try
+    '    Try
 
-            Dim psi As New ProcessStartInfo(filePath) With {
-                .UseShellExecute = True
-            }
+    '        Dim psi As New ProcessStartInfo(filePath) With {
+    '            .UseShellExecute = True
+    '        }
 
-            Process.Start(psi)
+    '        Process.Start(psi)
 
-            Dim fileName As String = Path.GetFileNameWithoutExtension(filePath)
-            ShowStatus(StatusPad & IconOpen & $"  Opened:   ""{fileName}""")
+    '        Dim fileName As String = Path.GetFileNameWithoutExtension(filePath)
+    '        ShowStatus(StatusPad & IconOpen & $"  Opened:   ""{fileName}""")
 
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
-            Debug.WriteLine("OpenFileWithDefaultApp: Error opening file: " & ex.Message)
-        End Try
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Cannot open: " & ex.Message)
+    '        Debug.WriteLine("OpenFileWithDefaultApp: Error opening file: " & ex.Message)
+    '    End Try
 
-    End Sub
+    'End Sub
 
     Private Sub NavigateBackward_Click()
         ' Navigate backward in the history list
@@ -5355,7 +5380,7 @@ Public Class Form1
         Dim trimmed = path.Trim()
 
         ' Delegate to the unified SafeLaunchEngine
-        If SafeLaunch(trimmed) Then
+        If engine.SafeLaunch(trimmed) Then
             Return
         End If
 
@@ -8507,7 +8532,7 @@ Public Class Form1
 
         AddHandler HelpTextBox.LinkClicked,
             Sub(sender, e)
-                SafeLaunch(e.LinkText)
+                engine.SafeLaunch(e.LinkText)
             End Sub
 
         scrollPanel.Controls.Add(HelpTextBox)
@@ -9398,8 +9423,8 @@ Public Class Form1
     Private Sub Test_SafeLaunch_ValidHttpUrl()
         Debug.WriteLine("→ Testing SafeLaunch: valid http URL")
 
-        Dim r As New LaunchRecorder
-        Dim engine As New SafeLaunchEngine(r)
+        'Dim r As New LaunchRecorder
+        'Dim engine As New SafeLaunchEngine(r)
 
         Dim result = engine.SafeLaunch("http://example.com")
 
