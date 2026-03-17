@@ -255,6 +255,12 @@ mkdir C:\newfolder
 make "C:\My New Folder"
 md C:\anotherfolder
 ```
+
+[Index](#commands)
+
+
+
+
 [Command Index](#command-index)
 
 ---
