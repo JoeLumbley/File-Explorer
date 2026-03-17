@@ -211,7 +211,6 @@ This makes the CLI feel natural and forgiving.
 
 # **Commands**
 
-## **Command Index**
 
 - [`cd`](#-change-directory--cd)  
 - [`copy cp`](#-copy--copy-cp)  
