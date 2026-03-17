@@ -693,18 +693,21 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
   
 - [What I Hope Learners Get From This](#what-i-hope-learners-get-from-this)
 
-- [Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
-
 - [Command Line Interface (CLI)](#command-line-interface)
 
 - [⌨️ Keyboard Shortcuts](#keyboard-shortcuts)
-
 
 - [📄 License](#license)
 
 - [🧬 Clones](#clones)
 
 - [📚 YearBook](#yearbook)
+
+
+- [Code Walkthrough](#-code-walkthrough-systems-that-make-up-the-app)
+
+
+
 
 
 [Back to the start](#file-explorer)
