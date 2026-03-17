@@ -35,8 +35,8 @@ The application is built around clarity, predictability, and emotional safety. W
 • Helpful usage messages and error feedback.  
 • Built‑in help system with full documentation in the Help Drawer.
 
-<img width="1266" height="733" alt="114" src="https://github.com/user-attachments/assets/a00cf73a-91b0-43be-a94f-1cee53d79fd3" />
 
+<img width="1266" height="733" alt="136" src="https://github.com/user-attachments/assets/118031d5-cc3b-4a59-9dc0-bc80b54e50c6" />
 
 The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
