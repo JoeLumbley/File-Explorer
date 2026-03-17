@@ -156,9 +156,9 @@ If you’re curious, the GitHub repository includes the full source code and doc
 The **Command Line Interface (CLI)** is an integrated text‑based command system inside the File Explorer application. It allows users to navigate folders, manage files, and perform common operations quickly using typed commands.
 
 
+<img width="1266" height="733" alt="138" src="https://github.com/user-attachments/assets/4b07d3cd-e2c7-4abf-8ec8-7c9d2dc19b60" />
 
 
-<img width="1266" height="733" alt="119" src="https://github.com/user-attachments/assets/bad79464-9688-4502-b511-ba8cef03b0fd" />
 
 
 
