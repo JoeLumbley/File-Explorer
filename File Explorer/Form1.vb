@@ -3362,64 +3362,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Sub ExpandNode_LazyLoad(node As TreeNode)
-
-    '    ' Only lazy-load if placeholder exists
-    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
-
-    '        tvFolders.BeginUpdate()
-
-    '        node.Nodes.Clear()
-
-    '        Dim basePath As String = CStr(node.Tag)
-
-    '        Try
-    '            For Each dirPath In Directory.GetDirectories(basePath)
-    '                Dim di As New DirectoryInfo(dirPath)
-
-    '                ' Skip hidden/system folders
-    '                If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-    '                    Continue For
-    '                End If
-
-    '                Dim child As New TreeNode(di.Name) With {
-    '                    .Tag = dirPath,
-    '                    .ImageKey = "Folder",
-    '                    .SelectedImageKey = "Folder"
-    '                }
-
-    '                If HasSubdirectories(dirPath) Then
-    '                    child.Nodes.Add("Loading...")
-    '                    child.StateImageIndex = 0   ' ▶ collapsed
-    '                Else
-    '                    child.StateImageIndex = 2   ' no arrow
-    '                End If
-
-    '                node.Nodes.Add(child)
-    '            Next
-
-    '        Catch ex As UnauthorizedAccessException
-    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
-    '            Debug.WriteLine($"[Access denied]: {ex.Message}")
-    '        Catch ex As IOException
-    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
-    '            Debug.WriteLine($"[Unavailable]: {ex.Message}")
-    '        Catch ex As Exception
-    '            Debug.WriteLine($"ExpandNode_LazyLoad Error: {ex.Message}")
-    '        End Try
-    '    End If
-
-    '    ' Set expanded icon
-    '    node.StateImageIndex = 1   ' ▼ expanded
-
-    '    tvFolders.EndUpdate()
-
-    'End Sub
-
-
-
-
-
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
 
         ' Only lazy-load if placeholder exists
