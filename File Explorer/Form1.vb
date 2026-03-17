@@ -532,64 +532,64 @@ Public Class Form1
 
 
 
-    Private iconQueue As New Concurrent.ConcurrentQueue(Of String)
-    Private iconWorkerRunning As Boolean = False
+    'Private iconQueue As New Concurrent.ConcurrentQueue(Of String)
+    'Private iconWorkerRunning As Boolean = False
 
 
 
 
-    Private Sub QueueIconRefresh(path As String)
-        iconQueue.Enqueue(path)
-        StartIconWorker()
-    End Sub
+    'Private Sub QueueIconRefresh(path As String)
+    '    iconQueue.Enqueue(path)
+    '    StartIconWorker()
+    'End Sub
 
 
 
-    Private Async Sub StartIconWorker()
-        If iconWorkerRunning Then Exit Sub
-        iconWorkerRunning = True
+    'Private Async Sub StartIconWorker()
+    '    If iconWorkerRunning Then Exit Sub
+    '    iconWorkerRunning = True
 
-        Await Task.Run(
-        Sub()
-            Dim path As String
+    '    Await Task.Run(
+    '    Sub()
+    '        Dim path As String
 
-            While iconQueue.TryDequeue(path)
-                Try
-                    Dim pixelSize = imgList.ImageSize.Width
-                    Dim icon = ShellInterop.GetIconForPath(path, pixelSize)
+    '        While iconQueue.TryDequeue(path)
+    '            Try
+    '                Dim pixelSize = imgList.ImageSize.Width
+    '                Dim icon = ShellInterop.GetIconForPath(path, pixelSize)
 
-                    If icon IsNot Nothing Then
-                        Me.BeginInvoke(
-                            Sub()
-                                If Not imgList.Images.ContainsKey(path) Then
-                                    imgList.Images.Add(path, icon)
-                                End If
+    '                If icon IsNot Nothing Then
+    '                    Me.BeginInvoke(
+    '                        Sub()
+    '                            If Not imgList.Images.ContainsKey(path) Then
+    '                                imgList.Images.Add(path, icon)
+    '                            End If
 
-                                ' Update ListView items
-                                For Each item As ListViewItem In lvFiles.Items
-                                    If CStr(item.Tag) = path Then
-                                        item.ImageKey = path
-                                        Exit For
-                                    End If
-                                Next
+    '                            ' Update ListView items
+    '                            For Each item As ListViewItem In lvFiles.Items
+    '                                If CStr(item.Tag) = path Then
+    '                                    item.ImageKey = path
+    '                                    Exit For
+    '                                End If
+    '                            Next
 
-                                ' Update TreeView nodes
-                                Dim nodes = tvFolders.Nodes.Find(path, True)
-                                For Each n In nodes
-                                    n.ImageKey = path
-                                    n.SelectedImageKey = path
-                                Next
-                            End Sub)
-                    End If
+    '                            ' Update TreeView nodes
+    '                            Dim nodes = tvFolders.Nodes.Find(path, True)
+    '                            For Each n In nodes
+    '                                n.ImageKey = path
+    '                                n.SelectedImageKey = path
+    '                            Next
+    '                        End Sub)
+    '                End If
 
-                Catch ex As Exception
-                    Debug.WriteLine($"Icon worker error: {ex.Message}")
-                End Try
-            End While
+    '            Catch ex As Exception
+    '                Debug.WriteLine($"Icon worker error: {ex.Message}")
+    '            End Try
+    '        End While
 
-            iconWorkerRunning = False
-        End Sub)
-    End Sub
+    '        iconWorkerRunning = False
+    '    End Sub)
+    'End Sub
 
 
 
@@ -3490,19 +3490,6 @@ Public Class Form1
         tvFolders.EndUpdate()
 
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
 
