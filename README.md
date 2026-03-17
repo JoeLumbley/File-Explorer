@@ -141,7 +141,6 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 # Command Line Interface
 
-## **Command Line Interface Index**
 
 
 
@@ -171,7 +170,7 @@ The CLI is designed to be:
 - **Beginner‑friendly** - helpful messages and examples  
 - **Powerful** - supports navigation, search, file operations, and more  
 
-[Command Index](#command-index)
+[Command Index](#commands)
 
 ---
 
@@ -202,7 +201,7 @@ If a command doesn’t match a known keyword, the CLI checks:
 
 This makes the CLI feel natural and forgiving.
 
-[Command Line Interface Index](#command-line-interface-index)
+[Index](#command-line-interface)
 
 ---
 
@@ -230,7 +229,7 @@ This makes the CLI feel natural and forgiving.
 - [`shortcuts keys`](#-keyboard-shortcuts--shortcuts-keys)  
 - [`text txt`](#-create-text-file--text-txt)  
 
-[Command Line Interface Index](#command-line-interface-index)
+[Index](#command-line-interface)
 
 [ Table of Contents](#table-of-contents)
 
@@ -259,9 +258,6 @@ md C:\anotherfolder
 
 
 
-
-[Command Index](#command-index)
-
 ---
 
 ## 📌 Pin — `pin`
@@ -281,7 +277,8 @@ pin C:\Projects
 pin "C:\My Documents"
 pin
 ```
-[Command Index](#command-index)
+
+[Index](#commands)
 
 ---
 
@@ -300,7 +297,7 @@ Copy a file or folder to the specified destination.
 copy C:\folderA\file.doc C:\folderB
 copy "C:\folder A" "C:\folder B"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -319,7 +316,7 @@ Move a file or folder to a new location.
 move C:\folderA\file.doc C:\folderB\file.doc
 move "C:\folder A\file.doc" "C:\folder B\renamed.doc"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -337,7 +334,7 @@ Rename a file or folder.
 ```
 rename "C:\folder\oldname.txt" "newname.txt"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -356,7 +353,7 @@ Delete the specified file or folder.
 delete C:\file.txt
 delete "C:\My Folder"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -374,7 +371,7 @@ Search the current directory for items whose names contain the given term.
 ```
 find document
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -387,6 +384,8 @@ findnext
 
 **Description**  
 Show the next result from the previous search.
+
+[Index](#commands)
 
 ---
 
@@ -405,7 +404,7 @@ Change the current working directory.
 cd C:\
 cd "C:\My Folder"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -424,7 +423,7 @@ Open a file or navigate into a folder.
 open C:\folder\file.txt
 open "C:\My Folder"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -442,7 +441,7 @@ Create a new text file at the specified path.
 ```
 text "C:\folder\example.txt"
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -462,7 +461,7 @@ df C:
 df D:
 df E:
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -480,7 +479,7 @@ Show all available drives along with their free‑space information.
 ```
 drives
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -500,7 +499,7 @@ help
 help cd
 help copy
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -522,7 +521,7 @@ man commands
 manual
 appmanual
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -541,7 +540,7 @@ Show all available keyboard shortcuts.
 shortcuts
 keys
 ```
-[Command Index](#command-index)
+[Index](#commands)
 
 ---
 
@@ -558,7 +557,7 @@ Close the application.
 ---
 
 
-[Command Index](#command-index)
+[Index](#commands)
 
 
 
@@ -587,7 +586,7 @@ This applies to:
 
 The CLI will warn the user when quotes are required.
 
-[Command Line Interface Index](#command-line-interface-index)
+[Index](#command-line-interface)
 
 ---
 
@@ -601,7 +600,7 @@ If the user enters something that is **not** a command:
 
 This makes the CLI feel natural and forgiving.
 
-[Command Line Interface Index](#command-line-interface-index)
+[Index](#command-line-interface)
 
 ---
 
@@ -640,7 +639,7 @@ The File Explorer CLI provides:
 
 It’s a flexible, efficient alternative to the graphical interface - perfect for users who enjoy command‑driven workflows.
 
-[Command Line Interface Index](#command-line-interface-index)
+[Index](#command-line-interface)
 
 
 
