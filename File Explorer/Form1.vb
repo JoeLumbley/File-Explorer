@@ -529,6 +529,73 @@ Public Class Form1
     'Dim r As New LaunchRecorder
     Dim engine As New SafeLaunchEngine(Me)
 
+
+
+
+    Private iconQueue As New Concurrent.ConcurrentQueue(Of String)
+    Private iconWorkerRunning As Boolean = False
+
+
+
+
+    Private Sub QueueIconRefresh(path As String)
+        iconQueue.Enqueue(path)
+        StartIconWorker()
+    End Sub
+
+
+
+    Private Async Sub StartIconWorker()
+        If iconWorkerRunning Then Exit Sub
+        iconWorkerRunning = True
+
+        Await Task.Run(
+        Sub()
+            Dim path As String
+
+            While iconQueue.TryDequeue(path)
+                Try
+                    Dim pixelSize = imgList.ImageSize.Width
+                    Dim icon = ShellInterop.GetIconForPath(path, pixelSize)
+
+                    If icon IsNot Nothing Then
+                        Me.BeginInvoke(
+                            Sub()
+                                If Not imgList.Images.ContainsKey(path) Then
+                                    imgList.Images.Add(path, icon)
+                                End If
+
+                                ' Update ListView items
+                                For Each item As ListViewItem In lvFiles.Items
+                                    If CStr(item.Tag) = path Then
+                                        item.ImageKey = path
+                                        Exit For
+                                    End If
+                                Next
+
+                                ' Update TreeView nodes
+                                Dim nodes = tvFolders.Nodes.Find(path, True)
+                                For Each n In nodes
+                                    n.ImageKey = path
+                                    n.SelectedImageKey = path
+                                Next
+                            End Sub)
+                    End If
+
+                Catch ex As Exception
+                    Debug.WriteLine($"Icon worker error: {ex.Message}")
+                End Try
+            End While
+
+            iconWorkerRunning = False
+        End Sub)
+    End Sub
+
+
+
+
+
+
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
 
@@ -549,6 +616,34 @@ Public Class Form1
                                       End If
                                   End Sub)
         )
+
+    End Sub
+
+    Private Sub Form1_DpiChanged(sender As Object, e As DpiChangedEventArgs) Handles Me.DpiChanged
+        Dim newSize = GetScaledIconSize(Me)
+        imgList.ImageSize = New Size(newSize, newSize)
+
+        ' Rebuild icons
+        imgList.Images.Clear()
+        InitImageList()
+        UpdateTreeRoots()
+        RefreshListView()
+    End Sub
+
+    Private Function GetScaledIconSize(form As Form) As Integer
+        Dim scale As Double = form.DeviceDpi / 96.0
+        Return CInt(16 * scale)
+    End Function
+
+
+
+    Private Async Sub RefreshListView()
+
+        If Not String.IsNullOrEmpty(currentFolder) Then
+
+            Await PopulateFiles(currentFolder)
+
+        End If
 
     End Sub
 
@@ -3267,13 +3362,70 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub ExpandNode_LazyLoad(node As TreeNode)
+
+    '    ' Only lazy-load if placeholder exists
+    '    If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+
+    '        tvFolders.BeginUpdate()
+
+    '        node.Nodes.Clear()
+
+    '        Dim basePath As String = CStr(node.Tag)
+
+    '        Try
+    '            For Each dirPath In Directory.GetDirectories(basePath)
+    '                Dim di As New DirectoryInfo(dirPath)
+
+    '                ' Skip hidden/system folders
+    '                If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
+    '                    Continue For
+    '                End If
+
+    '                Dim child As New TreeNode(di.Name) With {
+    '                    .Tag = dirPath,
+    '                    .ImageKey = "Folder",
+    '                    .SelectedImageKey = "Folder"
+    '                }
+
+    '                If HasSubdirectories(dirPath) Then
+    '                    child.Nodes.Add("Loading...")
+    '                    child.StateImageIndex = 0   ' ▶ collapsed
+    '                Else
+    '                    child.StateImageIndex = 2   ' no arrow
+    '                End If
+
+    '                node.Nodes.Add(child)
+    '            Next
+
+    '        Catch ex As UnauthorizedAccessException
+    '            node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+    '            Debug.WriteLine($"[Access denied]: {ex.Message}")
+    '        Catch ex As IOException
+    '            node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+    '            Debug.WriteLine($"[Unavailable]: {ex.Message}")
+    '        Catch ex As Exception
+    '            Debug.WriteLine($"ExpandNode_LazyLoad Error: {ex.Message}")
+    '        End Try
+    '    End If
+
+    '    ' Set expanded icon
+    '    node.StateImageIndex = 1   ' ▼ expanded
+
+    '    tvFolders.EndUpdate()
+
+    'End Sub
+
+
+
+
+
     Private Sub ExpandNode_LazyLoad(node As TreeNode)
 
         ' Only lazy-load if placeholder exists
         If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
 
             tvFolders.BeginUpdate()
-
             node.Nodes.Clear()
 
             Dim basePath As String = CStr(node.Tag)
@@ -3288,11 +3440,27 @@ Public Class Form1
                     End If
 
                     Dim child As New TreeNode(di.Name) With {
-                        .Tag = dirPath,
-                        .ImageKey = "Folder",
-                        .SelectedImageKey = "Folder"
-                    }
+                    .Tag = dirPath
+                }
 
+                    ' DPI-aware icon size
+                    Dim pixelSize As Integer = imgList.ImageSize.Width
+
+                    ' Real Explorer icon
+                    Dim icon = ShellInterop.GetIconForPath(dirPath, pixelSize)
+
+                    If icon IsNot Nothing Then
+                        If Not imgList.Images.ContainsKey(dirPath) Then
+                            imgList.Images.Add(dirPath, icon)
+                        End If
+                        child.ImageKey = dirPath
+                        child.SelectedImageKey = dirPath
+                    Else
+                        child.ImageKey = "Folder"
+                        child.SelectedImageKey = "Folder"
+                    End If
+
+                    ' Expand arrow logic
                     If HasSubdirectories(dirPath) Then
                         child.Nodes.Add("Loading...")
                         child.StateImageIndex = 0   ' ▶ collapsed
@@ -3306,9 +3474,11 @@ Public Class Form1
             Catch ex As UnauthorizedAccessException
                 node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
                 Debug.WriteLine($"[Access denied]: {ex.Message}")
+
             Catch ex As IOException
                 node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
                 Debug.WriteLine($"[Unavailable]: {ex.Message}")
+
             Catch ex As Exception
                 Debug.WriteLine($"ExpandNode_LazyLoad Error: {ex.Message}")
             End Try
@@ -3320,6 +3490,18 @@ Public Class Form1
         tvFolders.EndUpdate()
 
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
@@ -3363,6 +3545,45 @@ Public Class Form1
     End Sub
 
 
+    'Private Async Function PopulateFiles(path As String) As Task
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.Items.Clear()
+
+    '    Try
+    '        ' Kick off both enumerations in parallel
+    '        Dim dirTask = Task.Run(Function() GetDirectoriesSafe(path))
+    '        Dim fileTask = Task.Run(Function() GetFilesSafe(path))
+
+    '        Dim directories = Await dirTask
+    '        Dim files = Await fileTask
+
+    '        Dim itemsToAdd As New List(Of ListViewItem)
+
+    '        ' Build directory items
+    '        For Each d In directories
+    '            Dim di As New DirectoryInfo(d)
+    '            itemsToAdd.Add(BuildListViewItemForDirectory(di))
+    '        Next
+
+    '        ' Build file items
+    '        For Each f In files
+    '            Dim fi As New FileInfo(f)
+    '            itemsToAdd.Add(BuildListViewItemForFile(fi))
+    '        Next
+
+    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
+    '        Debug.WriteLine($"PopulateFiles - General Error - {ex.Message}")
+
+    '    Finally
+    '        lvFiles.EndUpdate()
+    '    End Try
+    'End Function
+
+
+
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
@@ -3374,6 +3595,10 @@ Public Class Form1
 
             Dim directories = Await dirTask
             Dim files = Await fileTask
+
+            ' Optional: Explorer-style sorting
+            directories = directories.OrderBy(Function(d) d).ToList()
+            files = files.OrderBy(Function(f) f).ToList()
 
             Dim itemsToAdd As New List(Of ListViewItem)
 
@@ -3399,6 +3624,41 @@ Public Class Form1
             lvFiles.EndUpdate()
         End Try
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function IsAccessTestFile(name As String) As Boolean
         Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
@@ -3480,6 +3740,29 @@ Public Class Form1
     'End Function
 
 
+    'Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
+    '    Dim item As New ListViewItem(di.Name)
+
+    '    item.SubItems.Add("Folder")
+    '    item.SubItems.Add("")
+    '    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = di.FullName
+
+    '    ' Shell icons
+    '    Dim icon = ShellInterop.GetIconForPath(di.FullName, ShellInterop.IconSize.Small)
+
+    '    If icon IsNot Nothing Then
+    '        If Not imgList.Images.ContainsKey(di.FullName) Then
+    '            imgList.Images.Add(di.FullName, icon)
+    '        End If
+    '        item.ImageKey = di.FullName
+    '    Else
+    '        item.ImageKey = "Folder"
+    '    End If
+
+    '    Return item
+    'End Function
+
     Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
         Dim item As New ListViewItem(di.Name)
 
@@ -3488,8 +3771,11 @@ Public Class Form1
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
 
-        ' Shell icons
-        Dim icon = ShellInterop.GetIconForPath(di.FullName, ShellInterop.IconSize.Small)
+        ' Determine DPI-scaled icon size
+        Dim pixelSize As Integer = imgList.ImageSize.Width
+
+        ' Request DPI-aware shell icon
+        Dim icon = ShellInterop.GetIconForPath(di.FullName, pixelSize)
 
         If icon IsNot Nothing Then
             If Not imgList.Images.ContainsKey(di.FullName) Then
@@ -3502,6 +3788,30 @@ Public Class Form1
 
         Return item
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
     '    Dim item As New ListViewItem(fi.Name)
@@ -3553,6 +3863,34 @@ Public Class Form1
 
 
 
+    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+    '    Dim item As New ListViewItem(fi.Name)
+
+    '    Dim ext = fi.Extension.ToLowerInvariant()
+    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '    item.SubItems.Add(category)
+    '    item.SubItems.Add(FormatSize(fi.Length))
+    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = fi.FullName
+
+    '    ' Shell icons
+    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
+
+    '    If icon IsNot Nothing Then
+    '        If Not imgList.Images.ContainsKey(fi.FullName) Then
+    '            imgList.Images.Add(fi.FullName, icon)
+    '        End If
+    '        item.ImageKey = fi.FullName
+    '    Else
+    '        item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+    '    End If
+
+    '    Return item
+    'End Function
+
+
+
     Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
         Dim item As New ListViewItem(fi.Name)
 
@@ -3564,8 +3902,11 @@ Public Class Form1
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
 
-        ' Shell icons
-        Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
+        ' Determine DPI-scaled icon size
+        Dim pixelSize As Integer = imgList.ImageSize.Width
+
+        ' Request DPI-aware shell icon
+        Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
 
         If icon IsNot Nothing Then
             If Not imgList.Images.ContainsKey(fi.FullName) Then
@@ -3578,6 +3919,43 @@ Public Class Form1
 
         Return item
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     ' ============================================================
@@ -7172,8 +7550,18 @@ Public Class Form1
 
     Private Sub InitImageList()
 
-        imgList.ImageSize = New Size(16, 16)
+
+
+        Dim size = GetScaledIconSize(Me)
+        imgList.ImageSize = New Size(size, size)
+
+
+
+        'imgList.ImageSize = New Size(16, 16)
         imgList.ColorDepth = ColorDepth.Depth32Bit
+
+
+
 
         ' Load icons 
         imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)

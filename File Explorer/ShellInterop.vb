@@ -1,6 +1,14 @@
-﻿Imports System.Drawing
+﻿Imports System
 Imports System.IO
+Imports System.Drawing
+Imports System.Diagnostics
 Imports System.Runtime.InteropServices
+Imports Microsoft.VisualBasic
+
+Imports System.Text
+Imports System.ComponentModel
+Imports System.Runtime.Versioning
+Imports System.Security
 
 Namespace Explorer.Interop.Shell
 
@@ -9,6 +17,7 @@ Namespace Explorer.Interop.Shell
         ' -------------------------------
         '  PUBLIC API (UI-agnostic)
         ' -------------------------------
+
         '    Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
         '        Dim flags As UInteger = SHGFI_ICON Or SHGFI_USEFILEATTRIBUTES
 
@@ -20,21 +29,21 @@ Namespace Explorer.Interop.Shell
 
         '        Dim shinfo As New SHFILEINFO()
 
+        '        ' Detect folder vs file
+        '        Dim attrs As UInteger =
+        '    If(Directory.Exists(path), FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL)
+
         '        Dim result = SHGetFileInfo(
         '    path,
-        '    FILE_ATTRIBUTE_NORMAL,
+        '    attrs,
         '    shinfo,
         '    CUInt(Marshal.SizeOf(shinfo)),
         '    flags
         ')
 
-        '        If result = IntPtr.Zero Then
-        '            Return Nothing
-        '        End If
+        '        If result = IntPtr.Zero Then Return Nothing
 
-        '        ' Safe icon cloning
-        '        Dim rawIcon As Icon = Drawing.Icon.FromHandle(shinfo.hIcon)
-
+        '        Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
         '        Dim daIcon As Icon = CType(rawIcon.Clone(), Icon)
 
         '        DestroyIcon(shinfo.hIcon)
@@ -42,7 +51,43 @@ Namespace Explorer.Interop.Shell
         '        Return daIcon
         '    End Function
 
+
+        'Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+        '    ' Use SHGetFileInfo for 16 or 32
+        '    If pixelSize = 16 Then
+        '        Return GetIconForPath(path, IconSize.Small)
+        '    ElseIf pixelSize = 32 Then
+        '        Return GetIconForPath(path, IconSize.Large)
+        '    End If
+
+        '    ' For other sizes, extract 32×32 and scale down
+        '    Dim baseIcon = GetIconForPath(path, IconSize.Large)
+        '    If baseIcon Is Nothing Then Return Nothing
+
+        '    Return New Icon(baseIcon, pixelSize, pixelSize)
+        'End Function
+
         Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
+            Return GetShellIcon(path, size)
+        End Function
+
+        Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+            ' Native sizes
+            If pixelSize <= 16 Then
+                Return GetShellIcon(path, IconSize.Small)
+            ElseIf pixelSize >= 32 Then
+                Return GetShellIcon(path, IconSize.Large)
+            End If
+
+            ' Scale from 32x32
+            Dim baseIcon = GetShellIcon(path, IconSize.Large)
+            If baseIcon Is Nothing Then Return Nothing
+
+            Return New Icon(baseIcon, pixelSize, pixelSize)
+        End Function
+
+
+        Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
             Dim flags As UInteger = SHGFI_ICON Or SHGFI_USEFILEATTRIBUTES
 
             If size = IconSize.Small Then
@@ -53,7 +98,6 @@ Namespace Explorer.Interop.Shell
 
             Dim shinfo As New SHFILEINFO()
 
-            ' Detect folder vs file
             Dim attrs As UInteger =
         If(Directory.Exists(path), FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL)
 
@@ -74,7 +118,6 @@ Namespace Explorer.Interop.Shell
 
             Return daIcon
         End Function
-
 
 
         ' -------------------------------
