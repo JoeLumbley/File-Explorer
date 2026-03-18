@@ -160,6 +160,7 @@ File Explorer sits squarely in that lineage. It takes something familiar, examin
 
 
 
+<img width="1920" height="1080" alt="141" src="https://github.com/user-attachments/assets/891cee12-66c1-45d6-975e-15bd92180b02" />
 
 
 ## 🧩 Design Principles  
