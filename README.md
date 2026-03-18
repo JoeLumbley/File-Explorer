@@ -101,11 +101,11 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
-## 🌤️ Why This Project Exists  
+## Why This Project Exists  
 File Explorer began as a simple experiment: what would happen if we rebuilt a familiar tool with the clarity, modularity, and emotional safety that modern learners deserve? Over time, it became something larger - a way to honor the lineage of humane computing that stretches from Engelbart’s 1968 demo to the mainstream interfaces of the late ’90s. This project is my contribution to that tradition. It’s a tool, yes, but also a teaching space, a design philosophy, and a small act of stewardship for the future of personal computing.
 
 
-## 🧭 Project Philosophy  
+## Project Philosophy  
 File Explorer is grounded in the belief that great software doesn’t just work — it **teaches**, **empowers**, and **invites exploration**. This project stands in the lineage that began with the Spirit of ’68, when pioneers imagined computers as extensions of human intellect, and continued through the Spirit of ’98, when those ideas reached millions through approachable, everyday interfaces.
 
 By rebuilding a familiar tool with clarity, modularity, and emotional safety, this Explorer aims to keep that tradition alive. It refines the past without romanticizing it, making its values visible, teachable, and ready for the next generation of learners and contributors. In this way, File Explorer isn’t just a technical exercise; it’s a way of carrying the circle forward — ensuring that the spirit of humane, empowering computing remains unbroken.
@@ -113,7 +113,7 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 
-## 🌱 The Spirit of ’68: When Computing Was Pure Imagination  
+## The Spirit of ’68: When Computing Was Pure Imagination  
 1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
 
 
@@ -121,7 +121,7 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 
-## 💻 The Spirit of ’98: When the Future Became Normal  
+## The Spirit of ’98: When the Future Became Normal  
 By 1998, the world had finally caught up to Engelbart’s imagination.
 
 - The web became the default interface to knowledge  
@@ -135,24 +135,24 @@ By 1998, the world had finally caught up to Engelbart’s imagination.
 If ’68 was the sketch, ’98 was the production model - the moment when visionary concepts became everyday experience.
 
 
-## 🔄 Where ’68 Meets ’98: The Architectural Bridge  
+## Where ’68 Meets ’98: The Architectural Bridge  
 The convergence of these eras reveals a deeper architectural story.
 
-### **1. Concept → Infrastructure**  
+### ** Concept → Infrastructure**  
 1968 gave us the conceptual primitives - pointing, linking, navigating, collaborating.  
 1998 delivered the infrastructure that made those primitives universal - TCP/IP, the browser, the desktop metaphor, consumer hardware, search engines.  
 It’s the difference between a blueprint and a city.
 
-### **2. Augmentation → Accessibility**  
+### ** Augmentation → Accessibility**  
 Engelbart sought to augment human intellect.  
 The web and Windows 98 made that augmentation available to billions.
 
-### **3. Prototype → Platform**  
+### ** Prototype → Platform**  
 ’68 was a prototype mindset.  
 ’98 was a platform mindset - the moment ideas stopped being experiments and became ecosystems.
 
 
-## 🔮 Why This Convergence Still Matters  
+## Why This Convergence Still Matters  
 We still live inside the tension between ’68 and ’98.  
 We want Engelbart’s fluid, collaborative, idea‑first computing, yet we continue to rely on the hardened, mass‑market platforms of the ’90s. Every major shift today - from AI copilots to spatial interfaces to real‑time collaborative tools - is another attempt to bring the spirit of ’68 back into the mainstream.
 
@@ -166,22 +166,22 @@ File Explorer sits squarely in that lineage. It takes something familiar, examin
 ## 🧩 Design Principles  
 These principles guide every subsystem, every folder layout, every architectural decision.
 
-### **1. Emotional Safety**  
+### ** Emotional Safety**  
 The codebase should feel welcoming, predictable, and forgiving. No surprises, no hidden traps.
 
-### **2. Modularity First**  
+### ** Modularity First**  
 Every subsystem stands alone. Every boundary is intentional. Interop and Shell APIs are isolated to protect contributors from accidental complexity.
 
-### **3. Onboarding as a First‑Class Goal**  
+### ** Onboarding as a First‑Class Goal**  
 The project is designed to teach. Documentation, folder structure, and naming all serve clarity and discoverability.
 
-### **4. Declarative Over Imperative**  
+### ** Declarative Over Imperative**  
 Rules, routing, and engines are expressed declaratively whenever possible, making behavior easy to reason about and easy to test.
 
-### **5. Native, Crisp, and DPI‑Aware**  
+### ** Native, Crisp, and DPI‑Aware**  
 Visual polish matters. Icons scale cleanly. UI elements feel at home on modern Windows.
 
-### **6. Explorer‑Style Predictability**  
+### ** Explorer‑Style Predictability**  
 The interface and behavior follow the spirit of classic Windows Explorer - familiar, stable, and intuitive.
 
 ---
