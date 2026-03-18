@@ -115,6 +115,9 @@ By 1998, the world had finally caught up to Engelbart’s imagination.
 - Windows 98 mainstreamed GUI literacy - windows, icons, menus, pointers  
 - Personal computing became cultural computing  
 
+<img width="1920" height="1032" alt="140" src="https://github.com/user-attachments/assets/95eb0d9a-6e87-44e5-b92f-717d66360a95" />
+
+
 If ’68 was the sketch, ’98 was the production model - the moment when visionary concepts became everyday experience.
 
 ---
