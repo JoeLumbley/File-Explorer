@@ -322,6 +322,44 @@ Namespace Explorer.Interop.Shell
         End Sub
 
 
+
+
+        <DllImport("shell32.dll", CharSet:=CharSet.Unicode)>
+        Private Shared Function SHFileOperation(ByRef lpFileOp As SHFILEOPSTRUCT) As Integer
+        End Function
+
+        <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
+        Private Structure SHFILEOPSTRUCT
+            Public hwnd As IntPtr
+            Public wFunc As UInteger
+            Public pFrom As String
+            Public pTo As String
+            Public fFlags As UShort
+            Public fAnyOperationsAborted As Boolean
+            Public hNameMappings As IntPtr
+            Public lpszProgressTitle As String
+        End Structure
+
+        Private Const FO_DELETE As UInteger = &H3
+        Private Const FOF_ALLOWUNDO As UShort = &H40
+        Private Const FOF_NOCONFIRMATION As UShort = &H10
+        Private Const FOF_SILENT As UShort = &H4
+
+
+        Public Shared Function SendToRecycleBin(path As String) As Boolean
+            Dim op As New SHFILEOPSTRUCT With {
+        .wFunc = FO_DELETE,
+        .pFrom = path & vbNullChar & vbNullChar, ' Double-null terminated
+        .fFlags = FOF_ALLOWUNDO Or FOF_NOCONFIRMATION Or FOF_SILENT
+    }
+
+            Dim result = SHFileOperation(op)
+            Return (result = 0 AndAlso Not op.fAnyOperationsAborted)
+        End Function
+
+
+
+
         ' -------------------------------
         '  SHFILEINFO STRUCT
         ' -------------------------------

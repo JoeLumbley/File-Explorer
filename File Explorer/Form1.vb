@@ -3184,75 +3184,71 @@ Public Class Form1
 
     Private Async Sub Delete_Click(sender As Object, e As EventArgs)
 
+        ' ------------------------------------------------------------
+        ' Prevent delete when viewing the Recycle Bin virtual folder
+        ' ------------------------------------------------------------
+        If currentFolder IsNot Nothing AndAlso
+           currentFolder.StartsWith("shell:::{645FF040-5081-101B-9F08-00AA002F954E}",
+                                    StringComparison.OrdinalIgnoreCase) Then
+
+            ShowStatus(StatusPad & IconWarning &
+                       " Delete is handled by Windows Explorer when viewing the Recycle Bin.")
+            Return
+        End If
+
         If lvFiles.SelectedItems.Count = 0 Then Exit Sub
 
         Dim selected = lvFiles.SelectedItems.Cast(Of ListViewItem)().ToList()
         Dim count As Integer = selected.Count
 
-        ' Confirm deletion
         Dim msg As String =
-        If(count = 1,
-           $"Are you sure you want to delete '{selected(0).Text}'?",
-           $"Are you sure you want to delete these {count} items?")
+            If(count = 1,
+               $"Are you sure you want to move '{selected(0).Text}' to the Recycle Bin?",
+               $"Are you sure you want to move these {count} items to the Recycle Bin?")
 
-        Dim confirm = MessageBox.Show(msg, "Delete",
-                                  MessageBoxButtons.YesNo,
-                                  MessageBoxIcon.Warning)
+        Dim confirm = MessageBox.Show(msg, "Move to Recycle Bin",
+                                      MessageBoxButtons.YesNo,
+                                      MessageBoxIcon.Question)
 
         If confirm <> DialogResult.Yes Then Exit Sub
 
-        ShowStatus(StatusPad & IconDelete & $"  Deleting {count} items.")
+        ShowStatus(StatusPad & IconDelete & $"  Moving {count} item(s) to Recycle Bin...")
 
-        ' Remember index of first selected item for post-refresh selection
         Dim firstIndex As Integer = selected(0).Index
 
         For Each item In selected
             Dim fullPath As String = CStr(item.Tag)
 
-            ' Reject relative paths
             If Not Path.IsPathRooted(fullPath) Then
                 ShowStatus(StatusPad & IconWarning &
-                       " Delete failed: Path must be absolute. Example: C:\folder")
+                           " Delete failed: Path must be absolute.")
                 Continue For
             End If
 
-            ' Protected path check
             If IsProtectedPathOrFolder(fullPath) Then
                 ShowStatus(StatusPad & IconProtect &
-                       " Deletion prevented for protected path: " & fullPath)
+                           " Deletion prevented for protected path: " & fullPath)
                 Continue For
             End If
 
             Try
-
-                If Directory.Exists(fullPath) Then
-                    Directory.Delete(fullPath, recursive:=True)
+                If ShellInterop.SendToRecycleBin(fullPath) Then
                     ShowStatus(StatusPad & IconDelete &
-                           " Deleted folder: " & item.Text)
-
-                ElseIf IO.File.Exists(fullPath) Then
-                    IO.File.Delete(fullPath)
-                    ShowStatus(StatusPad & IconDelete &
-                           " Deleted file: " & item.Text)
-
+                               " Sent to Recycle Bin: " & item.Text)
                 Else
-                    ShowStatus(StatusPad & IconWarning &
-                           " Path not found: " & fullPath)
+                    ShowStatus(StatusPad & IconError &
+                               " Failed to send to Recycle Bin: " & item.Text)
                 End If
 
             Catch ex As Exception
                 ShowStatus(StatusPad & IconError &
-                       " Delete failed: " & ex.Message)
+                           " Delete failed: " & ex.Message)
                 Debug.WriteLine("Delete_Click Error: " & ex.Message)
             End Try
         Next
 
-        ' Refresh the folder
         Await PopulateFiles(currentFolder)
 
-        ' ------------------------------------------------------------
-        ' Select the next logical item (Explorer-style)
-        ' ------------------------------------------------------------
         If lvFiles.Items.Count > 0 Then
             Dim newIndex As Integer = Math.Min(firstIndex, lvFiles.Items.Count - 1)
             lvFiles.Items(newIndex).Selected = True
@@ -3262,6 +3258,96 @@ Public Class Form1
 
         lvFiles.Focus()
         UpdateEditButtonsAndMenus()
+
+        'If lvFiles.SelectedItems.Count = 0 Then Exit Sub
+
+        '' If user is on the Recycle Bin node, do nothing.
+        'If currentFolder IsNot Nothing AndAlso
+        '   currentFolder.StartsWith("shell:::{645FF040-5081-101B-9F08-00AA002F954E}",
+        '                    StringComparison.OrdinalIgnoreCase) Then
+
+        '    ShowStatus(StatusPad & IconWarning &
+        '       " Delete is handled by Windows Explorer when viewing the Recycle Bin.")
+        '    Return
+        'End If
+
+
+        'Dim selected = lvFiles.SelectedItems.Cast(Of ListViewItem)().ToList()
+        'Dim count As Integer = selected.Count
+
+        '' Confirm deletion
+        'Dim msg As String =
+        'If(count = 1,
+        '   $"Are you sure you want to delete '{selected(0).Text}'?",
+        '   $"Are you sure you want to delete these {count} items?")
+
+        'Dim confirm = MessageBox.Show(msg, "Delete",
+        '                          MessageBoxButtons.YesNo,
+        '                          MessageBoxIcon.Warning)
+
+        'If confirm <> DialogResult.Yes Then Exit Sub
+
+        'ShowStatus(StatusPad & IconDelete & $"  Deleting {count} items.")
+
+        '' Remember index of first selected item for post-refresh selection
+        'Dim firstIndex As Integer = selected(0).Index
+
+        'For Each item In selected
+        '    Dim fullPath As String = CStr(item.Tag)
+
+        '    ' Reject relative paths
+        '    If Not Path.IsPathRooted(fullPath) Then
+        '        ShowStatus(StatusPad & IconWarning &
+        '               " Delete failed: Path must be absolute. Example: C:\folder")
+        '        Continue For
+        '    End If
+
+        '    ' Protected path check
+        '    If IsProtectedPathOrFolder(fullPath) Then
+        '        ShowStatus(StatusPad & IconProtect &
+        '               " Deletion prevented for protected path: " & fullPath)
+        '        Continue For
+        '    End If
+
+        '    Try
+
+        '        If Directory.Exists(fullPath) Then
+        '            Directory.Delete(fullPath, recursive:=True)
+        '            ShowStatus(StatusPad & IconDelete &
+        '                   " Deleted folder: " & item.Text)
+
+        '        ElseIf IO.File.Exists(fullPath) Then
+        '            IO.File.Delete(fullPath)
+        '            ShowStatus(StatusPad & IconDelete &
+        '                   " Deleted file: " & item.Text)
+
+        '        Else
+        '            ShowStatus(StatusPad & IconWarning &
+        '                   " Path not found: " & fullPath)
+        '        End If
+
+        '    Catch ex As Exception
+        '        ShowStatus(StatusPad & IconError &
+        '               " Delete failed: " & ex.Message)
+        '        Debug.WriteLine("Delete_Click Error: " & ex.Message)
+        '    End Try
+        'Next
+
+        '' Refresh the folder
+        'Await PopulateFiles(currentFolder)
+
+        '' ------------------------------------------------------------
+        '' Select the next logical item (Explorer-style)
+        '' ------------------------------------------------------------
+        'If lvFiles.Items.Count > 0 Then
+        '    Dim newIndex As Integer = Math.Min(firstIndex, lvFiles.Items.Count - 1)
+        '    lvFiles.Items(newIndex).Selected = True
+        '    lvFiles.Items(newIndex).Focused = True
+        '    lvFiles.Items(newIndex).EnsureVisible()
+        'End If
+
+        'lvFiles.Focus()
+        'UpdateEditButtonsAndMenus()
 
     End Sub
 
@@ -4181,84 +4267,207 @@ Public Class Form1
 
     End Sub
 
+    'Private Async Sub DeleteFileOrDirectory(path2Delete As String)
+    '    ' Reject relative paths outright
+    '    If Not Path.IsPathRooted(path2Delete) Then
+    '        ShowStatus(StatusPad & IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
+    '        Exit Sub
+    '    End If
+
+    '    ' Check if the path is in the protected list
+    '    If IsProtectedPathOrFolder(path2Delete) Then
+    '        ' Navigate to the protected path so the user can see it was not deleted
+    '        NavigateTo(path2Delete)
+    '        ' Inform the user that deletion was prevented
+    '        ShowStatus(StatusPad & IconProtect & "  Deletion prevented for protected path: " & path2Delete)
+    '        Exit Sub
+    '    End If
+
+    '    Try
+    '        ' Check if it's a file
+    '        If IO.File.Exists(path2Delete) Then
+    '            ' Go to the directory of the file to be deleted so the user can see what is about to be deleted.
+    '            Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
+    '            NavigateTo(destDir)
+
+    '            ' Make the user confirm file deletion.
+    '            Dim fileName As String = Path.GetFileName(path2Delete)
+    '            Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
+    '                                    "''" & fileName & "''?"
+    '            Dim result = MessageBox.Show(confirmMsg,
+    '                                     "Confirm File Deletion",
+    '                                     MessageBoxButtons.YesNo,
+    '                                     MessageBoxIcon.Question)
+    '            If result <> DialogResult.Yes Then Exit Sub
+
+    '            'IO.File.Delete(path2Delete)
+
+    '            If ShellInterop.SendToRecycleBin(path2Delete) Then
+    '                ShowStatus(StatusPad & IconDelete &
+    '           "  Sent to Recycle Bin: " & Path.GetFileName(path2Delete))
+    '            Else
+    '                ShowStatus(StatusPad & IconError &
+    '           "  Failed to send to Recycle Bin: " & path2Delete)
+    '            End If
+
+    '            ' Refresh the view to show the file is deleted
+    '            Await PopulateFiles(destDir) ' Await the async method
+
+    '            ShowStatus(StatusPad & IconDelete & "  Deleted file: " & fileName)
+
+    '            ' Check if it's a directory
+    '        ElseIf Directory.Exists(path2Delete) Then
+    '            ' Navigate into the folder to be deleted
+    '            NavigateTo(path2Delete)
+
+    '            ' Get the parent directory so we can navigate there after deletion
+    '            Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
+
+    '            ' Ask the user to confirm deletion
+    '            Dim folderName As String = Path.GetFileName(path2Delete)
+    '            Dim confirmMsg As String =
+    '            "Are you sure you want to delete the following folder:" & Environment.NewLine &
+    '            "''" & folderName & "'' and all of its contents?"
+    '            Dim result = MessageBox.Show(confirmMsg,
+    '                                     "Confirm Folder Deletion",
+    '                                     MessageBoxButtons.YesNo,
+    '                                     MessageBoxIcon.Question)
+    '            If result <> DialogResult.Yes Then Exit Sub
+
+
+    '            'Directory.Delete(path2Delete, recursive:=True)
+
+    '            If ShellInterop.SendToRecycleBin(path2Delete) Then
+    '                ShowStatus(StatusPad & IconDelete &
+    '           "  Sent to Recycle Bin: " & Path.GetFileName(path2Delete))
+    '            Else
+    '                ShowStatus(StatusPad & IconError &
+    '           "  Failed to send to Recycle Bin: " & path2Delete)
+    '            End If
+
+    '            ' Navigate to the parent so the user sees the result
+    '            NavigateTo(parentDir, True)
+
+    '            ' Refresh the view to show the folder is deleted
+    '            Await PopulateFiles(parentDir) ' Await the async method
+
+    '            ShowStatus(StatusPad & IconDelete & "  Deleted folder: " & folderName)
+
+    '        Else
+    '            ShowStatus(StatusPad & IconWarning & "  Delete failed: Path not found.")
+    '        End If
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError & " Delete failed: " & ex.Message)
+    '        Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
+    '    End Try
+    'End Sub
+
     Private Async Sub DeleteFileOrDirectory(path2Delete As String)
+
+        ' ------------------------------------------------------------
         ' Reject relative paths outright
+        ' ------------------------------------------------------------
         If Not Path.IsPathRooted(path2Delete) Then
-            ShowStatus(StatusPad & IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
+            ShowStatus(StatusPad & IconWarning &
+                   "  Delete failed: Path must be absolute. Example: C:\folder")
             Exit Sub
         End If
 
-        ' Check if the path is in the protected list
+        ' ------------------------------------------------------------
+        ' Protected path check
+        ' ------------------------------------------------------------
         If IsProtectedPathOrFolder(path2Delete) Then
-            ' Navigate to the protected path so the user can see it was not deleted
             NavigateTo(path2Delete)
-            ' Inform the user that deletion was prevented
-            ShowStatus(StatusPad & IconProtect & "  Deletion prevented for protected path: " & path2Delete)
+            ShowStatus(StatusPad & IconProtect &
+                   "  Deletion prevented for protected path: " & path2Delete)
             Exit Sub
         End If
 
         Try
-            ' Check if it's a file
+            ' ------------------------------------------------------------
+            ' FILE DELETE
+            ' ------------------------------------------------------------
             If IO.File.Exists(path2Delete) Then
-                ' Go to the directory of the file to be deleted so the user can see what is about to be deleted.
+
                 Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
                 NavigateTo(destDir)
 
-                ' Make the user confirm file deletion.
                 Dim fileName As String = Path.GetFileName(path2Delete)
-                Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
-                                        "''" & fileName & "''?"
-                Dim result = MessageBox.Show(confirmMsg,
-                                         "Confirm File Deletion",
-                                         MessageBoxButtons.YesNo,
-                                         MessageBoxIcon.Question)
-                If result <> DialogResult.Yes Then Exit Sub
-
-                IO.File.Delete(path2Delete)
-
-                ' Refresh the view to show the file is deleted
-                Await PopulateFiles(destDir) ' Await the async method
-
-                ShowStatus(StatusPad & IconDelete & "  Deleted file: " & fileName)
-
-                ' Check if it's a directory
-            ElseIf Directory.Exists(path2Delete) Then
-                ' Navigate into the folder to be deleted
-                NavigateTo(path2Delete)
-
-                ' Get the parent directory so we can navigate there after deletion
-                Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
-
-                ' Ask the user to confirm deletion
-                Dim folderName As String = Path.GetFileName(path2Delete)
                 Dim confirmMsg As String =
-                "Are you sure you want to delete the following folder:" & Environment.NewLine &
-                "''" & folderName & "'' and all of its contents?"
+                "Are you sure you want to move the file to the Recycle Bin:" &
+                Environment.NewLine &
+                "''" & fileName & "''?"
+
                 Dim result = MessageBox.Show(confirmMsg,
-                                         "Confirm Folder Deletion",
+                                         "Move to Recycle Bin",
                                          MessageBoxButtons.YesNo,
                                          MessageBoxIcon.Question)
+
                 If result <> DialogResult.Yes Then Exit Sub
 
-                Directory.Delete(path2Delete, recursive:=True)
+                If ShellInterop.SendToRecycleBin(path2Delete) Then
+                    ShowStatus(StatusPad & IconDelete &
+                           "  Sent to Recycle Bin: " & fileName)
+                Else
+                    ShowStatus(StatusPad & IconError &
+                           "  Failed to send to Recycle Bin: " & path2Delete)
+                End If
 
-                ' Navigate to the parent so the user sees the result
-                NavigateTo(parentDir, True)
-
-                ' Refresh the view to show the folder is deleted
-                Await PopulateFiles(parentDir) ' Await the async method
-
-                ShowStatus(StatusPad & IconDelete & "  Deleted folder: " & folderName)
-
-            Else
-                ShowStatus(StatusPad & IconWarning & "  Delete failed: Path not found.")
+                Await PopulateFiles(destDir)
+                Exit Sub
             End If
 
+            ' ------------------------------------------------------------
+            ' FOLDER DELETE
+            ' ------------------------------------------------------------
+            If Directory.Exists(path2Delete) Then
+
+                NavigateTo(path2Delete)
+
+                Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
+                Dim folderName As String = Path.GetFileName(path2Delete)
+
+                Dim confirmMsg As String =
+                "Are you sure you want to move the following folder to the Recycle Bin:" &
+                Environment.NewLine &
+                "''" & folderName & "'' and all of its contents?"
+
+                Dim result = MessageBox.Show(confirmMsg,
+                                         "Move Folder to Recycle Bin",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Question)
+
+                If result <> DialogResult.Yes Then Exit Sub
+
+                If ShellInterop.SendToRecycleBin(path2Delete) Then
+                    ShowStatus(StatusPad & IconDelete &
+                           "  Sent to Recycle Bin: " & folderName)
+                Else
+                    ShowStatus(StatusPad & IconError &
+                           "  Failed to send to Recycle Bin: " & path2Delete)
+                End If
+
+                NavigateTo(parentDir, True)
+                Await PopulateFiles(parentDir)
+                Exit Sub
+            End If
+
+            ' ------------------------------------------------------------
+            ' PATH NOT FOUND
+            ' ------------------------------------------------------------
+            ShowStatus(StatusPad & IconWarning &
+                   "  Delete failed: Path not found.")
+
         Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Delete failed: " & ex.Message)
+            ShowStatus(StatusPad & IconError &
+                   " Delete failed: " & ex.Message)
             Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
         End Try
+
     End Sub
+
+
 
 
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
@@ -4908,7 +5117,16 @@ Public Class Form1
 
         btnCut.Enabled = canRename
         btnRename.Enabled = canRename
-        btnDelete.Enabled = True   ' Delete allowed because resolver already filtered protected paths
+        'btnDelete.Enabled = True   ' Delete allowed because resolver already filtered protected paths
+
+        If currentFolder.StartsWith("shell:::{645FF040-5081-101B-9F08-00AA002F954E}",
+                            StringComparison.OrdinalIgnoreCase) Then
+            btnDelete.Enabled = False
+            cmsFiles.Items("Delete").Enabled = False
+        Else
+            btnDelete.Enabled = True
+            cmsFiles.Items("Delete").Enabled = True
+        End If
 
         SetContextDestructiveItems(True)
     End Sub
@@ -4922,7 +5140,7 @@ Public Class Form1
     Private Sub SetContextDestructiveItems(enabled As Boolean)
         cmsFiles.Items("Cut").Enabled = enabled
         cmsFiles.Items("Rename").Enabled = enabled
-        cmsFiles.Items("Delete").Enabled = enabled
+        'cmsFiles.Items("Delete").Enabled = enabled
     End Sub
 
     Private Sub UpdateCopyButtonAndMenus()
