@@ -312,194 +312,196 @@ Public Class Form1
 
 
     Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
-    {"cd",
-        (
-            {"cd"},
-            "cd [directory]",
-            "Change directory to the specified path.",
-            {
-                "cd C:\",
-                "cd ""C:\My Folder"""
-            }
-        )
-    },
-    {"copy",
-        (
-            {"copy", "cp"},
-            "copy [source] [destination]",
-            "Copy a file or folder to a destination folder.",
-            {
-                "copy C:\folderA\file.doc C:\folderB",
-                "copy ""C:\folder A"" ""C:\folder B"""
-            }
-        )
-    },
-    {"delete",
-        (
-            {"delete", "rm"},
-            "delete [file_or_directory]",
-            "Delete a file or folder.",
-            {
-                "delete C:\file.txt",
-                "delete ""C:\My Folder"""
-            }
-        )
-    },
-    {"df",
-        (
-            {"df"},
-            "df <drive_letter>:",
-            "Display the available free space on the specified drive.",
-            {
-                "df C:",
-                "df D:",
-                "df E:"
-            }
-        )
-    },
-    {"drives",
-        (
-            {"drives"},
-            "drives",
-            "Show an overview of all drives, including free space bars.",
-            {
-                "drives"
-            }
-        )
-    },
-    {"exit",
-        (
-            {
-                "exit", "quit", "close", "stop", "halt", "end", "signout",
-                "poweroff", "bye"
-            },
-            "exit",
-            "Exit the application.",
-            {}
-        )
-    },
-    {"find",
-        (
-            {"find", "search"},
-            "find [search_term]",
-            "Search for files and folders in the current directory.",
-            {
-                "find document"
-            }
-        )
-    },
-    {"findnext",
-        (
-            {"findnext", "searchnext", "next"},
-            "findnext",
-            "Show the next search result from the previous search.",
-            {}
-        )
-    },
-    {"help",
-        (
-            {"help", "commands", "?"},
-            "help [search_term]",
-            $"Show the full command list or jump to a specific command.",
-            {
-                "help",
-                "help cd",
-                "help copy"
-            }
-        )
-    },
-    {"man",
-        (
-            {"man", "manual", "appmanual"},
-            "man [section]",
-            "Show the full application manual or jump to a specific section.",
-            {
-                "man",
-                "man help",
-                "man commands",
-                "manual",
-                "appmanual"
-            }
-        )
-    },
-    {"mkdir",
-        (
-            {"mkdir", "make", "md"},
-            "mkdir [directory_path]",
-            "Create a new folder.",
-            {
-                "mkdir C:\newfolder",
-                "make ""C:\My New Folder""",
-                "md C:\anotherfolder"
-            }
-        )
-    },
-    {"move",
-        (
-            {"move", "mv"},
-            "move [source] [destination]",
-            "Move a file or folder to a new location.",
-            {
-                "move C:\folderA\file.doc C:\folderB\file.doc",
-                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-            }
-        )
-    },
-    {"open",
-        (
-            {"open"},
-            "open [file_or_directory]",
-            "Open a file or navigate into a folder.",
-            {
-                "open C:\folder\file.txt",
-                "open ""C:\My Folder"""
-            }
-        )
-    },
-    {"pin",
-        (
-            {"pin"},
-            "pin [folder_path]",
-            "Pin or unpin a folder.",
-            {
-                "pin C:\Projects",
-                "pin ""C:\My Documents""",
-                "pin"
-            }
-        )
-    },
-    {"rename",
-        (
-            {"rename", "rn"},
-            "rename [source_path] [new_name]",
-            "Rename a file or directory.",
-            {
-                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-            }
-        )
-    },
-    {"shortcuts",
-        (
-            {"shortcuts", "keys"},
-            "shortcuts",
-            "Show a list of all keyboard shortcuts.",
-            {
+        {"cd",
+            (
+                {"cd"},
+                "cd [directory]",
+                "Change directory to the specified path.",
+                {
+                    "cd C:\",
+                    "cd ""C:\My Folder"""
+                }
+            )
+        },
+        {"copy",
+            (
+                {"copy", "cp"},
+                "copy [source] [destination]",
+                "Copy a file or folder to a destination folder.",
+                {
+                    "copy C:\folderA\file.doc C:\folderB",
+                    "copy ""C:\folder A"" ""C:\folder B"""
+                }
+            )
+        },
+        {"delete",
+            (
+                {"delete", "rm"},
+                "delete [file_or_directory]",
+                "Delete a file or folder.",
+                {
+                    "delete C:\file.txt",
+                    "delete ""C:\My Folder"""
+                }
+            )
+        },
+        {"df",
+            (
+                {"df"},
+                "df <drive_letter>:",
+                "Display the available free space on the specified drive.",
+                {
+                    "df C:",
+                    "df D:",
+                    "df E:"
+                }
+            )
+        },
+        {"drives",
+            (
+                {"drives"},
+                "drives",
+                "Show an overview of all drives, including free space bars.",
+                {
+                    "drives"
+                }
+            )
+        },
+        {"exit",
+            (
+                {
+                    "exit", "quit", "close", "stop", "halt", "end", "signout",
+                    "poweroff", "bye"
+                },
+                "exit",
+                "Exit the application.",
+                {}
+            )
+        },
+        {"find",
+            (
+                {"find", "search"},
+                "find [search_term]",
+                "Search for files and folders in the current directory.",
+                {
+                    "find document"
+                }
+            )
+        },
+        {"findnext",
+            (
+                {"findnext", "searchnext", "next"},
+                "findnext",
+                "Show the next search result from the previous search.",
+                {}
+            )
+        },
+        {"help",
+            (
+                {"help", "commands", "?"},
+                "help [search_term]",
+                $"Show the full command list or jump to a specific command.",
+                {
+                    "help",
+                    "help cd",
+                    "help copy"
+                }
+            )
+        },
+        {"man",
+            (
+                {"man", "manual", "appmanual"},
+                "man [section]",
+                "Show the full application manual or jump to a specific section.",
+                {
+                    "man",
+                    "man help",
+                    "man commands",
+                    "manual",
+                    "appmanual"
+                }
+            )
+        },
+        {"mkdir",
+            (
+                {"mkdir", "make", "md"},
+                "mkdir [directory_path]",
+                "Create a new folder.",
+                {
+                    "mkdir C:\newfolder",
+                    "make ""C:\My New Folder""",
+                    "md C:\anotherfolder"
+                }
+            )
+        },
+        {"move",
+            (
+                {"move", "mv"},
+                "move [source] [destination]",
+                "Move a file or folder to a new location.",
+                {
+                    "move C:\folderA\file.doc C:\folderB\file.doc",
+                    "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+                }
+            )
+        },
+        {"open",
+            (
+                {"open"},
+                "open [file_or_directory]",
+                "Open a file or navigate into a folder.",
+                {
+                    "open C:\folder\file.txt",
+                    "open ""C:\My Folder"""
+                }
+            )
+        },
+        {"pin",
+            (
+                {"pin"},
+                "pin [folder_path]",
+                "Pin or unpin a folder.",
+                {
+                    "pin C:\Projects",
+                    "pin ""C:\My Documents""",
+                    "pin"
+                }
+            )
+        },
+        {"rename",
+            (
+                {"rename", "rn"},
+                "rename [source_path] [new_name]",
+                "Rename a file or directory.",
+                {
+                    "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+                }
+            )
+        },
+        {"shortcuts",
+            (
+                {"shortcuts", "keys"},
                 "shortcuts",
-                "keys"
-            }
-        )
-    },
-    {"text",
-        (
-            {"text", "txt"},
-            "text [file_path]",
-            "Create a new text file.",
-            {
-                "text ""C:\folder\example.txt"""
-            }
-        )
+                "Show a list of all keyboard shortcuts.",
+                {
+                    "shortcuts",
+                    "keys"
+                }
+            )
+        },
+        {"text",
+            (
+                {"text", "txt"},
+                "text [file_path]",
+                "Create a new text file.",
+                {
+                    "text ""C:\folder\example.txt"""
+                }
+            )
+        }
     }
-}
+
+
 
 
 
@@ -530,66 +532,41 @@ Public Class Form1
     Dim engine As New SafeLaunchEngine(Me)
 
 
+    ' Hightlight color constrants for search results.
+    Private OrangeHighlightColor As Color = Color.FromArgb(255, 203, 107)
+    Private BlueHighlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
 
 
-    'Private iconQueue As New Concurrent.ConcurrentQueue(Of String)
-    'Private iconWorkerRunning As Boolean = False
+    'Private currentVirtualItems As List(Of Explorer.VirtualFolders.RecycleBinItem)
 
-
-
-
-    'Private Sub QueueIconRefresh(path As String)
-    '    iconQueue.Enqueue(path)
-    '    StartIconWorker()
+    'Private Sub NavigateToVirtualFolder(shellPath As String)
+    '    If shellPath.StartsWith("shell:::{645FF040-5081-101B-9F08-00AA002F954E}",
+    '                        StringComparison.OrdinalIgnoreCase) Then
+    '        ShowRecycleBin()
+    '    Else
+    '        ShowStatus("Unknown virtual folder: " & shellPath)
+    '    End If
     'End Sub
 
 
+    Private Sub NavigateToVirtualFolder(shellPath As String)
 
-    'Private Async Sub StartIconWorker()
-    '    If iconWorkerRunning Then Exit Sub
-    '    iconWorkerRunning = True
+        ' For this demo, we'll only handle the Recycle Bin virtual folder. In a full implementation,
+        ' you could expand this method to recognize and navigate to other virtual folders as needed.
 
-    '    Await Task.Run(
-    '    Sub()
-    '        Dim path As String
+        ' Open the real Windows Recycle Bin
+        Try
+            Process.Start("explorer.exe", "shell:RecycleBinFolder")
+        Catch ex As Exception
+            ShowStatus("Unable to open Recycle Bin: " & ex.Message)
+        End Try
+    End Sub
 
-    '        While iconQueue.TryDequeue(path)
-    '            Try
-    '                Dim pixelSize = imgList.ImageSize.Width
-    '                Dim icon = ShellInterop.GetIconForPath(path, pixelSize)
 
-    '                If icon IsNot Nothing Then
-    '                    Me.BeginInvoke(
-    '                        Sub()
-    '                            If Not imgList.Images.ContainsKey(path) Then
-    '                                imgList.Images.Add(path, icon)
-    '                            End If
 
-    '                            ' Update ListView items
-    '                            For Each item As ListViewItem In lvFiles.Items
-    '                                If CStr(item.Tag) = path Then
-    '                                    item.ImageKey = path
-    '                                    Exit For
-    '                                End If
-    '                            Next
 
-    '                            ' Update TreeView nodes
-    '                            Dim nodes = tvFolders.Nodes.Find(path, True)
-    '                            For Each n In nodes
-    '                                n.ImageKey = path
-    '                                n.SelectedImageKey = path
-    '                            Next
-    '                        End Sub)
-    '                End If
 
-    '            Catch ex As Exception
-    '                Debug.WriteLine($"Icon worker error: {ex.Message}")
-    '            End Try
-    '        End While
 
-    '        iconWorkerRunning = False
-    '    End Sub)
-    'End Sub
 
 
 
@@ -1661,14 +1638,72 @@ Public Class Form1
         Return Not txtAddressBar.Focused AndAlso Not _isRenaming
     End Function
 
+    'Private Sub HandleFindPreviousCommand()
+
+    '    ' No active search
+    '    If SearchResults.Count = 0 Then
+    '        ShowStatus(
+    '        StatusPad & IconDialog &
+    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+    '    )
+    '        Return
+    '    End If
+
+    '    ' Move backward with wraparound
+    '    SearchIndex -= 1
+    '    If SearchIndex < 0 Then
+    '        SearchIndex = SearchResults.Count - 1
+    '    End If
+
+    '    ' Select the previous result
+    '    lvFiles.SelectedItems.Clear()
+    '    Dim prevPath As String = SearchResults(SearchIndex)
+    '    SelectListViewItemByPath(prevPath)
+
+    '    Dim fileName As String = Path.GetFileNameWithoutExtension(prevPath)
+
+    '    ShowSearchHud()
+    'End Sub
+
+
+    'Private Sub HandleFindPreviousCommand()
+
+    '    ' No active search
+    '    If SearchResults.Count = 0 Then
+    '        ShowStatus(
+    '        StatusPad & IconDialog &
+    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+    '    )
+    '        Return
+    '    End If
+
+    '    ' Move backward with wraparound
+    '    SearchIndex -= 1
+    '    If SearchIndex < 0 Then
+    '        SearchIndex = SearchResults.Count - 1
+    '    End If
+
+    '    ' Select the previous result
+    '    lvFiles.SelectedItems.Clear()
+    '    Dim prevPath As String = SearchResults(SearchIndex)
+    '    SelectListViewItemByPath(prevPath)
+
+    '    ' Apply all highlight rules in one unified pass
+    '    ApplySearchHighlights()
+
+    '    ' HUD
+    '    ShowSearchHud()
+
+    'End Sub
+
+
+
+
     Private Sub HandleFindPreviousCommand()
 
-        ' No active search
         If SearchResults.Count = 0 Then
-            ShowStatus(
-            StatusPad & IconDialog &
-            "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
-        )
+            ShowStatus(StatusPad & IconDialog &
+                   "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search.")
             Return
         End If
 
@@ -1678,15 +1713,17 @@ Public Class Form1
             SearchIndex = SearchResults.Count - 1
         End If
 
-        ' Select the previous result
-        lvFiles.SelectedItems.Clear()
-        Dim prevPath As String = SearchResults(SearchIndex)
-        SelectListViewItemByPath(prevPath)
-
-        Dim fileName As String = Path.GetFileNameWithoutExtension(prevPath)
-
-        ShowSearchHud()
+        SelectAndHighlightSearchResult(SearchResults(SearchIndex))
     End Sub
+
+
+
+
+
+
+
+
+
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
 
@@ -3433,6 +3470,47 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
+
+    '    Dim node As TreeNode = e.Node
+    '    If node Is Nothing Then Exit Sub
+
+    '    Dim path2Nav As String = TryCast(node.Tag, String)
+    '    If String.IsNullOrEmpty(path2Nav) Then Exit Sub
+
+    '    ' Determine if THIS node is a drive root (e.g., "C:\")
+    '    Dim isDriveRoot As Boolean =
+    '    Path.GetFullPath(path2Nav).TrimEnd("\"c).Length = 2 AndAlso
+    '    path2Nav(1) = ":"c
+
+    '    If isDriveRoot Then
+    '        Try
+    '            Dim driveInfo As New DriveInfo(path2Nav)
+
+    '            If driveInfo.IsReady = False Then
+    '                tvFolders.BeginUpdate()
+    '                tvFolders.Nodes.Remove(node)
+    '                tvFolders.EndUpdate()
+
+    '                ShowStatus(StatusPad & IconWarning &
+    '                       " Drive is not ready and has been removed.")
+    '                Return
+    '            End If
+
+    '        Catch ex As Exception
+    '            ShowStatus(StatusPad & IconError &
+    '                   " NavTree: Error accessing drive: " & ex.Message)
+    '            Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
+    '            Return
+    '        End Try
+    '    End If
+
+    '    ' Drive is ready OR node is not a drive root → navigate normally
+    '    NavigateTo(path2Nav)
+
+    'End Sub
+
+
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
 
         Dim node As TreeNode = e.Node
@@ -3441,7 +3519,17 @@ Public Class Form1
         Dim path2Nav As String = TryCast(node.Tag, String)
         If String.IsNullOrEmpty(path2Nav) Then Exit Sub
 
-        ' Determine if THIS node is a drive root (e.g., "C:\")
+        ' ============================================================
+        ' 1. VIRTUAL SHELL FOLDERS (Recycle Bin, etc.)
+        ' ============================================================
+        If path2Nav.StartsWith("shell:::", StringComparison.OrdinalIgnoreCase) Then
+            NavigateToVirtualFolder(path2Nav)
+            Return
+        End If
+
+        ' ============================================================
+        ' 2. DRIVE ROOT HANDLING
+        ' ============================================================
         Dim isDriveRoot As Boolean =
         Path.GetFullPath(path2Nav).TrimEnd("\"c).Length = 2 AndAlso
         path2Nav(1) = ":"c
@@ -3468,48 +3556,24 @@ Public Class Form1
             End Try
         End If
 
-        ' Drive is ready OR node is not a drive root → navigate normally
+        ' ============================================================
+        ' 3. NORMAL FILESYSTEM NAVIGATION
+        ' ============================================================
         NavigateTo(path2Nav)
 
     End Sub
 
 
-    'Private Async Function PopulateFiles(path As String) As Task
-    '    lvFiles.BeginUpdate()
-    '    lvFiles.Items.Clear()
 
-    '    Try
-    '        ' Kick off both enumerations in parallel
-    '        Dim dirTask = Task.Run(Function() GetDirectoriesSafe(path))
-    '        Dim fileTask = Task.Run(Function() GetFilesSafe(path))
 
-    '        Dim directories = Await dirTask
-    '        Dim files = Await fileTask
+    'Private Sub NavigateToVirtualFolder(shellPath As String)
+    '    ' TODO: Implement virtual folder navigation
+    '    ShowStatus("Opening virtual folder: " & shellPath)
+    'End Sub
 
-    '        Dim itemsToAdd As New List(Of ListViewItem)
 
-    '        ' Build directory items
-    '        For Each d In directories
-    '            Dim di As New DirectoryInfo(d)
-    '            itemsToAdd.Add(BuildListViewItemForDirectory(di))
-    '        Next
 
-    '        ' Build file items
-    '        For Each f In files
-    '            Dim fi As New FileInfo(f)
-    '            itemsToAdd.Add(BuildListViewItemForFile(fi))
-    '        Next
 
-    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
-    '        Debug.WriteLine($"PopulateFiles - General Error - {ex.Message}")
-
-    '    Finally
-    '        lvFiles.EndUpdate()
-    '    End Try
-    'End Function
 
 
 
@@ -3553,40 +3617,6 @@ Public Class Form1
             lvFiles.EndUpdate()
         End Try
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     Private Function IsAccessTestFile(name As String) As Boolean
@@ -3668,30 +3698,6 @@ Public Class Form1
     '    Return item
     'End Function
 
-
-    'Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
-    '    Dim item As New ListViewItem(di.Name)
-
-    '    item.SubItems.Add("Folder")
-    '    item.SubItems.Add("")
-    '    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = di.FullName
-
-    '    ' Shell icons
-    '    Dim icon = ShellInterop.GetIconForPath(di.FullName, ShellInterop.IconSize.Small)
-
-    '    If icon IsNot Nothing Then
-    '        If Not imgList.Images.ContainsKey(di.FullName) Then
-    '            imgList.Images.Add(di.FullName, icon)
-    '        End If
-    '        item.ImageKey = di.FullName
-    '    Else
-    '        item.ImageKey = "Folder"
-    '    End If
-
-    '    Return item
-    'End Function
-
     Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
         Dim item As New ListViewItem(di.Name)
 
@@ -3720,28 +3726,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
     '    Dim item As New ListViewItem(fi.Name)
 
@@ -3757,67 +3741,6 @@ Public Class Form1
 
     '    Return item
     'End Function
-
-
-
-    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-    '    Dim item As New ListViewItem(fi.Name)
-
-    '    Dim ext = fi.Extension.ToLowerInvariant()
-    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-    '    item.SubItems.Add(category)
-    '    item.SubItems.Add(FormatSize(fi.Length))
-    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = fi.FullName
-
-    '    ' --- ICON EXTRACTION ---
-    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
-
-    '    If icon IsNot Nothing Then
-    '        If Not ImageListSmall.Images.ContainsKey(fi.FullName) Then
-    '            ImageListSmall.Images.Add(fi.FullName, icon)
-    '        End If
-    '        item.ImageKey = fi.FullName
-    '    Else
-    '        item.ImageKey = "Documents" ' fallback
-    '    End If
-
-    '    Return item
-    'End Function
-
-
-
-
-
-
-
-    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-    '    Dim item As New ListViewItem(fi.Name)
-
-    '    Dim ext = fi.Extension.ToLowerInvariant()
-    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-    '    item.SubItems.Add(category)
-    '    item.SubItems.Add(FormatSize(fi.Length))
-    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = fi.FullName
-
-    '    ' Shell icons
-    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, ShellInterop.IconSize.Small)
-
-    '    If icon IsNot Nothing Then
-    '        If Not imgList.Images.ContainsKey(fi.FullName) Then
-    '            imgList.Images.Add(fi.FullName, icon)
-    '        End If
-    '        item.ImageKey = fi.FullName
-    '    Else
-    '        item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
-    '    End If
-
-    '    Return item
-    'End Function
-
 
 
     Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
@@ -3848,43 +3771,6 @@ Public Class Form1
 
         Return item
     End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     ' ============================================================
@@ -4120,8 +4006,6 @@ Public Class Form1
 
     End Function
 
-
-
     Public Async Function CopyFile(
     source As String,
     destination As String,
@@ -4295,103 +4179,6 @@ Public Class Form1
 
         End Try
 
-    End Sub
-
-    Private Sub MoveFileOrDirectory(source As String, destination As String)
-        Try
-            ' Validate parameters
-            If String.IsNullOrWhiteSpace(source) OrElse String.IsNullOrWhiteSpace(destination) Then
-                ShowStatus(StatusPad & IconWarning & " Source or destination path is invalid.")
-                Return
-            End If
-
-            ' if source and destination are the same, do nothing
-            If String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) Then
-                ShowStatus(StatusPad & IconWarning & " Source and destination paths are the same. Move operation canceled.")
-                Return
-            End If
-
-            ' Is source on the protected paths list?
-            If IsProtectedPathOrFolder(source) Then
-                ShowStatus(StatusPad & IconProtect & " Move operation prevented for protected path: " & source)
-                Return
-            End If
-
-            ' Is destination on the protected paths list?
-            If IsProtectedPathOrFolder(destination) Then
-                ShowStatus(StatusPad & IconProtect & " Move operation prevented for protected path: " & destination)
-                Return
-            End If
-
-            ' Prevent moving a directory into itself or its subdirectory
-            If Directory.Exists(source) AndAlso
-               (String.Equals(source.TrimEnd("\"c), destination.TrimEnd("\"c), StringComparison.OrdinalIgnoreCase) OrElse
-                destination.StartsWith(source.TrimEnd("\"c) & "\", StringComparison.OrdinalIgnoreCase)) Then
-                ShowStatus(StatusPad & IconWarning & " Cannot move a directory into itself or its subdirectory.")
-                Return
-            End If
-
-            ' Check if the source is a file
-            If IO.File.Exists(source) Then
-
-                ' Check if the destination file already exists
-                If Not IO.File.Exists(destination) Then
-
-                    ' Navigate to the directory of the source file
-                    NavigateTo(Path.GetDirectoryName(source))
-
-                    ShowStatus(StatusPad & IconMoving & "  Moving file to: " & destination)
-
-                    ' Ensure destination directory exists
-                    Directory.CreateDirectory(Path.GetDirectoryName(destination))
-
-                    IO.File.Move(source, destination)
-
-                    ' Navigate to the destination folder (corrected)
-                    NavigateTo(destination)
-
-                    ShowStatus(StatusPad & IconMoving & "  Moved file to: " & destination)
-
-                Else
-                    ShowStatus(StatusPad & IconWarning & " Destination file already exists.")
-                End If
-
-            ElseIf Directory.Exists(source) Then
-
-                ' Check if the destination directory already exists
-                If Not Directory.Exists(destination) Then
-
-                    ' Navigate to the directory being moved so the user can see it
-                    NavigateTo(source)
-
-                    ShowStatus(StatusPad & IconMoving & "  Moving directory to: " & destination)
-
-                    ' Ensure destination parent exists
-                    Directory.CreateDirectory(Path.GetDirectoryName(destination))
-
-                    ' Perform the move
-                    Directory.Move(source, destination)
-
-                    ' Navigate to the new location FIRST
-                    NavigateTo(destination)
-
-                    ' Now refresh the tree roots
-                    UpdateTreeRoots()
-
-                    ShowStatus(StatusPad & IconMoving & "  Moved directory to: " & destination)
-
-                Else
-                    ShowStatus(StatusPad & IconWarning & " Destination directory already exists.")
-                End If
-
-            Else
-                ShowStatus(StatusPad & IconWarning & "  Move failed: Source path not found. Paths with spaces must be enclosed in quotes. Example: move ""C:\folder A"" ""C:\folder B""")
-            End If
-
-        Catch ex As Exception
-            ShowStatus(StatusPad & IconError & " Move failed: " & ex.Message)
-            Debug.WriteLine("MoveFileOrDirectory Error: " & ex.Message)
-        End Try
     End Sub
 
     Private Async Sub DeleteFileOrDirectory(path2Delete As String)
@@ -4591,14 +4378,98 @@ Public Class Form1
         txtAddressBar.SelectionStart = txtAddressBar.Text.Length
     End Sub
 
+    'Private Sub HandleFindNextCommand()
+
+    '    ' No active search
+    '    If SearchResults.Count = 0 Then
+    '        ShowStatus(
+    '        StatusPad & IconDialog &
+    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+    '    )
+    '        Return
+    '    End If
+
+    '    ' Advance index with wraparound
+    '    SearchIndex += 1
+    '    If SearchIndex >= SearchResults.Count Then
+    '        SearchIndex = 0
+    '    End If
+
+    '    ApplySearchHighlights()
+
+
+
+    '    ' Select the next result
+    '    lvFiles.SelectedItems.Clear()
+
+
+    '    'RestoreBackground()
+
+    '    Dim nextPath As String = SearchResults(SearchIndex)
+    '    SelectListViewItemByPath(nextPath)
+
+    '    'HighlightSearchMatches()
+    '    'HighlightCurrentResult()
+
+    '    Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
+
+    '    ShowSearchHud()
+
+    'End Sub
+
+
+
+
+
+    'Private Sub HandleFindNextCommand()
+
+    '    ' No active search
+    '    If SearchResults.Count = 0 Then
+    '        ShowStatus(
+    '        StatusPad & IconDialog &
+    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
+    '    )
+    '        Return
+    '    End If
+
+    '    ' Advance index with wraparound
+    '    SearchIndex += 1
+    '    If SearchIndex >= SearchResults.Count Then
+    '        SearchIndex = 0
+    '    End If
+
+    '    '' Select the next result FIRST
+    '    'lvFiles.SelectedItems.Clear()
+
+    '    Dim nextPath As String = SearchResults(SearchIndex)
+    '    'SelectListViewItemByPath(nextPath)
+
+    '    '' Now apply all highlights in ONE BeginUpdate/EndUpdate block
+    '    'ApplySearchHighlights()
+
+    '    '' HUD
+    '    'ShowSearchHud()
+
+    '    ' 1. Move selection
+    '    lvFiles.BeginUpdate()
+    '    lvFiles.SelectedItems.Clear()
+    '    SelectListViewItemByPath(nextPath)
+    '    lvFiles.EndUpdate()
+
+    '    ' 2. Apply all highlight rules in one pass
+    '    ApplySearchHighlights()
+
+    '    ' 3. HUD
+    '    ShowSearchHud()
+
+    'End Sub
+
+
     Private Sub HandleFindNextCommand()
 
-        ' No active search
         If SearchResults.Count = 0 Then
-            ShowStatus(
-            StatusPad & IconDialog &
-            "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
-        )
+            ShowStatus(StatusPad & IconDialog &
+                   "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search.")
             Return
         End If
 
@@ -4608,15 +4479,41 @@ Public Class Form1
             SearchIndex = 0
         End If
 
-        ' Select the next result
-        lvFiles.SelectedItems.Clear()
-        Dim nextPath As String = SearchResults(SearchIndex)
-        SelectListViewItemByPath(nextPath)
+        SelectAndHighlightSearchResult(SearchResults(SearchIndex))
+    End Sub
 
-        Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
 
-        ShowSearchHud()
 
+
+
+
+
+
+    Private Sub ApplySearchHighlights()
+        'lvFiles.BeginUpdate()
+
+        ' 1. Clear all previous colors
+        RestoreBackground()
+
+        ' 2. Blue highlight for all matches
+        For Each path As String In SearchResults
+            Dim item As ListViewItem = FindListViewItemByPath(path)
+            If item IsNot Nothing Then
+                item.BackColor = BlueHighlightColor
+            End If
+        Next
+
+        ' 3. Orange highlight for the current result (if not selected)
+        If SearchResults.Count > 0 Then
+            Dim currentPath As String = SearchResults(SearchIndex)
+            Dim currentItem As ListViewItem = FindListViewItemByPath(currentPath)
+
+            If currentItem IsNot Nothing Then
+                currentItem.BackColor = OrangeHighlightColor
+            End If
+        End If
+
+        'lvFiles.EndUpdate()
     End Sub
 
     Private Sub ShowSearchHud()
@@ -4631,7 +4528,7 @@ Public Class Form1
 
 
     Private Sub HighlightSearchMatches()
-        Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
+        'Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
 
         lvFiles.BeginUpdate()
 
@@ -4639,7 +4536,7 @@ Public Class Form1
         For Each path As String In SearchResults
             Dim item As ListViewItem = FindListViewItemByPath(path)
             If item IsNot Nothing Then
-                item.BackColor = highlightColor
+                item.BackColor = BlueHighlightColor
             End If
         Next
 
@@ -4663,10 +4560,11 @@ Public Class Form1
         Dim item As ListViewItem = FindListViewItemByPath(currentPath)
         If item Is Nothing Then Exit Sub
 
-        Dim focusColor As Color = Color.FromArgb(255, 203, 107)
+        '' Orange hilite 
+        'Dim focusColor As Color = Color.FromArgb(255, 203, 107)
 
         lvFiles.BeginUpdate()
-        item.BackColor = focusColor
+        item.BackColor = OrangeHighlightColor
         lvFiles.EndUpdate()
 
     End Sub
@@ -5467,6 +5365,63 @@ Public Class Form1
             End If
         Next
 
+
+
+        '        ' ============================================================
+        '        ' RECYCLE BIN (virtual shell folder)
+        '        ' ============================================================
+        '        Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+        '        Dim recycleNode As New TreeNode("Recycle Bin") With {
+        '    .Tag = recycleBinPath
+        '}
+
+        '        ' --- Real Explorer icon ---
+        '        Dim rbIcon = ShellInterop.GetIconForPath(recycleBinPath, ShellInterop.IconSize.Small)
+
+        '        If rbIcon IsNot Nothing Then
+        '            If Not imgList.Images.ContainsKey(recycleBinPath) Then
+        '                imgList.Images.Add(recycleBinPath, rbIcon)
+        '            End If
+        '            recycleNode.ImageKey = recycleBinPath
+        '            recycleNode.SelectedImageKey = recycleBinPath
+        '        Else
+        '            recycleNode.ImageKey = "RecycleBin"
+        '            recycleNode.SelectedImageKey = "RecycleBin"
+        '        End If
+
+        '        ' Recycle Bin has no subfolders → no arrow
+        '        recycleNode.StateImageIndex = 2
+
+        '        tvFolders.Nodes.Add(recycleNode)
+
+
+        ' ============================================================
+        ' RECYCLE BIN (virtual shell folder)
+        ' ============================================================
+        Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+
+        Dim recycleNode As New TreeNode("Recycle Bin") With {
+    .Tag = recycleBinPath
+}
+
+        Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
+
+        If rbIcon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey("RecycleBin") Then
+                imgList.Images.Add("RecycleBin", rbIcon)
+            End If
+            recycleNode.ImageKey = "RecycleBin"
+            recycleNode.SelectedImageKey = "RecycleBin"
+        Else
+            recycleNode.ImageKey = "RecycleBin"
+            recycleNode.SelectedImageKey = "RecycleBin"
+        End If
+
+        recycleNode.StateImageIndex = 2
+        tvFolders.Nodes.Add(recycleNode)
+
+
+
         tvFolders.EndUpdate()
     End Sub
 
@@ -6035,6 +5990,131 @@ Public Class Form1
     End Sub
 
 
+    'Private Sub HandleFindCommand(parts As String())
+    '    Try
+    '        ' --- 1. Require a search term
+    '        If parts.Length < 2 Then
+    '            ShowStatus(StatusPad & IconDialog &
+    '                   "  Usage: find [search_term]   Example: find document")
+    '            Return
+    '        End If
+
+    '        ' Extract the search term (supports quotes + multi‑word)
+    '        Dim searchTerm As String =
+    '        String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+
+    '        If String.IsNullOrWhiteSpace(searchTerm) Then
+    '            ShowStatus(StatusPad & IconDialog &
+    '                   "  Usage: find [search_term]   Example: find document")
+    '            Return
+    '        End If
+
+    '        ' --- 2. Announce search
+    '        ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
+
+    '        ' --- 3. Perform search
+    '        OnlySearchForFilesInCurrentFolder(searchTerm)
+
+    '        ' Reset index for new search
+    '        SearchIndex = 0
+    '        RestoreBackground()
+
+    '        ' --- 4. If results exist, auto‑select the first one
+    '        If SearchResults.Count > 0 Then
+
+    '            lvFiles.SelectedItems.Clear()
+    '            SelectListViewItemByPath(SearchResults(0))
+
+    '            lvFiles.Focus()
+    '            HighlightSearchMatches()
+    '            HighlightCurrentResult()
+
+    '            ShowSearchHud()
+    '            Return
+    '        End If
+
+    '        ' --- 5. No results
+    '        ShowStatus(StatusPad & IconDialog &
+    '               "  No results found for: " & searchTerm)
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Search failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
+
+    Private Sub SelectAndHighlightSearchResult(path As String)
+
+        lvFiles.BeginUpdate()
+
+        lvFiles.SelectedItems.Clear()
+        SelectListViewItemByPath(path)
+        lvFiles.Focus()
+
+        ApplySearchHighlights()
+
+        lvFiles.EndUpdate()
+
+        ShowSearchHud()
+    End Sub
+
+
+
+    'Private Sub HandleFindCommand(parts As String())
+    '    Try
+    '        ' --- 1. Require a search term
+    '        If parts.Length < 2 Then
+    '            ShowStatus(StatusPad & IconDialog &
+    '                   "  Usage: find [search_term]   Example: find document")
+    '            Return
+    '        End If
+
+    '        ' Extract the search term (supports quotes + multi‑word)
+    '        Dim searchTerm As String =
+    '        String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
+
+    '        If String.IsNullOrWhiteSpace(searchTerm) Then
+    '            ShowStatus(StatusPad & IconDialog &
+    '                   "  Usage: find [search_term]   Example: find document")
+    '            Return
+    '        End If
+
+    '        ' --- 2. Announce search
+    '        ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
+
+    '        ' --- 3. Perform search
+    '        OnlySearchForFilesInCurrentFolder(searchTerm)
+
+    '        ' Reset index for new search
+    '        SearchIndex = 0
+
+    '        ' --- 4. If results exist, auto‑select the first one
+    '        If SearchResults.Count > 0 Then
+
+    '            lvFiles.SelectedItems.Clear()
+    '            SelectListViewItemByPath(SearchResults(0))
+    '            lvFiles.Focus()
+
+    '            ' Unified highlight pass
+    '            ApplySearchHighlights()
+
+    '            ShowSearchHud()
+    '            Return
+    '        End If
+
+    '        ' --- 5. No results
+    '        ShowStatus(StatusPad & IconDialog &
+    '               "  No results found for: " & searchTerm)
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               "  Search failed: " & ex.Message)
+    '    End Try
+    'End Sub
+
+
     Private Sub HandleFindCommand(parts As String())
         Try
             ' --- 1. Require a search term
@@ -6044,7 +6124,6 @@ Public Class Form1
                 Return
             End If
 
-            ' Extract the search term (supports quotes + multi‑word)
             Dim searchTerm As String =
             String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
 
@@ -6060,20 +6139,11 @@ Public Class Form1
             ' --- 3. Perform search
             OnlySearchForFilesInCurrentFolder(searchTerm)
 
-            ' Reset index for new search
             SearchIndex = 0
-            RestoreBackground()
 
-            ' --- 4. If results exist, auto‑select the first one
+            ' --- 4. Auto-select first result
             If SearchResults.Count > 0 Then
-
-                lvFiles.SelectedItems.Clear()
-                SelectListViewItemByPath(SearchResults(0))
-
-                lvFiles.Focus()
-                HighlightSearchMatches()
-
-                ShowSearchHud()
+                SelectAndHighlightSearchResult(SearchResults(0))
                 Return
             End If
 
@@ -6086,6 +6156,11 @@ Public Class Form1
                    "  Search failed: " & ex.Message)
         End Try
     End Sub
+
+
+
+
+
 
 
     Private Sub HandleExitCommand(parts As String())
@@ -8178,6 +8253,9 @@ Public Class Form1
         Debug.Assert(Not condition, message)
     End Sub
 
+    Private Sub tvFolders_BackgroundImageChanged(sender As Object, e As EventArgs) Handles tvFolders.BackgroundImageChanged
+
+    End Sub
 End Class
 
 Public Class ListViewItemComparer
@@ -8509,7 +8587,6 @@ End Class
 
 
 
-
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
 ' The goal: Explorer‑grade behavior with learner‑friendly clarity.
 
@@ -8520,4 +8597,36 @@ End Class
 
 ' Maximum Effort.
 
+' The Spirit of '68 Meets '98
+
+' "The Spirit of '68 Meets '98" refers to the convergence of revolutionary ideas and
+' technological advancements that emerged in 1968 with the innovations and cultural shifts
+' that took place in 1998. Here’s an exploration of how these two pivotal years in computer
+' history intersect:
+
+' The Spirit Of '68
+
+' 1968 was a year marked by significant social and political upheaval, but it was also a time of
+' groundbreaking innovation in the world of computing. The "Spirit of '68" embodies the ethos of
+' creativity, experimentation, and pushing boundaries that defined that era. It was a time when
+' visionaries like Douglas Engelbart were pioneering concepts such as the graphical user interface
+' (GUI), hypertext, and collaborative computing. The ideas born in 1968 laid the foundation for the
+' modern computing experience, emphasizing user empowerment and interaction.
+
+' The Spirit Of '98
+
+' Fast forward to 1998, and the tech landscape had evolved dramatically. The "Spirit of '98" captures
+' the excitement and rapid innovation of the late 90s, a time when the internet was becoming mainstream,
+' and companies like Microsoft were pushing the boundaries of software development. In 1998, Microsoft
+' released Windows 98, which built upon the innovations of the past while introducing new features and
+' improvements to the user experience. The "Spirit of '98" represents the culmination of decades of
+' innovation, where the ideas from 1968 were now being refined and brought to a mass audience.
+
+' The Convergence
+' The "Spirit of '68 Meets '98" symbolizes the convergence of these two eras, where the revolutionary
+' ideas and innovations from 1968 were now being realized and refined in 1998. It represents the
+' journey of computing from its experimental roots to its widespread adoption, highlighting the
+' importance of both visionary thinking and practical implementation. The innovations of 1968 set the
+' stage for the advancements of 1998, and together they illustrate the dynamic evolution of technology
+' and the enduring impact of visionary ideas on the world of computing.
 
