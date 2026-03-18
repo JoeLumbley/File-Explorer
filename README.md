@@ -138,16 +138,16 @@ If ’68 was the sketch, ’98 was the production model - the moment when vision
 ## Where ’68 Meets ’98: The Architectural Bridge  
 The convergence of these eras reveals a deeper architectural story.
 
-### ** Concept → Infrastructure**  
+### **Concept → Infrastructure**  
 1968 gave us the conceptual primitives - pointing, linking, navigating, collaborating.  
 1998 delivered the infrastructure that made those primitives universal - TCP/IP, the browser, the desktop metaphor, consumer hardware, search engines.  
 It’s the difference between a blueprint and a city.
 
-### ** Augmentation → Accessibility**  
+### **Augmentation → Accessibility**  
 Engelbart sought to augment human intellect.  
 The web and Windows 98 made that augmentation available to billions.
 
-### ** Prototype → Platform**  
+### **Prototype → Platform**  
 ’68 was a prototype mindset.  
 ’98 was a platform mindset - the moment ideas stopped being experiments and became ecosystems.
 
@@ -166,22 +166,22 @@ File Explorer sits squarely in that lineage. It takes something familiar, examin
 ## Design Principles  
 These principles guide every subsystem, every folder layout, every architectural decision.
 
-### ** Emotional Safety**  
+### **Emotional Safety**  
 The codebase should feel welcoming, predictable, and forgiving. No surprises, no hidden traps.
 
-### ** Modularity First**  
+### **Modularity First**  
 Every subsystem stands alone. Every boundary is intentional. Interop and Shell APIs are isolated to protect contributors from accidental complexity.
 
-### ** Onboarding as a First‑Class Goal**  
+### **Onboarding as a First‑Class Goal**  
 The project is designed to teach. Documentation, folder structure, and naming all serve clarity and discoverability.
 
-### ** Declarative Over Imperative**  
+### **Declarative Over Imperative**  
 Rules, routing, and engines are expressed declaratively whenever possible, making behavior easy to reason about and easy to test.
 
-### ** Native, Crisp, and DPI‑Aware**  
+### **Native, Crisp, and DPI‑Aware**  
 Visual polish matters. Icons scale cleanly. UI elements feel at home on modern Windows.
 
-### ** Explorer‑Style Predictability**  
+### **Explorer‑Style Predictability**  
 The interface and behavior follow the spirit of classic Windows Explorer - familiar, stable, and intuitive.
 
 ---
