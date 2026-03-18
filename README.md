@@ -5,8 +5,8 @@
 
 
 
-<img width="1266" height="733" alt="132" src="https://github.com/user-attachments/assets/a4f7fdbb-3c57-4a82-bf38-9bcc76208bd3" />
 
+<img width="1266" height="733" alt="142" src="https://github.com/user-attachments/assets/0302d0d9-4939-48da-9449-b2b8b5c55340" />
 
 
 The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
