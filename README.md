@@ -163,7 +163,7 @@ File Explorer sits squarely in that lineage. It takes something familiar, examin
 <img width="1920" height="1080" alt="141" src="https://github.com/user-attachments/assets/891cee12-66c1-45d6-975e-15bd92180b02" />
 
 
-## 🧩 Design Principles  
+## Design Principles  
 These principles guide every subsystem, every folder layout, every architectural decision.
 
 ### ** Emotional Safety**  
@@ -186,7 +186,7 @@ The interface and behavior follow the spirit of classic Windows Explorer - famil
 
 ---
 
-## 🏗️ Architecture Overview  
+## Architecture Overview  
 
 - **Engines** - UI‑agnostic, testable, declarative logic  
 - **Routing Tables** - predictable navigation and action resolution  
@@ -196,7 +196,7 @@ The interface and behavior follow the spirit of classic Windows Explorer - famil
 
 ---
 
-## 📚 Documentation & Walkthroughs  
+## Documentation & Walkthroughs  
 - Getting Started  
 - Subsystem Walkthroughs  
 - Code Index  
@@ -207,13 +207,13 @@ The interface and behavior follow the spirit of classic Windows Explorer - famil
 
 
 
-## 🤝 Contributing  
+## Contributing  
 This project welcomes learners, explorers, and collaborators. If you’d like to contribute, the simplest way to begin is by **forking the repository** and experimenting with your own ideas. Whether you’re refining a subsystem, improving documentation, or exploring a new architectural pattern, your contributions help carry this tradition forward. The goal isn’t just to build software - it’s to build understanding, clarity, and a shared sense of craftsmanship.
 
 ---
 
 
-## 🌀 Closing Note  
+## Closing Note  
 File Explorer is a continuation of a tradition - one that began with imagination, matured through accessibility, and now asks to be carried forward with clarity and care. This project is my way of keeping that circle unbroken.
 
 ---
