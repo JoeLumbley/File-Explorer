@@ -36,7 +36,7 @@ The application is built around clarity, predictability, and emotional safety. W
 • Built‑in help system with full documentation in the Help Drawer.
 
 
-<img width="1266" height="733" alt="142" src="https://github.com/user-attachments/assets/1010b037-cabb-4b09-b768-ad6bb91f0231" />
+<img width="1266" height="733" alt="143" src="https://github.com/user-attachments/assets/a7ceb3a3-09dc-4025-ad8a-620c3006c9ff" />
 
 The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
 
