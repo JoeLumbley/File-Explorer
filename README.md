@@ -60,7 +60,7 @@ The GUI and CLI work together seamlessly, giving users the freedom to choose the
 
 I set out to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to overlook how much is happening behind the scenes: navigation history, sorting, file type detection, context menus, clipboard operations, lazy loading of folder trees, and many other details. Recreating these features myself has been a practical way to explore system I/O, UI design, event handling, and performance considerations in a hands‑on, exploratory way.
 
-This project is not meant to replace the built‑in Windows Explorer. Instead, it serves as a learning environment — a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, much like how art students copy the masters to study technique and intention.
+This project is not meant to replace the built‑in Windows Explorer. Instead, it serves as a learning environment - a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, much like how art students copy the masters to study technique and intention.
 
 <img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
 
@@ -87,7 +87,7 @@ Everything is open‑source under the MIT License, so you’re free to explore, 
 Re‑creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
 
 ### **A space for deliberate practice and student‑driven growth**  
-One of the core ideas behind this project is the value of deliberate practice — breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
+One of the core ideas behind this project is the value of deliberate practice - breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
 
 My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at - it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
 
@@ -99,7 +99,7 @@ If you’re curious, the GitHub repository includes the full source code and doc
 ---
 
 ## 🌱 The Spirit of ’68: When Computing Was Pure Imagination  
-1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics — the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
+1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
 
 
 <img width="1920" height="1032" alt="139" src="https://github.com/user-attachments/assets/4e245759-47e7-4384-96c8-1d9dbfd49600" />
@@ -112,10 +112,10 @@ By 1998, the world had finally caught up to Engelbart’s imagination.
 
 - The web became the default interface to knowledge  
 - Search engines turned the planet into a navigable hypertext  
-- Windows 98 mainstreamed GUI literacy — windows, icons, menus, pointers  
+- Windows 98 mainstreamed GUI literacy - windows, icons, menus, pointers  
 - Personal computing became cultural computing  
 
-If ’68 was the sketch, ’98 was the production model — the moment when visionary concepts became everyday experience.
+If ’68 was the sketch, ’98 was the production model - the moment when visionary concepts became everyday experience.
 
 ---
 
@@ -123,8 +123,8 @@ If ’68 was the sketch, ’98 was the production model — the moment when visi
 The convergence of these eras reveals a deeper architectural story.
 
 ### **1. Concept → Infrastructure**  
-1968 gave us the conceptual primitives — pointing, linking, navigating, collaborating.  
-1998 delivered the infrastructure that made those primitives universal — TCP/IP, the browser, the desktop metaphor, consumer hardware, search engines.  
+1968 gave us the conceptual primitives - pointing, linking, navigating, collaborating.  
+1998 delivered the infrastructure that made those primitives universal - TCP/IP, the browser, the desktop metaphor, consumer hardware, search engines.  
 It’s the difference between a blueprint and a city.
 
 ### **2. Augmentation → Accessibility**  
@@ -133,15 +133,15 @@ The web and Windows 98 made that augmentation available to billions.
 
 ### **3. Prototype → Platform**  
 ’68 was a prototype mindset.  
-’98 was a platform mindset — the moment ideas stopped being experiments and became ecosystems.
+’98 was a platform mindset - the moment ideas stopped being experiments and became ecosystems.
 
 ---
 
 ## 🔮 Why This Convergence Still Matters  
 We still live inside the tension between ’68 and ’98.  
-We want Engelbart’s fluid, collaborative, idea‑first computing, yet we continue to rely on the hardened, mass‑market platforms of the ’90s. Every major shift today — from AI copilots to spatial interfaces to real‑time collaborative tools — is another attempt to bring the spirit of ’68 back into the mainstream.
+We want Engelbart’s fluid, collaborative, idea‑first computing, yet we continue to rely on the hardened, mass‑market platforms of the ’90s. Every major shift today - from AI copilots to spatial interfaces to real‑time collaborative tools - is another attempt to bring the spirit of ’68 back into the mainstream.
 
-File Explorer sits squarely in that lineage. It takes something familiar, examines its deep structure, and rebuilds it with clarity, intentionality, and emotional safety. It’s a small but meaningful way of keeping the circle unbroken — carrying forward the tradition of humane, empowering computing into the future.
+File Explorer sits squarely in that lineage. It takes something familiar, examines its deep structure, and rebuilds it with clarity, intentionality, and emotional safety. It’s a small but meaningful way of keeping the circle unbroken - carrying forward the tradition of humane, empowering computing into the future.
 
 ---
 
