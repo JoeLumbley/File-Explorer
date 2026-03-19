@@ -161,6 +161,80 @@ Imports System.ComponentModel
 Imports System.Runtime.Versioning
 Imports System.Security
 
+
+'Imports System.Runtime.InteropServices
+
+Namespace Explorer.Interop
+
+    <Flags>
+    Public Enum FileOperationFlags As UInteger
+        FOF_SILENT = &H4UI
+        FOF_NOCONFIRMATION = &H10UI
+        FOF_ALLOWUNDO = &H40UI
+        FOF_NOCONFIRMMKDIR = &H200UI
+        FOF_NOERRORUI = &H400UI
+
+        ' Extended flags (FOFX)
+        FOFX_NOCONFIRMMKDIR = &H200UI
+        FOFX_SHOWELEVATIONPROMPT = &H40000UI
+        FOFX_RECYCLEONDELETE = &H80000UI
+    End Enum
+
+    <ComImport(), Guid("3AD05575-8857-4850-9277-11B85BDB8E09"),
+     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
+    Public Interface IFileOperation
+        Sub Advise(pfops As IFileOperationProgressSink, ByRef pdwCookie As UInteger)
+        Sub Unadvise(dwcookie As UInteger)
+        Sub SetOperationFlags(dwOperationFlags As FileOperationFlags)
+        Sub SetOwnerWindow(hwndOwner As IntPtr)
+
+        ' We only need DeleteItem + PerformOperations for this subsystem
+        Sub DeleteItem(psiItem As IShellItem, pfopsItem As IFileOperationProgressSink)
+        Sub PerformOperations()
+        Function GetAnyOperationsAborted() As Boolean
+    End Interface
+
+    <ComImport(), Guid("04b0f1a7-9490-44bc-96e1-4296a31252e2"),
+     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
+    Public Interface IFileOperationProgressSink
+        ' We don’t need to implement methods for basic behavior; can be empty stub.
+    End Interface
+
+    <ComImport(), Guid("000214E6-0000-0000-C000-000000000046"),
+     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
+    Public Interface IShellItem
+    End Interface
+
+    <ComImport(), Guid("3AD05575-8857-4850-9277-11B85BDB8E09")>
+    Public Class FileOperation
+    End Class
+
+    Friend NotInheritable Class ShellInterop
+
+        Private Sub New()
+        End Sub
+
+        <DllImport("shell32.dll", CharSet:=CharSet.Unicode, PreserveSig:=False)>
+        Private Shared Sub SHCreateItemFromParsingName(
+            <MarshalAs(UnmanagedType.LPWStr)> pszPath As String,
+            pbc As IntPtr,
+            ByRef riid As Guid,
+            <MarshalAs(UnmanagedType.Interface)> ByRef ppv As Object)
+        End Sub
+
+        Public Shared Function CreateShellItemFromPath(path As String) As IShellItem
+            Dim iidShellItem As New Guid("000214E6-0000-0000-C000-000000000046")
+            Dim obj As Object = Nothing
+            SHCreateItemFromParsingName(path, IntPtr.Zero, iidShellItem, obj)
+            Return CType(obj, IShellItem)
+        End Function
+
+    End Class
+
+End Namespace
+
+
+
 Namespace Explorer.Interop.Shell
 
     Public NotInheritable Class ShellInterop
