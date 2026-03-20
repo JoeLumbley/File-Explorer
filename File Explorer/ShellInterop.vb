@@ -277,6 +277,21 @@ Namespace Explorer.Interop.Shell
             End Try
         End Function
 
+        Public Shared Function GetRecycleBinIcon(pixelSize As Integer) As Icon
+            ' Native sizes
+            If pixelSize <= 16 Then
+                Return GetRecycleBinIcon(IconSize.Small)
+            ElseIf pixelSize >= 32 Then
+                Return GetRecycleBinIcon(IconSize.Large)
+            End If
+
+            ' Scale from 32x32
+            Dim baseIcon = GetRecycleBinIcon(IconSize.Large)
+            If baseIcon Is Nothing Then Return Nothing
+
+            Return New Icon(baseIcon, pixelSize, pixelSize)
+        End Function
+
 
         ' -------------------------------
         '  INTERNAL HELPERS

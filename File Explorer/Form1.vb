@@ -32,7 +32,6 @@ Imports System.Text.RegularExpressions
 Imports System.Threading
 Imports File_Explorer.Explorer.Engines
 Imports File_Explorer.Explorer.Interop.Shell
-Imports Windows.Data.Json
 
 
 Public Class Form1
@@ -8580,6 +8579,10 @@ Public Class Form1
         tvFolders.BeginUpdate()
         tvFolders.Nodes.Clear()
 
+
+        Dim IconSize = GetScaledIconSize(Me)
+
+
         ' ============================================================
         ' EASY ACCESS ROOT
         ' ============================================================
@@ -8613,12 +8616,21 @@ Public Class Form1
             }
 
                 ' --- Real Explorer icon ---
-                Dim icon = ShellInterop.GetIconForPath(specialFolderPath, ShellInterop.IconSize.Small)
+                'Dim icon = ShellInterop.GetIconForPath(specialFolderPath, ShellInterop.IconSize.Small)
+
+                'Dim size = GetScaledIconSize(Me)
+                Dim icon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
 
                 If icon IsNot Nothing Then
+
+
+                    'If Not imgList.Images.ContainsKey(specialFolderPath) Then
+                    '    imgList.Images.Add(specialFolderPath, icon)
+                    'End If
                     If Not imgList.Images.ContainsKey(specialFolderPath) Then
-                        imgList.Images.Add(specialFolderPath, icon)
+                        imgList.Images.Add(specialFolderPath, icon.ToBitmap())
                     End If
+
                     node.ImageKey = specialFolderPath
                     node.SelectedImageKey = specialFolderPath
                 Else
@@ -8649,7 +8661,9 @@ Public Class Form1
         }
 
             ' --- Real Explorer icon ---
-            Dim icon = ShellInterop.GetIconForPath(entry.Path, ShellInterop.IconSize.Small)
+            'Dim icon = ShellInterop.GetIconForPath(entry.Path, ShellInterop.IconSize.Small)
+            Dim icon = ShellInterop.GetIconForPath(entry.Path, IconSize)
+
 
             If icon IsNot Nothing Then
                 If Not imgList.Images.ContainsKey(entry.Path) Then
@@ -8693,11 +8707,16 @@ Public Class Form1
                 }
 
                     ' --- Real Explorer drive icon ---
-                    Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
+                    'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
+                    'Dim sizePix1 = GetScaledIconSize(Me)
+                    Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
+
+
 
                     If driveIcon IsNot Nothing Then
                         If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
-                            imgList.Images.Add(di.RootDirectory.FullName, driveIcon)
+                            'imgList.Images.Add(di.RootDirectory.FullName, driveIcon)
+                            imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
                         End If
                         rootNode.ImageKey = di.RootDirectory.FullName
                         rootNode.SelectedImageKey = di.RootDirectory.FullName
@@ -8727,35 +8746,6 @@ Public Class Form1
         Next
 
 
-
-        '        ' ============================================================
-        '        ' RECYCLE BIN (virtual shell folder)
-        '        ' ============================================================
-        '        Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
-        '        Dim recycleNode As New TreeNode("Recycle Bin") With {
-        '    .Tag = recycleBinPath
-        '}
-
-        '        ' --- Real Explorer icon ---
-        '        Dim rbIcon = ShellInterop.GetIconForPath(recycleBinPath, ShellInterop.IconSize.Small)
-
-        '        If rbIcon IsNot Nothing Then
-        '            If Not imgList.Images.ContainsKey(recycleBinPath) Then
-        '                imgList.Images.Add(recycleBinPath, rbIcon)
-        '            End If
-        '            recycleNode.ImageKey = recycleBinPath
-        '            recycleNode.SelectedImageKey = recycleBinPath
-        '        Else
-        '            recycleNode.ImageKey = "RecycleBin"
-        '            recycleNode.SelectedImageKey = "RecycleBin"
-        '        End If
-
-        '        ' Recycle Bin has no subfolders → no arrow
-        '        recycleNode.StateImageIndex = 2
-
-        '        tvFolders.Nodes.Add(recycleNode)
-
-
         ' ============================================================
         ' RECYCLE BIN (virtual shell folder)
         ' ============================================================
@@ -8765,11 +8755,17 @@ Public Class Form1
     .Tag = recycleBinPath
 }
 
-        Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
+        'Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
+
+        'Dim sizePix = GetScaledIconSize(Me)
+        Dim rbIcon = ShellInterop.GetRecycleBinIcon(IconSize)
+
+
 
         If rbIcon IsNot Nothing Then
             If Not imgList.Images.ContainsKey("RecycleBin") Then
-                imgList.Images.Add("RecycleBin", rbIcon)
+                'imgList.Images.Add("RecycleBin", rbIcon)
+                imgList.Images.Add("RecycleBin", rbIcon.ToBitmap())
             End If
             recycleNode.ImageKey = "RecycleBin"
             recycleNode.SelectedImageKey = "RecycleBin"
@@ -8785,6 +8781,16 @@ Public Class Form1
 
         tvFolders.EndUpdate()
     End Sub
+
+
+
+
+
+
+
+
+
+
 
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
