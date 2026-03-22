@@ -5333,593 +5333,6 @@ Public Class Form1
     End Function
 
 
-    '    ' ================================================================
-    '    ' Recursive directory copy helper
-    '    ' ================================================================
-    '    Private Async Function CopyDirectoryRecursive(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    isCut As Boolean,
-    '    aggregate As CopyResult,
-    '    ct As CancellationToken
-    ') As Task
-
-    '        ct.ThrowIfCancellationRequested()
-
-    '        ' Files in this directory
-    '        Dim files As String() = Array.Empty(Of String)()
-    '        Try
-    '            files = Directory.GetFiles(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate files in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each file In files
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim fileName As String = Path.GetFileName(file)
-    '                Dim destPath As String = GetUniqueDestinationPath(Path.Combine(destDir, fileName))
-
-    '                Directory.CreateDirectory(Path.GetDirectoryName(destPath))
-    '                IO.File.Copy(file, destPath, overwrite:=False)
-
-    '                aggregate.FilesCopied += 1
-    '                aggregate.FilesProcessed += 1
-    '                aggregate.CopiedFilePaths.Add(destPath)
-
-    '                If isCut Then
-    '                    ct.ThrowIfCancellationRequested()
-    '                    IO.File.Delete(file)
-    '                End If
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy file: " & file & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Subdirectories
-    '        Dim dirs As String() = Array.Empty(Of String)()
-    '        Try
-    '            dirs = Directory.GetDirectories(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate directories in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each Directory2Copy In dirs
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim folderName As String = Path.GetFileName(Dir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-    '                Dim childDest As String = GetUniqueDestinationPath(Path.Combine(destDir, folderName))
-
-    '                aggregate.TotalDirectories += 1
-    '                aggregate.DirectoriesStarted += 1
-
-    '                Directory.CreateDirectory(childDest)
-    '                aggregate.DirectoriesCreated += 1
-    '                aggregate.CopiedFilePaths.Add(childDest)
-
-    '                Await CopyDirectoryRecursive(Directory2Copy, childDest, isCut, aggregate, ct)
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy directory: " & Dir() & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Cut/move: delete source directory after children processed
-    '        If isCut AndAlso Not aggregate.WasCanceled Then
-    '            Try
-    '                ct.ThrowIfCancellationRequested()
-    '                Directory.Delete(sourceDir, recursive:=False)
-    '            Catch ex As Exception
-    '                ' Non-fatal: directory may not be empty or deletable
-    '                aggregate.Errors.Add("Failed to delete source directory: " & sourceDir & " - " & ex.Message)
-    '            End Try
-    '        End If
-
-    '    End Function
-
-
-
-
-
-
-
-
-    ' ================================================================
-    ' Recursive directory copy helper
-    ' ================================================================
-    '    Private Async Function CopyDirectoryRecursive(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    isCut As Boolean,
-    '    aggregate As CopyResult,
-    '    ct As CancellationToken
-    ') As Task
-
-    '        ct.ThrowIfCancellationRequested()
-
-    '        ' Files in this directory
-    '        Dim files As String() = Array.Empty(Of String)()
-    '        Try
-    '            files = Directory.GetFiles(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate files in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each file In files
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim fileName As String = Path.GetFileName(file)
-    '                Dim destPath As String = GetUniqueDestinationPath(Path.Combine(destDir, fileName))
-
-    '                Directory.CreateDirectory(Path.GetDirectoryName(destPath))
-    '                System.IO.File.Copy(file, destPath, overwrite:=False)
-
-    '                aggregate.FilesCopied += 1
-    '                aggregate.FilesProcessed += 1
-    '                aggregate.CopiedFilePaths.Add(destPath)
-
-    '                If isCut Then
-    '                    ct.ThrowIfCancellationRequested()
-    '                    System.IO.File.Delete(file)
-    '                End If
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy file: " & file & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Subdirectories
-    '        Dim dirs As String() = Array.Empty(Of String)()
-    '        Try
-    '            dirs = Directory.GetDirectories(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate directories in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each Directory2Copy In dirs
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim folderName As String =
-    '                Path.GetFileName(Directory2Copy.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-
-    '                Dim childDest As String = GetUniqueDestinationPath(Path.Combine(destDir, folderName))
-
-    '                aggregate.TotalDirectories += 1
-    '                aggregate.DirectoriesStarted += 1
-
-    '                Directory.CreateDirectory(childDest)
-    '                aggregate.DirectoriesCreated += 1
-    '                aggregate.CopiedFilePaths.Add(childDest)
-
-    '                Await CopyDirectoryRecursive(Directory2Copy, childDest, isCut, aggregate, ct)
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy directory: " & Directory2Copy & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Cut/move: delete source directory after children processed
-    '        If isCut AndAlso Not aggregate.WasCanceled Then
-    '            Try
-    '                ct.ThrowIfCancellationRequested()
-    '                Directory.Delete(sourceDir, recursive:=False)
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to delete source directory: " & sourceDir & " - " & ex.Message)
-    '            End Try
-    '        End If
-
-    '    End Function
-
-
-    '    Private Async Function CopyDirectoryRecursive(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    isCut As Boolean,
-    '    aggregate As CopyResult,
-    '    ct As CancellationToken,
-    '    Optional progress As Action(Of CopyResult) = Nothing
-    ') As Task
-
-    '        ct.ThrowIfCancellationRequested()
-
-    '        ' Files
-    '        Dim files As String() = Array.Empty(Of String)()
-    '        Try
-    '            files = Directory.GetFiles(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate files in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each file In files
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim fileName As String = Path.GetFileName(file)
-    '                Dim destPath As String = GetUniqueDestinationPath(Path.Combine(destDir, fileName))
-
-    '                Directory.CreateDirectory(Path.GetDirectoryName(destPath))
-    '                IO.File.Copy(file, destPath, overwrite:=False)
-
-    '                aggregate.FilesCopied += 1
-    '                aggregate.FilesProcessed += 1
-    '                aggregate.CopiedFilePaths.Add(destPath)
-
-    '                ' Pulse progress
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                If isCut Then
-    '                    ct.ThrowIfCancellationRequested()
-    '                    IO.File.Delete(file)
-    '                End If
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy file: " & file & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Subdirectories
-    '        Dim dirs As String() = Array.Empty(Of String)()
-    '        Try
-    '            dirs = Directory.GetDirectories(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate directories in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each subDir In dirs
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim folderName As String =
-    '                Path.GetFileName(subDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-
-    '                Dim childDest As String = GetUniqueDestinationPath(Path.Combine(destDir, folderName))
-
-    '                aggregate.TotalDirectories += 1
-    '                aggregate.DirectoriesStarted += 1
-
-    '                Directory.CreateDirectory(childDest)
-    '                aggregate.DirectoriesCreated += 1
-    '                aggregate.CopiedFilePaths.Add(childDest)
-
-    '                ' Pulse progress
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                Await CopyDirectoryRecursive(subDir, childDest, isCut, aggregate, ct, progress)
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy directory: " & subDir & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' Cut/move: delete source directory after children processed
-    '        If isCut AndAlso Not aggregate.WasCanceled Then
-    '            Try
-    '                ct.ThrowIfCancellationRequested()
-    '                Directory.Delete(sourceDir, recursive:=False)
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to delete source directory: " & sourceDir & " - " & ex.Message)
-    '            End Try
-    '        End If
-
-    '    End Function
-
-
-
-    '    Private Async Function CopyDirectoryRecursive(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    isCut As Boolean,
-    '    aggregate As CopyResult,
-    '    ct As CancellationToken,
-    '    Optional progress As Action(Of CopyResult) = Nothing
-    ') As Task
-
-    '        ct.ThrowIfCancellationRequested()
-
-    '        ' ------------------------------------------------------------
-    '        ' FILES
-    '        ' ------------------------------------------------------------
-    '        Dim files As String() = Array.Empty(Of String)()
-    '        Try
-    '            files = Directory.GetFiles(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate files in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each file In files
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim fileName As String = Path.GetFileName(file)
-    '                Dim destPath As String = GetUniqueDestinationPath(Path.Combine(destDir, fileName))
-
-    '                ' Early pulse BEFORE copying
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                Directory.CreateDirectory(Path.GetDirectoryName(destPath))
-    '                IO.File.Copy(file, destPath, overwrite:=False)
-
-    '                aggregate.FilesCopied += 1
-    '                aggregate.FilesProcessed += 1
-    '                aggregate.CopiedFilePaths.Add(destPath)
-
-    '                ' Pulse AFTER copying
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                If isCut Then
-    '                    ct.ThrowIfCancellationRequested()
-    '                    IO.File.Delete(file)
-    '                End If
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy file: " & file & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' ------------------------------------------------------------
-    '        ' SUBDIRECTORIES
-    '        ' ------------------------------------------------------------
-    '        Dim dirs As String() = Array.Empty(Of String)()
-    '        Try
-    '            dirs = Directory.GetDirectories(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate directories in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each subDir In dirs
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim folderName As String =
-    '                Path.GetFileName(subDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-
-    '                Dim childDest As String = GetUniqueDestinationPath(Path.Combine(destDir, folderName))
-
-    '                aggregate.TotalDirectories += 1
-    '                aggregate.DirectoriesStarted += 1
-
-    '                Directory.CreateDirectory(childDest)
-    '                aggregate.DirectoriesCreated += 1
-    '                aggregate.CopiedFilePaths.Add(childDest)
-
-    '                ' Pulse AFTER creating directory
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                Await CopyDirectoryRecursive(subDir, childDest, isCut, aggregate, ct, progress)
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy directory: " & subDir & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' ------------------------------------------------------------
-    '        ' CUT: delete source directory after children processed
-    '        ' ------------------------------------------------------------
-    '        If isCut AndAlso Not aggregate.WasCanceled Then
-    '            Try
-    '                ct.ThrowIfCancellationRequested()
-    '                Directory.Delete(sourceDir, recursive:=False)
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to delete source directory: " & sourceDir & " - " & ex.Message)
-    '            End Try
-    '        End If
-
-    '    End Function
-
-
-
-    '    Private Sub CopyDirectoryRecursive(
-    '    sourceDir As String,
-    '    destDir As String,
-    '    isCut As Boolean,
-    '    aggregate As CopyResult,
-    '    ct As CancellationToken,
-    '    Optional progress As Action(Of CopyResult) = Nothing
-    ')
-
-    '        ct.ThrowIfCancellationRequested()
-
-    '        ' ------------------------------------------------------------
-    '        ' FILES
-    '        ' ------------------------------------------------------------
-    '        Dim files As String() = Array.Empty(Of String)()
-    '        Try
-    '            files = Directory.GetFiles(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate files in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each file In files
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim fileName As String = Path.GetFileName(file)
-    '                Dim destPath As String = GetUniqueDestinationPath(Path.Combine(destDir, fileName))
-
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                Directory.CreateDirectory(Path.GetDirectoryName(destPath))
-    '                IO.File.Copy(file, destPath, overwrite:=False)
-
-    '                aggregate.FilesCopied += 1
-    '                aggregate.FilesProcessed += 1
-    '                aggregate.CopiedFilePaths.Add(destPath)
-
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                If isCut Then
-    '                    ct.ThrowIfCancellationRequested()
-    '                    IO.File.Delete(file)
-    '                End If
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy file: " & file & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        ' ------------------------------------------------------------
-    '        ' SUBDIRECTORIES
-    '        ' ------------------------------------------------------------
-    '        Dim dirs As String() = Array.Empty(Of String)()
-    '        Try
-    '            dirs = Directory.GetDirectories(sourceDir)
-    '        Catch ex As Exception
-    '            aggregate.Errors.Add("Failed to enumerate directories in: " & sourceDir & " - " & ex.Message)
-    '        End Try
-
-    '        For Each subDir In dirs
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Try
-    '                Dim folderName As String =
-    '                Path.GetFileName(subDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
-
-    '                Dim childDest As String = GetUniqueDestinationPath(Path.Combine(destDir, folderName))
-
-    '                aggregate.TotalDirectories += 1
-    '                aggregate.DirectoriesStarted += 1
-
-    '                Directory.CreateDirectory(childDest)
-    '                aggregate.DirectoriesCreated += 1
-    '                aggregate.CopiedFilePaths.Add(childDest)
-
-    '                If progress IsNot Nothing Then progress(aggregate)
-
-    '                CopyDirectoryRecursive(subDir, childDest, isCut, aggregate, ct, progress)
-
-    '            Catch ex As OperationCanceledException
-    '                aggregate.WasCanceled = True
-    '                Exit For
-
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to copy directory: " & subDir & " - " & ex.Message)
-    '            End Try
-    '        Next
-
-    '        If isCut AndAlso Not aggregate.WasCanceled Then
-    '            Try
-    '                ct.ThrowIfCancellationRequested()
-    '                Directory.Delete(sourceDir, recursive:=False)
-    '            Catch ex As Exception
-    '                aggregate.Errors.Add("Failed to delete source directory: " & sourceDir & " - " & ex.Message)
-    '            End Try
-    '        End If
-
-    '    End Sub
-
-
-
-    '    Private Async Function CopyDirectoryRecursiveUnified(
-    '    srcDir As String,
-    '    destDir As String,
-    '    isCut As Boolean,
-    '    result As CopyResult,
-    '    ct As CancellationToken,
-    '    progress As Action(Of CopyResult)
-    ') As Task
-
-    '        ct.ThrowIfCancellationRequested()
-
-    '        ' ------------------------------------------------------------
-    '        ' Copy files in this directory
-    '        ' ------------------------------------------------------------
-    '        For Each file In Directory.GetFiles(srcDir)
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Dim fileName As String = Path.GetFileName(file)
-    '            Dim destPath As String = GetUniqueDestinationPath(Path.Combine(destDir, fileName))
-
-    '            Try
-    '                progress?.Invoke(result) ' early pulse
-
-    '                IO.File.Copy(file, destPath, overwrite:=False)
-
-    '                result.FilesCopied += 1
-    '                result.FilesProcessed += 1
-    '                result.CopiedFilePaths.Add(destPath)
-
-    '                progress?.Invoke(result) ' after copy
-
-    '                If isCut Then
-    '                    IO.File.Delete(file)
-    '                End If
-
-    '            Catch ex As Exception
-    '                result.FilesSkipped += 1
-    '                result.Errors.Add($"Failed to copy file '{file}': {ex.Message}")
-    '                progress?.Invoke(result)
-    '            End Try
-    '        Next
-
-    '        ' ------------------------------------------------------------
-    '        ' Recurse into subdirectories
-    '        ' ------------------------------------------------------------
-    '        For Each subDir In Directory.GetDirectories(srcDir)
-    '            ct.ThrowIfCancellationRequested()
-
-    '            Dim folderName As String = Path.GetFileName(subDir)
-    '            Dim newDest As String = GetUniqueDestinationPath(Path.Combine(destDir, folderName))
-
-    '            Directory.CreateDirectory(newDest)
-    '            result.DirectoriesCreated += 1
-    '            result.CopiedFilePaths.Add(newDest)
-
-    '            result.TotalDirectories += 1
-    '            result.DirectoriesStarted += 1
-
-    '            progress?.Invoke(result)
-
-    '            Await CopyDirectoryRecursiveUnified(subDir, newDest, isCut, result, ct, progress)
-
-    '            If isCut Then
-    '                Directory.Delete(subDir, recursive:=True)
-    '            End If
-    '        Next
-    '    End Function
-
-
-
     Private Sub CopyDirectoryRecursiveUnified(
     srcDir As String,
     destDir As String,
@@ -5990,33 +5403,9 @@ Public Class Form1
         Next
     End Sub
 
-
-
-
-
     ' ================================================================
     ' Auto-rename helper (Explorer-style unique destination)
     ' ================================================================
-    'Private Function GetUniqueDestinationPath(basePath As String) As String
-    '    If Not File.Exists(basePath) AndAlso Not IO.Directory.Exists(basePath) Then
-    '        Return basePath
-    '    End If
-
-    '    Dim directory As String = Path.GetDirectoryName(basePath)
-    '    Dim name As String = Path.GetFileNameWithoutExtension(basePath)
-    '    Dim ext As String = Path.GetExtension(basePath)
-
-    '    Dim counter As Integer = 2
-    '    While True
-    '        Dim candidate As String = Path.Combine(directory, $"{name} ({counter}){ext}")
-    '        If Not File.Exists(candidate) AndAlso Not IO.Directory.Exists(candidate) Then
-    '            Return candidate
-    '        End If
-    '        counter += 1
-    '    End While
-    'End Function
-
-
 
     Private Function GetUniqueDestinationPath(basePath As String) As String
         ' If the path does not exist, return it immediately
@@ -6043,13 +5432,6 @@ Public Class Form1
         ' Compiler‑required fallback (never reached)
         Return basePath
     End Function
-
-
-
-
-
-
-
 
 
     Public Async Function CopyDirectory(
@@ -6206,175 +5588,6 @@ Public Class Form1
         lvFiles.SelectedItems(0).BeginEdit() ' triggers inline rename
 
     End Sub
-
-    'Private Async Sub Delete_Click(sender As Object, e As EventArgs)
-
-    '    ' ------------------------------------------------------------
-    '    ' Prevent delete when viewing the Recycle Bin virtual folder
-    '    ' ------------------------------------------------------------
-    '    If currentFolder IsNot Nothing AndAlso
-    '       currentFolder.StartsWith("shell:::{645FF040-5081-101B-9F08-00AA002F954E}",
-    '                                StringComparison.OrdinalIgnoreCase) Then
-
-    '        ShowStatus(StatusPad & IconWarning &
-    '                   " Delete is handled by Windows Explorer when viewing the Recycle Bin.")
-    '        Return
-    '    End If
-
-    '    If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-    '    Dim selected = lvFiles.SelectedItems.Cast(Of ListViewItem)().ToList()
-    '    Dim count As Integer = selected.Count
-
-    '    Dim msg As String =
-    '        If(count = 1,
-    '           $"Are you sure you want to move '{selected(0).Text}' to the Recycle Bin?",
-    '           $"Are you sure you want to move these {count} items to the Recycle Bin?")
-
-    '    Dim confirm = MessageBox.Show(msg, "Move to Recycle Bin",
-    '                                  MessageBoxButtons.YesNo,
-    '                                  MessageBoxIcon.Question)
-
-    '    If confirm <> DialogResult.Yes Then Exit Sub
-
-    '    ShowStatus(StatusPad & IconDelete & $"  Moving {count} item(s) to Recycle Bin...")
-
-    '    Dim firstIndex As Integer = selected(0).Index
-
-    '    For Each item In selected
-    '        Dim fullPath As String = CStr(item.Tag)
-
-    '        If Not Path.IsPathRooted(fullPath) Then
-    '            ShowStatus(StatusPad & IconWarning &
-    '                       " Delete failed: Path must be absolute.")
-    '            Continue For
-    '        End If
-
-    '        If IsProtectedPathOrFolder(fullPath) Then
-    '            ShowStatus(StatusPad & IconProtect &
-    '                       " Deletion prevented for protected path: " & fullPath)
-    '            Continue For
-    '        End If
-
-    '        Try
-    '            If ShellInterop.SendToRecycleBin(fullPath) Then
-    '                ShowStatus(StatusPad & IconDelete &
-    '                           " Sent to Recycle Bin: " & item.Text)
-    '            Else
-    '                ShowStatus(StatusPad & IconError &
-    '                           " Failed to send to Recycle Bin: " & item.Text)
-    '            End If
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError &
-    '                       " Delete failed: " & ex.Message)
-    '            Debug.WriteLine("Delete_Click Error: " & ex.Message)
-    '        End Try
-    '    Next
-
-    '    Await PopulateFiles(currentFolder)
-
-    '    If lvFiles.Items.Count > 0 Then
-    '        Dim newIndex As Integer = Math.Min(firstIndex, lvFiles.Items.Count - 1)
-    '        lvFiles.Items(newIndex).Selected = True
-    '        lvFiles.Items(newIndex).Focused = True
-    '        lvFiles.Items(newIndex).EnsureVisible()
-    '    End If
-
-    '    lvFiles.Focus()
-    '    UpdateEditButtonsAndMenus()
-
-    '    'If lvFiles.SelectedItems.Count = 0 Then Exit Sub
-
-    '    '' If user is on the Recycle Bin node, do nothing.
-    '    'If currentFolder IsNot Nothing AndAlso
-    '    '   currentFolder.StartsWith("shell:::{645FF040-5081-101B-9F08-00AA002F954E}",
-    '    '                    StringComparison.OrdinalIgnoreCase) Then
-
-    '    '    ShowStatus(StatusPad & IconWarning &
-    '    '       " Delete is handled by Windows Explorer when viewing the Recycle Bin.")
-    '    '    Return
-    '    'End If
-
-
-    '    'Dim selected = lvFiles.SelectedItems.Cast(Of ListViewItem)().ToList()
-    '    'Dim count As Integer = selected.Count
-
-    '    '' Confirm deletion
-    '    'Dim msg As String =
-    '    'If(count = 1,
-    '    '   $"Are you sure you want to delete '{selected(0).Text}'?",
-    '    '   $"Are you sure you want to delete these {count} items?")
-
-    '    'Dim confirm = MessageBox.Show(msg, "Delete",
-    '    '                          MessageBoxButtons.YesNo,
-    '    '                          MessageBoxIcon.Warning)
-
-    '    'If confirm <> DialogResult.Yes Then Exit Sub
-
-    '    'ShowStatus(StatusPad & IconDelete & $"  Deleting {count} items.")
-
-    '    '' Remember index of first selected item for post-refresh selection
-    '    'Dim firstIndex As Integer = selected(0).Index
-
-    '    'For Each item In selected
-    '    '    Dim fullPath As String = CStr(item.Tag)
-
-    '    '    ' Reject relative paths
-    '    '    If Not Path.IsPathRooted(fullPath) Then
-    '    '        ShowStatus(StatusPad & IconWarning &
-    '    '               " Delete failed: Path must be absolute. Example: C:\folder")
-    '    '        Continue For
-    '    '    End If
-
-    '    '    ' Protected path check
-    '    '    If IsProtectedPathOrFolder(fullPath) Then
-    '    '        ShowStatus(StatusPad & IconProtect &
-    '    '               " Deletion prevented for protected path: " & fullPath)
-    '    '        Continue For
-    '    '    End If
-
-    '    '    Try
-
-    '    '        If Directory.Exists(fullPath) Then
-    '    '            Directory.Delete(fullPath, recursive:=True)
-    '    '            ShowStatus(StatusPad & IconDelete &
-    '    '                   " Deleted folder: " & item.Text)
-
-    '    '        ElseIf IO.File.Exists(fullPath) Then
-    '    '            IO.File.Delete(fullPath)
-    '    '            ShowStatus(StatusPad & IconDelete &
-    '    '                   " Deleted file: " & item.Text)
-
-    '    '        Else
-    '    '            ShowStatus(StatusPad & IconWarning &
-    '    '                   " Path not found: " & fullPath)
-    '    '        End If
-
-    '    '    Catch ex As Exception
-    '    '        ShowStatus(StatusPad & IconError &
-    '    '               " Delete failed: " & ex.Message)
-    '    '        Debug.WriteLine("Delete_Click Error: " & ex.Message)
-    '    '    End Try
-    '    'Next
-
-    '    '' Refresh the folder
-    '    'Await PopulateFiles(currentFolder)
-
-    '    '' ------------------------------------------------------------
-    '    '' Select the next logical item (Explorer-style)
-    '    '' ------------------------------------------------------------
-    '    'If lvFiles.Items.Count > 0 Then
-    '    '    Dim newIndex As Integer = Math.Min(firstIndex, lvFiles.Items.Count - 1)
-    '    '    lvFiles.Items(newIndex).Selected = True
-    '    '    lvFiles.Items(newIndex).Focused = True
-    '    '    lvFiles.Items(newIndex).EnsureVisible()
-    '    'End If
-
-    '    'lvFiles.Focus()
-    '    'UpdateEditButtonsAndMenus()
-
-    'End Sub
 
     Private Async Sub Delete_Click(sender As Object, e As EventArgs)
 
@@ -6698,45 +5911,6 @@ Public Class Form1
 
     End Sub
 
-    'Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
-
-    '    Dim node As TreeNode = e.Node
-    '    If node Is Nothing Then Exit Sub
-
-    '    Dim path2Nav As String = TryCast(node.Tag, String)
-    '    If String.IsNullOrEmpty(path2Nav) Then Exit Sub
-
-    '    ' Determine if THIS node is a drive root (e.g., "C:\")
-    '    Dim isDriveRoot As Boolean =
-    '    Path.GetFullPath(path2Nav).TrimEnd("\"c).Length = 2 AndAlso
-    '    path2Nav(1) = ":"c
-
-    '    If isDriveRoot Then
-    '        Try
-    '            Dim driveInfo As New DriveInfo(path2Nav)
-
-    '            If driveInfo.IsReady = False Then
-    '                tvFolders.BeginUpdate()
-    '                tvFolders.Nodes.Remove(node)
-    '                tvFolders.EndUpdate()
-
-    '                ShowStatus(StatusPad & IconWarning &
-    '                       " Drive is not ready and has been removed.")
-    '                Return
-    '            End If
-
-    '        Catch ex As Exception
-    '            ShowStatus(StatusPad & IconError &
-    '                   " NavTree: Error accessing drive: " & ex.Message)
-    '            Debug.WriteLine("NavTree AfterSelect: Error accessing drive: " & ex.Message)
-    '            Return
-    '        End Try
-    '    End If
-
-    '    ' Drive is ready OR node is not a drive root → navigate normally
-    '    NavigateTo(path2Nav)
-
-    'End Sub
 
 
     Private Sub NavigateToSelectedFolderTreeView_AfterSelect(sender As Object, e As TreeViewEventArgs)
@@ -6790,19 +5964,6 @@ Public Class Form1
         NavigateTo(path2Nav)
 
     End Sub
-
-
-
-
-    'Private Sub NavigateToVirtualFolder(shellPath As String)
-    '    ' TODO: Implement virtual folder navigation
-    '    ShowStatus("Opening virtual folder: " & shellPath)
-    'End Sub
-
-
-
-
-
 
 
     Private Async Function PopulateFiles(path As String) As Task
@@ -6914,18 +6075,6 @@ Public Class Form1
     ' LISTVIEW ITEM BUILDERS
     ' ============================================================
 
-    'Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
-    '    Dim item As New ListViewItem(di.Name)
-
-    '    item.SubItems.Add("Folder")
-    '    item.SubItems.Add("") ' No size
-    '    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = di.FullName
-    '    item.ImageKey = "Folder"
-
-    '    Return item
-    'End Function
-
     Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
         Dim item As New ListViewItem(di.Name)
 
@@ -6952,23 +6101,6 @@ Public Class Form1
         Return item
     End Function
 
-
-
-    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-    '    Dim item As New ListViewItem(fi.Name)
-
-    '    Dim ext = fi.Extension.ToLowerInvariant()
-    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-    '    item.SubItems.Add(category)
-    '    item.SubItems.Add(FormatSize(fi.Length))
-    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = fi.FullName
-
-    '    item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
-
-    '    Return item
-    'End Function
 
 
     Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
@@ -7177,14 +6309,12 @@ Public Class Form1
         End If
     End Sub
 
-
     Private Sub HandleRenameOfCurrentFolder(oldPath As String, newPath As String)
         If String.Equals(oldPath, currentFolder, StringComparison.OrdinalIgnoreCase) Then
             Dim navTarget As String = ResolveNavigationTarget(newPath)
             NavigateTo(navTarget, recordHistory:=True)
         End If
     End Sub
-
 
     Private Function ValidateNewNameForFile(oldFullPath As String, newName As String) _
     As (IsValid As Boolean, ErrorMessage As String)
@@ -7281,7 +6411,6 @@ Public Class Form1
         End Try
     End Function
 
-
     Public Async Sub NavigateTo(path As String, Optional recordHistory As Boolean = True)
         ' Navigate to the specified folder path.
         ' Updates the current folder, path textbox, and file list.
@@ -7323,7 +6452,6 @@ Public Class Form1
         End If
 
     End Sub
-
 
     Private Sub GoToFolderOrOpenFile(path As String)
         If String.IsNullOrWhiteSpace(path) Then
@@ -7409,213 +6537,9 @@ Public Class Form1
 
     End Sub
 
-    'Private Async Sub DeleteFileOrDirectory(path2Delete As String)
-    '    ' Reject relative paths outright
-    '    If Not Path.IsPathRooted(path2Delete) Then
-    '        ShowStatus(StatusPad & IconWarning & "  Delete failed: Path must be absolute. Example: C:\folder")
-    '        Exit Sub
-    '    End If
-
-    '    ' Check if the path is in the protected list
-    '    If IsProtectedPathOrFolder(path2Delete) Then
-    '        ' Navigate to the protected path so the user can see it was not deleted
-    '        NavigateTo(path2Delete)
-    '        ' Inform the user that deletion was prevented
-    '        ShowStatus(StatusPad & IconProtect & "  Deletion prevented for protected path: " & path2Delete)
-    '        Exit Sub
-    '    End If
-
-    '    Try
-    '        ' Check if it's a file
-    '        If IO.File.Exists(path2Delete) Then
-    '            ' Go to the directory of the file to be deleted so the user can see what is about to be deleted.
-    '            Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
-    '            NavigateTo(destDir)
-
-    '            ' Make the user confirm file deletion.
-    '            Dim fileName As String = Path.GetFileName(path2Delete)
-    '            Dim confirmMsg As String = "Are you sure you want to delete the file:" & Environment.NewLine &
-    '                                    "''" & fileName & "''?"
-    '            Dim result = MessageBox.Show(confirmMsg,
-    '                                     "Confirm File Deletion",
-    '                                     MessageBoxButtons.YesNo,
-    '                                     MessageBoxIcon.Question)
-    '            If result <> DialogResult.Yes Then Exit Sub
-
-    '            'IO.File.Delete(path2Delete)
-
-    '            If ShellInterop.SendToRecycleBin(path2Delete) Then
-    '                ShowStatus(StatusPad & IconDelete &
-    '           "  Sent to Recycle Bin: " & Path.GetFileName(path2Delete))
-    '            Else
-    '                ShowStatus(StatusPad & IconError &
-    '           "  Failed to send to Recycle Bin: " & path2Delete)
-    '            End If
-
-    '            ' Refresh the view to show the file is deleted
-    '            Await PopulateFiles(destDir) ' Await the async method
-
-    '            ShowStatus(StatusPad & IconDelete & "  Deleted file: " & fileName)
-
-    '            ' Check if it's a directory
-    '        ElseIf Directory.Exists(path2Delete) Then
-    '            ' Navigate into the folder to be deleted
-    '            NavigateTo(path2Delete)
-
-    '            ' Get the parent directory so we can navigate there after deletion
-    '            Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
-
-    '            ' Ask the user to confirm deletion
-    '            Dim folderName As String = Path.GetFileName(path2Delete)
-    '            Dim confirmMsg As String =
-    '            "Are you sure you want to delete the following folder:" & Environment.NewLine &
-    '            "''" & folderName & "'' and all of its contents?"
-    '            Dim result = MessageBox.Show(confirmMsg,
-    '                                     "Confirm Folder Deletion",
-    '                                     MessageBoxButtons.YesNo,
-    '                                     MessageBoxIcon.Question)
-    '            If result <> DialogResult.Yes Then Exit Sub
-
-
-    '            'Directory.Delete(path2Delete, recursive:=True)
-
-    '            If ShellInterop.SendToRecycleBin(path2Delete) Then
-    '                ShowStatus(StatusPad & IconDelete &
-    '           "  Sent to Recycle Bin: " & Path.GetFileName(path2Delete))
-    '            Else
-    '                ShowStatus(StatusPad & IconError &
-    '           "  Failed to send to Recycle Bin: " & path2Delete)
-    '            End If
-
-    '            ' Navigate to the parent so the user sees the result
-    '            NavigateTo(parentDir, True)
-
-    '            ' Refresh the view to show the folder is deleted
-    '            Await PopulateFiles(parentDir) ' Await the async method
-
-    '            ShowStatus(StatusPad & IconDelete & "  Deleted folder: " & folderName)
-
-    '        Else
-    '            ShowStatus(StatusPad & IconWarning & "  Delete failed: Path not found.")
-    '        End If
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & " Delete failed: " & ex.Message)
-    '        Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
-    '    End Try
-    'End Sub
-
-    'Private Async Sub DeleteFileOrDirectory(path2Delete As String)
-
-    '    ' ------------------------------------------------------------
-    '    ' Reject relative paths outright
-    '    ' ------------------------------------------------------------
-    '    If Not Path.IsPathRooted(path2Delete) Then
-    '        ShowStatus(StatusPad & IconWarning &
-    '               "  Delete failed: Path must be absolute. Example: C:\folder")
-    '        Exit Sub
-    '    End If
-
-    '    ' ------------------------------------------------------------
-    '    ' Protected path check
-    '    ' ------------------------------------------------------------
-    '    If IsProtectedPathOrFolder(path2Delete) Then
-    '        NavigateTo(path2Delete)
-    '        ShowStatus(StatusPad & IconProtect &
-    '               "  Deletion prevented for protected path: " & path2Delete)
-    '        Exit Sub
-    '    End If
-
-    '    Try
-    '        ' ------------------------------------------------------------
-    '        ' FILE DELETE
-    '        ' ------------------------------------------------------------
-    '        If IO.File.Exists(path2Delete) Then
-
-    '            Dim destDir As String = IO.Path.GetDirectoryName(path2Delete)
-    '            NavigateTo(destDir)
-
-    '            Dim fileName As String = Path.GetFileName(path2Delete)
-    '            Dim confirmMsg As String =
-    '            "Are you sure you want to move the file to the Recycle Bin:" &
-    '            Environment.NewLine &
-    '            "''" & fileName & "''?"
-
-    '            Dim result = MessageBox.Show(confirmMsg,
-    '                                     "Move to Recycle Bin",
-    '                                     MessageBoxButtons.YesNo,
-    '                                     MessageBoxIcon.Question)
-
-    '            If result <> DialogResult.Yes Then Exit Sub
-
-    '            If ShellInterop.SendToRecycleBin(path2Delete) Then
-    '                ShowStatus(StatusPad & IconDelete &
-    '                       "  Sent to Recycle Bin: " & fileName)
-    '            Else
-    '                ShowStatus(StatusPad & IconError &
-    '                       "  Failed to send to Recycle Bin: " & path2Delete)
-    '            End If
-
-    '            Await PopulateFiles(destDir)
-    '            Exit Sub
-    '        End If
-
-    '        ' ------------------------------------------------------------
-    '        ' FOLDER DELETE
-    '        ' ------------------------------------------------------------
-    '        If Directory.Exists(path2Delete) Then
-
-    '            NavigateTo(path2Delete)
-
-    '            Dim parentDir As String = IO.Path.GetDirectoryName(path2Delete)
-    '            Dim folderName As String = Path.GetFileName(path2Delete)
-
-    '            Dim confirmMsg As String =
-    '            "Are you sure you want to move the following folder to the Recycle Bin:" &
-    '            Environment.NewLine &
-    '            "''" & folderName & "'' and all of its contents?"
-
-    '            Dim result = MessageBox.Show(confirmMsg,
-    '                                     "Move Folder to Recycle Bin",
-    '                                     MessageBoxButtons.YesNo,
-    '                                     MessageBoxIcon.Question)
-
-    '            If result <> DialogResult.Yes Then Exit Sub
-
-    '            If ShellInterop.SendToRecycleBin(path2Delete) Then
-    '                ShowStatus(StatusPad & IconDelete &
-    '                       "  Sent to Recycle Bin: " & folderName)
-    '            Else
-    '                ShowStatus(StatusPad & IconError &
-    '                       "  Failed to send to Recycle Bin: " & path2Delete)
-    '            End If
-
-    '            NavigateTo(parentDir, True)
-    '            Await PopulateFiles(parentDir)
-    '            Exit Sub
-    '        End If
-
-    '        ' ------------------------------------------------------------
-    '        ' PATH NOT FOUND
-    '        ' ------------------------------------------------------------
-    '        ShowStatus(StatusPad & IconWarning &
-    '               "  Delete failed: Path not found.")
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               " Delete failed: " & ex.Message)
-    '        Debug.WriteLine("DeleteFileOrDirectory Error: " & ex.Message)
-    '    End Try
-
-    'End Sub
-
-
-
-
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
         PerformRename(sourcePath, newName)
     End Sub
-
 
     Private Function SearchHelp(term As String) As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
         term = term.Trim().ToLowerInvariant()
@@ -7631,7 +6555,6 @@ Public Class Form1
               End Function).
         ToList()
     End Function
-
 
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
         ' =============================================================
@@ -7697,7 +6620,6 @@ Public Class Form1
         Next
     End Sub
 
-
     Public Sub ShowStatus(message As String)
         If lblStatus Is Nothing Then
             Debug.WriteLine("lblStatus control is not initialized.")
@@ -7729,93 +6651,6 @@ Public Class Form1
         txtAddressBar.SelectionStart = txtAddressBar.Text.Length
     End Sub
 
-    'Private Sub HandleFindNextCommand()
-
-    '    ' No active search
-    '    If SearchResults.Count = 0 Then
-    '        ShowStatus(
-    '        StatusPad & IconDialog &
-    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
-    '    )
-    '        Return
-    '    End If
-
-    '    ' Advance index with wraparound
-    '    SearchIndex += 1
-    '    If SearchIndex >= SearchResults.Count Then
-    '        SearchIndex = 0
-    '    End If
-
-    '    ApplySearchHighlights()
-
-
-
-    '    ' Select the next result
-    '    lvFiles.SelectedItems.Clear()
-
-
-    '    'RestoreBackground()
-
-    '    Dim nextPath As String = SearchResults(SearchIndex)
-    '    SelectListViewItemByPath(nextPath)
-
-    '    'HighlightSearchMatches()
-    '    'HighlightCurrentResult()
-
-    '    Dim fileName As String = Path.GetFileNameWithoutExtension(nextPath)
-
-    '    ShowSearchHud()
-
-    'End Sub
-
-
-
-
-
-    'Private Sub HandleFindNextCommand()
-
-    '    ' No active search
-    '    If SearchResults.Count = 0 Then
-    '        ShowStatus(
-    '        StatusPad & IconDialog &
-    '        "  No previous search results. Press Ctrl+F or enter: find [search_term] to start a search."
-    '    )
-    '        Return
-    '    End If
-
-    '    ' Advance index with wraparound
-    '    SearchIndex += 1
-    '    If SearchIndex >= SearchResults.Count Then
-    '        SearchIndex = 0
-    '    End If
-
-    '    '' Select the next result FIRST
-    '    'lvFiles.SelectedItems.Clear()
-
-    '    Dim nextPath As String = SearchResults(SearchIndex)
-    '    'SelectListViewItemByPath(nextPath)
-
-    '    '' Now apply all highlights in ONE BeginUpdate/EndUpdate block
-    '    'ApplySearchHighlights()
-
-    '    '' HUD
-    '    'ShowSearchHud()
-
-    '    ' 1. Move selection
-    '    lvFiles.BeginUpdate()
-    '    lvFiles.SelectedItems.Clear()
-    '    SelectListViewItemByPath(nextPath)
-    '    lvFiles.EndUpdate()
-
-    '    ' 2. Apply all highlight rules in one pass
-    '    ApplySearchHighlights()
-
-    '    ' 3. HUD
-    '    ShowSearchHud()
-
-    'End Sub
-
-
     Private Sub HandleFindNextCommand()
 
         If SearchResults.Count = 0 Then
@@ -7832,13 +6667,6 @@ Public Class Form1
 
         SelectAndHighlightSearchResult(SearchResults(SearchIndex))
     End Sub
-
-
-
-
-
-
-
 
     Private Sub ApplySearchHighlights()
         'lvFiles.BeginUpdate()
@@ -8440,167 +7268,30 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
-    'Private Sub UpdateTreeRoots()
-    '    ' Update the TreeView with current drives and special folders at the top level.
-
-    '    tvFolders.BeginUpdate()
-
-    '    ' Clear existing nodes and add new ones for:
-    '    tvFolders.Nodes.Clear()
-
-    '    ' --- Easy Access node ---
-    '    Dim easyAccessNode As New TreeNode("Easy Access") With {
-    '        .ImageKey = "EasyAccess",
-    '        .SelectedImageKey = "EasyAccess",
-    '        .StateImageIndex = 0   ' ▶ collapsed
-    '    }
-
-    '    ' Define special folders
-    '    Dim specialFolders As (String, Environment.SpecialFolder)() = {
-    '        ("Documents", Environment.SpecialFolder.MyDocuments),
-    '        ("Music", Environment.SpecialFolder.MyMusic),
-    '        ("Pictures", Environment.SpecialFolder.MyPictures),
-    '        ("Videos", Environment.SpecialFolder.MyVideos),
-    '        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
-    '        ("Desktop", Environment.SpecialFolder.Desktop)
-    '    }
-
-    '    For Each sf In specialFolders
-    '        Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
-
-    '        ' Handle Downloads manually
-    '        If sf.Item1 = "Downloads" Then
-    '            specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
-    '        End If
-
-    '        If Directory.Exists(specialFolderPath) Then
-
-    '            Dim node As New TreeNode(sf.Item1) With {
-    '                .Tag = specialFolderPath,
-    '                .ImageKey = sf.Item1,
-    '                .SelectedImageKey = sf.Item1
-    '            }
-
-    '            If HasSubdirectories(specialFolderPath) Then
-    '                node.Nodes.Add("Loading...")
-    '                node.StateImageIndex = 0   ' ▶ collapsed
-    '            Else
-    '                node.StateImageIndex = 2  ' no arrow
-    '            End If
-
-    '            easyAccessNode.Nodes.Add(node)
-    '        End If
-    '    Next
-
-    '    ' --- User Easy Access entries ---
-    '    Dim userEntries = LoadEasyAccessEntries()
-
-    '    For Each entry In userEntries
-    '        Dim node As New TreeNode(entry.Name) With {
-    '            .Tag = entry.Path,
-    '            .ImageKey = "Folder",
-    '            .SelectedImageKey = "Folder"
-    '        }
-
-    '        If HasSubdirectories(entry.Path) Then
-    '            node.Nodes.Add("Loading...")
-    '            node.StateImageIndex = 0
-    '        Else
-    '            node.StateImageIndex = 2
-    '        End If
-
-    '        easyAccessNode.Nodes.Add(node)
-    '    Next
-
-    '    ' Add Easy Access to tree
-    '    tvFolders.Nodes.Add(easyAccessNode)
-
-    '    ' Expand Easy Access and update arrow
-    '    easyAccessNode.Expand()
-    '    easyAccessNode.StateImageIndex = 1   ' ▼ expanded
-
-    '    ' --- Drives ---
-    '    For Each di In DriveInfo.GetDrives()
-    '        If di.IsReady Then
-    '            Try
-    '                'Dim freeSpace As String = FormatBytes(di.AvailableFreeSpace)
-    '                Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
-
-    '                Dim totalSpace As String = FormatSize(di.TotalSize)
-
-
-    '                Dim used = di.TotalSize - di.AvailableFreeSpace
-    '                Dim bar = BuildUsageBar(used, di.TotalSize, 4)
-
-
-
-    '                Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
-
-    '                Dim rootNode As New TreeNode(displayText) With {
-    '                    .Tag = di.RootDirectory.FullName
-    '                }
-
-    '                If di.DriveType = DriveType.CDRom Then
-    '                    rootNode.ImageKey = "Optical"
-    '                    rootNode.SelectedImageKey = "Optical"
-    '                Else
-    '                    rootNode.ImageKey = "Drive"
-    '                    rootNode.SelectedImageKey = "Drive"
-    '                End If
-
-    '                If HasSubdirectories(di.RootDirectory.FullName) Then
-    '                    rootNode.Nodes.Add("Loading...")
-    '                    rootNode.StateImageIndex = 0   ' ▶ collapsed
-    '                Else
-    '                    rootNode.StateImageIndex = 2  ' no arrow
-    '                End If
-
-    '                tvFolders.Nodes.Add(rootNode)
-
-    '            Catch ex As IOException
-    '                Debug.WriteLine($"Error accessing drive {di.Name}: {ex.Message}")
-    '            Catch ex As UnauthorizedAccessException
-    '                Debug.WriteLine($"Access denied to drive {di.Name}: {ex.Message}")
-    '            Catch ex As Exception
-    '                Debug.WriteLine($"Unexpected error with drive {di.Name}: {ex.Message}")
-    '            End Try
-    '        Else
-    '            Debug.WriteLine($"Drive {di.Name} is not ready.")
-    '        End If
-    '    Next
-
-    '    tvFolders.EndUpdate()
-
-    'End Sub
-
-
-
     Private Sub UpdateTreeRoots()
         tvFolders.BeginUpdate()
         tvFolders.Nodes.Clear()
 
-
         Dim IconSize = GetScaledIconSize(Me)
-
 
         ' ============================================================
         ' EASY ACCESS ROOT
         ' ============================================================
         Dim easyAccessNode As New TreeNode("Easy Access") With {
-        .ImageKey = "EasyAccess",
-        .SelectedImageKey = "EasyAccess",
-        .StateImageIndex = 0
-    }
+            .ImageKey = "EasyAccess",
+            .SelectedImageKey = "EasyAccess",
+            .StateImageIndex = 0
+        }
 
         ' Special folders
         Dim specialFolders As (String, Environment.SpecialFolder)() = {
-        ("Documents", Environment.SpecialFolder.MyDocuments),
-        ("Music", Environment.SpecialFolder.MyMusic),
-        ("Pictures", Environment.SpecialFolder.MyPictures),
-        ("Videos", Environment.SpecialFolder.MyVideos),
-        ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
-        ("Desktop", Environment.SpecialFolder.Desktop)
-    }
+            ("Documents", Environment.SpecialFolder.MyDocuments),
+            ("Music", Environment.SpecialFolder.MyMusic),
+            ("Pictures", Environment.SpecialFolder.MyPictures),
+            ("Videos", Environment.SpecialFolder.MyVideos),
+            ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
+            ("Desktop", Environment.SpecialFolder.Desktop)
+        }
 
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
@@ -8612,8 +7303,8 @@ Public Class Form1
 
             If Directory.Exists(specialFolderPath) Then
                 Dim node As New TreeNode(sf.Item1) With {
-                .Tag = specialFolderPath
-            }
+                    .Tag = specialFolderPath
+                }
 
                 ' --- Real Explorer icon ---
                 'Dim icon = ShellInterop.GetIconForPath(specialFolderPath, ShellInterop.IconSize.Small)
@@ -8657,8 +7348,8 @@ Public Class Form1
 
         For Each entry In userEntries
             Dim node As New TreeNode(entry.Name) With {
-            .Tag = entry.Path
-        }
+                .Tag = entry.Path
+            }
 
             ' --- Real Explorer icon ---
             'Dim icon = ShellInterop.GetIconForPath(entry.Path, ShellInterop.IconSize.Small)
@@ -8703,8 +7394,8 @@ Public Class Form1
                     Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
 
                     Dim rootNode As New TreeNode(displayText) With {
-                    .Tag = di.RootDirectory.FullName
-                }
+                        .Tag = di.RootDirectory.FullName
+                    }
 
                     ' --- Real Explorer drive icon ---
                     'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
@@ -8752,14 +7443,13 @@ Public Class Form1
         Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
 
         Dim recycleNode As New TreeNode("Recycle Bin") With {
-    .Tag = recycleBinPath
-}
+            .Tag = recycleBinPath
+        }
 
         'Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
 
         'Dim sizePix = GetScaledIconSize(Me)
         Dim rbIcon = ShellInterop.GetRecycleBinIcon(IconSize)
-
 
 
         If rbIcon IsNot Nothing Then
@@ -8777,20 +7467,8 @@ Public Class Form1
         recycleNode.StateImageIndex = 2
         tvFolders.Nodes.Add(recycleNode)
 
-
-
         tvFolders.EndUpdate()
     End Sub
-
-
-
-
-
-
-
-
-
-
 
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
@@ -8894,11 +7572,9 @@ Public Class Form1
         Return current.Substring(root.Length)
     End Function
 
-
     ' ============================================================
     '  EASY ACCESS PINNING SYSTEM — REFINED & COMPLETE
     ' ============================================================
-
 
     Private Function NormalizePath(p As String) As String
         If String.IsNullOrWhiteSpace(p) Then Return ""
@@ -9010,7 +7686,6 @@ Public Class Form1
     ' ------------------------------------------------------------
     '  Pin Button State
     ' ------------------------------------------------------------
-
 
     Private Sub UpdatePinButtonState()
         btnPin.Enabled = False
@@ -9128,21 +7803,21 @@ Public Class Form1
     '  Toggle Pin
     ' ------------------------------------------------------------
 
-    Private Sub TogglePin(path As String)
-        If String.IsNullOrWhiteSpace(path) Then Exit Sub
-        If Not Directory.Exists(path) Then Exit Sub
-        If IsSpecialFolder(path) Then Exit Sub
+    'Private Sub TogglePin(path As String)
+    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
+    '    If Not Directory.Exists(path) Then Exit Sub
+    '    If IsSpecialFolder(path) Then Exit Sub
 
-        Dim name As String = GetFolderDisplayName(path)
+    '    Dim name As String = GetFolderDisplayName(path)
 
-        If IsPinned(path) Then
-            RemoveFromEasyAccess(path)
-        Else
-            AddToEasyAccess(name, path)
-        End If
+    '    If IsPinned(path) Then
+    '        RemoveFromEasyAccess(path)
+    '    Else
+    '        AddToEasyAccess(name, path)
+    '    End If
 
-        RefreshPinUI()
-    End Sub
+    '    RefreshPinUI()
+    'End Sub
 
     ' ------------------------------------------------------------
     '  Determine Pinnable Target
@@ -9189,16 +7864,7 @@ Public Class Form1
         Return Nothing
     End Function
 
-
     Private Sub InitApp()
-
-        'deleteEngine = New Explorer.Engines.DeleteEngine(
-        'Me.Handle,
-        'HelpPanel,
-        'Sub(msg) ShowStatus(StatusPad & msg))
-
-
-
 
         Me.Text = "File Explorer - Code with Joe"
 
@@ -9224,13 +7890,12 @@ Public Class Form1
 
         InitializeHelpPanel()
 
-
         ' HelpPanel is now fully created and not Nothing
         deleteEngine = New Explorer.Engines.DeleteEngine(
-        Me.Handle,
-        HelpPanel,
-        Sub(msg) ShowStatus(StatusPad & msg)
-    )
+            Me.Handle,
+            HelpPanel,
+            Sub(msg) ShowStatus(StatusPad & msg)
+        )
 
 
         '  Start in User Profile folder
@@ -9360,7 +8025,6 @@ Public Class Form1
         RestoreAddressBar()
     End Sub
 
-
     Private Sub HandleDrivesCommand(parts As String())
         Try
             ShowDriveOverview()
@@ -9372,62 +8036,6 @@ Public Class Form1
 
         RestoreAddressBar()
     End Sub
-
-
-    'Private Sub HandleFindCommand(parts As String())
-    '    Try
-    '        ' --- 1. Require a search term
-    '        If parts.Length < 2 Then
-    '            ShowStatus(StatusPad & IconDialog &
-    '                   "  Usage: find [search_term]   Example: find document")
-    '            Return
-    '        End If
-
-    '        ' Extract the search term (supports quotes + multi‑word)
-    '        Dim searchTerm As String =
-    '        String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
-
-    '        If String.IsNullOrWhiteSpace(searchTerm) Then
-    '            ShowStatus(StatusPad & IconDialog &
-    '                   "  Usage: find [search_term]   Example: find document")
-    '            Return
-    '        End If
-
-    '        ' --- 2. Announce search
-    '        ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
-
-    '        ' --- 3. Perform search
-    '        OnlySearchForFilesInCurrentFolder(searchTerm)
-
-    '        ' Reset index for new search
-    '        SearchIndex = 0
-    '        RestoreBackground()
-
-    '        ' --- 4. If results exist, auto‑select the first one
-    '        If SearchResults.Count > 0 Then
-
-    '            lvFiles.SelectedItems.Clear()
-    '            SelectListViewItemByPath(SearchResults(0))
-
-    '            lvFiles.Focus()
-    '            HighlightSearchMatches()
-    '            HighlightCurrentResult()
-
-    '            ShowSearchHud()
-    '            Return
-    '        End If
-
-    '        ' --- 5. No results
-    '        ShowStatus(StatusPad & IconDialog &
-    '               "  No results found for: " & searchTerm)
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Search failed: " & ex.Message)
-    '    End Try
-    'End Sub
-
-
 
     Private Sub SelectAndHighlightSearchResult(path As String)
 
@@ -9443,61 +8051,6 @@ Public Class Form1
 
         ShowSearchHud()
     End Sub
-
-
-
-    'Private Sub HandleFindCommand(parts As String())
-    '    Try
-    '        ' --- 1. Require a search term
-    '        If parts.Length < 2 Then
-    '            ShowStatus(StatusPad & IconDialog &
-    '                   "  Usage: find [search_term]   Example: find document")
-    '            Return
-    '        End If
-
-    '        ' Extract the search term (supports quotes + multi‑word)
-    '        Dim searchTerm As String =
-    '        String.Join(" ", parts.Skip(1)).Trim().Trim(""""c)
-
-    '        If String.IsNullOrWhiteSpace(searchTerm) Then
-    '            ShowStatus(StatusPad & IconDialog &
-    '                   "  Usage: find [search_term]   Example: find document")
-    '            Return
-    '        End If
-
-    '        ' --- 2. Announce search
-    '        ShowStatus(StatusPad & IconSearch & "  Searching for: " & searchTerm)
-
-    '        ' --- 3. Perform search
-    '        OnlySearchForFilesInCurrentFolder(searchTerm)
-
-    '        ' Reset index for new search
-    '        SearchIndex = 0
-
-    '        ' --- 4. If results exist, auto‑select the first one
-    '        If SearchResults.Count > 0 Then
-
-    '            lvFiles.SelectedItems.Clear()
-    '            SelectListViewItemByPath(SearchResults(0))
-    '            lvFiles.Focus()
-
-    '            ' Unified highlight pass
-    '            ApplySearchHighlights()
-
-    '            ShowSearchHud()
-    '            Return
-    '        End If
-
-    '        ' --- 5. No results
-    '        ShowStatus(StatusPad & IconDialog &
-    '               "  No results found for: " & searchTerm)
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               "  Search failed: " & ex.Message)
-    '    End Try
-    'End Sub
-
 
     Private Sub HandleFindCommand(parts As String())
         Try
@@ -9541,12 +8094,6 @@ Public Class Form1
         End Try
     End Sub
 
-
-
-
-
-
-
     Private Sub HandleExitCommand(parts As String())
         ' Confirm exit
         If MessageBox.Show("Are you sure you want to exit?",
@@ -9558,7 +8105,6 @@ Public Class Form1
             ShowStatus("Exit cancelled.")
         End If
     End Sub
-
 
     Private Sub HandleShortcutsCommand(parts As String())
         Try
@@ -9575,7 +8121,6 @@ Public Class Form1
 
                 Return
             End If
-
 
             HelpTextBox.Text = text
             ShowHelpPanelAnimated()
@@ -9617,7 +8162,6 @@ Public Class Form1
                 RestoreAddressBar()
                 Return
             End If
-
 
             ' ---------------------------------------------------------
             ' ⭐ Automatic: man <command> → show that command’s help page
@@ -9695,7 +8239,6 @@ Public Class Form1
         FocusHelpText()
     End Sub
 
-
     Private Sub ShowSearchResults(term As String, results As String)
         If String.IsNullOrEmpty(results) Then
             HelpTextBox.Text = $"No results found for ""{term}""."
@@ -9707,20 +8250,17 @@ Public Class Form1
         FocusHelpText()
     End Sub
 
-
     Private Sub EnsureHelpPanelVisible()
         If Not HelpPanel.Visible Then
             ShowHelpPanelAnimated()
         End If
     End Sub
 
-
     Private Function RenderSection(title As String, lines As List(Of String)) As String
         Return title & Environment.NewLine &
            New String("-"c, title.Length) & Environment.NewLine &
            String.Join(Environment.NewLine, lines)
     End Function
-
 
     Private Function SearchManual(manualText As String, searchTerm As String) As String
         Dim sb As New Text.StringBuilder()
@@ -9781,550 +8321,548 @@ Public Class Form1
     Private Function BuildManualDictionary() As Dictionary(Of String, List(Of String))
 
         Dim sections As New Dictionary(Of String, String()) From {
-        {
-            "Table of Contents",
             {
-                "  • Introduction",
-                "  • Getting Started",
-                "  • Using the App",
-                "  • Why I'm Creating File Explorer",
-                "  • What I Hope Learners Get From This",
-                "  • Features",
-                "  • File Operations",
-                "  • Search",
-                "  • Keyboard Shortcuts",
-                "  • Command Line Interface (CLI)",
-                "  • Commands",
-                "  • Drive Tools",
-                "  • Pinning System",
-                "  • Manual & Help System",
-                ""
-            }
-        },
-        {
-            "Introduction",
+                "Table of Contents",
+                {
+                    "  • Introduction",
+                    "  • Getting Started",
+                    "  • Using the App",
+                    "  • Why I'm Creating File Explorer",
+                    "  • What I Hope Learners Get From This",
+                    "  • Features",
+                    "  • File Operations",
+                    "  • Search",
+                    "  • Keyboard Shortcuts",
+                    "  • Command Line Interface (CLI)",
+                    "  • Commands",
+                    "  • Drive Tools",
+                    "  • Pinning System",
+                    "  • Manual & Help System",
+                    ""
+                }
+            },
             {
-                "",
-                "File Explorer is a simple, fast, and user-friendly file",
-                "management application designed to make navigating,",
-                "organizing, and manipulating files intuitive for all users.",
-                "It combines a clean graphical interface with a powerful",
-                "built-in Command Line Interface (CLI) for users who prefer",
-                "keyboard-driven workflows.",
-                "",
-                "The application is designed around clarity, predictability,",
-                "and emotional safety. Whether you prefer clicking, typing,",
-                "or shortcut-driven workflows, File Explorer adapts to",
-                "your style.",
-                ""
-            }
-        },
-        {
-            "Getting Started",
+                "Introduction",
+                {
+                    "",
+                    "File Explorer is a simple, fast, and user-friendly file",
+                    "management application designed to make navigating,",
+                    "organizing, and manipulating files intuitive for all users.",
+                    "It combines a clean graphical interface with a powerful",
+                    "built-in Command Line Interface (CLI) for users who prefer",
+                    "keyboard-driven workflows.",
+                    "",
+                    "The application is designed around clarity, predictability,",
+                    "and emotional safety. Whether you prefer clicking, typing,",
+                    "or shortcut-driven workflows, File Explorer adapts to",
+                    "your style.",
+                    ""
+                }
+            },
             {
-                "",
-                "Clone File Explorer in Visual Studio.",
-                "",
-                "   Open Visual Studio",
-                "",
-                "   From the Start Window:",
-                "     • Click ""Clone a repository""",
-                "",
-                "   Enter the GitHub Repository URL",
-                "   In the ""Repository Location"" box, enter:",
-                "     https://github.com/JoeLumbley/File-Explorer.git",
-                "",
-                "   Click ""Clone""",
-                "   Visual Studio will download the repository.",
-                "",
-                "   Build and Run the Application",
-                "   • Press F5",
-                "   • Or click the Start button",
-                "",
-                "   Troubleshooting Tips",
-                "   • Ensure you have an active internet connection.",
-                "   • Restart Visual Studio if cloning hangs.",
-                "   • Restore NuGet packages if dependencies are missing.",
-                "   • Ensure the "".NET Desktop Development"" workload",
-                "     is installed.",
-                "",
-                "Summary:",
-                "   Visual Studio → Clone → Paste URL → Clone → F5"
-            }
-        },
-        {
-            "Using the App",
+                "Getting Started",
+                {
+                    "",
+                    "Clone File Explorer in Visual Studio.",
+                    "",
+                    "   Open Visual Studio",
+                    "",
+                    "   From the Start Window:",
+                    "     • Click ""Clone a repository""",
+                    "",
+                    "   Enter the GitHub Repository URL",
+                    "   In the ""Repository Location"" box, enter:",
+                    "     https://github.com/JoeLumbley/File-Explorer.git",
+                    "",
+                    "   Click ""Clone""",
+                    "   Visual Studio will download the repository.",
+                    "",
+                    "   Build and Run the Application",
+                    "   • Press F5",
+                    "   • Or click the Start button",
+                    "",
+                    "   Troubleshooting Tips",
+                    "   • Ensure you have an active internet connection.",
+                    "   • Restart Visual Studio if cloning hangs.",
+                    "   • Restore NuGet packages if dependencies are missing.",
+                    "   • Ensure the "".NET Desktop Development"" workload",
+                    "     is installed.",
+                    "",
+                    "Summary:",
+                    "   Visual Studio → Clone → Paste URL → Clone → F5"
+                }
+            },
             {
-                "",
-                "File Explorer is designed as a space for deliberate practice",
-                "and student-driven growth. By breaking a complex system",
-                "into understandable pieces, learners can study how real",
-                "applications work and rebuild them with intention.",
-                "",
-                "This project is small enough to grasp, but rich enough to",
-                "teach:",
-                "  • Decomposition and naming",
-                "  • Event flow and UI state management",
-                "  • Predictable, user-centered design",
-                "",
-                "The goal is to provide a foundation learners can extend,",
-                "reshape, and eventually outgrow as they build their own",
-                "tools.",
-                ""
-            }
-        },
-        {
-            "Why I'm Creating File Explorer",
+                "Using the App",
+                {
+                    "",
+                    "File Explorer is designed as a space for deliberate practice",
+                    "and student-driven growth. By breaking a complex system",
+                    "into understandable pieces, learners can study how real",
+                    "applications work and rebuild them with intention.",
+                    "",
+                    "This project is small enough to grasp, but rich enough to",
+                    "teach:",
+                    "  • Decomposition and naming",
+                    "  • Event flow and UI state management",
+                    "  • Predictable, user-centered design",
+                    "",
+                    "The goal is to provide a foundation learners can extend,",
+                    "reshape, and eventually outgrow as they build their own",
+                    "tools.",
+                    ""
+                }
+            },
             {
-                "",
-                "File Explorer began as a personal exploration into how",
-                "file managers work under the hood. We use them every",
-                "day, but rarely think about the engineering behind",
-                "navigation history, sorting, context menus,",
-                "clipboard operations, and folder trees.",
-                "",
-                "Re-creating these features has been a practical way to study:",
-                "  • System I/O",
-                "  • UI design",
-                "  • Event handling",
-                "  • Performance considerations",
-                "",
-                "This project is not meant to replace Windows Explorer.",
-                "Instead, it serves as a learning environment a place to",
-                "experiment, break things, fix them, and understand",
-                "why they work.",
-                ""
-            }
-        },
-        {
-            "What I Hope Learners Get From This",
+                "Why I'm Creating File Explorer",
+                {
+                    "",
+                    "File Explorer began as a personal exploration into how",
+                    "file managers work under the hood. We use them every",
+                    "day, but rarely think about the engineering behind",
+                    "navigation history, sorting, context menus,",
+                    "clipboard operations, and folder trees.",
+                    "",
+                    "Re-creating these features has been a practical way to study:",
+                    "  • System I/O",
+                    "  • UI design",
+                    "  • Event handling",
+                    "  • Performance considerations",
+                    "",
+                    "This project is not meant to replace Windows Explorer.",
+                    "Instead, it serves as a learning environment a place to",
+                    "experiment, break things, fix them, and understand",
+                    "why they work.",
+                    ""
+                }
+            },
             {
-                "",
-                "This project is designed for learners at all levels.",
-                "",
-                "What you can gain:",
-                "",
-                "• A clearer understanding of how file systems are accessed",
-                "  and managed.",
-                "• Insight into building a real Windows Forms application.",
-                "• Practical examples of organizing and structuring a",
-                "   larger project.",
-                "• Confidence to modify, extend, or build your own tools.",
-                "• An appreciation for the subtle engineering challenges",
-                "   behind everyday software.",
-                "",
-                "Re-creating something familiar is one of the most effective",
-                "ways to deepen your understanding.",
-                ""
-            }
-        },
-        {
-            "Features",
+                "What I Hope Learners Get From This",
+                {
+                    "",
+                    "This project is designed for learners at all levels.",
+                    "",
+                    "What you can gain:",
+                    "",
+                    "• A clearer understanding of how file systems are accessed",
+                    "  and managed.",
+                    "• Insight into building a real Windows Forms application.",
+                    "• Practical examples of organizing and structuring a",
+                    "   larger project.",
+                    "• Confidence to modify, extend, or build your own tools.",
+                    "• An appreciation for the subtle engineering challenges",
+                    "   behind everyday software.",
+                    "",
+                    "Re-creating something familiar is one of the most effective",
+                    "ways to deepen your understanding.",
+                    ""
+                }
+            },
             {
-                "",
-                "Graphical Interface:",
-                "  • Browse directories using a tree view and list view.",
-                "  • Perform file operations such as copy, move, delete, and",
-                "     rename.",
-                "  • Use cut, copy, and paste for file and folder management.",
-                "  • Access context menus for quick actions.",
-                "  • Navigate backward and forward through history.",
-                "  • View file type icons and real-time status updates.",
-                "",
-                "Integrated Command Line Interface (CLI):",
-                "  • Fast directory navigation (cd).",
-                "  • File operations (copy, move, delete, rename).",
-                "  • Create text files (text, txt).",
-                "  • Search and cycle results (find, findnext).",
-                "  • Type a path to open it directly.",
-                "  • Supports quoted paths with spaces.",
-                "  • Helpful usage messages and error feedback.",
-                "  • Built-in help system with full documentation.",
-                "",
-                "The GUI and CLI work together seamlessly, giving users the",
-                "freedom to choose the workflow that suits them best.",
-                ""
-            }
-        },
-        {
-            "File Operations",
+                "Features",
+                {
+                    "",
+                    "Graphical Interface:",
+                    "  • Browse directories using a tree view and list view.",
+                    "  • Perform file operations such as copy, move, delete, and",
+                    "     rename.",
+                    "  • Use cut, copy, and paste for file and folder management.",
+                    "  • Access context menus for quick actions.",
+                    "  • Navigate backward and forward through history.",
+                    "  • View file type icons and real-time status updates.",
+                    "",
+                    "Integrated Command Line Interface (CLI):",
+                    "  • Fast directory navigation (cd).",
+                    "  • File operations (copy, move, delete, rename).",
+                    "  • Create text files (text, txt).",
+                    "  • Search and cycle results (find, findnext).",
+                    "  • Type a path to open it directly.",
+                    "  • Supports quoted paths with spaces.",
+                    "  • Helpful usage messages and error feedback.",
+                    "  • Built-in help system with full documentation.",
+                    "",
+                    "The GUI and CLI work together seamlessly, giving users the",
+                    "freedom to choose the workflow that suits them best.",
+                    ""
+                }
+            },
             {
-                "",
-                "Creating a Folder:",
-                "  • Click ""New Folder""",
-                "  • Press Ctrl+Shift+N",
-                "  • Or run:  mkdir <folder>",
-                "",
-                "Renaming:",
-                "  • Select an item and press F2",
-                "  • Or run:  rename <old> <new>",
-                "",
-                "Copying Files:",
-                "  • Select an item and press Ctrl+C → Ctrl+V",
-                "  • Or run:  copy <source> <destination>",
-                "",
-                "Cutting Files:",
-                "  • Press Ctrl+X",
-                "",
-                "Pasting Files:",
-                "  • Press Ctrl+V",
-                "",
-                "Selecting All:",
-                "  • Press Ctrl+A",
-                "",
-                "Copying File or Folder Path:",
-                "  • Press Ctrl+Shift+C",
-                "",
-                "Moving Files:",
-                "  • Drag and drop",
-                "  • Or run:  move <source> <destination>",
-                "",
-                "Deleting Files:",
-                "  • Select an item and press Delete",
-                "  • Select an item and press Ctrl+D",
-                "  • Or run:  delete <path>",
-                "",
-                "Opening Files:",
-                "  • Select an item and press Enter",
-                "  • Select an item and press Ctrl+O",
-                "  • Or run:  open <path>",
-                ""
-            }
-        },
-        {
-            "Search",
+                "File Operations",
+                {
+                    "",
+                    "Creating a Folder:",
+                    "  • Click ""New Folder""",
+                    "  • Press Ctrl+Shift+N",
+                    "  • Or run:  mkdir <folder>",
+                    "",
+                    "Renaming:",
+                    "  • Select an item and press F2",
+                    "  • Or run:  rename <old> <new>",
+                    "",
+                    "Copying Files:",
+                    "  • Select an item and press Ctrl+C → Ctrl+V",
+                    "  • Or run:  copy <source> <destination>",
+                    "",
+                    "Cutting Files:",
+                    "  • Press Ctrl+X",
+                    "",
+                    "Pasting Files:",
+                    "  • Press Ctrl+V",
+                    "",
+                    "Selecting All:",
+                    "  • Press Ctrl+A",
+                    "",
+                    "Copying File or Folder Path:",
+                    "  • Press Ctrl+Shift+C",
+                    "",
+                    "Moving Files:",
+                    "  • Drag and drop",
+                    "  • Or run:  move <source> <destination>",
+                    "",
+                    "Deleting Files:",
+                    "  • Select an item and press Delete",
+                    "  • Select an item and press Ctrl+D",
+                    "  • Or run:  delete <path>",
+                    "",
+                    "Opening Files:",
+                    "  • Select an item and press Enter",
+                    "  • Select an item and press Ctrl+O",
+                    "  • Or run:  open <path>",
+                    ""
+                }
+            },
             {
-                "",
-                "Starting a Search:",
-                "  • Press Ctrl+F",
-                "  • Or run:  find <term>",
-                "",
-                "Navigating Results:",
-                "  • Next result - F3",
-                "  • Previous result - Shift+F3",
-                "",
-                "Resetting Search:",
-                "  • Press Esc",
-                "",
-                "Notes:",
-                "  • Search highlights matches in the File List.",
-                "  • Results cycle through visible items.",
-                "  • Search terms support partial matches.",
-                ""
-            }
-        },
-        {
-            "Keyboard Shortcuts",
+                "Search",
+                {
+                    "",
+                    "Starting a Search:",
+                    "  • Press Ctrl+F",
+                    "  • Or run:  find <term>",
+                    "",
+                    "Navigating Results:",
+                    "  • Next result - F3",
+                    "  • Previous result - Shift+F3",
+                    "",
+                    "Resetting Search:",
+                    "  • Press Esc",
+                    "",
+                    "Notes:",
+                    "  • Search highlights matches in the File List.",
+                    "  • Results cycle through visible items.",
+                    "  • Search terms support partial matches.",
+                    ""
+                }
+            },
             {
-                "Navigation:",
-                "  Back - Alt+Left",
-                "  Forward - Alt+Right",
-                "  Parent folder - Alt+Up",
-                "  User folder - Alt+Home",
-                "  Full screen - F11",
-                "",
-                "Address Bar:",
-                "  Focus - Ctrl+L",
-                "  Focus - Alt+D",
-                "  Focus - F4",
-                "  Reset - Esc",
-                "",
-                "Search:",
-                "  Start search - Ctrl+F",
-                "  Next result - F3",
-                "  Previous result - Shift+F3",
-                "",
-                "Focus Navigation:",
-                "  Cycle forward - Tab",
-                "  Cycle backward - Shift+Tab",
-                "",
-                "File Operations:",
-                "  Open selected item (File List) - Enter",
-                "  Open selected item or run an 'open' command - Ctrl+O",
-                "  Rename - F2",
-                "  Delete - Delete",
-                "  Delete - Ctrl+D",
-                "  Copy - Ctrl+C",
-                "  Paste - Ctrl+V",
-                "  Cut - Ctrl+X",
-                "  Select all - Ctrl+A",
-                "  New folder - Ctrl+Shift+N",
-                "  New text file - Ctrl+Shift+T",
-                "  Copy file or folder path - Ctrl+Shift+C",
-                "",
-                "TreeView Navigation:",
-                "  Expand or collapse selected folder - Enter",
-                "  Collapse folder, or move to parent - Left Arrow",
-                "  Expand folder, or move to first child - Right Arrow",
-                "  Move to previous folder - Up Arrow",
-                "  Move to next folder - Down Arrow",
-                "  Jump to first root folder - Home",
-                "  Jump to last visible folder - End",
-                "  Scroll up through folders - Page Up",
-                "  Scroll down through folders - Page Down",
-                "  Expand one level - Ctrl+Shift+E",
-                "  Collapse one level - Ctrl+Shift+L",
-                "",
-                "Pinning:",
-                "  Pin or unpin current folder - Alt+P",
-                "",
-                "Refresh:",
-                "  Refresh current folder - F5",
-                "",
-                "Help Drawer (Text Editing):",
-                "  Copy text - Ctrl+C",
-                "  Select all text - Ctrl+A",
-                ""
-            }
-        },
-{
-            "Command Line Interface (CLI)",
+                "Keyboard Shortcuts",
+                {
+                    "Navigation:",
+                    "  Back - Alt+Left",
+                    "  Forward - Alt+Right",
+                    "  Parent folder - Alt+Up",
+                    "  User folder - Alt+Home",
+                    "  Full screen - F11",
+                    "",
+                    "Address Bar:",
+                    "  Focus - Ctrl+L",
+                    "  Focus - Alt+D",
+                    "  Focus - F4",
+                    "  Reset - Esc",
+                    "",
+                    "Search:",
+                    "  Start search - Ctrl+F",
+                    "  Next result - F3",
+                    "  Previous result - Shift+F3",
+                    "",
+                    "Focus Navigation:",
+                    "  Cycle forward - Tab",
+                    "  Cycle backward - Shift+Tab",
+                    "",
+                    "File Operations:",
+                    "  Open selected item (File List) - Enter",
+                    "  Open selected item or run an 'open' command - Ctrl+O",
+                    "  Rename - F2",
+                    "  Delete - Delete",
+                    "  Delete - Ctrl+D",
+                    "  Copy - Ctrl+C",
+                    "  Paste - Ctrl+V",
+                    "  Cut - Ctrl+X",
+                    "  Select all - Ctrl+A",
+                    "  New folder - Ctrl+Shift+N",
+                    "  New text file - Ctrl+Shift+T",
+                    "  Copy file or folder path - Ctrl+Shift+C",
+                    "",
+                    "TreeView Navigation:",
+                    "  Expand or collapse selected folder - Enter",
+                    "  Collapse folder, or move to parent - Left Arrow",
+                    "  Expand folder, or move to first child - Right Arrow",
+                    "  Move to previous folder - Up Arrow",
+                    "  Move to next folder - Down Arrow",
+                    "  Jump to first root folder - Home",
+                    "  Jump to last visible folder - End",
+                    "  Scroll up through folders - Page Up",
+                    "  Scroll down through folders - Page Down",
+                    "  Expand one level - Ctrl+Shift+E",
+                    "  Collapse one level - Ctrl+Shift+L",
+                    "",
+                    "Pinning:",
+                    "  Pin or unpin current folder - Alt+P",
+                    "",
+                    "Refresh:",
+                    "  Refresh current folder - F5",
+                    "",
+                    "Help Drawer (Text Editing):",
+                    "  Copy text - Ctrl+C",
+                    "  Select all text - Ctrl+A",
+                    ""
+                }
+            },
             {
-                "The integrated Command Line Interface gives you fast, keyboard-driven control over",
-                "navigation and file operations. It is designed to be predictable, forgiving, and",
-                "beginner-friendly, with clear usage messages and error feedback.",
-                "",
-                "Features:",
-                "  • Navigate directories quickly using commands like cd and back.",
-                "  • Perform file operations such as copy, move, delete, and rename.",
-                "  • Create text files using text or txt.",
-                "  • Search for files using find and cycle results with findnext.",
-                "  • Type a full path to open it directly.",
-                "  • Supports quoted paths with spaces.",
-                "  • Provides helpful usage messages when commands are incomplete or incorrect.",
-                "",
-                "Examples:",
-                "  cd C:\Users\Joseph\Documents",
-                "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
-                "  delete ""C:\Temp\old.txt""",
-                "  text ""notes.txt""",
-                "",
-                "The CLI is fully integrated with the GUI, so actions",
-                "performed in one are reflected immediately",
-                "in the other."
-            }
-        },
-        {
-            "Commands",
+                "Command Line Interface (CLI)",
+                {
+                    "The integrated Command Line Interface gives you fast, keyboard-driven control over",
+                    "navigation and file operations. It is designed to be predictable, forgiving, and",
+                    "beginner-friendly, with clear usage messages and error feedback.",
+                    "",
+                    "Features:",
+                    "  • Navigate directories quickly using commands like cd and back.",
+                    "  • Perform file operations such as copy, move, delete, and rename.",
+                    "  • Create text files using text or txt.",
+                    "  • Search for files using find and cycle results with findnext.",
+                    "  • Type a full path to open it directly.",
+                    "  • Supports quoted paths with spaces.",
+                    "  • Provides helpful usage messages when commands are incomplete or incorrect.",
+                    "",
+                    "Examples:",
+                    "  cd C:\Users\Joseph\Documents",
+                    "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
+                    "  delete ""C:\Temp\old.txt""",
+                    "  text ""notes.txt""",
+                    "",
+                    "The CLI is fully integrated with the GUI, so actions",
+                    "performed in one are reflected immediately",
+                    "in the other."
+                }
+            },
             {
-                "The CLI supports a variety of commands for navigation,",
-                "file operations, searching, drive inspection, and pinning.",
-                "All commands are designed to be predictable, forgiving,",
-                "and emotionally safe for beginners.",
-                "",
-                "Navigation:",
-                "  cd <path>            Change directory.",
-                "  back                      Go to previous folder.",
-                "  forward                 Go to next folder.",
-                "  up                         Go to parent folder.",
-                "",
-                "File Operations:",
-                "  copy <source> <dest>      Copy a file or folder.",
-                "  move <source> <dest>     Move a file or folder.",
-                "  delete <path>                    Delete a file or folder.",
-                "  rename <old> <new>       Rename a file or folder.",
-                "  mkdir <folder>                  Create a new folder.",
-                "  text <file>                          Create a new text file.",
-                "  txt <file>                            Alias for text.",
-                "",
-                "Opening:",
-                "  open <path>          Open a file or folder.",
-                "",
-                "Search:",
-                "  find <term>           Search for items in the current folder.",
-                "  findnext                  Jump to the next search result.",
-                "",
-                "Drive Tools:",
-                "  drives                    Show all ready drives with free space,",
-                "                                total size, and a usage bar.",
-                "  df <drive>            Show free space for a specific drive.",
-                "",
-                "Pinning:",
-                "  pin <path>           Pin or unpin a folder in Easy Access.",
-                "",
-                "Help:",
-                "  man                      Show the manual.",
-                "  man <section>    Jump to a specific manual section.",
-                "",
-                "Examples:",
-                "  cd C:\Users\Joseph\Documents",
-                "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
-                "  delete ""C:\Temp\old.txt""",
-                "  df C:"
-            }
-        },
-        {
-            "Drive Tools",
+                "Commands",
+                {
+                    "The CLI supports a variety of commands for navigation,",
+                    "file operations, searching, drive inspection, and pinning.",
+                    "All commands are designed to be predictable, forgiving,",
+                    "and emotionally safe for beginners.",
+                    "",
+                    "Navigation:",
+                    "  cd <path>            Change directory.",
+                    "  back                      Go to previous folder.",
+                    "  forward                 Go to next folder.",
+                    "  up                         Go to parent folder.",
+                    "",
+                    "File Operations:",
+                    "  copy <source> <dest>      Copy a file or folder.",
+                    "  move <source> <dest>     Move a file or folder.",
+                    "  delete <path>                    Delete a file or folder.",
+                    "  rename <old> <new>       Rename a file or folder.",
+                    "  mkdir <folder>                  Create a new folder.",
+                    "  text <file>                          Create a new text file.",
+                    "  txt <file>                            Alias for text.",
+                    "",
+                    "Opening:",
+                    "  open <path>          Open a file or folder.",
+                    "",
+                    "Search:",
+                    "  find <term>           Search for items in the current folder.",
+                    "  findnext                  Jump to the next search result.",
+                    "",
+                    "Drive Tools:",
+                    "  drives                    Show all ready drives with free space,",
+                    "                                total size, and a usage bar.",
+                    "  df <drive>            Show free space for a specific drive.",
+                    "",
+                    "Pinning:",
+                    "  pin <path>           Pin or unpin a folder in Easy Access.",
+                    "",
+                    "Help:",
+                    "  man                      Show the manual.",
+                    "  man <section>    Jump to a specific manual section.",
+                    "",
+                    "Examples:",
+                    "  cd C:\Users\Joseph\Documents",
+                    "  copy ""C:\file.txt"" ""D:\Backup\file.txt""",
+                    "  delete ""C:\Temp\old.txt""",
+                    "  df C:"
+                }
+            },
             {
-                "",
-                "Drive Tools provide quick access to information about",
-                "your system's drives. You can view available drives,",
-                "their labels, free space, and usage bars.",
-                "",
-                "Commands:",
-                "  drives            Shows all drives free space, size, and usage.",
-                "  df <drive>    Shows free space for a specific drive.",
-                "",
-                "drives",
-                "",
-                "Shows all available drives with free space, total size, and",
-                "a usage bar. This gives you a clear overview of your",
-                "storage layout at a glance.",
-                "",
-                "Usage:",
-                "  drives",
-                "",
-                "Features:",
-                "  • Lists all ready drives.",
-                "  • Shows volume label.",
-                "  • Shows free space and total size.",
-                "  • Includes a 20-character usage bar for",
-                "    quick visual scanning.",
-                "",
-                "Example Output:",
-                "  ⏹ used   ⬜ free",
-                "",
-                "  C:\ - Windows",
-                "        68.51 GB free of 237.47 GB",
-                "        ⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜",
-                "",
-                "  D:\ - Back Up 2021",
-                "         1.15 TB free of 1.82 TB",
-                "        ⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
-                "",
-                "Notes:",
-                "  • Drives are sorted alphabetically for predictability.",
-                "  • Empty volume labels appear as (no label).",
-                "",
-                "df",
-                "",
-                "Shows free space for a specific drive. This is a quick,",
-                "focused version of the drives command, ideal for checking",
-                "a single drive at a glance.",
-                "",
-                "Usage:",
-                "  df <drive_letter>:",
-                "",
-                "Examples:",
-                "  df C:",
-                "  df D:",
-                "",
-                "Behavior:",
-                "  • Accepts C, C:, or C:\ formats.",
-                "  • Shows a short usage bar (8 characters) for",
-                "    quick scanning.",
-                "  • Displays free space and total size.",
-                "",
-                "Example Output:",
-                "  C:\   ⏹⏹⏹⬜⬜⬜⬜⬜   68.51 GB free of 237.47 GB",
-                "",
-                "Notes:",
-                "  • If the drive is not ready, an error message is shown.",
-                "  • The df command is designed to be forgiving and",
-                "    beginner-friendly.",
-                ""
-            }
-        },
-        {
-            "Pinning System",
+                "Drive Tools",
+                {
+                    "",
+                    "Drive Tools provide quick access to information about",
+                    "your system's drives. You can view available drives,",
+                    "their labels, free space, and usage bars.",
+                    "",
+                    "Commands:",
+                    "  drives            Shows all drives free space, size, and usage.",
+                    "  df <drive>    Shows free space for a specific drive.",
+                    "",
+                    "drives",
+                    "",
+                    "Shows all available drives with free space, total size, and",
+                    "a usage bar. This gives you a clear overview of your",
+                    "storage layout at a glance.",
+                    "",
+                    "Usage:",
+                    "  drives",
+                    "",
+                    "Features:",
+                    "  • Lists all ready drives.",
+                    "  • Shows volume label.",
+                    "  • Shows free space and total size.",
+                    "  • Includes a 20-character usage bar for",
+                    "    quick visual scanning.",
+                    "",
+                    "Example Output:",
+                    "  ⏹ used   ⬜ free",
+                    "",
+                    "  C:\ - Windows",
+                    "        68.51 GB free of 237.47 GB",
+                    "        ⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜",
+                    "",
+                    "  D:\ - Back Up 2021",
+                    "         1.15 TB free of 1.82 TB",
+                    "        ⏹⏹⏹⏹⏹⏹⏹⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜",
+                    "",
+                    "Notes:",
+                    "  • Drives are sorted alphabetically for predictability.",
+                    "  • Empty volume labels appear as (no label).",
+                    "",
+                    "df",
+                    "",
+                    "Shows free space for a specific drive. This is a quick,",
+                    "focused version of the drives command, ideal for checking",
+                    "a single drive at a glance.",
+                    "",
+                    "Usage:",
+                    "  df <drive_letter>:",
+                    "",
+                    "Examples:",
+                    "  df C:",
+                    "  df D:",
+                    "",
+                    "Behavior:",
+                    "  • Accepts C, C:, or C:\ formats.",
+                    "  • Shows a short usage bar (8 characters) for",
+                    "    quick scanning.",
+                    "  • Displays free space and total size.",
+                    "",
+                    "Example Output:",
+                    "  C:\   ⏹⏹⏹⬜⬜⬜⬜⬜   68.51 GB free of 237.47 GB",
+                    "",
+                    "Notes:",
+                    "  • If the drive is not ready, an error message is shown.",
+                    "  • The df command is designed to be forgiving and",
+                    "    beginner-friendly.",
+                    ""
+                }
+            },
             {
-                "",
-                "The Pinning System lets you keep important folders in",
-                "the Easy Access list.",
-                "",
-                "Features:",
-                "  • Pin or unpin any non-special folder.",
-                "  • Prevents pinning system folders such as Documents, ",
-                "     Desktop, Downloads, Music, Pictures, and Videos.",
-                "  • Uses a unified pin engine shared by the GUI, CLI, and",
-                "     keyboard shortcuts.",
-                "  • Maintains pinned folders even if the target folder is",
-                "     temporarily missing.",
-                "  • Prevents duplicate pinned entries by normalizing paths.",
-                "",
-                "Usage:",
-                "  • Right-click a folder and choose ""Pin"" or ""Unpin"".",
-                "  • Press Alt+P to toggle pin state for the current folder.",
-                "  • Run:  pin <path>",
-                "",
-                "Examples:",
-                "  pin C:\Projects",
-                "  pin ""C:\My Folder""",
-                "",
-                "Behavior:",
-                "  • Pinning adds the folder to the Easy Access list.",
-                "  • Unpinning removes it from the list.",
-                "  • The system updates all UI elements immediately.",
-                "  • The pinned state is synchronized across the GUI, CLI,",
-                "    and keyboard engine.",
-                "",
-                "Notes:",
-                "  • Special system folders cannot be pinned.",
-                "  • The pin command uses toggle behavior.",
-                "    If a folder is pinned, it becomes unpinned.",
-                "    If it is unpinned, it becomes pinned.",
-                "  • The system ensures emotionally safe, predictable",
-                "    behavior at all times.",
-                ""
-            }
-        },
-        {
-            "Manual & Help System",
+                "Pinning System",
+                {
+                    "",
+                    "The Pinning System lets you keep important folders in",
+                    "the Easy Access list.",
+                    "",
+                    "Features:",
+                    "  • Pin or unpin any non-special folder.",
+                    "  • Prevents pinning system folders such as Documents, ",
+                    "     Desktop, Downloads, Music, Pictures, and Videos.",
+                    "  • Uses a unified pin engine shared by the GUI, CLI, and",
+                    "     keyboard shortcuts.",
+                    "  • Maintains pinned folders even if the target folder is",
+                    "     temporarily missing.",
+                    "  • Prevents duplicate pinned entries by normalizing paths.",
+                    "",
+                    "Usage:",
+                    "  • Right-click a folder and choose ""Pin"" or ""Unpin"".",
+                    "  • Press Alt+P to toggle pin state for the current folder.",
+                    "  • Run:  pin <path>",
+                    "",
+                    "Examples:",
+                    "  pin C:\Projects",
+                    "  pin ""C:\My Folder""",
+                    "",
+                    "Behavior:",
+                    "  • Pinning adds the folder to the Easy Access list.",
+                    "  • Unpinning removes it from the list.",
+                    "  • The system updates all UI elements immediately.",
+                    "  • The pinned state is synchronized across the GUI, CLI,",
+                    "    and keyboard engine.",
+                    "",
+                    "Notes:",
+                    "  • Special system folders cannot be pinned.",
+                    "  • The pin command uses toggle behavior.",
+                    "    If a folder is pinned, it becomes unpinned.",
+                    "    If it is unpinned, it becomes pinned.",
+                    "  • The system ensures emotionally safe, predictable",
+                    "    behavior at all times.",
+                    ""
+                }
+            },
             {
-                "",
-                "help (commands, ?):",
-                "  Usage: help [command]",
-                "  Shows help for commands or lists all commands.",
-                "",
-                "Examples:",
-                "  help",
-                "  help cd",
-                "  help copy",
-                "",
-                "man (manual, appmanual):",
-                "  Usage: man [section]",
-                "  Opens the app manual or jumps to a specific section.",
-                "",
-                "Behavior:",
-                "  • man                          Opens the full manual.",
-                "  • man <section>        Jumps to a manual section.",
-                "  • man help                 Opens the Command Reference.",
-                "  • man commands      Opens the Command Reference.",
-                "",
-                "Supported aliases:",
-                "  manual",
-                "  appmanual",
-                "",
-                "Examples:",
-                "  man",
-                "  man keyboard",
-                "  man search",
-                "  man help",
-                "  man commands",
-                "  manual",
-                "  appmanual",
-                "",
-                "Notes:",
-                "  • Section names are matched case‑insensitively.",
-                "  • Prefix matching is supported",
-                "    (e.g., 'man key' → Keyboard Shortcuts).",
-                "  • If no section matches, the manual shows a",
-                "    friendly error message.",
-                "  • The manual viewer supports scrolling, search,",
-                "    and text selection.",
-                ""
+                "Manual & Help System",
+                {
+                    "",
+                    "help (commands, ?):",
+                    "  Usage: help [command]",
+                    "  Shows help for commands or lists all commands.",
+                    "",
+                    "Examples:",
+                    "  help",
+                    "  help cd",
+                    "  help copy",
+                    "",
+                    "man (manual, appmanual):",
+                    "  Usage: man [section]",
+                    "  Opens the app manual or jumps to a specific section.",
+                    "",
+                    "Behavior:",
+                    "  • man                          Opens the full manual.",
+                    "  • man <section>        Jumps to a manual section.",
+                    "  • man help                 Opens the Command Reference.",
+                    "  • man commands      Opens the Command Reference.",
+                    "",
+                    "Supported aliases:",
+                    "  manual",
+                    "  appmanual",
+                    "",
+                    "Examples:",
+                    "  man",
+                    "  man keyboard",
+                    "  man search",
+                    "  man help",
+                    "  man commands",
+                    "  manual",
+                    "  appmanual",
+                    "",
+                    "Notes:",
+                    "  • Section names are matched case‑insensitively.",
+                    "  • Prefix matching is supported",
+                    "    (e.g., 'man key' → Keyboard Shortcuts).",
+                    "  • If no section matches, the manual shows a",
+                    "    friendly error message.",
+                    "  • The manual viewer supports scrolling, search,",
+                    "    and text selection.",
+                    ""
+                }
             }
         }
-    }
 
         Return sections.ToDictionary(
-        Function(kvp) kvp.Key,
-        Function(kvp) kvp.Value.ToList()
-    )
+            Function(kvp) kvp.Key,
+            Function(kvp) kvp.Value.ToList()
+        )
 
     End Function
-
-
 
     ' ============================================================
     '  BuildAppManualText
@@ -10336,13 +8874,6 @@ Public Class Form1
         ' Navigation hint
         sb.AppendLine("Use man [section] to jump to a section.")
         sb.AppendLine()
-
-        '' Table of Contents (in insertion order)
-        'sb.AppendLine("Table of Contents")
-        'For Each key In dict.Keys
-        '    sb.AppendLine("  • " & key)
-        'Next
-        'sb.AppendLine()
 
         ' Sections (in insertion order)
         For Each key In dict.Keys
@@ -10366,86 +8897,85 @@ Public Class Form1
 
         ' Keyboard Shortcuts
         AddAliases(map, "Keyboard Shortcuts",
-        "key", "keys", "keyboard", "kbd", "kb",
-        "shortcut", "shortcuts", "hotkey", "hotkeys",
-        "bindings", "keybindings", "keybinds",
-        "controls", "accelerators",
-        "function keys", "fn keys",
-        "nav keys", "navigation keys",
-        "key commands", "key commands list",
-        "key list", "shortcut list",
-        "keyboard help", "keyboard guide"
-    )
+            "key", "keys", "keyboard", "kbd", "kb",
+            "shortcut", "shortcuts", "hotkey", "hotkeys",
+            "bindings", "keybindings", "keybinds",
+            "controls", "accelerators",
+            "function keys", "fn keys",
+            "nav keys", "navigation keys",
+            "key commands", "key commands list",
+            "key list", "shortcut list",
+            "keyboard help", "keyboard guide"
+        )
 
         ' Search
         AddAliases(map, "Search",
-        "find", "search", "lookup", "locate",
-        "findnext", "searching"
-    )
+            "find", "search", "lookup", "locate",
+            "findnext", "searching"
+        )
 
         ' File Operations
         AddAliases(map, "File Operations",
-        "files", "file ops", "ops", "operations"
-    )
+            "files", "file ops", "ops", "operations"
+        )
 
 
 
 
         ' Drive Tools
         AddAliases(map, "Drive Tools",
-        "df", "drives", "drive", "disk", "disks", "storage"
-    )
+            "df", "drives", "drive", "disk", "disks", "storage"
+        )
 
         ' Pinning System
         AddAliases(map, "Pinning System",
-        "pin", "pins", "pinned",
-        "bookmark", "bookmarks",
-        "fav", "favs",
-        "favorite", "favorites",
-        "star", "starred"
-    )
+            "pin", "pins", "pinned",
+            "bookmark", "bookmarks",
+            "fav", "favs",
+            "favorite", "favorites",
+            "star", "starred"
+        )
 
         ' CLI
         AddAliases(map, "Command Line Interface (CLI)",
-        "cli", "command line", "terminal", "console"
-    )
+            "cli", "command line", "terminal", "console"
+        )
 
         ' Commands
         AddAliases(map, "Commands",
-        "help", "commands", "cmds", "command list",
-        "cli commands", "all commands", "command reference"
-    )
+            "help", "commands", "cmds", "command list",
+            "cli commands", "all commands", "command reference"
+        )
 
         ' Manual & Help System
         AddAliases(map, "Manual & Help System",
-        "manual", "man", "help", "appmanual",
-        "docs", "documentation", "reference"
-    )
+            "manual", "man", "help", "appmanual",
+            "docs", "documentation", "reference"
+        )
 
         ' Introduction
         AddAliases(map, "Introduction",
-        "intro"
-    )
+            "intro"
+        )
 
         ' Getting Started
         AddAliases(map, "Getting Started",
-        "start", "getting started", "install",
-        "installation", "setup"
-    )
+            "start", "getting started", "install",
+            "installation", "setup"
+        )
 
         ' Features
         AddAliases(map, "Features",
-        "capabilities", "what it does"
-    )
+            "capabilities", "what it does"
+        )
 
         ' Using the App
         AddAliases(map, "Using the App",
-        "usage", "using", "interface", "ui"
-    )
+            "usage", "using", "interface", "ui"
+        )
 
         Return map
     End Function
-
 
     Private Sub AddAliases(map As Dictionary(Of String, String),
                        section As String,
@@ -10455,8 +8985,6 @@ Public Class Form1
             map(n) = section
         Next
     End Sub
-
-
 
     Private Function SearchManualDict(searchTerm As String) As String
         Dim dict = BuildManualDictionary()
@@ -10484,7 +9012,6 @@ Public Class Form1
         If Not found Then Return ""
         Return sb.ToString()
     End Function
-
 
     Private Function BuildShortcutsHelp() As String
         Dim sb As New Text.StringBuilder()
@@ -10625,10 +9152,10 @@ Public Class Form1
             Dim totalStr = FormatSize(di.TotalSize)
 
             HelpTextBox.AppendText(
-            $"  {di.Name} - {label}" & Environment.NewLine &
-            $"  {freeStr} free of {totalStr}" & Environment.NewLine &
-            $"  {bar}" & Environment.NewLine & Environment.NewLine
-        )
+                $"  {di.Name} - {label}" & Environment.NewLine &
+                $"  {freeStr} free of {totalStr}" & Environment.NewLine &
+                $"  {bar}" & Environment.NewLine & Environment.NewLine
+            )
         Next
 
         ShowHelpPanelAnimated()
@@ -10683,38 +9210,38 @@ Public Class Form1
 
         ' --- Main Help Drawer Panel ---
         HelpPanel = New Panel() With {
-        .Dock = DockStyle.Right,
-        .Width = 475,
-        .Visible = False,
-        .BackColor = Color.FromArgb(245, 245, 245),
-        .Padding = New Padding(10),
-        .BorderStyle = BorderStyle.FixedSingle
-    }
+            .Dock = DockStyle.Right,
+            .Width = 475,
+            .Visible = False,
+            .BackColor = Color.FromArgb(245, 245, 245),
+            .Padding = New Padding(10),
+            .BorderStyle = BorderStyle.FixedSingle
+        }
 
         ' --- Header Bar ---
         Dim headerPanel As New Panel() With {
-        .Dock = DockStyle.Top,
-        .Height = 32,
-        .BackColor = Color.FromArgb(245, 245, 245)
-    }
+            .Dock = DockStyle.Top,
+            .Height = 32,
+            .BackColor = Color.FromArgb(245, 245, 245)
+        }
 
         HelpHeaderLabel = New Label() With {
-        .Text = "Command Reference",
-        .Dock = DockStyle.Left,
-        .Width = 300,
-        .Font = New Font("Segoe UI", 11, FontStyle.Bold),
-        .ForeColor = Color.Black,
-        .TextAlign = ContentAlignment.MiddleLeft
-    }
+            .Text = "Command Reference",
+            .Dock = DockStyle.Left,
+            .Width = 300,
+            .Font = New Font("Segoe UI", 11, FontStyle.Bold),
+            .ForeColor = Color.Black,
+            .TextAlign = ContentAlignment.MiddleLeft
+        }
 
         Dim closeBtn As New Button() With {
-        .Text = "✕",
-        .Dock = DockStyle.Right,
-        .Width = 32,
-        .FlatStyle = FlatStyle.Flat,
-        .BackColor = Color.FromArgb(245, 245, 245),
-        .ForeColor = Color.Black
-    }
+            .Text = "✕",
+            .Dock = DockStyle.Right,
+            .Width = 32,
+            .FlatStyle = FlatStyle.Flat,
+            .BackColor = Color.FromArgb(245, 245, 245),
+            .ForeColor = Color.Black
+        }
         AddHandler closeBtn.Click, Sub() HelpPanel.Visible = False
 
         headerPanel.Controls.Add(closeBtn)
@@ -10722,32 +9249,23 @@ Public Class Form1
 
         ' --- Scrollable Container ---
         scrollPanel = New Panel() With {
-        .Dock = DockStyle.Fill,
-        .AutoScroll = True,
-        .BackColor = Color.FromArgb(245, 245, 245)
-    }
+            .Dock = DockStyle.Fill,
+            .AutoScroll = True,
+            .BackColor = Color.FromArgb(245, 245, 245)
+        }
 
         ' --- Help Text Area ---
         HelpTextBox = New RichTextBox() With {
-        .DetectUrls = True,
-        .WordWrap = False,
-        .Dock = DockStyle.Fill,
-        .ReadOnly = True,
-        .BorderStyle = BorderStyle.None,
-        .Font = New Font("Segoe UI", 11, FontStyle.Regular),
-        .BackColor = Color.White,
-        .ScrollBars = RichTextBoxScrollBars.Both,
-        .Height = 300
-    }
-        '    AddHandler HelpTextBox.LinkClicked,
-        'Sub(sender, e)
-        '    Try
-        '        Process.Start(New ProcessStartInfo(e.LinkText) With {.UseShellExecute = True})
-        '    Catch ex As Exception
-        '        MessageBox.Show("Failed to open link: " & ex.Message)
-        '    End Try
-        'End Sub
-
+            .DetectUrls = True,
+            .WordWrap = False,
+            .Dock = DockStyle.Fill,
+            .ReadOnly = True,
+            .BorderStyle = BorderStyle.None,
+            .Font = New Font("Segoe UI", 11, FontStyle.Regular),
+            .BackColor = Color.White,
+            .ScrollBars = RichTextBoxScrollBars.Both,
+            .Height = 300
+        }
 
         AddHandler HelpTextBox.LinkClicked,
             Sub(sender, e)
@@ -10935,21 +9453,13 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub InitImageList()
-
-
 
         Dim size = GetScaledIconSize(Me)
         imgList.ImageSize = New Size(size, size)
 
-
-
         'imgList.ImageSize = New Size(16, 16)
         imgList.ColorDepth = ColorDepth.Depth32Bit
-
-
-
 
         ' Load icons 
         imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
@@ -10984,7 +9494,6 @@ Public Class Form1
         imgArrows.Images.Add("NoArrow", My.Resources.Resource1.No_Arrow_16X16)
 
     End Sub
-
 
     Private Sub InitContextMenu()
 
@@ -11065,15 +9574,12 @@ Public Class Form1
 
         lvFiles.ContextMenuStrip = cmsFiles
 
-
-
         cmsTree.Items.Add(mnuPin)
         cmsTree.Items.Add(mnuUnpin)
 
         tvFolders.ContextMenuStrip = cmsTree
 
     End Sub
-
 
     Private Sub RunTests()
 
@@ -11101,11 +9607,7 @@ Public Class Form1
 
         TestValidateNotCopyingIntoSelf()
 
-
         TestSafeLaunchEngine()
-
-
-
 
         Debug.WriteLine("All tests executed.")
 
@@ -11140,7 +9642,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub TestIsProtectedPath_ExactMode()
 
         Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Exact Mode)")
@@ -11170,7 +9671,6 @@ Public Class Form1
 
     End Sub
 
-
     Private Sub TestIsProtectedPath_SubdirMode()
 
         Debug.WriteLine("→ Testing IsProtectedPathOrFolder (Subdirectory Mode)")
@@ -11196,7 +9696,6 @@ Public Class Form1
         Debug.WriteLine("✓ Subdirectory-inclusive tests passed")
 
     End Sub
-
 
     Private Sub TestFormatSize()
 
@@ -11473,7 +9972,6 @@ Public Class Form1
 
     End Sub
 
-
     ' ============================================================
     '  SafeLaunchEngine Tests
     ' ============================================================
@@ -11493,7 +9991,6 @@ Public Class Form1
         Test_SafeLaunch_UrlPriorityOverFile()
     End Sub
 
-
     Private Sub Test_SafeLaunch_ValidHttpUrl()
         Debug.WriteLine("→ Testing SafeLaunch: valid http URL")
 
@@ -11509,7 +10006,6 @@ Public Class Form1
         Debug.WriteLine("✓ http URL test passed")
     End Sub
 
-
     Private Sub Test_SafeLaunch_ValidHttpsUrl()
         Debug.WriteLine("→ Testing SafeLaunch: valid https URL")
 
@@ -11523,7 +10019,6 @@ Public Class Form1
 
         Debug.WriteLine("✓ https URL test passed")
     End Sub
-
 
     Private Sub Test_SafeLaunch_RejectsNonHttpProtocols()
         Debug.WriteLine("→ Testing SafeLaunch: reject non-http protocols")
@@ -11539,8 +10034,6 @@ Public Class Form1
         Debug.WriteLine("✓ Non-http protocol rejection passed")
     End Sub
 
-
-
     Private Sub Test_SafeLaunch_RejectsMalformedUrl()
         Debug.WriteLine("→ Testing SafeLaunch: malformed URL")
 
@@ -11553,7 +10046,6 @@ Public Class Form1
 
         Debug.WriteLine("✓ Malformed URL test passed")
     End Sub
-
 
     Private Sub Test_SafeLaunch_FolderPath()
         Debug.WriteLine("→ Testing SafeLaunch: folder path")
@@ -11637,9 +10129,6 @@ Public Class Form1
         Debug.Assert(Not condition, message)
     End Sub
 
-    Private Sub tvFolders_BackgroundImageChanged(sender As Object, e As EventArgs) Handles tvFolders.BackgroundImageChanged
-
-    End Sub
 End Class
 
 ' This app was developed with the help of Copilot through many human + AI pairing sessions.
