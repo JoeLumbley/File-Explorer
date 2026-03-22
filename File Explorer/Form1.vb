@@ -11642,121 +11642,121 @@ Public Class Form1
     End Sub
 End Class
 
-Public Class ListViewItemComparer
-    Implements IComparer
+'Public Class ListViewItemComparer
+'    Implements IComparer
 
-    Private ReadOnly _column As Integer
-    Private ReadOnly _order As SortOrder
-    Private ReadOnly _columnTypes As Dictionary(Of Integer, ColumnDataType)
+'    Private ReadOnly _column As Integer
+'    Private ReadOnly _order As SortOrder
+'    Private ReadOnly _columnTypes As Dictionary(Of Integer, ColumnDataType)
 
-    Public Enum ColumnDataType
-        Text
-        Number
-        DateValue
-    End Enum
+'    Public Enum ColumnDataType
+'        Text
+'        Number
+'        DateValue
+'    End Enum
 
-    Public Sub New(column As Integer, order As SortOrder,
-                   Optional columnTypes As Dictionary(Of Integer, ColumnDataType) = Nothing)
+'    Public Sub New(column As Integer, order As SortOrder,
+'                   Optional columnTypes As Dictionary(Of Integer, ColumnDataType) = Nothing)
 
-        _column = column
-        _order = order
-        _columnTypes = If(columnTypes, New Dictionary(Of Integer, ColumnDataType))
-    End Sub
+'        _column = column
+'        _order = order
+'        _columnTypes = If(columnTypes, New Dictionary(Of Integer, ColumnDataType))
+'    End Sub
 
-    Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
-        Dim itemX As ListViewItem = CType(x, ListViewItem)
-        Dim itemY As ListViewItem = CType(y, ListViewItem)
+'    Public Function Compare(x As Object, y As Object) As Integer Implements IComparer.Compare
+'        Dim itemX As ListViewItem = CType(x, ListViewItem)
+'        Dim itemY As ListViewItem = CType(y, ListViewItem)
 
-        Dim valX As String = itemX.SubItems(_column).Text
-        Dim valY As String = itemY.SubItems(_column).Text
+'        Dim valX As String = itemX.SubItems(_column).Text
+'        Dim valY As String = itemY.SubItems(_column).Text
 
-        Dim result As Integer
+'        Dim result As Integer
 
-        Select Case GetColumnType(_column)
-            Case ColumnDataType.Number
-                result = CompareNumbers(valX, valY)
+'        Select Case GetColumnType(_column)
+'            Case ColumnDataType.Number
+'                result = CompareNumbers(valX, valY)
 
-            Case ColumnDataType.DateValue
-                result = CompareDates(valX, valY)
+'            Case ColumnDataType.DateValue
+'                result = CompareDates(valX, valY)
 
-            Case Else
-                result = String.Compare(valX, valY, StringComparison.OrdinalIgnoreCase)
-        End Select
+'            Case Else
+'                result = String.Compare(valX, valY, StringComparison.OrdinalIgnoreCase)
+'        End Select
 
-        If _order = SortOrder.Descending Then result = -result
-        Return result
-    End Function
+'        If _order = SortOrder.Descending Then result = -result
+'        Return result
+'    End Function
 
-    Private Function GetColumnType(col As Integer) As ColumnDataType
-        If _columnTypes.ContainsKey(col) Then
-            Return _columnTypes(col)
-        End If
-        Return ColumnDataType.Text
-    End Function
+'    Private Function GetColumnType(col As Integer) As ColumnDataType
+'        If _columnTypes.ContainsKey(col) Then
+'            Return _columnTypes(col)
+'        End If
+'        Return ColumnDataType.Text
+'    End Function
 
-    ' -----------------------------
-    '   NUMBER SORTING (FILE SIZE)
-    ' -----------------------------
-    Private Function CompareNumbers(a As String, b As String) As Integer
-        Dim n1 As Long = ParseSize(a)
-        Dim n2 As Long = ParseSize(b)
-        Return n1.CompareTo(n2)
-    End Function
+'    ' -----------------------------
+'    '   NUMBER SORTING (FILE SIZE)
+'    ' -----------------------------
+'    Private Function CompareNumbers(a As String, b As String) As Integer
+'        Dim n1 As Long = ParseSize(a)
+'        Dim n2 As Long = ParseSize(b)
+'        Return n1.CompareTo(n2)
+'    End Function
 
-    ' -----------------------------
-    '   DATE SORTING
-    ' -----------------------------
-    Private Function CompareDates(a As String, b As String) As Integer
-        Dim d1, d2 As DateTime
-        DateTime.TryParse(a, d1)
-        DateTime.TryParse(b, d2)
-        Return d1.CompareTo(d2)
-    End Function
+'    ' -----------------------------
+'    '   DATE SORTING
+'    ' -----------------------------
+'    Private Function CompareDates(a As String, b As String) As Integer
+'        Dim d1, d2 As DateTime
+'        DateTime.TryParse(a, d1)
+'        DateTime.TryParse(b, d2)
+'        Return d1.CompareTo(d2)
+'    End Function
 
-    Private Function ParseSize(input As String) As Long
-        If String.IsNullOrWhiteSpace(input) Then Return 0
+'    Private Function ParseSize(input As String) As Long
+'        If String.IsNullOrWhiteSpace(input) Then Return 0
 
-        ' Normalize
-        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
+'        ' Normalize
+'        Dim text = input.Trim().Replace(",", "").ToUpperInvariant()
 
-        ' Extract sign
-        Dim isNegative As Boolean = text.StartsWith("-")
-        If isNegative Then text = text.Substring(1).Trim()
+'        ' Extract sign
+'        Dim isNegative As Boolean = text.StartsWith("-")
+'        If isNegative Then text = text.Substring(1).Trim()
 
-        ' Split into number + unit
-        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
-        Dim numberPart As String = parts(0)
-        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
+'        ' Split into number + unit
+'        Dim parts = text.Split(" "c, StringSplitOptions.RemoveEmptyEntries)
+'        Dim numberPart As String = parts(0)
+'        Dim unitPart As String = If(parts.Length > 1, parts(1), "B")
 
-        ' Parse numeric portion
-        Dim value As Double
-        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
-                           Globalization.CultureInfo.InvariantCulture, value) Then
-            Return 0
-        End If
+'        ' Parse numeric portion
+'        Dim value As Double
+'        If Not Double.TryParse(numberPart, Globalization.NumberStyles.Float,
+'                           Globalization.CultureInfo.InvariantCulture, value) Then
+'            Return 0
+'        End If
 
-        ' Look up the factor from the shared SizeUnits array
-        Dim factor As Long = 1
-        For Each u In Form1.SizeUnits
-            If u.Unit.Equals(unitPart, StringComparison.OrdinalIgnoreCase) Then
-                factor = u.Factor
-                Exit For
-            End If
-        Next
+'        ' Look up the factor from the shared SizeUnits array
+'        Dim factor As Long = 1
+'        For Each u In Form1.SizeUnits
+'            If u.Unit.Equals(unitPart, StringComparison.OrdinalIgnoreCase) Then
+'                factor = u.Factor
+'                Exit For
+'            End If
+'        Next
 
-        ' Compute final byte count
-        Dim bytes As Double = value * factor
-        Dim result As Long = CLng(Math.Round(bytes))
+'        ' Compute final byte count
+'        Dim bytes As Double = value * factor
+'        Dim result As Long = CLng(Math.Round(bytes))
 
-        Return If(isNegative, -result, result)
-    End Function
+'        Return If(isNegative, -result, result)
+'    End Function
 
-    ' TEMP: expose parser for testing
-    Public Function Test_ParseSize(input As String) As Long
-        Return ParseSize(input)
-    End Function
+'    ' TEMP: expose parser for testing
+'    Public Function Test_ParseSize(input As String) As Long
+'        Return ParseSize(input)
+'    End Function
 
-End Class
+'End Class
 
 'Public Class CopyResult
 '    Public Property FilesCopied As Integer
@@ -11801,64 +11801,64 @@ End Class
 'End Class
 
 
-Public Class CopyResult
-    Public Property FilesCopied As Integer
-    Public Property FilesSkipped As Integer
-    Public Property DirectoriesCreated As Integer
-    Public Property Errors As New List(Of String)
-    Public Property CopiedFilePaths As New List(Of String)
+'Public Class CopyResult
+'    Public Property FilesCopied As Integer
+'    Public Property FilesSkipped As Integer
+'    Public Property DirectoriesCreated As Integer
+'    Public Property Errors As New List(Of String)
+'    Public Property CopiedFilePaths As New List(Of String)
 
-    ' Progress pulse
-    Public Property FilesProcessed As Integer
-    Public Property TotalDirectories As Integer
-    Public Property DirectoriesStarted As Integer
+'    ' Progress pulse
+'    Public Property FilesProcessed As Integer
+'    Public Property TotalDirectories As Integer
+'    Public Property DirectoriesStarted As Integer
 
-    ' NEW: Total files expected to be processed
-    Public Property TotalFiles As Integer   ' ← Add this
+'    ' NEW: Total files expected to be processed
+'    Public Property TotalFiles As Integer   ' ← Add this
 
-    ' Cancellation flag
-    Public Property WasCanceled As Boolean
+'    ' Cancellation flag
+'    Public Property WasCanceled As Boolean
 
-    Public ReadOnly Property Success As Boolean
-        Get
-            Return Errors.Count = 0 AndAlso Not WasCanceled
-        End Get
-    End Property
+'    Public ReadOnly Property Success As Boolean
+'        Get
+'            Return Errors.Count = 0 AndAlso Not WasCanceled
+'        End Get
+'    End Property
 
-    Public Sub Append(other As CopyResult)
-        If other Is Nothing Then Exit Sub
+'    Public Sub Append(other As CopyResult)
+'        If other Is Nothing Then Exit Sub
 
-        Me.FilesCopied += other.FilesCopied
-        Me.FilesSkipped += other.FilesSkipped
-        Me.DirectoriesCreated += other.DirectoriesCreated
+'        Me.FilesCopied += other.FilesCopied
+'        Me.FilesSkipped += other.FilesSkipped
+'        Me.DirectoriesCreated += other.DirectoriesCreated
 
-        Me.FilesProcessed += other.FilesProcessed
-        Me.TotalDirectories += other.TotalDirectories
-        Me.DirectoriesStarted += other.DirectoriesStarted
+'        Me.FilesProcessed += other.FilesProcessed
+'        Me.TotalDirectories += other.TotalDirectories
+'        Me.DirectoriesStarted += other.DirectoriesStarted
 
-        ' NEW: merge file totals
-        Me.TotalFiles += other.TotalFiles
+'        ' NEW: merge file totals
+'        Me.TotalFiles += other.TotalFiles
 
-        If other.CopiedFilePaths IsNot Nothing Then
-            Me.CopiedFilePaths.AddRange(other.CopiedFilePaths)
-        End If
+'        If other.CopiedFilePaths IsNot Nothing Then
+'            Me.CopiedFilePaths.AddRange(other.CopiedFilePaths)
+'        End If
 
-        If other.Errors IsNot Nothing AndAlso other.Errors.Count > 0 Then
-            Me.Errors.AddRange(other.Errors)
-        End If
-    End Sub
-End Class
+'        If other.Errors IsNot Nothing AndAlso other.Errors.Count > 0 Then
+'            Me.Errors.AddRange(other.Errors)
+'        End If
+'    End Sub
+'End Class
 
 
-Public Class LaunchRecorder
-    Public LastAction As String = Nothing
-    Public LastTarget As String = Nothing
+'Public Class LaunchRecorder
+'    Public LastAction As String = Nothing
+'    Public LastTarget As String = Nothing
 
-    Public Sub Record(action As String, target As String)
-        LastAction = action
-        LastTarget = target
-    End Sub
-End Class
+'    Public Sub Record(action As String, target As String)
+'        LastAction = action
+'        LastTarget = target
+'    End Sub
+'End Class
 
 'Public Class SafeLaunchEngine
 
@@ -11908,113 +11908,113 @@ End Class
 
 'End Class
 
-Public Class SafeLaunchEngine
+'Public Class SafeLaunchEngine
 
-    Private ReadOnly _owner As Form1
-    Private ReadOnly _recorder As LaunchRecorder   ' Optional for tests
+'    Private ReadOnly _owner As Form1
+'    Private ReadOnly _recorder As LaunchRecorder   ' Optional for tests
 
-    Public Sub New(owner As Form1, Optional recorder As LaunchRecorder = Nothing)
-        _owner = owner
-        _recorder = recorder
-    End Sub
+'    Public Sub New(owner As Form1, Optional recorder As LaunchRecorder = Nothing)
+'        _owner = owner
+'        _recorder = recorder
+'    End Sub
 
-    Public Function SafeLaunch(input As String) As Boolean
-        If String.IsNullOrWhiteSpace(input) Then
-            Return False
-        End If
+'    Public Function SafeLaunch(input As String) As Boolean
+'        If String.IsNullOrWhiteSpace(input) Then
+'            Return False
+'        End If
 
-        Dim path = input.Trim()
+'        Dim path = input.Trim()
 
-        ' 1. URL
-        If IsSafeUrl(path) Then
-            Return LaunchUrl(path)
-        End If
+'        ' 1. URL
+'        If IsSafeUrl(path) Then
+'            Return LaunchUrl(path)
+'        End If
 
-        ' 2. Folder
-        If Directory.Exists(path) Then
-            Return LaunchFolder(path)
-        End If
+'        ' 2. Folder
+'        If Directory.Exists(path) Then
+'            Return LaunchFolder(path)
+'        End If
 
-        ' 3. File
-        If File.Exists(path) Then
-            Return LaunchFile(path)
-        End If
+'        ' 3. File
+'        If File.Exists(path) Then
+'            Return LaunchFile(path)
+'        End If
 
-        Return False
-    End Function
+'        Return False
+'    End Function
 
-    ' ---------------------------------------------------------
-    '  Launchers
-    ' ---------------------------------------------------------
+'    ' ---------------------------------------------------------
+'    '  Launchers
+'    ' ---------------------------------------------------------
 
-    Private Function LaunchUrl(url As String) As Boolean
-        If _recorder IsNot Nothing Then
-            _recorder.Record("Url", url)
-            Return True
-        End If
+'    Private Function LaunchUrl(url As String) As Boolean
+'        If _recorder IsNot Nothing Then
+'            _recorder.Record("Url", url)
+'            Return True
+'        End If
 
-        Try
-            Dim psi As New ProcessStartInfo(url) With {.UseShellExecute = True}
-            Process.Start(psi)
+'        Try
+'            Dim psi As New ProcessStartInfo(url) With {.UseShellExecute = True}
+'            Process.Start(psi)
 
-            _owner.ShowStatus(_owner.StatusPad & _owner.IconOpen & $"  Opening URL: {url}")
-            Return True
+'            _owner.ShowStatus(_owner.StatusPad & _owner.IconOpen & $"  Opening URL: {url}")
+'            Return True
 
-        Catch ex As Exception
-            _owner.ShowStatus(_owner.StatusPad & _owner.IconError & " Cannot open URL: " & ex.Message)
-            Return False
-        End Try
-    End Function
+'        Catch ex As Exception
+'            _owner.ShowStatus(_owner.StatusPad & _owner.IconError & " Cannot open URL: " & ex.Message)
+'            Return False
+'        End Try
+'    End Function
 
-    Private Function LaunchFolder(path As String) As Boolean
-        If _recorder IsNot Nothing Then
-            _recorder.Record("Folder", path)
-            Return True
-        End If
+'    Private Function LaunchFolder(path As String) As Boolean
+'        If _recorder IsNot Nothing Then
+'            _recorder.Record("Folder", path)
+'            Return True
+'        End If
 
-        _owner.NavigateTo(path)
-        Return True
-    End Function
+'        _owner.NavigateTo(path)
+'        Return True
+'    End Function
 
-    Private Function LaunchFile(filePath As String) As Boolean
-        If _recorder IsNot Nothing Then
-            _recorder.Record("File", filePath)
-            Return True
-        End If
+'    Private Function LaunchFile(filePath As String) As Boolean
+'        If _recorder IsNot Nothing Then
+'            _recorder.Record("File", filePath)
+'            Return True
+'        End If
 
-        Try
-            Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
-            Process.Start(psi)
+'        Try
+'            Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
+'            Process.Start(psi)
 
-            Dim name = Path.GetFileNameWithoutExtension(filePath)
-            _owner.ShowStatus(_owner.StatusPad & _owner.IconOpen & $"  Opened:   ""{name}""")
-            Return True
+'            Dim name = Path.GetFileNameWithoutExtension(filePath)
+'            _owner.ShowStatus(_owner.StatusPad & _owner.IconOpen & $"  Opened:   ""{name}""")
+'            Return True
 
-        Catch ex As Exception
-            _owner.ShowStatus(_owner.StatusPad & _owner.IconError & " Cannot open: " & ex.Message)
-            Return False
-        End Try
-    End Function
+'        Catch ex As Exception
+'            _owner.ShowStatus(_owner.StatusPad & _owner.IconError & " Cannot open: " & ex.Message)
+'            Return False
+'        End Try
+'    End Function
 
-    ' ---------------------------------------------------------
-    '  URL Validation
-    ' ---------------------------------------------------------
-    Private Function IsSafeUrl(text As String) As Boolean
-        Dim uri As Uri = Nothing
+'    ' ---------------------------------------------------------
+'    '  URL Validation
+'    ' ---------------------------------------------------------
+'    Private Function IsSafeUrl(text As String) As Boolean
+'        Dim uri As Uri = Nothing
 
-        If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then
-            Return False
-        End If
+'        If Not Uri.TryCreate(text, UriKind.Absolute, uri) Then
+'            Return False
+'        End If
 
-        Select Case uri.Scheme
-            Case Uri.UriSchemeHttp, Uri.UriSchemeHttps
-                Return True
-            Case Else
-                Return False
-        End Select
-    End Function
+'        Select Case uri.Scheme
+'            Case Uri.UriSchemeHttp, Uri.UriSchemeHttps
+'                Return True
+'            Case Else
+'                Return False
+'        End Select
+'    End Function
 
-End Class
+'End Class
 
 
 
