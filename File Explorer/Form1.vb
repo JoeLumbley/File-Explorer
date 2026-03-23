@@ -2273,11 +2273,101 @@ Public Class Form1
         Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
     End Function
 
+    'Private Async Sub HandleMoveCommand(parts As String())
+
+    '    If parts.Length <= 2 Then
+    '        ShowStatus(StatusPad & IconDialog &
+    '           " Usage: move [source] [destination]  Example: move ""C:\A B"" ""C:\C D""")
+    '        Exit Sub
+    '    End If
+
+    '    Dim source As String =
+    '    String.Join(" ", parts.Skip(1).Take(parts.Length - 2)).Trim()
+
+    '    Dim destinationRoot As String =
+    '    parts(parts.Length - 1).Trim()
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate source
+    '    ' ------------------------------------------------------------
+    '    If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
+    '        ShowStatus(StatusPad & IconError &
+    '           $" Move failed: Source ""{source}"" does not exist. " &
+    '           "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Validate destination root
+    '    ' ------------------------------------------------------------
+    '    If Not Directory.Exists(destinationRoot) Then
+    '        ShowStatus(StatusPad & IconError &
+    '           $" Move failed: Destination ""{destinationRoot}"" does not exist. " &
+    '           "If the path contains spaces, enclose it in quotes.")
+    '        Exit Sub
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Prevent moving a folder into itself or its own subtree
+    '    ' ------------------------------------------------------------
+    '    If Directory.Exists(source) Then
+    '        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar)
+    '        Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar)
+
+    '        If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
+    '            ShowStatus(StatusPad & IconError &
+    '               " Cannot move a folder into itself or one of its subfolders.")
+    '            Exit Sub
+    '        End If
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Perform unified move (Cut) on a background thread
+    '    ' ------------------------------------------------------------
+    '    copyCts = New CancellationTokenSource()
+    '    Dim ct = copyCts.Token
+
+    '    ShowStatus(StatusPad & IconCut & " Moving... please wait.")
+
+    '    Dim result As CopyResult =
+    '    Await Task.Run(
+    '        Function()
+    '            Return CopyFileOrDirectoryUnified(
+    '                source,
+    '                destinationRoot,
+    '                isCut:=True,
+    '                ct,
+    '                Nothing)   ' no progress callback for CLI move
+    '        End Function,
+    '        ct)
+
+    '    ' ------------------------------------------------------------
+    '    ' Report result
+    '    ' ------------------------------------------------------------
+    '    If result.WasCanceled Then
+    '        ShowStatus(StatusPad & IconWarning & " Move canceled.")
+    '    ElseIf result.Success Then
+    '        ShowStatus(StatusPad & IconCut &
+    '           $" Moved {result.FilesCopied} item(s).")
+    '    Else
+    '        ShowStatus(StatusPad & IconError &
+    '           " Move completed with errors. Some items could not be moved.")
+    '    End If
+
+    '    ' ------------------------------------------------------------
+    '    ' Restore address bar after CLI move
+    '    ' ------------------------------------------------------------
+    '    RestoreAddressBar()
+
+    'End Sub
+
+
+
     Private Async Sub HandleMoveCommand(parts As String())
 
         If parts.Length <= 2 Then
             ShowStatus(StatusPad & IconDialog &
-               " Usage: move [source] [destination]  Example: move ""C:\A B"" ""C:\C D""")
+           " Usage: move [source] [destination]  Example: move ""C:\A B"" ""C:\C D""")
             Exit Sub
         End If
 
@@ -2292,8 +2382,8 @@ Public Class Form1
         ' ------------------------------------------------------------
         If Not (IO.File.Exists(source) OrElse Directory.Exists(source)) Then
             ShowStatus(StatusPad & IconError &
-               $" Move failed: Source ""{source}"" does not exist. " &
-               "If the path contains spaces, enclose it in quotes.")
+           $" Move failed: Source ""{source}"" does not exist. " &
+           "If the path contains spaces, enclose it in quotes.")
             Exit Sub
         End If
 
@@ -2302,8 +2392,8 @@ Public Class Form1
         ' ------------------------------------------------------------
         If Not Directory.Exists(destinationRoot) Then
             ShowStatus(StatusPad & IconError &
-               $" Move failed: Destination ""{destinationRoot}"" does not exist. " &
-               "If the path contains spaces, enclose it in quotes.")
+           $" Move failed: Destination ""{destinationRoot}"" does not exist. " &
+           "If the path contains spaces, enclose it in quotes.")
             Exit Sub
         End If
 
@@ -2316,48 +2406,69 @@ Public Class Form1
 
             If destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase) Then
                 ShowStatus(StatusPad & IconError &
-                   " Cannot move a folder into itself or one of its subfolders.")
+               " Cannot move a folder into itself or one of its subfolders.")
                 Exit Sub
             End If
         End If
 
         ' ------------------------------------------------------------
-        ' Perform unified move (Cut) on a background thread
+        ' Create CTS
         ' ------------------------------------------------------------
         copyCts = New CancellationTokenSource()
-        Dim ct = copyCts.Token
+        Dim token = copyCts.Token
 
-        ShowStatus(StatusPad & IconCut & " Moving... please wait.")
+        Try
+            ShowStatus(StatusPad & IconCut & " Moving... please wait.")
 
-        Dim result As CopyResult =
-        Await Task.Run(
-            Function()
-                Return CopyFileOrDirectoryUnified(
-                    source,
-                    destinationRoot,
-                    isCut:=True,
-                    ct,
-                    Nothing)   ' no progress callback for CLI move
-            End Function,
-            ct)
+            ' ------------------------------------------------------------
+            ' Use the unified orchestration layer
+            ' ------------------------------------------------------------
+            Dim result = Await RunCopyOrCutOperation(
+            New List(Of String) From {source},
+            destinationRoot,
+            isCut:=True,
+            CopyUIContext.CLI,
+            token
+        )
 
-        ' ------------------------------------------------------------
-        ' Report result
-        ' ------------------------------------------------------------
-        If result.WasCanceled Then
-            ShowStatus(StatusPad & IconWarning & " Move canceled.")
-        ElseIf result.Success Then
-            ShowStatus(StatusPad & IconCut &
-               $" Moved {result.FilesCopied} item(s).")
-        Else
-            ShowStatus(StatusPad & IconError &
+            Dim summary = result.Summary
+
+            ' ------------------------------------------------------------
+            ' Report result
+            ' ------------------------------------------------------------
+            If summary.WasCanceled Then
+                ShowStatus(StatusPad & IconWarning & " Move canceled.")
+            ElseIf summary.Success Then
+                ShowStatus(StatusPad & IconCut &
+               $" Moved {summary.FilesCopied} item(s).")
+            Else
+                ShowStatus(StatusPad & IconError &
                " Move completed with errors. Some items could not be moved.")
-        End If
+            End If
 
-        ' ------------------------------------------------------------
-        ' Restore address bar after CLI move
-        ' ------------------------------------------------------------
-        RestoreAddressBar()
+            ' ------------------------------------------------------------
+            ' Refresh UI
+            ' ------------------------------------------------------------
+            Await PopulateFiles(currentFolder)
+            UpdateTreeRoots()
+            RestoreAddressBar()
+
+        Catch ex As OperationCanceledException
+            ShowStatus(StatusPad & IconWarning & " Move canceled.")
+
+        Catch ex As Exception
+            ShowStatus(StatusPad & IconError & " Move failed: " & ex.Message)
+
+        Finally
+            If copyCts IsNot Nothing Then
+                copyCts.Dispose()
+                copyCts = Nothing
+            End If
+
+            If HelpPanel.Visible Then
+                HelpPanel.Visible = False
+            End If
+        End Try
 
     End Sub
 
