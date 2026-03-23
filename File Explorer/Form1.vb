@@ -320,198 +320,391 @@ Public Class Form1
     }
 
 
-    Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
-        {"cd",
-            (
-                {"cd"},
-                "cd [directory]",
-                "Change directory to the specified path.",
-                {
-                    "cd C:\",
-                    "cd ""C:\My Folder"""
-                }
-            )
-        },
-        {"copy",
-            (
-                {"copy", "cp"},
-                "copy [source] [destination]",
-                "Copy a file or folder to a destination folder.",
-                {
-                    "copy C:\folderA\file.doc C:\folderB",
-                    "copy ""C:\folder A"" ""C:\folder B"""
-                }
-            )
-        },
-        {"delete",
-            (
-                {"delete", "rm"},
-                "delete [file_or_directory]",
-                "Delete a file or folder.",
-                {
-                    "delete C:\file.txt",
-                    "delete ""C:\My Folder"""
-                }
-            )
-        },
-        {"df",
-            (
-                {"df"},
-                "df <drive_letter>:",
-                "Display the available free space on the specified drive.",
-                {
-                    "df C:",
-                    "df D:",
-                    "df E:"
-                }
-            )
-        },
-        {"drives",
-            (
-                {"drives"},
-                "drives",
-                "Show an overview of all drives, including free space bars.",
-                {
-                    "drives"
-                }
-            )
-        },
-        {"exit",
-            (
-                {
-                    "exit", "quit", "close", "stop", "halt", "end", "signout",
-                    "poweroff", "bye"
-                },
-                "exit",
-                "Exit the application.",
-                {}
-            )
-        },
-        {"find",
-            (
-                {"find", "search"},
-                "find [search_term]",
-                "Search for files and folders in the current directory.",
-                {
-                    "find document"
-                }
-            )
-        },
-        {"findnext",
-            (
-                {"findnext", "searchnext", "next"},
-                "findnext",
-                "Show the next search result from the previous search.",
-                {}
-            )
-        },
-        {"help",
-            (
-                {"help", "commands", "?"},
-                "help [search_term]",
-                $"Show the full command list or jump to a specific command.",
-                {
-                    "help",
-                    "help cd",
-                    "help copy"
-                }
-            )
-        },
-        {"man",
-            (
-                {"man", "manual", "appmanual"},
-                "man [section]",
-                "Show the full application manual or jump to a specific section.",
-                {
-                    "man",
-                    "man help",
-                    "man commands",
-                    "manual",
-                    "appmanual"
-                }
-            )
-        },
-        {"mkdir",
-            (
-                {"mkdir", "make", "md"},
-                "mkdir [directory_path]",
-                "Create a new folder.",
-                {
-                    "mkdir C:\newfolder",
-                    "make ""C:\My New Folder""",
-                    "md C:\anotherfolder"
-                }
-            )
-        },
-        {"move",
-            (
-                {"move", "mv"},
-                "move [source] [destination]",
-                "Move a file or folder to a new location.",
-                {
-                    "move C:\folderA\file.doc C:\folderB\file.doc",
-                    "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-                }
-            )
-        },
-        {"open",
-            (
-                {"open"},
-                "open [file_or_directory]",
-                "Open a file or navigate into a folder.",
-                {
-                    "open C:\folder\file.txt",
-                    "open ""C:\My Folder"""
-                }
-            )
-        },
-        {"pin",
-            (
-                {"pin"},
-                "pin [folder_path]",
-                "Pin or unpin a folder.",
-                {
-                    "pin C:\Projects",
-                    "pin ""C:\My Documents""",
-                    "pin"
-                }
-            )
-        },
-        {"rename",
-            (
-                {"rename", "rn"},
-                "rename [source_path] [new_name]",
-                "Rename a file or directory.",
-                {
-                    "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-                }
-            )
-        },
-        {"shortcuts",
-            (
-                {"shortcuts", "keys"},
-                "shortcuts",
-                "Show a list of all keyboard shortcuts.",
-                {
-                    "shortcuts",
-                    "keys"
-                }
-            )
-        },
-        {"text",
-            (
-                {"text", "txt"},
-                "text [file_path]",
-                "Create a new text file.",
-                {
-                    "text ""C:\folder\example.txt"""
-                }
-            )
+    'Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
+    '    {"cd",
+    '        (
+    '            {"cd"},
+    '            "cd [directory]",
+    '            "Change directory to the specified path.",
+    '            {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"copy",
+    '        (
+    '            {"copy", "cp"},
+    '            "copy [source] [destination]",
+    '            "Copy a file or folder to a destination folder.",
+    '            {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            }
+    '        )
+    '    },
+    '    {"delete",
+    '        (
+    '            {"delete", "rm"},
+    '            "delete [file_or_directory]",
+    '            "Delete a file or folder.",
+    '            {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"df",
+    '        (
+    '            {"df"},
+    '            "df <drive_letter>:",
+    '            "Display the available free space on the specified drive.",
+    '            {
+    '                "df C:",
+    '                "df D:",
+    '                "df E:"
+    '            }
+    '        )
+    '    },
+    '    {"drives",
+    '        (
+    '            {"drives"},
+    '            "drives",
+    '            "Show an overview of all drives, including free space bars.",
+    '            {
+    '                "drives"
+    '            }
+    '        )
+    '    },
+    '    {"exit",
+    '        (
+    '            {
+    '                "exit", "quit", "close", "stop", "halt", "end", "signout",
+    '                "poweroff", "bye"
+    '            },
+    '            "exit",
+    '            "Exit the application.",
+    '            {}
+    '        )
+    '    },
+    '    {"find",
+    '        (
+    '            {"find", "search"},
+    '            "find [search_term]",
+    '            "Search for files and folders in the current directory.",
+    '            {
+    '                "find document"
+    '            }
+    '        )
+    '    },
+    '    {"findnext",
+    '        (
+    '            {"findnext", "searchnext", "next"},
+    '            "findnext",
+    '            "Show the next search result from the previous search.",
+    '            {}
+    '        )
+    '    },
+    '    {"help",
+    '        (
+    '            {"help", "commands", "?"},
+    '            "help [search_term]",
+    '            $"Show the full command list or jump to a specific command.",
+    '            {
+    '                "help",
+    '                "help cd",
+    '                "help copy"
+    '            }
+    '        )
+    '    },
+    '    {"man",
+    '        (
+    '            {"man", "manual", "appmanual"},
+    '            "man [section]",
+    '            "Show the full application manual or jump to a specific section.",
+    '            {
+    '                "man",
+    '                "man help",
+    '                "man commands",
+    '                "manual",
+    '                "appmanual"
+    '            }
+    '        )
+    '    },
+    '    {"mkdir",
+    '        (
+    '            {"mkdir", "make", "md"},
+    '            "mkdir [directory_path]",
+    '            "Create a new folder.",
+    '            {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            }
+    '        )
+    '    },
+    '    {"move",
+    '        (
+    '            {"move", "mv"},
+    '            "move [source] [destination]",
+    '            "Move a file or folder to a new location.",
+    '            {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            }
+    '        )
+    '    },
+    '    {"open",
+    '        (
+    '            {"open"},
+    '            "open [file_or_directory]",
+    '            "Open a file or navigate into a folder.",
+    '            {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            }
+    '        )
+    '    },
+    '    {"pin",
+    '        (
+    '            {"pin"},
+    '            "pin [folder_path]",
+    '            "Pin or unpin a folder.",
+    '            {
+    '                "pin C:\Projects",
+    '                "pin ""C:\My Documents""",
+    '                "pin"
+    '            }
+    '        )
+    '    },
+    '    {"rename",
+    '        (
+    '            {"rename", "rn"},
+    '            "rename [source_path] [new_name]",
+    '            "Rename a file or directory.",
+    '            {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            }
+    '        )
+    '    },
+    '    {"shortcuts",
+    '        (
+    '            {"shortcuts", "keys"},
+    '            "shortcuts",
+    '            "Show a list of all keyboard shortcuts.",
+    '            {
+    '                "shortcuts",
+    '                "keys"
+    '            }
+    '        )
+    '    },
+    '    {"text",
+    '        (
+    '            {"text", "txt"},
+    '            "text [file_path]",
+    '            "Create a new text file.",
+    '            {
+    '                "text ""C:\folder\example.txt"""
+    '            }
+    '        )
+    '    }
+    '}
+
+
+    Private ReadOnly CommandHelp As New Dictionary(Of String, CommandInfo) From {
+    {"cd",
+        New CommandInfo With {
+            .Aliases = {"cd"},
+            .Usage = "cd [directory]",
+            .Description = "Change directory to the specified path.",
+            .Examples = {
+                "cd C:\",
+                "cd ""C:\My Folder"""
+            },
+            .Category = CommandCategory.Navigation
+        }
+    },
+    {"copy",
+        New CommandInfo With {
+            .Aliases = {"copy", "cp"},
+            .Usage = "copy [source] [destination]",
+            .Description = "Copy a file or folder to a destination folder.",
+            .Examples = {
+                "copy C:\folderA\file.doc C:\folderB",
+                "copy ""C:\folder A"" ""C:\folder B"""
+            },
+            .Category = CommandCategory.FileOperations
+        }
+    },
+    {"delete",
+        New CommandInfo With {
+            .Aliases = {"delete", "rm"},
+            .Usage = "delete [file_or_directory]",
+            .Description = "Delete a file or folder.",
+            .Examples = {
+                "delete C:\file.txt",
+                "delete ""C:\My Folder"""
+            },
+            .Category = CommandCategory.FileOperations
+        }
+    },
+    {"df",
+        New CommandInfo With {
+            .Aliases = {"df"},
+            .Usage = "df <drive_letter>:",
+            .Description = "Display the available free space on the specified drive.",
+            .Examples = {"df C:", "df D:", "df E:"},
+            .Category = CommandCategory.System
+        }
+    },
+    {"drives",
+        New CommandInfo With {
+            .Aliases = {"drives"},
+            .Usage = "drives",
+            .Description = "Show an overview of all drives, including free space bars.",
+            .Examples = {"drives"},
+            .Category = CommandCategory.System
+        }
+    },
+    {"exit",
+        New CommandInfo With {
+            .Aliases = {
+                "exit", "quit", "close", "stop", "halt", "end",
+                "signout", "poweroff", "bye", "shutdown", "logoff",
+                "terminate", "leave", "farewell", "adios", "ciao",
+                "sayonara", "goodbye", "later"
+            },
+            .Usage = "exit",
+            .Description = "Exit the application.",
+            .Examples = {"exit"},
+            .Category = CommandCategory.System
+        }
+    },
+    {"find",
+        New CommandInfo With {
+            .Aliases = {"find", "search"},
+            .Usage = "find [search_term]",
+            .Description = "Search for files and folders in the current directory.",
+            .Examples = {"find document"},
+            .Category = CommandCategory.Search
+        }
+    },
+    {"findnext",
+        New CommandInfo With {
+            .Aliases = {"findnext", "searchnext", "next"},
+            .Usage = "findnext",
+            .Description = "Show the next search result from the previous search.",
+            .Examples = {"findnext"},
+            .Category = CommandCategory.Search
+        }
+    },
+    {"help",
+        New CommandInfo With {
+            .Aliases = {"help", "commands", "?"},
+            .Usage = "help [search_term]",
+            .Description = "Show the full command list or jump to a specific command.",
+            .Examples = {"help", "help cd", "help copy"},
+            .Category = CommandCategory.Help
+        }
+    },
+    {"man",
+        New CommandInfo With {
+            .Aliases = {"man", "manual", "appmanual"},
+            .Usage = "man [section]",
+            .Description = "Show the full app manual or jump to a specific section.",
+            .Examples = {"man", "man help", "manual"},
+            .Category = CommandCategory.Help
+        }
+    },
+    {"mkdir",
+        New CommandInfo With {
+            .Aliases = {"mkdir", "make", "md"},
+            .Usage = "mkdir [directory_path]",
+            .Description = "Create a new folder.",
+            .Examples = {
+                "mkdir C:\newfolder",
+                "make ""C:\My New Folder""",
+                "md C:\anotherfolder"
+            },
+            .Category = CommandCategory.FileOperations
+        }
+    },
+    {"move",
+        New CommandInfo With {
+            .Aliases = {"move", "mv"},
+            .Usage = "move [source] [destination]",
+            .Description = "Move a file or folder to a new location.",
+            .Examples = {
+                "move C:\folderA\file.doc C:\folderB\file.doc",
+                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+            },
+            .Category = CommandCategory.FileOperations
+        }
+    },
+    {"open",
+        New CommandInfo With {
+            .Aliases = {"open"},
+            .Usage = "open [file_or_directory]",
+            .Description = "Open a file or navigate into a folder.",
+            .Examples = {
+                "open C:\folder\file.txt",
+                "open ""C:\My Folder"""
+            },
+            .Category = CommandCategory.Navigation
+        }
+    },
+    {"pin",
+        New CommandInfo With {
+            .Aliases = {"pin"},
+            .Usage = "pin [folder_path]",
+            .Description = "Pin or unpin a folder.",
+            .Examples = {
+                "pin C:\Projects",
+                "pin ""C:\My Documents""",
+                "pin"
+            },
+            .Category = CommandCategory.Navigation
+        }
+    },
+    {"rename",
+        New CommandInfo With {
+            .Aliases = {"rename", "rn"},
+            .Usage = "rename [source_path] [new_name]",
+            .Description = "Rename a file or directory.",
+            .Examples = {
+                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+            },
+            .Category = CommandCategory.FileOperations
+        }
+    },
+    {"shortcuts",
+        New CommandInfo With {
+            .Aliases = {"shortcuts", "keys"},
+            .Usage = "shortcuts",
+            .Description = "Show a list of all keyboard shortcuts.",
+            .Examples = {"shortcuts", "keys"},
+            .Category = CommandCategory.Shortcuts
+        }
+    },
+    {"text",
+        New CommandInfo With {
+            .Aliases = {"text", "txt"},
+            .Usage = "text [file_path]",
+            .Description = "Create a new text file.",
+            .Examples = {"text ""C:\folder\example.txt"""},
+            .Category = CommandCategory.FileOperations
         }
     }
+}
 
-
-
+    Public Enum CommandCategory
+        Navigation
+        FileOperations
+        Search
+        System
+        Help
+        Shortcuts
+    End Enum
 
 
     Private HelpHeaderLabel As Label
@@ -4398,20 +4591,20 @@ Public Class Form1
         PerformRename(sourcePath, newName)
     End Sub
 
-    Private Function SearchHelp(term As String) As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-        term = term.Trim().ToLowerInvariant()
-        If term = "" Then Return CommandHelp.ToList()
+    'Private Function SearchHelp(term As String) As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+    '    term = term.Trim().ToLowerInvariant()
+    '    If term = "" Then Return CommandHelp.ToList()
 
-        Return CommandHelp.
-        Where(Function(entry)
-                  Dim meta = entry.Value
-                  Return entry.Key.ToLower().Contains(term) _
-                      OrElse meta.Aliases.Any(Function(a) a.ToLower().Contains(term)) _
-                      OrElse meta.Usage.ToLower().Contains(term) _
-                      OrElse meta.Description.ToLower().Contains(term)
-              End Function).
-        ToList()
-    End Function
+    '    Return CommandHelp.
+    '    Where(Function(entry)
+    '              Dim meta = entry.Value
+    '              Return entry.Key.ToLower().Contains(term) _
+    '                  OrElse meta.Aliases.Any(Function(a) a.ToLower().Contains(term)) _
+    '                  OrElse meta.Usage.ToLower().Contains(term) _
+    '                  OrElse meta.Description.ToLower().Contains(term)
+    '          End Function).
+    '    ToList()
+    'End Function
 
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
         ' =============================================================
@@ -5766,18 +5959,219 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub HandleHelpCommand(parts As String())
+    '    Try
+    '        ' Set font for help text box
+    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+
+    '        ' Extract and clean up the terms from the command
+    '        Dim terms = parts.Skip(1).
+    '                      Select(Function(t) t.Trim()).
+    '                      Where(Function(t) t <> "").
+    '                      ToList()
+
+    '        ' Handle special case for keyboard shortcuts
+    '        If terms.Count = 1 Then
+    '            Dim t = terms(0).ToLowerInvariant()
+    '            If t = "keys" OrElse t = "shortcuts" Then
+    '                HelpHeaderLabel.Text = "Keyboard Shortcuts"
+    '                HelpTextBox.Text = BuildShortcutsHelp()
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+    '        End If
+
+    '        ' Prepare to search for help entries
+    '        Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
+
+    '        If terms.Count > 0 Then
+    '            Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+
+    '            ' Search for each term and aggregate results
+    '            For Each term In terms
+    '                filtered = filtered.Union(SearchHelp(term)).ToList()
+    '            Next
+
+    '            ' Check if any results were found
+    '            If filtered.Count = 0 Then
+    '                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
+    '                HelpTextBox.Text = "No matching commands were found."
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            entries = filtered
+    '            HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
+    '        Else
+    '            HelpHeaderLabel.Text = "Command Reference"
+    '        End If
+
+    '        ' Build and display the help text
+    '        Dim text As String = BuildHelpText(entries)
+    '        HelpTextBox.Text = text
+
+    '        ' Show help panel if not already visible
+    '        If Not HelpPanel.Visible Then
+    '            ShowHelpPanelAnimated()
+    '        End If
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ' Display error message if an exception occurs
+    '        ShowStatus(StatusPad & IconError & " Failed to display help information: " & ex.Message)
+    '    Finally
+    '        RestoreAddressBar()
+    '    End Try
+    'End Sub
+
+
+
+    'Private Sub HandleHelpCommand(parts As String())
+    '    Try
+    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+
+    '        ' Extract search terms
+    '        Dim terms = parts.Skip(1).
+    '                     Select(Function(t) t.Trim()).
+    '                     Where(Function(t) t <> "").
+    '                     ToList()
+
+    '        ' ------------------------------------------------------------
+    '        ' Special case: keyboard shortcuts
+    '        ' ------------------------------------------------------------
+    '        If terms.Count = 1 Then
+    '            Dim t = terms(0).ToLowerInvariant()
+    '            If t = "keys" OrElse t = "shortcuts" Then
+    '                HelpHeaderLabel.Text = "Keyboard Shortcuts"
+    '                HelpTextBox.Text = BuildShortcutsHelp()
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' No terms → show full category‑grouped help
+    '        ' ------------------------------------------------------------
+    '        If terms.Count = 0 Then
+    '            HelpHeaderLabel.Text = "Command Reference"
+    '            HelpTextBox.Text = BuildFullCategoryHelp()
+    '            ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' Single term → try command, then category, then search
+    '        ' ------------------------------------------------------------
+    '        If terms.Count = 1 Then
+    '            Dim term = terms(0).ToLowerInvariant()
+
+    '            ' 1. Direct command lookup
+    '            If CommandHelp.ContainsKey(term) Then
+    '                HelpHeaderLabel.Text = $"Help: {term}"
+    '                HelpTextBox.Text = BuildSingleCommandHelp(CommandHelp(term))
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            ' 2. Category lookup
+    '            Dim catName = [Enum].GetNames(GetType(CommandCategory)).
+    '                       FirstOrDefault(Function(c) c.ToLower() = term)
+
+    '            If catName IsNot Nothing Then
+    '                Dim cat = CType([Enum].Parse(GetType(CommandCategory), catName), CommandCategory)
+    '                HelpHeaderLabel.Text = $"{cat} Commands"
+    '                HelpTextBox.Text = BuildCategoryHelp(cat)
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            ' 3. Fuzzy search across commands
+    '            Dim results = SearchHelp(term)
+    '            If results.Any() Then
+    '                HelpHeaderLabel.Text = $"Help: {term}"
+    '                HelpTextBox.Text = BuildSearchResultsHelp(results)
+    '                ShowHelpPanelAnimated()
+    '                FocusHelpText()
+    '                RestoreAddressBar()
+    '                Return
+    '            End If
+
+    '            ' No matches
+    '            HelpHeaderLabel.Text = $"No results for ""{term}"""
+    '            HelpTextBox.Text = "No matching commands were found."
+    '            ShowHelpPanelAnimated()
+    '            FocusHelpText()
+    '            RestoreAddressBar()
+    '            Return
+    '        End If
+
+    '        ' ------------------------------------------------------------
+    '        ' Multi‑term search (AND logic)
+    '        ' ------------------------------------------------------------
+    '        Dim multiResults = SearchHelpMultiTerm(terms)
+
+    '        If multiResults.Any() Then
+    '            HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
+    '            HelpTextBox.Text = BuildSearchResultsHelp(multiResults)
+    '        Else
+    '            HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
+    '            HelpTextBox.Text = "No matching commands were found."
+    '        End If
+
+    '        ShowHelpPanelAnimated()
+    '        FocusHelpText()
+
+    '    Catch ex As Exception
+    '        ShowStatus(StatusPad & IconError &
+    '               " Failed to display help information: " & ex.Message)
+    '    Finally
+    '        RestoreAddressBar()
+    '    End Try
+    'End Sub
+
+
+
+
     Private Sub HandleHelpCommand(parts As String())
         Try
-            ' Set font for help text box
-            HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+            'HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+            'HelpTextBox.Font = New Font("Consolas", 11, FontStyle.Regular)
 
-            ' Extract and clean up the terms from the command
+            'Consolas
+            Try
+                HelpTextBox.Font = New Font("Consolas", 10, FontStyle.Regular)
+            Catch ex As Exception
+                ' Fallback to a default font if Consolas is not available
+                HelpTextBox.Font = New Font("Arial", 10, FontStyle.Regular)
+            End Try
+
+
+            HelpTextBox.ForeColor = Color.Black
+            HelpTextBox.BackColor = Color.White
+
+
+
+
+
+
             Dim terms = parts.Skip(1).
-                          Select(Function(t) t.Trim()).
-                          Where(Function(t) t <> "").
-                          ToList()
+                         Select(Function(t) t.Trim()).
+                         Where(Function(t) t <> "").
+                         ToList()
 
-            ' Handle special case for keyboard shortcuts
+            ' Keyboard shortcuts special case
             If terms.Count = 1 Then
                 Dim t = terms(0).ToLowerInvariant()
                 If t = "keys" OrElse t = "shortcuts" Then
@@ -5790,50 +6184,582 @@ Public Class Form1
                 End If
             End If
 
-            ' Prepare to search for help entries
-            Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
+            ' No terms → full category help
+            If terms.Count = 0 Then
+                HelpHeaderLabel.Text = "Command Reference"
+                HelpTextBox.Text = BuildFullCategoryHelp()
+                ShowHelpPanelAnimated()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
 
-            If terms.Count > 0 Then
-                Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
+            ' Single term → command, category, then search
+            If terms.Count = 1 Then
+                Dim term = terms(0).ToLowerInvariant()
 
-                ' Search for each term and aggregate results
-                For Each term In terms
-                    filtered = filtered.Union(SearchHelp(term)).ToList()
-                Next
-
-                ' Check if any results were found
-                If filtered.Count = 0 Then
-                    HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
-                    HelpTextBox.Text = "No matching commands were found."
+                ' Direct command key lookup
+                If CommandHelp.ContainsKey(term) Then
+                    HelpHeaderLabel.Text = $"Help: {term}"
+                    HelpTextBox.Text = BuildSingleCommandHelp(CommandHelp(term))
                     ShowHelpPanelAnimated()
                     FocusHelpText()
                     RestoreAddressBar()
                     Return
                 End If
 
-                entries = filtered
-                HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
-            Else
-                HelpHeaderLabel.Text = "Command Reference"
-            End If
+                ' Category lookup
+                Dim catName = [Enum].GetNames(GetType(CommandCategory)).
+                           FirstOrDefault(Function(c) c.ToLower() = term)
 
-            ' Build and display the help text
-            Dim text As String = BuildHelpText(entries)
-            HelpTextBox.Text = text
+                If catName IsNot Nothing Then
+                    Dim cat = CType([Enum].Parse(GetType(CommandCategory), catName), CommandCategory)
+                    HelpHeaderLabel.Text = $"{cat} Commands"
+                    HelpTextBox.Text = BuildCategoryHelp(cat)
+                    ShowHelpPanelAnimated()
+                    FocusHelpText()
+                    RestoreAddressBar()
+                    Return
+                End If
 
-            ' Show help panel if not already visible
-            If Not HelpPanel.Visible Then
+                ' Fuzzy search
+                Dim results = SearchHelpCI(term)
+                If results.Any() Then
+                    HelpHeaderLabel.Text = $"Help: {term}"
+                    HelpTextBox.Text = BuildSearchResultsHelp(results)
+                    ShowHelpPanelAnimated()
+                    FocusHelpText()
+                    RestoreAddressBar()
+                    Return
+                End If
+
+                HelpHeaderLabel.Text = $"No results for ""{term}"""
+                HelpTextBox.Text = "No matching commands were found."
                 ShowHelpPanelAnimated()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
             End If
+
+            ' Multi‑term search (AND)
+            Dim multiResults = SearchHelpMultiTerm(terms)
+
+            If multiResults.Any() Then
+                HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
+                HelpTextBox.Text = BuildSearchResultsHelp(multiResults)
+            Else
+                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
+                HelpTextBox.Text = "No matching commands were found."
+            End If
+
+            ShowHelpPanelAnimated()
             FocusHelpText()
 
         Catch ex As Exception
-            ' Display error message if an exception occurs
-            ShowStatus(StatusPad & IconError & " Failed to display help information: " & ex.Message)
+            ShowStatus(StatusPad & IconError &
+                   " Failed to display help information: " & ex.Message)
         Finally
             RestoreAddressBar()
         End Try
     End Sub
+
+
+    '    Private ReadOnly CommandHelp As New Dictionary(Of String, CommandInfo) From {
+    '    {"cd",
+    '        New CommandInfo With {
+    '            .Aliases = {"cd"},
+    '            .Usage = "cd [directory]",
+    '            .Description = "Change directory to the specified path.",
+    '            .Examples = {
+    '                "cd C:\",
+    '                "cd ""C:\My Folder"""
+    '            },
+    '            .Category = CommandCategory.Navigation
+    '        }
+    '    },
+    '    {"copy",
+    '        New CommandInfo With {
+    '            .Aliases = {"copy", "cp"},
+    '            .Usage = "copy [source] [destination]",
+    '            .Description = "Copy a file or folder to a destination folder.",
+    '            .Examples = {
+    '                "copy C:\folderA\file.doc C:\folderB",
+    '                "copy ""C:\folder A"" ""C:\folder B"""
+    '            },
+    '            .Category = CommandCategory.FileOperations
+    '        }
+    '    },
+    '    {"delete",
+    '        New CommandInfo With {
+    '            .Aliases = {"delete", "rm"},
+    '            .Usage = "delete [file_or_directory]",
+    '            .Description = "Delete a file or folder.",
+    '            .Examples = {
+    '                "delete C:\file.txt",
+    '                "delete ""C:\My Folder"""
+    '            },
+    '            .Category = CommandCategory.FileOperations
+    '        }
+    '    },
+    '    {"df",
+    '        New CommandInfo With {
+    '            .Aliases = {"df"},
+    '            .Usage = "df <drive_letter>:",
+    '            .Description = "Display the available free space on the specified drive.",
+    '            .Examples = {"df C:", "df D:", "df E:"},
+    '            .Category = CommandCategory.System
+    '        }
+    '    },
+    '    {"drives",
+    '        New CommandInfo With {
+    '            .Aliases = {"drives"},
+    '            .Usage = "drives",
+    '            .Description = "Show an overview of all drives, including free space bars.",
+    '            .Examples = {"drives"},
+    '            .Category = CommandCategory.System
+    '        }
+    '    },
+    '    {"exit",
+    '        New CommandInfo With {
+    '            .Aliases = {
+    '                "exit", "quit", "close", "stop", "halt", "end",
+    '                "signout", "poweroff", "bye", "shutdown", "logoff",
+    '                "terminate", "leave", "farewell", "adios", "ciao",
+    '                "sayonara", "goodbye", "later"
+    '            },
+    '            .Usage = "exit",
+    '            .Description = "Exit the application.",
+    '            .Examples = {"exit"},
+    '            .Category = CommandCategory.System
+    '        }
+    '    },
+    '    {"find",
+    '        New CommandInfo With {
+    '            .Aliases = {"find", "search"},
+    '            .Usage = "find [search_term]",
+    '            .Description = "Search for files and folders in the current directory.",
+    '            .Examples = {"find document"},
+    '            .Category = CommandCategory.Search
+    '        }
+    '    },
+    '    {"findnext",
+    '        New CommandInfo With {
+    '            .Aliases = {"findnext", "searchnext", "next"},
+    '            .Usage = "findnext",
+    '            .Description = "Show the next search result from the previous search.",
+    '            .Examples = {"findnext"},
+    '            .Category = CommandCategory.Search
+    '        }
+    '    },
+    '    {"help",
+    '        New CommandInfo With {
+    '            .Aliases = {"help", "commands", "?"},
+    '            .Usage = "help [search_term]",
+    '            .Description = "Show the full command list or jump to a specific command.",
+    '            .Examples = {
+    '                "help",
+    '                "help cd",
+    '                "help copy"
+    '            },
+    '            .Category = CommandCategory.Help
+    '        }
+    '    },
+    '    {"man",
+    '        New CommandInfo With {
+    '            .Aliases = {"man", "manual", "appmanual"},
+    '            .Usage = "man [section]",
+    '            .Description = "Show the full application manual or jump to a specific section.",
+    '            .Examples = {
+    '                "man",
+    '                "man help",
+    '                "man commands",
+    '                "manual",
+    '                "appmanual"
+    '            },
+    '            .Category = CommandCategory.Help
+    '        }
+    '    },
+    '    {"mkdir",
+    '        New CommandInfo With {
+    '            .Aliases = {"mkdir", "make", "md"},
+    '            .Usage = "mkdir [directory_path]",
+    '            .Description = "Create a new folder.",
+    '            .Examples = {
+    '                "mkdir C:\newfolder",
+    '                "make ""C:\My New Folder""",
+    '                "md C:\anotherfolder"
+    '            },
+    '            .Category = CommandCategory.FileOperations
+    '        }
+    '    },
+    '    {"move",
+    '        New CommandInfo With {
+    '            .Aliases = {"move", "mv"},
+    '            .Usage = "move [source] [destination]",
+    '            .Description = "Move a file or folder to a new location.",
+    '            .Examples = {
+    '                "move C:\folderA\file.doc C:\folderB\file.doc",
+    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
+    '            },
+    '            .Category = CommandCategory.FileOperations
+    '        }
+    '    },
+    '    {"open",
+    '        New CommandInfo With {
+    '            .Aliases = {"open"},
+    '            .Usage = "open [file_or_directory]",
+    '            .Description = "Open a file or navigate into a folder.",
+    '            .Examples = {
+    '                "open C:\folder\file.txt",
+    '                "open ""C:\My Folder"""
+    '            },
+    '            .Category = CommandCategory.Navigation
+    '        }
+    '    },
+    '    {"pin",
+    '        New CommandInfo With {
+    '            .Aliases = {"pin"},
+    '            .Usage = "pin [folder_path]",
+    '            .Description = "Pin or unpin a folder.",
+    '            .Examples = {
+    '                "pin C:\Projects",
+    '                "pin ""C:\My Documents""",
+    '                "pin"
+    '            },
+    '            .Category = CommandCategory.Navigation
+    '        }
+    '    },
+    '    {"rename",
+    '        New CommandInfo With {
+    '            .Aliases = {"rename", "rn"},
+    '            .Usage = "rename [source_path] [new_name]",
+    '            .Description = "Rename a file or directory.",
+    '            .Examples = {
+    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
+    '            },
+    '            .Category = CommandCategory.FileOperations
+    '        }
+    '    },
+    '    {"shortcuts",
+    '        New CommandInfo With {
+    '            .Aliases = {"shortcuts", "keys"},
+    '            .Usage = "shortcuts",
+    '            .Description = "Show a list of all keyboard shortcuts.",
+    '            .Examples = {
+    '                "shortcuts",
+    '                "keys"
+    '            },
+    '            .Category = CommandCategory.Shortcuts
+    '        }
+    '    },
+    '    {"text",
+    '        New CommandInfo With {
+    '            .Aliases = {"text", "txt"},
+    '            .Usage = "text [file_path]",
+    '            .Description = "Create a new text file.",
+    '            .Examples = {
+    '                "text ""C:\folder\example.txt"""
+    '            },
+    '            .Category = CommandCategory.FileOperations
+    '        }
+    '    }
+    '}
+
+
+
+
+
+
+
+
+
+    'Private Function BuildFullCategoryHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    For Each cat In [Enum].GetValues(GetType(CommandCategory))
+    '        sb.AppendLine($"{cat} Commands")
+    '        sb.AppendLine(New String("-"c, 40))
+
+    '        Dim items = CommandHelp.Values.
+    '        Where(Function(ci) ci.Category = cat).
+    '        OrderBy(Function(ci) ci.Aliases(0))
+
+    '        For Each ci In items
+    '            sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+    '        Next
+
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
+    'Private Function BuildSingleCommandHelp(ci As CommandInfo) As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine($"Command: {ci.Aliases(0)}")
+    '    sb.AppendLine($"Aliases: {String.Join(", ", ci.Aliases)}")
+    '    sb.AppendLine($"Usage:   {ci.Usage}")
+    '    sb.AppendLine()
+    '    sb.AppendLine(ci.Description)
+    '    sb.AppendLine()
+
+    '    If ci.Examples.Length > 0 Then
+    '        sb.AppendLine("Examples:")
+    '        For Each ex In ci.Examples
+    '            sb.AppendLine($"  {ex}")
+    '        Next
+    '    End If
+
+    '    Return sb.ToString()
+    'End Function
+
+
+    Private Function BuildFullCategoryHelp() As String
+        Dim sb As New Text.StringBuilder()
+
+        For Each cat As CommandCategory In [Enum].GetValues(GetType(CommandCategory))
+
+            sb.AppendLine()
+
+            sb.AppendLine($"{cat} Commands")
+            sb.AppendLine(New String("-"c, 40))
+
+            Dim items = CommandHelp.Values.
+            Where(Function(ci) ci.Category = cat).
+            OrderBy(Function(ci) ci.Aliases(0))
+
+            For Each ci In items
+                'sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+                sb.AppendLine($"{ci.Aliases(0)} {ci.Description}")
+
+            Next
+
+            sb.AppendLine()
+        Next
+
+        Return sb.ToString()
+    End Function
+
+    Private Function BuildSingleCommandHelp(ci As CommandInfo) As String
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine($"Command: {ci.Aliases(0)}")
+        sb.AppendLine($"Aliases: {String.Join(", ", ci.Aliases)}")
+        sb.AppendLine($"Usage:   {ci.Usage}")
+        sb.AppendLine()
+        sb.AppendLine(ci.Description)
+        sb.AppendLine()
+
+        If ci.Examples IsNot Nothing AndAlso ci.Examples.Length > 0 Then
+            sb.AppendLine("Examples:")
+            For Each ex In ci.Examples
+                sb.AppendLine($"  {ex}")
+            Next
+        End If
+
+        Return sb.ToString()
+    End Function
+
+    Private Function BuildCategoryHelp(cat As CommandCategory) As String
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine($"{cat} Commands")
+        sb.AppendLine(New String("-"c, 40))
+
+        Dim items = CommandHelp.Values.
+        Where(Function(ci) ci.Category = cat).
+        OrderBy(Function(ci) ci.Aliases(0))
+
+        For Each ci In items
+            sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+        Next
+
+        Return sb.ToString()
+    End Function
+
+    Private Function BuildSearchResultsHelp(results As IEnumerable(Of CommandInfo)) As String
+        Dim sb As New Text.StringBuilder()
+
+        For Each ci In results
+            sb.AppendLine($"{ci.Aliases(0)}  -  {ci.Description}")
+        Next
+
+        Return sb.ToString()
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Function SearchHelpCI(term As String) As IEnumerable(Of CommandInfo)
+    '    term = term.ToLowerInvariant()
+
+    '    Return CommandHelp.Values.Where(Function(ci)
+    '                                        ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
+    '    ci.Description.ToLower().Contains(term) OrElse
+    '    ci.Usage.ToLower().Contains(term)
+    '                                    End Function)
+    'End Function
+
+    Private Function SearchHelpCI(term As String) As IEnumerable(Of CommandInfo)
+        term = term.ToLowerInvariant()
+
+        Return CommandHelp.Values.Where(Function(ci)
+                                            Return ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
+                                               ci.Description.ToLower().Contains(term) OrElse
+                                               ci.Usage.ToLower().Contains(term)
+                                        End Function)
+    End Function
+
+
+    'Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
+    '    Dim results As IEnumerable(Of CommandInfo) = CommandHelp.Values
+
+    '    For Each t In terms
+    '        Dim tt = t.ToLowerInvariant()
+    '        results = results.Where(Function(ci)
+    '                                    ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
+    '        ci.Description.ToLower().Contains(tt) OrElse
+    '        ci.Usage.ToLower().Contains(tt)
+    '                                End Function)
+    '    Next
+
+    '    Return results
+    'End Function
+
+
+
+    Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
+        Dim results As IEnumerable(Of CommandInfo) = CommandHelp.Values
+
+        For Each t In terms
+            Dim tt = t.ToLowerInvariant()
+            results = results.Where(Function(ci)
+                                        Return ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
+                                           ci.Description.ToLower().Contains(tt) OrElse
+                                           ci.Usage.ToLower().Contains(tt)
+                                    End Function)
+        Next
+
+        Return results
+    End Function
+
+
+
+
+    'Private Function SearchHelpCI(term As String) As IEnumerable(Of CommandInfo)
+    '    term = term.ToLowerInvariant()
+
+    '    Return CommandHelp.Values.Where(
+    '    Function(ci)
+    '        ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
+    '        ci.Description.ToLower().Contains(term) OrElse
+    '        ci.Usage.ToLower().Contains(term)
+    '    End Function)
+
+    'End Function
+
+    'Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
+    '    Dim results As IEnumerable(Of CommandInfo) = CommandHelp.Values
+
+    '    For Each t In terms
+    '        Dim tt = t.ToLowerInvariant()
+
+    '        results = results.Where(
+    '        Function(ci)
+    '            ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
+    '            ci.Description.ToLower().Contains(tt) OrElse
+    '            ci.Usage.ToLower().Contains(tt)
+    '        End Function)
+    '    Next
+
+    '    Return results
+    'End Function
+
+
+    'Private Function BuildCategoryHelp(cat As CommandCategory) As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    sb.AppendLine($"{cat} Commands")
+    '    sb.AppendLine(New String("-"c, 40))
+
+    '    Dim items = CommandHelp.Values.
+    '    Where(Function(ci) ci.Category = cat).
+    '    OrderBy(Function(ci) ci.Aliases(0))
+
+    '    For Each ci In items
+    '        sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
+
+    'Private Function BuildSearchResultsHelp(results As IEnumerable(Of CommandInfo)) As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    For Each ci In results
+    '        sb.AppendLine($"{ci.Aliases(0)}  -  {ci.Description}")
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
+
+    'Private Function SearchHelp(term As String) As IEnumerable(Of CommandInfo)
+    '    term = term.ToLowerInvariant()
+
+    '    Return CommandHelp.Values.Where(Function(ci)
+    '                                        ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
+    '        ci.Description.ToLower().Contains(term) OrElse
+    '        ci.Usage.ToLower().Contains(term)
+    '    )
+    'End Function
+
+    'Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
+    '    Dim results = CommandHelp.Values.AsEnumerable()
+
+    '    For Each t In terms
+    '        Dim tt = t.ToLowerInvariant()
+    '        results = results.Where(Function(ci)
+    '                                    ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
+    '            ci.Description.ToLower().Contains(tt) OrElse
+    '            ci.Usage.ToLower().Contains(tt)
+    '        )
+    '    Next
+
+    '    Return results
+    'End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Sub HandleDfCommand(parts As String())
         Try
@@ -6029,15 +6955,15 @@ Public Class Form1
                                OrElse kvp.Value.Aliases.Any(Function(a) a.Equals(searchTerm, StringComparison.OrdinalIgnoreCase))
                            End Function)
 
-            If cmdMatch.Key IsNot Nothing Then
-                HelpHeaderLabel.Text = $"Man: {cmdMatch.Key}"
-                HelpTextBox.Text = BuildHelpText({cmdMatch})
+            'If cmdMatch.Key IsNot Nothing Then
+            '    HelpHeaderLabel.Text = $"Man: {cmdMatch.Key}"
+            '    HelpTextBox.Text = BuildHelpText({cmdMatch})
 
-                If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
-                FocusHelpText()
-                RestoreAddressBar()
-                Return
-            End If
+            '    If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+            '    FocusHelpText()
+            '    RestoreAddressBar()
+            '    Return
+            'End If
 
             ' ---------------------------------------------------------
             ' Build manual dictionary + alias table
