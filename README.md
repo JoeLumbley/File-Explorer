@@ -61,9 +61,9 @@ File Explorer began as a simple experiment: what would happen if we rebuilt a fa
 
 
 ## Project Philosophy  
-File Explorer is grounded in the belief that great software doesn’t just work — it **teaches**, **empowers**, and **invites exploration**. This project stands in the lineage that began with the Spirit of ’68, when pioneers imagined computers as extensions of human intellect, and continued through the Spirit of ’98, when those ideas reached millions through approachable, everyday interfaces.
+File Explorer is grounded in the belief that great software doesn’t just work - it **teaches**, **empowers**, and **invites exploration**. This project stands in the lineage that began with the Spirit of ’68, when pioneers imagined computers as extensions of human intellect, and continued through the Spirit of ’98, when those ideas reached millions through approachable, everyday interfaces.
 
-By rebuilding a familiar tool with clarity, modularity, and emotional safety, this Explorer aims to keep that tradition alive. It refines the past without romanticizing it, making its values visible, teachable, and ready for the next generation of learners and contributors. In this way, File Explorer isn’t just a technical exercise; it’s a way of carrying the circle forward — ensuring that the spirit of humane, empowering computing remains unbroken.
+By rebuilding a familiar tool with clarity, modularity, and emotional safety, this Explorer aims to keep that tradition alive. It refines the past without romanticizing it, making its values visible, teachable, and ready for the next generation of learners and contributors. In this way, File Explorer isn’t just a technical exercise; it’s a way of carrying the circle forward - ensuring that the spirit of humane, empowering computing remains unbroken.
 
 
 
