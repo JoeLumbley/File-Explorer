@@ -6151,7 +6151,7 @@ Public Class Form1
 
             'Consolas
             Try
-                HelpTextBox.Font = New Font("Consolas", 10, FontStyle.Regular)
+                HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
             Catch ex As Exception
                 ' Fallback to a default font if Consolas is not available
                 HelpTextBox.Font = New Font("Arial", 10, FontStyle.Regular)
@@ -6159,7 +6159,7 @@ Public Class Form1
 
 
             HelpTextBox.ForeColor = Color.Black
-            HelpTextBox.BackColor = Color.White
+            'HelpTextBox.BackColor = Color.White
 
 
 
@@ -6532,7 +6532,7 @@ Public Class Form1
 
             For Each ci In items
                 'sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
-                sb.AppendLine($"{ci.Aliases(0)} {ci.Description}")
+                sb.AppendLine($"{ci.Aliases(0)} - {ci.Description}")
 
             Next
 
@@ -6964,6 +6964,18 @@ Public Class Form1
             '    RestoreAddressBar()
             '    Return
             'End If
+
+            If cmdMatch.Key IsNot Nothing Then
+                Dim ci As CommandInfo = cmdMatch.Value
+
+                HelpHeaderLabel.Text = $"Man: {cmdMatch.Key}"
+                HelpTextBox.Text = BuildSingleCommandHelp(ci)
+
+                If Not HelpPanel.Visible Then ShowHelpPanelAnimated()
+                FocusHelpText()
+                RestoreAddressBar()
+                Return
+            End If
 
             ' ---------------------------------------------------------
             ' Build manual dictionary + alias table
