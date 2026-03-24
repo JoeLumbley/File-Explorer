@@ -57,10 +57,16 @@ The GUI and CLI work together seamlessly, giving users the freedom to choose the
 File Explorer began as a simple experiment: what would happen if we rebuilt a familiar tool with the clarity, modularity, and emotional safety that modern learners deserve? Over time, it became something larger - a way to honor the lineage of humane computing that stretches from Engelbart’s 1968 demo to the mainstream interfaces of the late ’90s. This project is my contribution to that tradition. It’s a tool, yes, but also a teaching space, a design philosophy, and a small act of stewardship for the future of personal computing.
 
 
+
+
 ## Project Philosophy  
 File Explorer is grounded in the belief that great software doesn’t just work - it **teaches**, **empowers**, and **invites exploration**. This project stands in the lineage that began with the Spirit of ’68, when pioneers imagined computers as extensions of human intellect, and continued through the Spirit of ’98, when those ideas reached millions through approachable, everyday interfaces.
 
 By rebuilding a familiar tool with clarity, modularity, and emotional safety, this Explorer aims to keep that tradition alive. It refines the past without romanticizing it, making its values visible, teachable, and ready for the next generation of learners and contributors. In this way, File Explorer isn’t just a technical exercise; it’s a way of carrying the circle forward - ensuring that the spirit of humane, empowering computing remains unbroken.
+
+
+<img width="1920" height="1032" alt="146" src="https://github.com/user-attachments/assets/9ab940e0-d97b-41c4-912d-f1527e0994ad" />
+
 
 [ Table of Contents](#table-of-contents)
 
@@ -71,7 +77,6 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 
-<img width="1920" height="1032" alt="146" src="https://github.com/user-attachments/assets/9ab940e0-d97b-41c4-912d-f1527e0994ad" />
 
 
 ## The Spirit of ’98: When the Future Became Normal  
