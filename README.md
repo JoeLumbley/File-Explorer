@@ -822,6 +822,10 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 ## Table of Contents
 
+
+- [Why This Project Exists](#why-this-project-exists)
+
+
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
 - [What I Hope Learners Get From This](#what-i-hope-learners-get-from-this)
