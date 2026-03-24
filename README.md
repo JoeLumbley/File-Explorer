@@ -82,7 +82,10 @@ When Computing Was Pure Imagination
 
 
 
-## The Spirit of ’98: When the Future Became Normal  
+## The Spirit of 98
+
+When the Future Became Normal
+
 By 1998, the world had finally caught up to Engelbart’s imagination.
 
 - The web became the default interface to knowledge  
@@ -831,6 +834,8 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 - [Project Philosophy](#project-philosophy)
 
 - [The Spirit of '68](#the-spirit-of-68)
+
+- [The Spirit of '98](#the-spirit-of-98)
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
