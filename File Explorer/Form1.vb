@@ -1629,8 +1629,8 @@ Public Class Form1
         Dim normalized = NormalizePath(path)
 
         If String.IsNullOrWhiteSpace(normalized) _
-    OrElse Not Directory.Exists(normalized) _
-    OrElse IsSpecialFolder(normalized) Then
+       OrElse Not Directory.Exists(normalized) _
+           OrElse IsSpecialFolder(normalized) Then
 
             If showErrors Then
                 ShowStatus(StatusPad & IconError &
@@ -2192,12 +2192,12 @@ Public Class Form1
             ' Run unified copy engine
             ' ------------------------------------------------------------
             Dim result = Await RunCopyOrCutOperation(
-            New List(Of String) From {source},
-            destinationRoot,
-            isCut:=False,
-            CopyUIContext.CLI,
-            token
-        )
+                New List(Of String) From {source},
+                destinationRoot,
+                isCut:=False,
+                CopyUIContext.CLI,
+                token
+            )
 
             Dim items = result.Results
             Dim summary = result.Summary
@@ -2260,12 +2260,12 @@ Public Class Form1
     End Function
 
     Private Async Function RunCopyOrCutOperation(
-    sources As List(Of String),
-    destinationRoot As String,
-    isCut As Boolean,
-    context As CopyUIContext,
-    ct As CancellationToken
-) As Task(Of (Results As List(Of String), Summary As CopyResult))
+        sources As List(Of String),
+        destinationRoot As String,
+        isCut As Boolean,
+        context As CopyUIContext,
+        ct As CancellationToken
+    ) As Task(Of (Results As List(Of String), Summary As CopyResult))
 
         Dim results As New List(Of String)
         Dim summary As New CopyResult()
@@ -2307,34 +2307,35 @@ Public Class Form1
         Dim finishing As Boolean = False
 
         Dim progressCallback As Action(Of CopyResult) =
-    Sub(r)
+        Sub(r)
 
-        processedCount = r.FilesProcessed
+            processedCount = r.FilesProcessed
 
-        ' Explorer-accurate finishing logic
-        If r.TotalFiles > 0 AndAlso r.FilesProcessed >= r.TotalFiles Then
-            finishing = True
-        Else
-            finishing = False
-        End If
+            ' Explorer-accurate finishing logic
+            If r.TotalFiles > 0 AndAlso r.FilesProcessed >= r.TotalFiles Then
+                finishing = True
+            Else
+                finishing = False
+            End If
 
-        Dim hint As String =
+            Dim hint As String =
             If(context = CopyUIContext.CLI,
                "  Press ESC to cancel.",
                "")
 
-        Dim msg As String =
+            Dim msg As String =
             If(finishing,
                StatusPad & IconCopy & $" Finishing up... {processedCount} processed.{hint}",
                StatusPad & IconCopy & $" Copying... {processedCount} processed.{hint}")
 
-        ' Marshal to UI thread
-        If Me.InvokeRequired Then
-            Me.BeginInvoke(Sub() ShowStatus(msg))
-        Else
-            ShowStatus(msg)
-        End If
-    End Sub
+            ' Marshal to UI thread
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() ShowStatus(msg))
+            Else
+                ShowStatus(msg)
+            End If
+        End Sub
+
 
         ShowStatus(StatusPad & IconCopy & " Copying... please wait.")
 
@@ -2457,19 +2458,19 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-    Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
-        If Not Directory.Exists(source) Then
-            Return False
-        End If
+    'Public Function IsCopyIntoSelf(source As String, destinationRoot As String) As Boolean
+    '    If Not Directory.Exists(source) Then
+    '        Return False
+    '    End If
 
-        Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
-                  Path.DirectorySeparatorChar
+    '    Dim srcFull = Path.GetFullPath(source).TrimEnd(Path.DirectorySeparatorChar) &
+    '              Path.DirectorySeparatorChar
 
-        Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
-                   Path.DirectorySeparatorChar
+    '    Dim destFull = Path.GetFullPath(destinationRoot).TrimEnd(Path.DirectorySeparatorChar) &
+    '               Path.DirectorySeparatorChar
 
-        Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
-    End Function
+    '    Return destFull.StartsWith(srcFull, StringComparison.OrdinalIgnoreCase)
+    'End Function
 
     'Private Async Sub HandleMoveCommand(parts As String())
 
@@ -2622,12 +2623,12 @@ Public Class Form1
             ' Use the unified orchestration layer
             ' ------------------------------------------------------------
             Dim result = Await RunCopyOrCutOperation(
-            New List(Of String) From {source},
-            destinationRoot,
-            isCut:=True,
-            CopyUIContext.CLI,
-            token
-        )
+                New List(Of String) From {source},
+                destinationRoot,
+                isCut:=True,
+                CopyUIContext.CLI,
+                token
+            )
 
             Dim summary = result.Summary
 
@@ -3223,12 +3224,12 @@ Public Class Form1
         Dim token = copyCts.Token
 
         Dim op = Await RunCopyOrCutOperation(
-        _clipboardPaths,
-        destDir,
-        _clipboardIsCut,
-        CopyUIContext.Paste,
-        token
-    )
+            _clipboardPaths,
+            destDir,
+            _clipboardIsCut,
+            CopyUIContext.Paste,
+            token
+        )
 
         Dim items = op.Results
         Dim summary = op.Summary
@@ -3275,8 +3276,8 @@ Public Class Form1
         lvFiles.SelectedItems.Clear()
 
         Dim lookup As New HashSet(Of String)(
-        paths.Select(Function(p) p.ToLowerInvariant())
-    )
+            paths.Select(Function(p) p.ToLowerInvariant())
+        )
 
         For Each item As ListViewItem In lvFiles.Items
             Dim p As String = TryCast(item.Tag, String)
@@ -3292,12 +3293,12 @@ Public Class Form1
     End Sub
 
     Public Function CopyFileOrDirectoryUnified(
-    sourcePath As String,
-    destinationRoot As String,
-    isCut As Boolean,
-    ct As CancellationToken,
-    Optional progress As Action(Of CopyResult) = Nothing
-) As CopyResult
+        sourcePath As String,
+        destinationRoot As String,
+        isCut As Boolean,
+        ct As CancellationToken,
+        Optional progress As Action(Of CopyResult) = Nothing
+    ) As CopyResult
 
         Dim result As New CopyResult()
 
@@ -3389,13 +3390,13 @@ Public Class Form1
 
 
     Private Sub CopyDirectoryRecursiveUnified(
-    srcDir As String,
-    destDir As String,
-    isCut As Boolean,
-    result As CopyResult,
-    ct As CancellationToken,
-    progress As Action(Of CopyResult)
-)
+        srcDir As String,
+        destDir As String,
+        isCut As Boolean,
+        result As CopyResult,
+        ct As CancellationToken,
+        progress As Action(Of CopyResult)
+    )
 
         ct.ThrowIfCancellationRequested()
 
@@ -3578,13 +3579,13 @@ Public Class Form1
         Return result
     End Function
 
-    Private Function CountAllDirectories(root As String) As Integer
-        Dim count As Integer = 1 ' include root
-        For Each d In Directory.GetDirectories(root, "*", SearchOption.AllDirectories)
-            count += 1
-        Next
-        Return count
-    End Function
+    'Private Function CountAllDirectories(root As String) As Integer
+    '    Dim count As Integer = 1 ' include root
+    '    For Each d In Directory.GetDirectories(root, "*", SearchOption.AllDirectories)
+    '        count += 1
+    '    Next
+    '    Return count
+    'End Function
 
 
     Private Function IsRealFileSystemPath(path2check As String) As Boolean
@@ -4393,68 +4394,68 @@ Public Class Form1
     End Function
 
 
-    Private Function ResolveDestinationPathWithAutoRename(initialPath As String, isDir As Boolean) As String
-        ' ------------------------------------------------------------
-        ' Helper: auto‑rename for files + directories
-        ' (pure path resolver, no IO side‑effects)
-        ' ------------------------------------------------------------
+    'Private Function ResolveDestinationPathWithAutoRename(initialPath As String, isDir As Boolean) As String
+    '    ' ------------------------------------------------------------
+    '    ' Helper: auto‑rename for files + directories
+    '    ' (pure path resolver, no IO side‑effects)
+    '    ' ------------------------------------------------------------
 
-        Dim folder = Path.GetDirectoryName(initialPath)
-        Dim baseName = Path.GetFileNameWithoutExtension(initialPath)
-        Dim ext = Path.GetExtension(initialPath)
+    '    Dim folder = Path.GetDirectoryName(initialPath)
+    '    Dim baseName = Path.GetFileNameWithoutExtension(initialPath)
+    '    Dim ext = Path.GetExtension(initialPath)
 
-        Dim candidate = initialPath
-        Dim counter = 1
+    '    Dim candidate = initialPath
+    '    Dim counter = 1
 
-        While File.Exists(candidate) OrElse Directory.Exists(candidate)
-            If isDir Then
-                candidate = Path.Combine(folder, $"{baseName} ({counter})")
-            Else
-                candidate = Path.Combine(folder, $"{baseName} ({counter}){ext}")
-            End If
-            counter += 1
-        End While
+    '    While File.Exists(candidate) OrElse Directory.Exists(candidate)
+    '        If isDir Then
+    '            candidate = Path.Combine(folder, $"{baseName} ({counter})")
+    '        Else
+    '            candidate = Path.Combine(folder, $"{baseName} ({counter}){ext}")
+    '        End If
+    '        counter += 1
+    '    End While
 
-        Return candidate
+    '    Return candidate
 
-    End Function
+    'End Function
 
-    Public Async Function CopyFile(
-    source As String,
-    destination As String,
-    ct As CancellationToken
-) As Task(Of CopyResult)
+    'Public Async Function CopyFile(
+    '    source As String,
+    '    destination As String,
+    '    ct As CancellationToken
+    ') As Task(Of CopyResult)
 
-        Dim result As New CopyResult()
+    '    Dim result As New CopyResult()
 
-        Try
-            ct.ThrowIfCancellationRequested()
+    '    Try
+    '        ct.ThrowIfCancellationRequested()
 
-            Await Task.Run(Sub()
-                               ct.ThrowIfCancellationRequested()
-                               IO.File.Copy(source, destination, overwrite:=False)
-                           End Sub, ct)
+    '        Await Task.Run(Sub()
+    '                           ct.ThrowIfCancellationRequested()
+    '                           IO.File.Copy(source, destination, overwrite:=False)
+    '                       End Sub, ct)
 
-            result.FilesCopied = 1
+    '        result.FilesCopied = 1
 
-        Catch ex As OperationCanceledException
-            Throw   ' bubble up to orchestrator
+    '    Catch ex As OperationCanceledException
+    '        Throw   ' bubble up to orchestrator
 
-        Catch ex As IOException
-            result.FilesSkipped = 1
-            result.Errors.Add("I/O error copying file: " & source & " → " & destination & " - " & ex.Message)
+    '    Catch ex As IOException
+    '        result.FilesSkipped = 1
+    '        result.Errors.Add("I/O error copying file: " & source & " → " & destination & " - " & ex.Message)
 
-        Catch ex As UnauthorizedAccessException
-            result.FilesSkipped = 1
-            result.Errors.Add("Unauthorized copying file: " & source & " - " & ex.Message)
+    '    Catch ex As UnauthorizedAccessException
+    '        result.FilesSkipped = 1
+    '        result.Errors.Add("Unauthorized copying file: " & source & " - " & ex.Message)
 
-        Catch ex As Exception
-            result.FilesSkipped = 1
-            result.Errors.Add("Copy failed for file: " & source & " - " & ex.Message)
-        End Try
+    '    Catch ex As Exception
+    '        result.FilesSkipped = 1
+    '        result.Errors.Add("Copy failed for file: " & source & " - " & ex.Message)
+    '    End Try
 
-        Return result
-    End Function
+    '    Return result
+    'End Function
 
     Private Function IsFileLocked(file As FileInfo) As Boolean
         Try
@@ -4757,9 +4758,9 @@ Public Class Form1
         Dim fileName As String = Path.GetFileNameWithoutExtension(ResultPath)
 
         ShowStatus(
-        StatusPad & IconSearch &
-        $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
-    )
+            StatusPad & IconSearch &
+            $"  Result {SearchIndex + 1} of {SearchResults.Count}    ""{fileName}""    Prev  Shift+F3    Next  F3    Open  Ctrl+O    Reset  Esc"
+        )
     End Sub
 
 
