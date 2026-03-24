@@ -830,10 +830,6 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 
 
-https://github.com/JoeLumbley/File-Explorer/blob/master/README.md#project-philosophy
-
-
-
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
