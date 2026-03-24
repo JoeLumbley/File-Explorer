@@ -6466,83 +6466,6 @@ Public Class Form1
     '}
 
 
-
-
-
-
-
-
-
-    'Private Function BuildFullCategoryHelp() As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    For Each cat In [Enum].GetValues(GetType(CommandCategory))
-    '        sb.AppendLine($"{cat} Commands")
-    '        sb.AppendLine(New String("-"c, 40))
-
-    '        Dim items = CommandHelp.Values.
-    '        Where(Function(ci) ci.Category = cat).
-    '        OrderBy(Function(ci) ci.Aliases(0))
-
-    '        For Each ci In items
-    '            sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
-    '        Next
-
-    '        sb.AppendLine()
-    '    Next
-
-    '    Return sb.ToString()
-    'End Function
-
-
-    'Private Function BuildSingleCommandHelp(ci As CommandInfo) As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    sb.AppendLine($"Command: {ci.Aliases(0)}")
-    '    sb.AppendLine($"Aliases: {String.Join(", ", ci.Aliases)}")
-    '    sb.AppendLine($"Usage:   {ci.Usage}")
-    '    sb.AppendLine()
-    '    sb.AppendLine(ci.Description)
-    '    sb.AppendLine()
-
-    '    If ci.Examples.Length > 0 Then
-    '        sb.AppendLine("Examples:")
-    '        For Each ex In ci.Examples
-    '            sb.AppendLine($"  {ex}")
-    '        Next
-    '    End If
-
-    '    Return sb.ToString()
-    'End Function
-
-
-    'Private Function BuildFullCategoryHelp() As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    For Each cat As CommandCategory In [Enum].GetValues(GetType(CommandCategory))
-
-    '        sb.AppendLine("Use help (command) to jump to info. about that command")
-    '        sb.AppendLine()
-
-    '        sb.AppendLine($"{cat} Commands")
-    '        sb.AppendLine(New String("-"c, 40))
-
-    '        Dim items = CommandHelp.Values.
-    '        Where(Function(ci) ci.Category = cat).
-    '        OrderBy(Function(ci) ci.Aliases(0))
-
-    '        For Each ci In items
-    '            'sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
-    '            sb.AppendLine($"{ci.Aliases(0)} - {ci.Description}")
-
-    '        Next
-
-    '        sb.AppendLine()
-    '    Next
-
-    '    Return sb.ToString()
-    'End Function
-
     Private Function BuildFullCategoryHelp() As String
         Dim sb As New Text.StringBuilder()
 
@@ -6553,7 +6476,7 @@ Public Class Form1
         For Each cat As CommandCategory In [Enum].GetValues(GetType(CommandCategory))
 
             sb.AppendLine($"{cat} Commands")
-            sb.AppendLine(New String("-"c, 40))
+            sb.AppendLine(New String("-"c, 73))
 
             Dim items = CommandHelp.Values _
             .Where(Function(ci) ci.Category = cat) _
@@ -6592,15 +6515,21 @@ Public Class Form1
     Private Function BuildCategoryHelp(cat As CommandCategory) As String
         Dim sb As New Text.StringBuilder()
 
-        sb.AppendLine($"{cat} Commands")
-        sb.AppendLine(New String("-"c, 40))
+        'sb.AppendLine()
+
+        'sb.AppendLine($"{cat} Commands")
+        'sb.AppendLine(New String("-"c, 73))
+        sb.AppendLine()
+
 
         Dim items = CommandHelp.Values.
         Where(Function(ci) ci.Category = cat).
         OrderBy(Function(ci) ci.Aliases(0))
 
         For Each ci In items
-            sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+            'sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+            sb.AppendLine($"{ci.Aliases(0)} - {ci.Description}")
+
         Next
 
         Return sb.ToString()
@@ -6616,33 +6545,6 @@ Public Class Form1
         Return sb.ToString()
     End Function
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function SearchHelpCI(term As String) As IEnumerable(Of CommandInfo)
-    '    term = term.ToLowerInvariant()
-
-    '    Return CommandHelp.Values.Where(Function(ci)
-    '                                        ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
-    '    ci.Description.ToLower().Contains(term) OrElse
-    '    ci.Usage.ToLower().Contains(term)
-    '                                    End Function)
-    'End Function
-
     Private Function SearchHelpCI(term As String) As IEnumerable(Of CommandInfo)
         term = term.ToLowerInvariant()
 
@@ -6652,23 +6554,6 @@ Public Class Form1
                                                ci.Usage.ToLower().Contains(term)
                                         End Function)
     End Function
-
-
-    'Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
-    '    Dim results As IEnumerable(Of CommandInfo) = CommandHelp.Values
-
-    '    For Each t In terms
-    '        Dim tt = t.ToLowerInvariant()
-    '        results = results.Where(Function(ci)
-    '                                    ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
-    '        ci.Description.ToLower().Contains(tt) OrElse
-    '        ci.Usage.ToLower().Contains(tt)
-    '                                End Function)
-    '    Next
-
-    '    Return results
-    'End Function
-
 
 
     Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
@@ -6685,108 +6570,6 @@ Public Class Form1
 
         Return results
     End Function
-
-
-
-
-    'Private Function SearchHelpCI(term As String) As IEnumerable(Of CommandInfo)
-    '    term = term.ToLowerInvariant()
-
-    '    Return CommandHelp.Values.Where(
-    '    Function(ci)
-    '        ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
-    '        ci.Description.ToLower().Contains(term) OrElse
-    '        ci.Usage.ToLower().Contains(term)
-    '    End Function)
-
-    'End Function
-
-    'Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
-    '    Dim results As IEnumerable(Of CommandInfo) = CommandHelp.Values
-
-    '    For Each t In terms
-    '        Dim tt = t.ToLowerInvariant()
-
-    '        results = results.Where(
-    '        Function(ci)
-    '            ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
-    '            ci.Description.ToLower().Contains(tt) OrElse
-    '            ci.Usage.ToLower().Contains(tt)
-    '        End Function)
-    '    Next
-
-    '    Return results
-    'End Function
-
-
-    'Private Function BuildCategoryHelp(cat As CommandCategory) As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    sb.AppendLine($"{cat} Commands")
-    '    sb.AppendLine(New String("-"c, 40))
-
-    '    Dim items = CommandHelp.Values.
-    '    Where(Function(ci) ci.Category = cat).
-    '    OrderBy(Function(ci) ci.Aliases(0))
-
-    '    For Each ci In items
-    '        sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
-    '    Next
-
-    '    Return sb.ToString()
-    'End Function
-
-
-
-    'Private Function BuildSearchResultsHelp(results As IEnumerable(Of CommandInfo)) As String
-    '    Dim sb As New Text.StringBuilder()
-
-    '    For Each ci In results
-    '        sb.AppendLine($"{ci.Aliases(0)}  -  {ci.Description}")
-    '    Next
-
-    '    Return sb.ToString()
-    'End Function
-
-
-    'Private Function SearchHelp(term As String) As IEnumerable(Of CommandInfo)
-    '    term = term.ToLowerInvariant()
-
-    '    Return CommandHelp.Values.Where(Function(ci)
-    '                                        ci.Aliases.Any(Function(a) a.ToLower().Contains(term)) OrElse
-    '        ci.Description.ToLower().Contains(term) OrElse
-    '        ci.Usage.ToLower().Contains(term)
-    '    )
-    'End Function
-
-    'Private Function SearchHelpMultiTerm(terms As List(Of String)) As IEnumerable(Of CommandInfo)
-    '    Dim results = CommandHelp.Values.AsEnumerable()
-
-    '    For Each t In terms
-    '        Dim tt = t.ToLowerInvariant()
-    '        results = results.Where(Function(ci)
-    '                                    ci.Aliases.Any(Function(a) a.ToLower().Contains(tt)) OrElse
-    '            ci.Description.ToLower().Contains(tt) OrElse
-    '            ci.Usage.ToLower().Contains(tt)
-    '        )
-    '    Next
-
-    '    Return results
-    'End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub HandleDfCommand(parts As String())
         Try
