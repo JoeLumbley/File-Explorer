@@ -827,9 +827,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 - [Project Philosophy](#project-philosophy)
 
-
-
-
+- [The Spirit of '68](the-spirit-of-68-when-computing-was-pure-imagination)
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
