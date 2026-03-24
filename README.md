@@ -74,9 +74,9 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 ## The Spirit of 68
 
-When Computing Was Pure Imagination 
+**When Computing Was Pure Imagination**
 
-1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
+1968 wasn’t just the year of Engelbart’s **“Mother of All Demos.”** It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
 
 
 
@@ -84,7 +84,7 @@ When Computing Was Pure Imagination
 
 ## The Spirit of 98
 
-When the Future Became Normal
+**When the Future Became Normal**
 
 By 1998, the world had finally caught up to Engelbart’s imagination.
 
@@ -101,7 +101,7 @@ If ’68 was the sketch, ’98 was the production model - the moment when vision
 
 ## Where 68 Meets 98
 
-The Architectural Bridge
+**The Architectural Bridge**
 
 The convergence of these eras reveals a deeper architectural story.
 
