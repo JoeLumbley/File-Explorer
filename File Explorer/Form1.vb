@@ -735,8 +735,11 @@ Public Class Form1
 
 
     ' Hightlight color constrants for search results.
-    Private OrangeHighlightColor As Color = Color.FromArgb(255, 203, 107)
-    Private BlueHighlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
+    'Private OrangeHighlightColor As Color = Color.FromArgb(255, 203, 107)
+    Private OrangeHighlightColor As Color = Color.FromArgb(255, 230, 183)
+
+    'Private BlueHighlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
+    Private BlueHighlightColor As Color = Color.FromArgb(220, 243, 255) ' soft, calm blue
 
 
     ' Form1 fields
@@ -1847,6 +1850,8 @@ Public Class Form1
         End If
 
         SelectAndHighlightSearchResult(SearchResults(SearchIndex))
+
+        ShowSearchHud()
     End Sub
 
     Private Function HandleFileFolderOperations(sender As Object, keyData As Keys) As Boolean
@@ -4716,6 +4721,8 @@ Public Class Form1
         End If
 
         SelectAndHighlightSearchResult(SearchResults(SearchIndex))
+
+        ShowSearchHud()
     End Sub
 
     Private Sub ApplySearchHighlights()
@@ -4756,47 +4763,47 @@ Public Class Form1
     End Sub
 
 
-    Private Sub HighlightSearchMatches()
-        'Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
+    'Private Sub HighlightSearchMatches()
+    '    'Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
 
-        lvFiles.BeginUpdate()
+    '    lvFiles.BeginUpdate()
 
-        ' Apply highlight to matched items
-        For Each path As String In SearchResults
-            Dim item As ListViewItem = FindListViewItemByPath(path)
-            If item IsNot Nothing Then
-                item.BackColor = BlueHighlightColor
-            End If
-        Next
+    '    ' Apply highlight to matched items
+    '    For Each path As String In SearchResults
+    '        Dim item As ListViewItem = FindListViewItemByPath(path)
+    '        If item IsNot Nothing Then
+    '            item.BackColor = BlueHighlightColor
+    '        End If
+    '    Next
 
-        lvFiles.EndUpdate()
-    End Sub
+    '    lvFiles.EndUpdate()
+    'End Sub
 
     Private Sub RestoreBackground()
-        lvFiles.BeginUpdate()
+        'lvFiles.BeginUpdate()
 
         For Each item As ListViewItem In lvFiles.Items
             item.BackColor = Color.White
         Next
 
-        lvFiles.EndUpdate()
+        'lvFiles.EndUpdate()
     End Sub
 
-    Private Sub HighlightCurrentResult()
-        If SearchResults.Count = 0 Then Exit Sub
+    'Private Sub HighlightCurrentResult()
+    '    If SearchResults.Count = 0 Then Exit Sub
 
-        Dim currentPath As String = SearchResults(SearchIndex)
-        Dim item As ListViewItem = FindListViewItemByPath(currentPath)
-        If item Is Nothing Then Exit Sub
+    '    Dim currentPath As String = SearchResults(SearchIndex)
+    '    Dim item As ListViewItem = FindListViewItemByPath(currentPath)
+    '    If item Is Nothing Then Exit Sub
 
-        '' Orange hilite 
-        'Dim focusColor As Color = Color.FromArgb(255, 203, 107)
+    '    '' Orange hilite 
+    '    'Dim focusColor As Color = Color.FromArgb(255, 203, 107)
 
-        lvFiles.BeginUpdate()
-        item.BackColor = OrangeHighlightColor
-        lvFiles.EndUpdate()
+    '    lvFiles.BeginUpdate()
+    '    item.BackColor = OrangeHighlightColor
+    '    lvFiles.EndUpdate()
 
-    End Sub
+    'End Sub
 
     Private Function FindListViewItemByPath(fullPath As String) As ListViewItem
         For Each item As ListViewItem In lvFiles.Items
@@ -5042,11 +5049,11 @@ Public Class Form1
         ' 2. System-level protected folders (exact or subpaths)
         ' ------------------------------------------------------------
         Dim protectedPaths As String() = {
-        "C:\Windows",
-        "C:\Program Files",
-        "C:\Program Files (x86)",
-        "C:\ProgramData"
-    }
+            "C:\Windows",
+            "C:\Program Files",
+            "C:\Program Files (x86)",
+            "C:\ProgramData"
+        }
 
         For Each protectedPath In protectedPaths
             Dim normProt As String = Path.GetFullPath(protectedPath).TrimEnd("\"c)
@@ -5069,10 +5076,10 @@ Public Class Form1
         Dim userRoot As String = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
 
         Dim protectedUserFolders As String() = {
-        "C:\Users",                                 ' parent container
-        Path.Combine(userRoot, "AppData\Local"),
-        Path.Combine(userRoot, "AppData\Roaming")
-    }
+            "C:\Users",                                 ' parent container
+            Path.Combine(userRoot, "AppData\Local"),
+            Path.Combine(userRoot, "AppData\Roaming")
+        }
 
         For Each protectedFolder In protectedUserFolders
             Dim normProt As String = Path.GetFullPath(protectedFolder).TrimEnd("\"c)
@@ -5533,20 +5540,20 @@ Public Class Form1
         Return name
     End Function
 
-    Private Function FormatBytes(bytes As Long) As String
-        Dim absBytes As Double = Math.Abs(bytes)
+    'Private Function FormatBytes(bytes As Long) As String
+    '    Dim absBytes As Double = Math.Abs(bytes)
 
-        ' Walk upward through SizeUnits until the next unit would be too large
-        Dim order As Integer = 0
-        While order < SizeUnits.Length - 1 AndAlso absBytes >= SizeUnits(order + 1).Factor
-            order += 1
-        End While
+    '    ' Walk upward through SizeUnits until the next unit would be too large
+    '    Dim order As Integer = 0
+    '    While order < SizeUnits.Length - 1 AndAlso absBytes >= SizeUnits(order + 1).Factor
+    '        order += 1
+    '    End While
 
-        Dim value As Double = absBytes / SizeUnits(order).Factor
-        Dim formatted = $"{value:0.##} {SizeUnits(order).Unit}"
+    '    Dim value As Double = absBytes / SizeUnits(order).Factor
+    '    Dim formatted = $"{value:0.##} {SizeUnits(order).Unit}"
 
-        Return If(bytes < 0, "-" & formatted, formatted)
-    End Function
+    '    Return If(bytes < 0, "-" & formatted, formatted)
+    'End Function
 
     Public Function CanonicalizePath(inputPath As String) As String
         ' ============================================================
@@ -5849,25 +5856,6 @@ Public Class Form1
         TryPinOrUnpin(TryCast(tvFolders.SelectedNode?.Tag, String))
     End Sub
 
-    ' ------------------------------------------------------------
-    '  Toggle Pin
-    ' ------------------------------------------------------------
-
-    'Private Sub TogglePin(path As String)
-    '    If String.IsNullOrWhiteSpace(path) Then Exit Sub
-    '    If Not Directory.Exists(path) Then Exit Sub
-    '    If IsSpecialFolder(path) Then Exit Sub
-
-    '    Dim name As String = GetFolderDisplayName(path)
-
-    '    If IsPinned(path) Then
-    '        RemoveFromEasyAccess(path)
-    '    Else
-    '        AddToEasyAccess(name, path)
-    '    End If
-
-    '    RefreshPinUI()
-    'End Sub
 
     ' ------------------------------------------------------------
     '  Determine Pinnable Target
@@ -6509,13 +6497,13 @@ Public Class Form1
 
         lvFiles.SelectedItems.Clear()
         SelectListViewItemByPath(path)
-        lvFiles.Focus()
+        'lvFiles.Focus()
 
         ApplySearchHighlights()
 
         lvFiles.EndUpdate()
 
-        ShowSearchHud()
+        'ShowSearchHud()
     End Sub
 
     Private Sub HandleFindCommand(parts As String())
@@ -6546,7 +6534,9 @@ Public Class Form1
 
             ' --- 4. Auto-select first result
             If SearchResults.Count > 0 Then
+
                 SelectAndHighlightSearchResult(SearchResults(0))
+                ShowSearchHud()
                 Return
             End If
 
