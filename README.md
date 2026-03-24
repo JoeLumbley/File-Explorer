@@ -99,7 +99,10 @@ By 1998, the world had finally caught up to Engelbart’s imagination.
 If ’68 was the sketch, ’98 was the production model - the moment when visionary concepts became everyday experience.
 
 
-## Where ’68 Meets ’98: The Architectural Bridge  
+## Where 68 Meets 98
+
+The Architectural Bridge
+
 The convergence of these eras reveals a deeper architectural story.
 
 ### **Concept → Infrastructure**  
@@ -836,6 +839,10 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 - [The Spirit of '68](#the-spirit-of-68)
 
 - [The Spirit of '98](#the-spirit-of-98)
+
+
+- [Where '68 Meets '98](#where-68-meets-98)
+
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
