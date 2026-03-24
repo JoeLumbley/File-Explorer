@@ -46,9 +46,6 @@ The GUI and CLI work together seamlessly, giving users the freedom to choose the
 
 
 ---
----
----
----
 
 
 
@@ -65,6 +62,7 @@ File Explorer is grounded in the belief that great software doesn’t just work 
 
 By rebuilding a familiar tool with clarity, modularity, and emotional safety, this Explorer aims to keep that tradition alive. It refines the past without romanticizing it, making its values visible, teachable, and ready for the next generation of learners and contributors. In this way, File Explorer isn’t just a technical exercise; it’s a way of carrying the circle forward - ensuring that the spirit of humane, empowering computing remains unbroken.
 
+[ Table of Contents](#table-of-contents)
 
 
 
@@ -116,6 +114,9 @@ File Explorer sits squarely in that lineage. It takes something familiar, examin
 
 
 <img width="1920" height="1080" alt="141" src="https://github.com/user-attachments/assets/891cee12-66c1-45d6-975e-15bd92180b02" />
+
+
+[ Table of Contents](#table-of-contents)
 
 
 ## Design Principles  
