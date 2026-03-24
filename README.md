@@ -56,51 +56,6 @@ The GUI and CLI work together seamlessly, giving users the freedom to choose the
 
 
 
-## Why I’m Creating File Explorer
-
-I set out to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to overlook how much is happening behind the scenes: navigation history, sorting, file type detection, context menus, clipboard operations, lazy loading of folder trees, and many other details. Recreating these features myself has been a practical way to explore system I/O, UI design, event handling, and performance considerations in a hands‑on, exploratory way.
-
-This project is not meant to replace the built‑in Windows Explorer. Instead, it serves as a learning environment - a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, much like how art students copy the masters to study technique and intention.
-
-<img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
-
-[ Table of Contents](#table-of-contents)
-
-
-## What I Hope Learners Get From This
-
-This project is designed for anyone who wants to understand how real applications work - from beginners taking their first steps to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
-
-### **A clearer understanding of how file systems are accessed and managed**  
-By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
-
-### **Insight into building a real Windows Forms application**  
-The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
-
-### **Practical examples of organizing and structuring a larger project**  
-You’ll find subsystems for navigation history, sorting logic, search functionality, and file‑type mapping - all working together in a cohesive, maintainable way.
-
-### **Confidence to modify, extend, or build your own tools**  
-Everything is open‑source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
-
-### **A reminder that even “simple” tools contain fascinating engineering challenges**  
-Re‑creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
-
-### **A space for deliberate practice and student‑driven growth**  
-One of the core ideas behind this project is the value of deliberate practice - breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
-
-My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at - it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
-
-If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
-
-[ Table of Contents](#table-of-contents)
-
-
-
-
-
-
-
 ## Why This Project Exists  
 File Explorer began as a simple experiment: what would happen if we rebuilt a familiar tool with the clarity, modularity, and emotional safety that modern learners deserve? Over time, it became something larger - a way to honor the lineage of humane computing that stretches from Engelbart’s 1968 demo to the mainstream interfaces of the late ’90s. This project is my contribution to that tradition. It’s a tool, yes, but also a teaching space, a design philosophy, and a small act of stewardship for the future of personal computing.
 
@@ -117,8 +72,8 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
 
 
-<img width="1920" height="1032" alt="139" src="https://github.com/user-attachments/assets/4e245759-47e7-4384-96c8-1d9dbfd49600" />
 
+<img width="1920" height="1032" alt="146" src="https://github.com/user-attachments/assets/9ab940e0-d97b-41c4-912d-f1527e0994ad" />
 
 
 ## The Spirit of ’98: When the Future Became Normal  
@@ -185,6 +140,55 @@ Visual polish matters. Icons scale cleanly. UI elements feel at home on modern W
 The interface and behavior follow the spirit of classic Windows Explorer - familiar, stable, and intuitive.
 
 ---
+
+
+
+
+
+## Why I’m Creating File Explorer
+
+I set out to build my own File Explorer because I wanted to understand, from the ground up, how a core part of every operating system actually works. We all use file managers every day, but it’s easy to overlook how much is happening behind the scenes: navigation history, sorting, file type detection, context menus, clipboard operations, lazy loading of folder trees, and many other details. Recreating these features myself has been a practical way to explore system I/O, UI design, event handling, and performance considerations in a hands‑on, exploratory way.
+
+This project is not meant to replace the built‑in Windows Explorer. Instead, it serves as a learning environment - a place where I can experiment, break things, fix them, and understand why they work the way they do. By rebuilding something familiar, I get to uncover the subtle engineering decisions that make everyday tools feel intuitive, much like how art students copy the masters to study technique and intention.
+
+<img width="1920" height="1080" alt="105" src="https://github.com/user-attachments/assets/2144557d-8c45-4278-b2fb-f485ab5f2212" />
+
+[ Table of Contents](#table-of-contents)
+
+
+## What I Hope Learners Get From This
+
+This project is designed for anyone who wants to understand how real applications work - from beginners taking their first steps to experienced developers exploring deeper architectural ideas. My hope is that you come away with:
+
+### **A clearer understanding of how file systems are accessed and managed**  
+By looking at the code behind navigation, file operations, and directory structures, you can see how your operating system performs these tasks under the hood.
+
+### **Insight into building a real Windows Forms application**  
+The project demonstrates UI layout, event‑driven programming, keyboard shortcuts, tooltips, context menus, and the small design decisions that make an interface feel intuitive and predictable.
+
+### **Practical examples of organizing and structuring a larger project**  
+You’ll find subsystems for navigation history, sorting logic, search functionality, and file‑type mapping - all working together in a cohesive, maintainable way.
+
+### **Confidence to modify, extend, or build your own tools**  
+Everything is open‑source under the MIT License, so you’re free to explore, customize, or reuse any part of the codebase in your own applications.
+
+### **A reminder that even “simple” tools contain fascinating engineering challenges**  
+Re‑creating something familiar is one of the most effective ways to deepen your understanding. Much like how art students copy the masters to study technique, rebuilding a tool like File Explorer reveals the subtle decisions and hidden complexity behind everyday software.
+
+### **A space for deliberate practice and student‑driven growth**  
+One of the core ideas behind this project is the value of deliberate practice - breaking a complex system into understandable pieces, studying them closely, and rebuilding them with intention. File Explorer is a perfect playground for that kind of learning. It’s small enough to grasp, but rich enough to teach real engineering habits: decomposition, naming, event flow, UI state management, and the discipline of making things predictable for users.
+
+My hope is that this project becomes a starting point for students who want to build their own great applications. By exploring the code, modifying features, or adding entirely new ones, learners can practice the same skills professional developers use every day. This isn’t just a tool to look at - it’s a foundation you can extend, reshape, and eventually outgrow as you build projects of your own.
+
+If you’re curious, the GitHub repository includes the full source code and documentation. I’d love to hear your thoughts, suggestions, or ideas for future features. This project is as much about learning as it is about building something functional, and I’m excited to share that journey with you.
+
+[ Table of Contents](#table-of-contents)
+
+
+
+
+
+
 
 ## Architecture Overview  
 
