@@ -73,7 +73,9 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 ## The Spirit of 68
+
 When Computing Was Pure Imagination 
+
 1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
 
 
@@ -828,7 +830,7 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 - [Project Philosophy](#project-philosophy)
 
-- [The Spirit of '68](the-spirit-of-68)
+- [The Spirit of '68](#the-spirit-of-68)
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
