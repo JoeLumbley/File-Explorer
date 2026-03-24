@@ -6516,24 +6516,51 @@ Public Class Form1
     'End Function
 
 
+    'Private Function BuildFullCategoryHelp() As String
+    '    Dim sb As New Text.StringBuilder()
+
+    '    For Each cat As CommandCategory In [Enum].GetValues(GetType(CommandCategory))
+
+    '        sb.AppendLine("Use help (command) to jump to info. about that command")
+    '        sb.AppendLine()
+
+    '        sb.AppendLine($"{cat} Commands")
+    '        sb.AppendLine(New String("-"c, 40))
+
+    '        Dim items = CommandHelp.Values.
+    '        Where(Function(ci) ci.Category = cat).
+    '        OrderBy(Function(ci) ci.Aliases(0))
+
+    '        For Each ci In items
+    '            'sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
+    '            sb.AppendLine($"{ci.Aliases(0)} - {ci.Description}")
+
+    '        Next
+
+    '        sb.AppendLine()
+    '    Next
+
+    '    Return sb.ToString()
+    'End Function
+
     Private Function BuildFullCategoryHelp() As String
         Dim sb As New Text.StringBuilder()
 
-        For Each cat As CommandCategory In [Enum].GetValues(GetType(CommandCategory))
+        ' Global navigation hint (shown once)
+        sb.AppendLine("Use help <command> to jump to a specific command.")
+        sb.AppendLine()
 
-            sb.AppendLine()
+        For Each cat As CommandCategory In [Enum].GetValues(GetType(CommandCategory))
 
             sb.AppendLine($"{cat} Commands")
             sb.AppendLine(New String("-"c, 40))
 
-            Dim items = CommandHelp.Values.
-            Where(Function(ci) ci.Category = cat).
-            OrderBy(Function(ci) ci.Aliases(0))
+            Dim items = CommandHelp.Values _
+            .Where(Function(ci) ci.Category = cat) _
+            .OrderBy(Function(ci) ci.Aliases(0))
 
             For Each ci In items
-                'sb.AppendLine($"{ci.Aliases(0),-12} {ci.Description}")
                 sb.AppendLine($"{ci.Aliases(0)} - {ci.Description}")
-
             Next
 
             sb.AppendLine()
