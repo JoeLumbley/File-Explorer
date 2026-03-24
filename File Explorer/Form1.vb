@@ -6028,143 +6028,16 @@ Public Class Form1
     '    End Try
     'End Sub
 
-
-
-    'Private Sub HandleHelpCommand(parts As String())
-    '    Try
-    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-
-    '        ' Extract search terms
-    '        Dim terms = parts.Skip(1).
-    '                     Select(Function(t) t.Trim()).
-    '                     Where(Function(t) t <> "").
-    '                     ToList()
-
-    '        ' ------------------------------------------------------------
-    '        ' Special case: keyboard shortcuts
-    '        ' ------------------------------------------------------------
-    '        If terms.Count = 1 Then
-    '            Dim t = terms(0).ToLowerInvariant()
-    '            If t = "keys" OrElse t = "shortcuts" Then
-    '                HelpHeaderLabel.Text = "Keyboard Shortcuts"
-    '                HelpTextBox.Text = BuildShortcutsHelp()
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-    '        End If
-
-    '        ' ------------------------------------------------------------
-    '        ' No terms → show full category‑grouped help
-    '        ' ------------------------------------------------------------
-    '        If terms.Count = 0 Then
-    '            HelpHeaderLabel.Text = "Command Reference"
-    '            HelpTextBox.Text = BuildFullCategoryHelp()
-    '            ShowHelpPanelAnimated()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' ------------------------------------------------------------
-    '        ' Single term → try command, then category, then search
-    '        ' ------------------------------------------------------------
-    '        If terms.Count = 1 Then
-    '            Dim term = terms(0).ToLowerInvariant()
-
-    '            ' 1. Direct command lookup
-    '            If CommandHelp.ContainsKey(term) Then
-    '                HelpHeaderLabel.Text = $"Help: {term}"
-    '                HelpTextBox.Text = BuildSingleCommandHelp(CommandHelp(term))
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-
-    '            ' 2. Category lookup
-    '            Dim catName = [Enum].GetNames(GetType(CommandCategory)).
-    '                       FirstOrDefault(Function(c) c.ToLower() = term)
-
-    '            If catName IsNot Nothing Then
-    '                Dim cat = CType([Enum].Parse(GetType(CommandCategory), catName), CommandCategory)
-    '                HelpHeaderLabel.Text = $"{cat} Commands"
-    '                HelpTextBox.Text = BuildCategoryHelp(cat)
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-
-    '            ' 3. Fuzzy search across commands
-    '            Dim results = SearchHelp(term)
-    '            If results.Any() Then
-    '                HelpHeaderLabel.Text = $"Help: {term}"
-    '                HelpTextBox.Text = BuildSearchResultsHelp(results)
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-
-    '            ' No matches
-    '            HelpHeaderLabel.Text = $"No results for ""{term}"""
-    '            HelpTextBox.Text = "No matching commands were found."
-    '            ShowHelpPanelAnimated()
-    '            FocusHelpText()
-    '            RestoreAddressBar()
-    '            Return
-    '        End If
-
-    '        ' ------------------------------------------------------------
-    '        ' Multi‑term search (AND logic)
-    '        ' ------------------------------------------------------------
-    '        Dim multiResults = SearchHelpMultiTerm(terms)
-
-    '        If multiResults.Any() Then
-    '            HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
-    '            HelpTextBox.Text = BuildSearchResultsHelp(multiResults)
-    '        Else
-    '            HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
-    '            HelpTextBox.Text = "No matching commands were found."
-    '        End If
-
-    '        ShowHelpPanelAnimated()
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError &
-    '               " Failed to display help information: " & ex.Message)
-    '    Finally
-    '        RestoreAddressBar()
-    '    End Try
-    'End Sub
-
-
-
-
     Private Sub HandleHelpCommand(parts As String())
+
         Try
-            'HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-            'HelpTextBox.Font = New Font("Consolas", 11, FontStyle.Regular)
+            HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
+        Catch ex As Exception
+            ' Fallback to a default font if Segoe UI is not available
+            HelpTextBox.Font = New Font("Arial", 10, FontStyle.Regular)
+        End Try
 
-            'Consolas
-            Try
-                HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-            Catch ex As Exception
-                ' Fallback to a default font if Consolas is not available
-                HelpTextBox.Font = New Font("Arial", 10, FontStyle.Regular)
-            End Try
-
-
-            HelpTextBox.ForeColor = Color.Black
-            'HelpTextBox.BackColor = Color.White
-
-
-
-
-
+        Try
 
             Dim terms = parts.Skip(1).
                          Select(Function(t) t.Trim()).
