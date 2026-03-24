@@ -111,8 +111,8 @@ The convergence of these eras reveals a deeper architectural story.
 It’s the difference between a blueprint and a city.
 
 ### **Augmentation → Accessibility**  
-Engelbart sought to augment human intellect.  
-The web and Windows 98 made that augmentation available to billions.
+Engelbart sought to **augment human intellect**.  
+The web and Windows 98 made that **augmentation** available to billions.
 
 ### **Prototype → Platform**  
 ’68 was a prototype mindset.  
