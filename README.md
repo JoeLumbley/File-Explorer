@@ -98,6 +98,7 @@ By 1998, the world had finally caught up to Engelbart’s imagination.
 
 If ’68 was the sketch, ’98 was the production model - the moment when visionary concepts became everyday experience.
 
+[ Table of Contents](#table-of-contents)
 
 ## Where 68 Meets 98
 
