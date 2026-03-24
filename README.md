@@ -5,8 +5,8 @@
 
 
 
+<img width="1266" height="733" alt="147" src="https://github.com/user-attachments/assets/dcb713f1-4d87-4aa8-8bd7-ceaa7cd8f4fa" />
 
-<img width="1266" height="733" alt="142" src="https://github.com/user-attachments/assets/0302d0d9-4939-48da-9449-b2b8b5c55340" />
 
 
 The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
@@ -72,14 +72,20 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 
-## The Spirit of ’68: When Computing Was Pure Imagination  
-1968 wasn’t just the year of Engelbart’s “Mother of All Demos.” It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
+## The Spirit of 68
+
+**When Computing Was Pure Imagination**
+
+1968 wasn’t just the year of Engelbart’s **“Mother of All Demos.”** It was the moment when computing stopped being about machines and started being about **human augmentation**. Engelbart and his team introduced ideas that functioned as cognitive prosthetics - the mouse, hypertext, interactive editing, shared workspaces. Computing became a medium for thought, a place where ideas could be shaped, linked, and explored. It was idealistic, experimental, and far ahead of its time, but it established the mental model for everything that followed.
 
 
 
 
 
-## The Spirit of ’98: When the Future Became Normal  
+## The Spirit of 98
+
+**When the Future Became Normal**
+
 By 1998, the world had finally caught up to Engelbart’s imagination.
 
 - The web became the default interface to knowledge  
@@ -93,7 +99,10 @@ By 1998, the world had finally caught up to Engelbart’s imagination.
 If ’68 was the sketch, ’98 was the production model - the moment when visionary concepts became everyday experience.
 
 
-## Where ’68 Meets ’98: The Architectural Bridge  
+## Where 68 Meets 98
+
+**The Architectural Bridge**
+
 The convergence of these eras reveals a deeper architectural story.
 
 ### **Concept → Infrastructure**  
@@ -102,8 +111,8 @@ The convergence of these eras reveals a deeper architectural story.
 It’s the difference between a blueprint and a city.
 
 ### **Augmentation → Accessibility**  
-Engelbart sought to augment human intellect.  
-The web and Windows 98 made that augmentation available to billions.
+Engelbart sought to **augment human intellect**.  
+The web and Windows 98 made that **augmentation** available to billions.
 
 ### **Prototype → Platform**  
 ’68 was a prototype mindset.  
@@ -821,6 +830,19 @@ It’s a flexible, efficient alternative to the graphical interface - perfect fo
 
 
 ## Table of Contents
+
+
+- [Why This Project Exists](#why-this-project-exists)
+
+- [Project Philosophy](#project-philosophy)
+
+- [The Spirit of '68](#the-spirit-of-68)
+
+- [The Spirit of '98](#the-spirit-of-98)
+
+
+- [Where '68 Meets '98](#where-68-meets-98)
+
 
 - [Why I’m Creating File Explorer](#why-im-creating-file-explorer)
   
