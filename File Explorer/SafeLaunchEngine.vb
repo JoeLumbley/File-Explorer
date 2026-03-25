@@ -1,5 +1,6 @@
 ﻿
 Imports System.IO
+Imports File_Explorer.Explorer.Navigation
 
 Public Class SafeLaunchEngine
 
@@ -18,6 +19,36 @@ Public Class SafeLaunchEngine
 
         Dim path = input.Trim()
 
+        '' 0. Virtual folder (shell::: or shell:)
+        '' shell:::{645FF040-5081-101B-9F08-00AA002F954E}
+        '' shell:RecycleBinFolder
+        'If path.StartsWith("shell:::", StringComparison.OrdinalIgnoreCase) OrElse
+        '   path.StartsWith("shell:", StringComparison.OrdinalIgnoreCase) Then
+
+        '    Dim vf = VirtualFolderResolver.Resolve(path)
+        '    If vf.HasValue Then
+        '        Return LaunchVirtualFolder(vf.Value)
+        '    End If
+        'End If
+
+
+        ' 0. Virtual folder (shell::: or shell:)
+        If path.StartsWith("shell:::", StringComparison.OrdinalIgnoreCase) Then
+
+            Dim vf = VirtualFolderResolver.Resolve(path)
+            If vf.HasValue Then
+                Return LaunchVirtualFolder(vf.Value)
+            End If
+
+        ElseIf path.StartsWith("shell:", StringComparison.OrdinalIgnoreCase) Then
+
+            Dim vf = VirtualFolderMap.ResolveCanonical(path)
+            If vf.HasValue Then
+                Return LaunchVirtualFolder(vf.Value)
+            End If
+
+        End If
+
         ' 1. URL
         If IsSafeUrl(path) Then
             Return LaunchUrl(path)
@@ -34,6 +65,15 @@ Public Class SafeLaunchEngine
         End If
 
         Return False
+    End Function
+
+    Private Function LaunchVirtualFolder(vf As VirtualFolder) As Boolean
+        Try
+            ShellNavigation.OpenVirtualFolder(vf)
+            Return True
+        Catch
+            Return False
+        End Try
     End Function
 
     ' ---------------------------------------------------------
