@@ -697,14 +697,14 @@ Public Class Form1
     }
 }
 
-    Public Enum CommandCategory
-        Navigation
-        FileOperations
-        Search
-        System
-        Help
-        Shortcuts
-    End Enum
+    'Public Enum CommandCategory
+    '    Navigation
+    '    FileOperations
+    '    Search
+    '    System
+    '    Help
+    '    Shortcuts
+    'End Enum
 
 
     Private HelpHeaderLabel As Label
@@ -724,11 +724,11 @@ Public Class Form1
     Private CancelCopyHost As ToolStripControlHost
 
 
-    Public Enum CopyUIContext
-        None
-        CLI
-        Paste
-    End Enum
+    'Public Enum CopyUIContext
+    '    None
+    '    CLI
+    '    Paste
+    'End Enum
 
     'Dim r As New LaunchRecorder
     Dim engine As New SafeLaunchEngine(Me)
