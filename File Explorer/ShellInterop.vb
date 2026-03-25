@@ -1,14 +1,14 @@
 ﻿Imports System
-Imports System.IO
-Imports System.Drawing
-Imports System.Diagnostics
-Imports System.Runtime.InteropServices
-Imports Microsoft.VisualBasic
-
-Imports System.Text
 Imports System.ComponentModel
+Imports System.Diagnostics
+Imports System.Drawing
+Imports System.IO
+Imports System.Runtime.InteropServices
 Imports System.Runtime.Versioning
 Imports System.Security
+Imports System.Text
+Imports File_Explorer.Explorer.Navigation
+Imports Microsoft.VisualBasic
 
 Namespace Explorer.Interop
 
@@ -263,6 +263,36 @@ Namespace Explorer.Interop.Shell
         Private Shared Function SHFileOperation(ByRef lpFileOp As SHFILEOPSTRUCT) As Integer
         End Function
 
+        <DllImport("shell32.dll")>
+        Private Shared Function ILCombine(pidl1 As IntPtr, pidl2 As IntPtr) As IntPtr
+        End Function
+
+
+
+        <DllImport("shell32.dll", CharSet:=CharSet.Unicode)>
+        Private Shared Function SHGetNameFromIDList(
+            pidl As IntPtr,
+            sigdnName As UInteger,
+            ByRef ppszName As IntPtr
+        ) As Integer
+        End Function
+
+
+
+
+        Private Const SIGDN_NORMALDISPLAY As UInteger = &H0UI
+
+        Private Shared Function GetDisplayNameFromPidl(pidl As IntPtr) As String
+            Dim psz As IntPtr = IntPtr.Zero
+            Dim hr = SHGetNameFromIDList(pidl, SIGDN_NORMALDISPLAY, psz)
+            If hr <> 0 OrElse psz = IntPtr.Zero Then Return String.Empty
+            Try
+                Return Marshal.PtrToStringUni(psz)
+            Finally
+                CoTaskMemFree(psz)
+            End Try
+        End Function
+
         <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
         Private Structure SHFILEOPSTRUCT
             Public hwnd As IntPtr
@@ -291,6 +321,90 @@ Namespace Explorer.Interop.Shell
             Dim result = SHFileOperation(op)
             Return (result = 0 AndAlso Not op.fAnyOperationsAborted)
         End Function
+
+
+        'Public Shared Function GetRecycleBinItems() As List(Of VirtualItem)
+        '    Dim results As New List(Of VirtualItem)
+
+        '    Dim desktop As IShellFolder = ShellInterop.GetDesktopFolder()
+        '    Dim recyclePidl As IntPtr = ShellInterop.ParseDisplayName("shell:RecycleBinFolder")
+
+        '    Dim recycleFolder As IShellFolder = Nothing
+        '    desktop.BindToObject(recyclePidl, IntPtr.Zero, ShellIID.IShellFolder, recycleFolder)
+
+        '    Dim enumIdList As IEnumIDList = Nothing
+        '    recycleFolder.EnumObjects(IntPtr.Zero,
+        '                      SHCONTF.SHCONTF_FOLDERS Or SHCONTF.SHCONTF_NONFOLDERS,
+        '                      enumIdList)
+
+        '    Dim fetched As UInteger = 0
+        '    Dim pidl As IntPtr = IntPtr.Zero
+
+        '    While enumIdList.Next(1, pidl, fetched) = 0 AndAlso fetched = 1
+        '        Dim name = ShellInterop.GetDisplayName(recycleFolder, pidl)
+        '        Dim origPath = ShellInterop.GetRecycleBinOriginalPath(pidl)
+        '        Dim size = ShellInterop.GetRecycleBinSize(pidl)
+        '        Dim deleted = ShellInterop.GetRecycleBinDeletionTime(pidl)
+
+        '        results.Add(New VirtualItem With {
+        '    .name = name,
+        '    .Type = "Deleted Item",
+        '    .OriginalPath = origPath,
+        '    .size = size,
+        '    .Modified = deleted,
+        '    .pidl = pidl,
+        '    .IsFolder = False
+        '})
+        '    End While
+
+        '    Return results
+        'End Function
+
+        '    Public Shared Function GetRecycleBinItems() As List(Of VirtualItem)
+        '        Dim results As New List(Of VirtualItem)
+
+        '        Dim desktop As IShellFolder = GetDesktopFolder()
+        '        Dim recyclePidl As IntPtr = ParseDisplayName("shell:RecycleBinFolder")
+
+        '        If recyclePidl = IntPtr.Zero OrElse desktop Is Nothing Then
+        '            Return results
+        '        End If
+
+        '        Dim recycleFolder As IShellFolder = Nothing
+        '        desktop.BindToObject(recyclePidl, IntPtr.Zero, ShellIID.IShellFolder, recycleFolder)
+
+        '        Dim enumIdList As IEnumIDList = Nothing
+        '        recycleFolder.EnumObjects(
+        '    IntPtr.Zero,
+        '    SHCONTF.SHCONTF_FOLDERS Or SHCONTF.SHCONTF_NONFOLDERS,
+        '    enumIdList
+        ')
+
+        '        Dim fetched As UInteger = 0
+        '        Dim childPidl As IntPtr = IntPtr.Zero
+
+        '        While enumIdList.Next(1UI, childPidl, fetched) = 0 AndAlso fetched = 1UI
+
+        '            Dim fullPidl = ILCombine(recyclePidl, childPidl)
+
+        '            Dim name = GetDisplayNameFromPidl(fullPidl)
+        '            Dim origPath = GetRecycleBinOriginalPath(fullPidl)
+        '            Dim size = GetRecycleBinSize(fullPidl)
+        '            Dim deleted = GetRecycleBinDeletionTime(fullPidl)
+
+        '            results.Add(New VirtualItem With {
+        '        .Name = name,
+        '        .Type = "Deleted Item",
+        '        .OriginalPath = origPath,
+        '        .Size = size,
+        '        .Modified = deleted,
+        '        .Pidl = fullPidl,
+        '        .IsFolder = False
+        '    })
+        '        End While
+
+        '        Return results
+        '    End Function
 
 
 

@@ -4046,49 +4046,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Async Function PopulateFiles(path As String) As Task
-    '    lvFiles.BeginUpdate()
-    '    lvFiles.Items.Clear()
-
-    '    Try
-    '        ' Kick off both enumerations in parallel
-    '        Dim dirTask = Task.Run(Function() GetDirectoriesSafe(path))
-    '        Dim fileTask = Task.Run(Function() GetFilesSafe(path))
-
-    '        Dim directories = Await dirTask
-    '        Dim files = Await fileTask
-
-    '        ' Optional: Explorer-style sorting
-    '        directories = directories.OrderBy(Function(d) d).ToList()
-    '        files = files.OrderBy(Function(f) f).ToList()
-
-    '        Dim itemsToAdd As New List(Of ListViewItem)
-
-    '        ' Build directory items
-    '        For Each d In directories
-    '            Dim di As New DirectoryInfo(d)
-    '            itemsToAdd.Add(BuildListViewItemForDirectory(di))
-    '        Next
-
-    '        ' Build file items
-    '        For Each f In files
-    '            Dim fi As New FileInfo(f)
-    '            itemsToAdd.Add(BuildListViewItemForFile(fi))
-    '        Next
-
-    '        lvFiles.Items.AddRange(itemsToAdd.ToArray())
-
-    '        ShowStatus(StatusPad & $" {lvFiles.Items.Count} items")
-
-    '    Catch ex As Exception
-    '        ShowStatus(StatusPad & IconError & $" Error: {ex.Message}")
-    '        Debug.WriteLine($"PopulateFiles - General Error - {ex.Message}")
-
-    '    Finally
-    '        lvFiles.EndUpdate()
-    '    End Try
-    'End Function
-
 
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
@@ -4134,47 +4091,10 @@ Public Class Form1
         End Try
     End Function
 
-
-
-
-
-
-
-
-
-
     Private Function IsAccessTestFile(name As String) As Boolean
         Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
     End Function
 
-
-    'Private Function GetDirectoriesSafe(path2Get As String) As List(Of String)
-    '    Dim results As New List(Of String)
-
-    '    Try
-    '        For Each d In Directory.GetDirectories(path2Get)
-    '            Dim name = Path.GetFileName(d)
-
-    '            ' Skip our own temp directories
-    '            If IsAccessTestFile(name) Then Continue For
-
-    '            Dim di As New DirectoryInfo(d)
-
-    '            ' Skip hidden/system unless ShowHiddenFiles = True
-    '            If Not ShowHiddenFiles Then
-    '                If (di.Attributes And (FileAttributes.Hidden Or FileAttributes.System)) <> 0 Then
-    '                    Continue For
-    '                End If
-    '            End If
-
-    '            results.Add(d)
-    '        Next
-    '    Catch
-    '        ' swallow — safe enumeration
-    '    End Try
-
-    '    Return results
-    'End Function
 
     Private Function GetDirectoriesSafe(path2Get As String) As List(Of String)
         Dim results As New List(Of String)

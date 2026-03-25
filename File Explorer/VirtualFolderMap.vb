@@ -15,94 +15,6 @@
             Return FolderUris(vf)
         End Function
 
-        'Public Shared Function ResolveCanonical(shellPath As String) As VirtualFolder?
-        '    Dim lower = shellPath.ToLowerInvariant()
-
-        '    For Each kvp In FolderUris
-        '        If lower = kvp.Value.ToLowerInvariant() Then
-        '            Return kvp.Key
-        '        End If
-        '    Next
-
-        '    Return Nothing
-        'End Function
-
-        'Public Shared Function ResolveCanonical(shellPath As String) As VirtualFolder?
-        '    Dim lower = shellPath.ToLowerInvariant()
-
-        '    Select Case lower
-        '        Case "shell:controlpanel", "shell:controlpanelfolder"
-        '            Return VirtualFolder.ControlPanel
-        '        Case "shell:recyclebin", "shell:recyclebinfolder"
-        '            Return VirtualFolder.RecycleBin
-        '        Case "shell:downloads", "shell:downloadsfolder"
-        '            Return VirtualFolder.Downloads
-        '        Case "shell:computer", "shell:mycomputer", "shell:mycomputerfolder", "shell:pc", "shell:thispc"
-        '            Return VirtualFolder.ThisPC
-        '        Case "shell:network", "shell:networkplaces", "shell:networkplacesfolder"
-        '            Return VirtualFolder.Network
-        '        Case "shell:desktop"
-        '            Return VirtualFolder.Desktop
-        '    End Select
-
-        '    Return Nothing
-        'End Function
-
-        'Public Shared Function ResolveCanonical(shellPath As String) As VirtualFolder?
-        '    Dim lower = shellPath.TrimEnd("\"c).ToLowerInvariant()
-
-        '    Select Case lower
-        '        Case "shell:controlpanel", "shell:control panel", "shell:controlpanelfolder"
-        '            Return VirtualFolder.ControlPanel
-
-        '        Case "shell:recycle", "shell:recyclebin", "shell:recyclebinfolder"
-        '            Return VirtualFolder.RecycleBin
-
-        '        Case "shell:downloads", "shell:downloadsfolder"
-        '            Return VirtualFolder.Downloads
-
-        '        Case "shell:computer", "shell:mycomputer", "shell:mycomputerfolder",
-        '             "shell:pc", "shell:thispc"
-        '            Return VirtualFolder.ThisPC
-
-        '        Case "shell:network", "shell:networkplaces", "shell:networkplacesfolder"
-        '            Return VirtualFolder.Network
-
-        '        Case "shell:desktop"
-        '            Return VirtualFolder.Desktop
-        '    End Select
-
-        '    Return Nothing
-        'End Function
-
-        'Public Shared Function ResolveCanonical(shellPath As String) As VirtualFolder?
-        '    Dim lower = shellPath.TrimEnd("\"c).ToLowerInvariant()
-
-        '    Select Case lower
-        '        Case "shell:controlpanel", "shell:control panel", "shell:controlpanelfolder"
-        '            Return VirtualFolder.ControlPanel
-
-        '        Case "shell:recycle", "shell:recyclebin", "shell:recycle bin", "shell:recyclebinfolder"
-        '            Return VirtualFolder.RecycleBin
-
-        '        Case "shell:downloads", "shell:downloadsfolder"
-        '            Return VirtualFolder.Downloads
-
-        '        Case "shell:computer", "shell:mycomputer", "shell:mycomputerfolder",
-        '             "shell:pc", "shell:thispc"
-        '            Return VirtualFolder.ThisPC
-
-        '        Case "shell:network", "shell:networkplaces", "shell:networkplacesfolder"
-        '            Return VirtualFolder.Network
-
-        '        Case "shell:desktop", "shell:desktopfolder"
-        '            Return VirtualFolder.Desktop
-        '    End Select
-
-        '    Return Nothing
-        'End Function
-
-
         Public Shared Function ResolveCanonical(shellPath As String) As VirtualFolder?
             Dim lower = shellPath.TrimEnd("\"c).ToLowerInvariant()
 
@@ -140,9 +52,6 @@
 
             Return Nothing
         End Function
-
-
-
 
     End Class
 
