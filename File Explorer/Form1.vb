@@ -3940,8 +3940,8 @@ Public Class Form1
                     End If
 
                     Dim child As New TreeNode(di.Name) With {
-                    .Tag = dirPath
-                }
+                        .Tag = dirPath
+                    }
 
                     ' DPI-aware icon size
                     Dim pixelSize As Integer = imgList.ImageSize.Width
@@ -5354,6 +5354,16 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
+
+
+
+
+
+
+
+
+
+
     Private Sub UpdateTreeRoots()
         tvFolders.BeginUpdate()
         tvFolders.Nodes.Clear()
@@ -5467,6 +5477,37 @@ Public Class Form1
         easyAccessNode.Expand()
         easyAccessNode.StateImageIndex = 1
 
+
+        ' ============================================================
+        ' This PC (virtual shell folder)
+        ' ============================================================
+
+
+        Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+
+        Dim thisPCNode As New TreeNode("This PC") With {
+            .Tag = thisPCPath
+        }
+
+        'Dim pcIcon = ShellInterop.GetIconForPath(thisPCPath, IconSize)
+
+        Dim pcIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
+
+        If pcIcon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey("ThisPC") Then
+                imgList.Images.Add("ThisPC", pcIcon.ToBitmap())
+            End If
+            thisPCNode.ImageKey = "ThisPC"
+            thisPCNode.SelectedImageKey = "ThisPC"
+        Else
+            thisPCNode.ImageKey = "Computer"
+            thisPCNode.SelectedImageKey = "Computer"
+        End If
+
+        thisPCNode.StateImageIndex = 2
+        tvFolders.Nodes.Add(thisPCNode)
+
+
         ' ============================================================
         ' DRIVES
         ' ============================================================
@@ -5555,6 +5596,19 @@ Public Class Form1
 
         tvFolders.EndUpdate()
     End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
@@ -7925,17 +7979,238 @@ Public Class Form1
 
     End Sub
 
+    'Private Sub InitListView()
+    '    lvFiles.View = View.Details
+    '    lvFiles.FullRowSelect = True
+    '    lvFiles.MultiSelect = True
+    '    lvFiles.Columns.Clear()
+    '    lvFiles.Columns.Add("Name", 500)
+    '    lvFiles.Columns.Add("Type", 175)
+    '    lvFiles.Columns.Add("Size", 100)
+    '    lvFiles.Columns.Add("Modified", 150)
+
+    'End Sub
+
     Private Sub InitListView()
         lvFiles.View = View.Details
         lvFiles.FullRowSelect = True
         lvFiles.MultiSelect = True
+        lvFiles.AllowDrop = True   ' <-- REQUIRED
+
         lvFiles.Columns.Clear()
         lvFiles.Columns.Add("Name", 500)
         lvFiles.Columns.Add("Type", 175)
         lvFiles.Columns.Add("Size", 100)
         lvFiles.Columns.Add("Modified", 150)
+    End Sub
+
+    Private Sub lvFiles_DragEnter(sender As Object, e As DragEventArgs) _
+    Handles lvFiles.DragEnter
+
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.Copy
+            Exit Sub
+        End If
+
+        ' MTP / WPD devices (Moto G, Pixel, Xiaomi, etc.)
+        If e.Data.GetDataPresent("FileGroupDescriptorW") Then
+            e.Effect = DragDropEffects.Copy
+            Exit Sub
+        End If
+
+        ' Some devices still expose PIDLs (Samsung, some cameras)
+        If e.Data.GetDataPresent("Shell IDList Array") Then
+            e.Effect = DragDropEffects.Copy
+            Exit Sub
+        End If
+
+        e.Effect = DragDropEffects.None
+    End Sub
+
+    'Private Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) _
+    'Handles lvFiles.DragDrop
+
+    '    ' 1. Handle normal filesystem drops first
+    '    If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+    '        Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+    '        For Each file In files
+    '            Dim srcItem = ShellInterop.CreateShellItemFromPath(file)
+    '            Dim destItem = ShellInterop.CreateShellItemFromPath(currentFolder)
+    '            ShellInterop.CopyShellItem(srcItem, destItem)
+    '        Next
+    '        Exit Sub
+    '    End If
+
+    'End Sub
+
+
+    'Private Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) _
+    'Handles lvFiles.DragDrop
+
+    '    ' Normal filesystem drops
+    '    If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+    '        Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+
+    '        Dim _ = RunCopyOrCutOperation(
+    '        sources:=files.ToList(),
+    '        destinationRoot:=currentFolder,
+    '        isCut:=False,
+    '        context:=CopyUIContext.Paste,
+    '        ct:=CancellationToken.None
+    '    )
+
+    '        Exit Sub
+    '    End If
+
+    'End Sub
+
+    Private Async Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) _
+    Handles lvFiles.DragDrop
+
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+
+            ' ------------------------------------------------------------
+            ' Create fresh CTS for this copy operation
+            ' ------------------------------------------------------------
+            copyCts = New CancellationTokenSource()
+            Dim token = copyCts.Token
+
+            Dim op = Await RunCopyOrCutOperation(
+                sources:=files.ToList(),
+                destinationRoot:=currentFolder,
+                isCut:=False,
+                context:=CopyUIContext.Paste,
+                ct:=CancellationToken.None
+            )
+
+            Dim items = op.Results
+            Dim summary = op.Summary
+
+            Await PopulateFiles(currentFolder)
+
+            ' --- Correct cancellation-aware ordering ---
+            If summary.WasCanceled Then
+                ShowStatus(StatusPad & IconWarning &
+                " Paste canceled.")
+            ElseIf summary.TotalFiles = 0 Then
+                ShowStatus(StatusPad & IconWarning &
+                " Nothing was pasted.")
+            ElseIf summary.TotalFiles = 1 Then
+                ShowStatus(StatusPad & IconPaste &
+                $" Pasted 1 file.")
+            Else
+                ShowStatus(StatusPad & IconPaste &
+                $" Pasted {summary.TotalFiles} files.")
+            End If
+
+            UpdateAllUIStates()
+
+            Exit Sub
+        End If
 
     End Sub
+
+
+    Private Function ParseFileGroupDescriptorW(bytes As Byte()) As List(Of String)
+        Dim names As New List(Of String)
+
+        Using ms As New MemoryStream(bytes)
+            Using br As New BinaryReader(ms, Encoding.Unicode)
+                Dim count = br.ReadInt32()
+
+                For i = 1 To count
+                    ms.Position = 76 * i ' FILEDESCRIPTORW struct size
+                    Dim nameBytes = br.ReadBytes(520) ' 260 WCHARs
+                    Dim name = Encoding.Unicode.GetString(nameBytes).TrimEnd(ChrW(0))
+                    names.Add(name)
+                Next
+            End Using
+        End Using
+
+        Return names
+    End Function
+
+
+
+
+
+
+
+    'Private Function ParseFileGroupDescriptorW(bytes As Byte()) As List(Of String)
+    '    Dim names As New List(Of String)
+
+    '    Using ms As New MemoryStream(bytes)
+    '        Using br As New BinaryReader(ms, Encoding.Unicode)
+    '            Dim count = br.ReadInt32()
+
+    '            For i = 1 To count
+    '                ms.Position = 76 * i ' FILEDESCRIPTORW struct size
+    '                Dim nameBytes = br.ReadBytes(520) ' 260 WCHARs
+    '                Dim name = Encoding.Unicode.GetString(nameBytes).TrimEnd(ChrW(0))
+    '                names.Add(name)
+    '            Next
+    '        End Using
+    '    End Using
+
+    '    Return names
+    'End Function
+
+    '    'If e.Data.GetDataPresent("Shell IDList Array") Then
+
+    '    '    Dim pidls = ShellIDListArray.FromDataObject(e.Data)
+
+    '    '    ' Create Shell.Application COM object
+    '    '    Dim shell = CreateObject("Shell.Application")
+    '    '    Dim destFolder = shell.NameSpace(currentFolder)
+
+    '    '    For Each pidlPtr As IntPtr In pidls.Items
+
+    '    '        ' Convert PIDL → IShellItem
+    '    '        Dim srcItem = ShellInterop.CreateShellItemFromPIDL(pidlPtr)
+
+    '    '        ' Get display name (normal display)
+    '    '        Dim name = ShellInterop.GetDisplayName(srcItem, SIGDN.SIGDN_NORMALDISPLAY)
+
+    '    '        ' Get folder containing the item
+    '    '        Dim parent As IShellItem = Nothing
+    '    '        srcItem.GetParent(parent)
+
+    '    '        Dim parentPath = ShellInterop.GetDisplayName(parent, SIGDN.SIGDN_FILESYSPATH)
+    '    '        If String.IsNullOrEmpty(parentPath) Then Continue For
+
+    '    '        Dim srcFolder = shell.NameSpace(parentPath)
+    '    '        Dim srcFolderItem = srcFolder.ParseName(name)
+
+    '    '        ' THIS is the magic: Explorer's own copy engine
+    '    '        destFolder.CopyHere(srcFolderItem, 16) ' 16 = No UI
+    '    '    Next
+    '    'End If
+
+    'End Sub
+
+
+
+
+    'Private Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) Handles lvFiles.DragDrop
+    '    ' Log available data formats
+    '    For Each format As String In e.Data.GetFormats()
+    '        Debug.WriteLine(format)
+    '    Next
+
+    '    ' Check for Shell IDList Array
+    '    If e.Data.GetDataPresent("Shell IDList Array") Then
+    '        Dim pidls = ShellIDListArray.FromDataObject(e.Data)
+    '        If pidls IsNot Nothing AndAlso pidls.Items.Count > 0 Then
+    '            ' Process the pidls
+    '        Else
+    '            Debug.WriteLine("No PIDLs found.")
+    '        End If
+    '    Else
+    '        Debug.WriteLine("Shell IDList Array not present.")
+    '    End If
+    'End Sub
+
 
     Private Sub InitTreeView()
 
