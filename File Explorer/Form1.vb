@@ -5408,14 +5408,14 @@ Public Class Form1
                 'Dim size = GetScaledIconSize(Me)
                 Dim icon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
 
-                If icon IsNot Nothing Then
+                If Icon IsNot Nothing Then
 
 
                     'If Not imgList.Images.ContainsKey(specialFolderPath) Then
                     '    imgList.Images.Add(specialFolderPath, icon)
                     'End If
                     If Not imgList.Images.ContainsKey(specialFolderPath) Then
-                        imgList.Images.Add(specialFolderPath, icon.ToBitmap())
+                        imgList.Images.Add(specialFolderPath, Icon.ToBitmap())
                     End If
 
                     node.ImageKey = specialFolderPath
