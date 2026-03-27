@@ -1,51 +1,49 @@
-# File Explorer
+# **File Explorer**
 
-
-**File Explorer** is a simple, fast, and user‑friendly file management application designed to make navigating, organizing, and manipulating files intuitive for all users. It combines a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)** for those who prefer keyboard‑driven workflows.
+**File Explorer** is a fast, intuitive, and user‑friendly file management application designed to make navigating, organizing, and manipulating files feel effortless. It blends a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)**, giving users the freedom to work the way they prefer clicking, typing, or mixing both.
 
 <img width="1266" height="733" alt="149" src="https://github.com/user-attachments/assets/bafb4169-6cc3-4623-a781-2dc73ec1cf5e" />
 
-
-
-
-
-The application is built around clarity, predictability, and emotional safety. Whether you prefer clicking, typing, or shortcut‑driven workflows, File Explorer adapts to your style.
+The entire application is built around clarity, predictability, and emotional safety. Whether you’re exploring folders visually or issuing precise commands, File Explorer adapts to your workflow and stays out of your way.
 
 [ Table of Contents](#table-of-contents)
 
+---
 
 ## **Features**
 
-### **Graphical Interface**  
-• Browse directories using a tree view and list view.  
-• Perform file operations such as copy, move, delete, and rename.  
-• Use cut, copy, and paste for file and folder management.  
-• Access context menus for quick actions.  
-• Navigate backward and forward through history.  
-• View file type icons and real‑time status updates.  
-• Open the **Help Drawer**, a panel with beginner‑friendly documentation.
+### **Graphical Interface**
+• Browse directories using a tree view and list view  
+• Perform file operations such as copy, move, delete, and rename  
+• Use cut, copy, and paste for file and folder management  
+• Access context menus for quick actions  
+• Navigate backward and forward through history  
+• View file type icons and real‑time status updates  
+• Open the **Help Drawer**, a panel with beginner‑friendly documentation  
 
-### **Integrated Command Line Interface (CLI)**  
-• Fast directory navigation (`cd`).  
-• File operations (`copy`, `move`, `delete`, `rename`).  
-• Create text files (`text`, `txt`).  
-• Search and cycle results (`find`, `findnext`).  
-• Type a path to open it directly.  
-• Supports quoted paths with spaces.  
-• Helpful usage messages and error feedback.  
-• Built‑in help system with full documentation in the Help Drawer.
-
+### **Integrated Command Line Interface (CLI)**
+• Fast directory navigation (`cd`)  
+• File operations (`copy`, `move`, `delete`, `rename`)  
+• Create text files (`text`, `txt`)  
+• Search and cycle results (`find`, `findnext`)  
+• Type a path to open it directly  
+• Supports quoted paths with spaces  
+• Helpful usage messages and clear error feedback  
+• Built‑in help system with full documentation in the Help Drawer  
 
 <img width="1266" height="733" alt="145" src="https://github.com/user-attachments/assets/f87f49ed-f19e-4532-8401-e45053e3e57f" />
 
-The GUI and CLI work together seamlessly, giving users the freedom to choose the workflow that suits them best.
-
-
+The GUI and CLI share the same engines and rules, working together seamlessly so users can switch between them without friction.
 
 [ Table of Contents](#table-of-contents)
 
-
 ---
+
+
+
+
+
+
 
 
 
