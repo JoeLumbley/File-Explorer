@@ -206,6 +206,125 @@ If you’re curious, the GitHub repository includes the full source code and doc
 
 
 
+
+
+
+
+---
+
+# **Architecture Overview**
+
+```
+                           ┌──────────────────────────┐
+                           │        User Input        │
+                           │  (Clicking / Typing /    │
+                           │   Shortcuts / Shell URIs)│
+                           └─────────────┬────────────┘
+                                         │
+                                         ▼
+                    ┌────────────────────────────────────────┐
+                    │        Intent Interpretation Layer     │
+                    │  • GUI events                          │
+                    │  • CLI parser                          │
+                    │  • Shell namespace resolver            │
+                    └─────────────┬──────────────────────────┘
+                                  │
+                                  ▼
+        ┌────────────────────────────────────────────────────────────────┐
+        │                     Navigation & Routing Core                  │
+        │                                                                │
+        │  ┌──────────────────────┐   ┌──────────────────────────────┐   │
+        │  │  VirtualFolderMap    │   │   Canonical Name Resolver    │   │
+        │  │  (Declarative map)   │   │   (shell:, GUIDs, aliases)   │   │
+        │  └──────────────────────┘   └──────────────────────────────┘   │
+        │                                                                │
+        │  ┌──────────────────────┐   ┌──────────────────────────────┐   │
+        │  │ Navigation History   │   │   Path Normalization Engine  │   │
+        │  │ (Back/Forward stack) │   │   (safe, predictable rules)  │   │
+        │  └──────────────────────┘   └──────────────────────────────┘   │
+        └───────────────────────┬────────────────────────────────────────┘
+                                │
+                                ▼
+                     ┌──────────────────────────┐
+                     │    File Operation Engine │
+                     │ • Copy / Move / Delete   │
+                     │ • Rename                 │
+                     │ • Text file creation     │
+                     │ • Progress               │
+                     └─────────────┬────────────┘
+                                   │
+                                   ▼
+                     ┌──────────────────────────┐
+                     │    UI Synchronization    │
+                     │ • TreeView refresh       │
+                     │ • ListView updates       │
+                     │ • Status bar messages    │
+                     │ • Help Drawer feedback   │
+                     └─────────────┬────────────┘
+                                   │
+                                   ▼
+                     ┌──────────────────────────┐
+                     │      Visual Layer        │
+                     │ • Icons (DPI‑aware)      │
+                     │ • Layout & theming       │
+                     │ • Real‑time indicators   │
+                     └──────────────────────────┘
+```
+
+---
+
+# **How to Read This Diagram**
+
+### **1. User Input Layer**  
+Everything begins with intent — clicking, typing, entering a path, or using a `shell:` URI.  
+File Explorer treats all of these as first‑class citizens.
+
+### **2. Intent Interpretation Layer**  
+This is where the architecture shines:
+
+- GUI events  
+- CLI commands  
+- Shell namespace paths  
+
+…all flow into the same unified interpretation layer.
+
+### **3. Navigation & Routing Core**  
+This is the heart of File Explorer — declarative, predictable, emotionally safe.
+
+It includes:
+
+- `VirtualFolderMap`  
+- canonical name + GUID resolver  
+- navigation history  
+- path normalization  
+
+This is where the Spirit of ’68 meets the Spirit of ’98.
+
+### **4. File Operation Engine**  
+Explorer‑style operations with:
+
+- progress callbacks  
+- cancellation  
+- safe error handling  
+- unified logic shared by GUI + CLI  
+
+### **5. UI Synchronization**  
+The engines update the UI through a clean, centralized layer:
+
+- TreeView  
+- ListView  
+- Status bar  
+- Help Drawer  
+
+### **6. Visual Layer**  
+Native, crisp, DPI‑aware visuals that feel at home on modern Windows.
+
+---
+
+
+
+
+
 ## Architecture Overview  
 
 - **Engines** - UI‑agnostic, testable, declarative logic  
