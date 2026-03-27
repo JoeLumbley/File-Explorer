@@ -2,7 +2,18 @@
 
 **File Explorer** is a fast, intuitive, and user‑friendly file management application designed to make navigating, organizing, and manipulating files feel effortless. It blends a clean graphical interface with a powerful built‑in **Command Line Interface (CLI)**, giving users the freedom to work the way they prefer clicking, typing, or mixing both.
 
-<img width="1266" height="733" alt="149" src="https://github.com/user-attachments/assets/bafb4169-6cc3-4623-a781-2dc73ec1cf5e" />
+
+
+
+
+
+
+
+<img width="1266" height="733" alt="151" src="https://github.com/user-attachments/assets/272aff36-1d2c-49e4-b53e-7d99fcd95f7d" />
+
+
+
+
 
 The entire application is built around clarity, predictability, and emotional safety. Whether you’re exploring folders visually or issuing precise commands, File Explorer adapts to your workflow and stays out of your way.
 
