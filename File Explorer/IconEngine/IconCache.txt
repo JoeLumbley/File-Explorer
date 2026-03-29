@@ -1,4 +1,4 @@
-﻿Imports System.Collections.Concurrent
+Imports System.Collections.Concurrent
 
 ' Key used to store/retrieve icons from the cache.
 ' Version ties entries to a specific DPI generation.

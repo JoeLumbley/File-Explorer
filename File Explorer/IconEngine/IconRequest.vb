@@ -25,6 +25,12 @@ Public Class IconRequest
     ' Optional overlay to apply (shortcut arrow, shared, etc.).
     Public Property Overlay As IconOverlayKind = IconOverlayKind.None
 
+    Public ReadOnly Property CacheKeyString As String
+        Get
+            Return IconCache.BuildKey(Me).ToString()
+        End Get
+    End Property
+
     Public Overrides Function ToString() As String
         If IsVirtual Then
             Return $"Virtual: {VirtualName}, {PixelSize}px"

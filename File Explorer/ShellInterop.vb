@@ -301,8 +301,36 @@ Namespace Explorer.Interop.Shell
 
         Private Const CSIDL_BITBUCKET As Integer = &HA
 
+        'Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
+        '    Dim flags As UInteger = SHGFI_ICON Or SHGFI_USEFILEATTRIBUTES
+
+        '    If size = IconSize.Small Then
+        '        flags = flags Or SHGFI_SMALLICON
+        '    Else
+        '        flags = flags Or SHGFI_LARGEICON
+        '    End If
+
+        '    Dim shinfo As New SHFILEINFO()
+        '    Dim attrs As UInteger =
+        '        If(Directory.Exists(path), FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL)
+
+        '    Dim result = SHGetFileInfo(
+        '        path,
+        '        attrs,
+        '        shinfo,
+        '        CUInt(Marshal.SizeOf(shinfo)),
+        '        flags)
+
+        '    If result = IntPtr.Zero Then Return Nothing
+
+        '    Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
+        '    Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
+        '    DestroyIcon(shinfo.hIcon)
+        '    Return cloned
+        'End Function
+
         Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
-            Dim flags As UInteger = SHGFI_ICON Or SHGFI_USEFILEATTRIBUTES
+            Dim flags As UInteger = SHGFI_ICON
 
             If size = IconSize.Small Then
                 flags = flags Or SHGFI_SMALLICON
@@ -311,15 +339,24 @@ Namespace Explorer.Interop.Shell
             End If
 
             Dim shinfo As New SHFILEINFO()
-            Dim attrs As UInteger =
-                If(Directory.Exists(path), FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL)
+
+            Dim attrs As UInteger
+
+            If IO.File.Exists(path) OrElse IO.Directory.Exists(path) Then
+                ' Real file → do NOT use SHGFI_USEFILEATTRIBUTES
+                attrs = 0UI
+            Else
+                ' Missing file → fall back to extension icon
+                flags = flags Or SHGFI_USEFILEATTRIBUTES
+                attrs = FILE_ATTRIBUTE_NORMAL
+            End If
 
             Dim result = SHGetFileInfo(
-                path,
-                attrs,
-                shinfo,
-                CUInt(Marshal.SizeOf(shinfo)),
-                flags)
+        path,
+        attrs,
+        shinfo,
+        CUInt(Marshal.SizeOf(shinfo)),
+        flags)
 
             If result = IntPtr.Zero Then Return Nothing
 
@@ -328,6 +365,25 @@ Namespace Explorer.Interop.Shell
             DestroyIcon(shinfo.hIcon)
             Return cloned
         End Function
+
+
+
+        ' Public wrapper for PIDL-based icon extraction
+        Public Shared Function GetIconForPIDL(pidl As IntPtr, pixelSize As Integer) As Icon
+            Dim size As IconSize =
+            If(pixelSize <= 16, IconSize.Small, IconSize.Large)
+
+            Dim baseIcon = GetIconForPIDL(pidl, size)
+            If baseIcon Is Nothing Then Return Nothing
+
+            ' Scale if needed
+            If pixelSize = 16 OrElse pixelSize = 32 Then
+                Return baseIcon
+            End If
+
+            Return New Icon(baseIcon, pixelSize, pixelSize)
+        End Function
+
 
         Private Shared Function GetIconForPIDL(pidl As IntPtr, size As IconSize) As Icon
             Dim flags As UInteger = SHGFI_ICON Or SHGFI_PIDL

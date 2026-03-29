@@ -1,4 +1,4 @@
-﻿' File Explorer is a simple, fast, and user‑friendly file management application
+' File Explorer is a simple, fast, and user‑friendly file management application
 ' designed to make navigating, organizing, and manipulating files intuitive for all users.
 
 ' MIT License
@@ -4047,19 +4047,6 @@ Public Class Form1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
@@ -4088,7 +4075,7 @@ Public Class Form1
             ' Build file items
             For Each f In files
                 Dim fi As New FileInfo(f)
-                itemsToAdd.Add(Await BuildListViewItemForFile(fi))
+                itemsToAdd.Add(BuildListViewItemForFile(fi))
             Next
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
@@ -4103,17 +4090,6 @@ Public Class Form1
             lvFiles.EndUpdate()
         End Try
     End Function
-
-
-
-
-
-
-
-
-
-
-
 
     Private Function IsAccessTestFile(name As String) As Boolean
         Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
@@ -4209,38 +4185,7 @@ Public Class Form1
 
 
 
-    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-    '    Dim item As New ListViewItem(fi.Name)
-
-    '    Dim ext = fi.Extension.ToLowerInvariant()
-    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-    '    item.SubItems.Add(category)
-    '    item.SubItems.Add(FormatSize(fi.Length))
-    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = fi.FullName
-
-    '    ' Determine DPI-scaled icon size
-    '    Dim pixelSize As Integer = imgList.ImageSize.Width
-
-    '    ' Request DPI-aware shell icon
-    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
-
-    '    If icon IsNot Nothing Then
-    '        If Not imgList.Images.ContainsKey(fi.FullName) Then
-    '            imgList.Images.Add(fi.FullName, icon)
-    '        End If
-    '        item.ImageKey = fi.FullName
-    '    Else
-    '        item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
-    '    End If
-
-    '    Return item
-    'End Function
-
-
-
-    Private Async Function BuildListViewItemForFile(fi As FileInfo) As Task(Of ListViewItem)
+    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
         Dim item As New ListViewItem(fi.Name)
 
         Dim ext = fi.Extension.ToLowerInvariant()
@@ -4254,23 +4199,18 @@ Public Class Form1
         ' Determine DPI-scaled icon size
         Dim pixelSize As Integer = imgList.ImageSize.Width
 
-        ' Build icon request
-        Dim req As New IconRequest With {
-        .FullPath = fi.FullName,
-        .PixelSize = pixelSize
-    }
+        ' Request DPI-aware shell icon
+        Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
 
-        ' Ask IconEngine for placeholder + async load
-        Dim result = Await IconEngine.GetIconAsync(req, CancellationToken.None)
-
-        Dim key = IconCache.BuildKey(req).ToString()
-
-        ' Add placeholder to ImageList
-        If Not imgList.Images.ContainsKey(key) Then
-            imgList.Images.Add(key, result.Icon)
+        If icon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey(fi.FullName) Then
+                imgList.Images.Add(fi.FullName, icon)
+            End If
+            item.ImageKey = fi.FullName
+        Else
+            item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
         End If
 
-        item.ImageKey = key
         Return item
     End Function
 
@@ -6053,8 +5993,6 @@ Public Class Form1
 
         Me.CenterToScreen()
 
-        AddHandler IconEngine.IconAvailable, AddressOf OnIconAvailable
-
         ConfigureTooltips()
 
         InitStatusBar()
@@ -6092,85 +6030,6 @@ Public Class Form1
 
     End Sub
 
-
-
-    'Private Sub OnIconAvailable(request As IconRequest, icon As Icon)
-    '    If Me.InvokeRequired Then
-    '        Me.BeginInvoke(New Action(Of IconRequest, Icon)(AddressOf OnIconAvailable), request, icon)
-    '        Return
-    '    End If
-
-    '    Dim key = IconCache.BuildKey(request).ToString()
-
-    '    ' Update ImageList
-    '    If imgList.Images.ContainsKey(key) Then
-    '        imgList.Images(key) = icon.ToBitmap()
-    '    Else
-    '        imgList.Images.Add(key, icon)
-    '    End If
-
-    '    ' Update ListView item
-    '    For Each item As ListViewItem In lvFiles.Items
-    '        If String.Equals(item.Tag?.ToString(), request.FullPath, StringComparison.OrdinalIgnoreCase) Then
-    '            item.ImageKey = key
-    '            Exit For
-    '        End If
-    '    Next
-    'End Sub
-
-
-
-    Private Sub OnIconAvailable(request As IconRequest, icon As Icon)
-        If Me.InvokeRequired Then
-            Me.BeginInvoke(New Action(Of IconRequest, Icon)(AddressOf OnIconAvailable), request, icon)
-            Return
-        End If
-
-        Dim key = IconCache.BuildKey(request).ToString()
-
-        ' Replace icon safely
-        If imgList.Images.ContainsKey(key) Then
-            imgList.Images.RemoveByKey(key)
-        End If
-        imgList.Images.Add(key, icon)
-
-        ' Update ListView item
-        For Each item As ListViewItem In lvFiles.Items
-            If String.Equals(item.Tag?.ToString(), request.FullPath, StringComparison.OrdinalIgnoreCase) Then
-                item.ImageKey = key
-                Exit For
-            End If
-        Next
-    End Sub
-
-
-
-    'Private Sub OnIconAvailable(request As IconRequest, icon As Icon)
-    '    If Me.InvokeRequired Then
-    '        Me.BeginInvoke(New Action(Of IconRequest, Icon)(AddressOf OnIconAvailable), request, icon)
-    '        Return
-    '    End If
-
-    '    ' Update the ImageList
-    '    Dim key = request.CacheKeyString
-    '    If Not imgList.Images.ContainsKey(key) Then
-    '        imgList.Images.Add(key, icon)
-    '    Else
-    '        imgList.Images.Add(key, icon)
-    '    End If
-
-    '    ' Refresh the ListView item that uses this icon
-    '    RefreshListViewItemForIcon(request)
-    'End Sub
-
-    'Private Sub RefreshListViewItemForIcon(request As IconRequest)
-    '    For Each item As ListViewItem In lvFiles.Items
-    '        If String.Equals(item.Tag?.ToString(), request.FullPath, StringComparison.OrdinalIgnoreCase) Then
-    '            item.ImageKey = request.CacheKeyString
-    '            Exit For
-    '        End If
-    '    Next
-    'End Sub
     'Private Sub HandleHelpCommand(parts As String())
     '    Try
     '        ' Set font for help text box
