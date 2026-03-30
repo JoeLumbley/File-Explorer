@@ -369,20 +369,20 @@ Namespace Explorer.Interop.Shell
 
 
         ' Public wrapper for PIDL-based icon extraction
-        Public Shared Function GetIconForPIDL(pidl As IntPtr, pixelSize As Integer) As Icon
-            Dim size As IconSize =
-            If(pixelSize <= 16, IconSize.Small, IconSize.Large)
+        'Public Shared Function GetIconForPIDL(pidl As IntPtr, pixelSize As Integer) As Icon
+        '    Dim size As IconSize =
+        '    If(pixelSize <= 16, IconSize.Small, IconSize.Large)
 
-            Dim baseIcon = GetIconForPIDL(pidl, size)
-            If baseIcon Is Nothing Then Return Nothing
+        '    Dim baseIcon = GetIconForPIDL(pidl, size)
+        '    If baseIcon Is Nothing Then Return Nothing
 
-            ' Scale if needed
-            If pixelSize = 16 OrElse pixelSize = 32 Then
-                Return baseIcon
-            End If
+        '    ' Scale if needed
+        '    If pixelSize = 16 OrElse pixelSize = 32 Then
+        '        Return baseIcon
+        '    End If
 
-            Return New Icon(baseIcon, pixelSize, pixelSize)
-        End Function
+        '    Return New Icon(baseIcon, pixelSize, pixelSize)
+        'End Function
 
 
         Private Shared Function GetIconForPIDL(pidl As IntPtr, size As IconSize) As Icon
