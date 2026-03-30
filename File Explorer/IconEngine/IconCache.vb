@@ -28,6 +28,12 @@ Public Class IconCache
         Dim id As String
         Dim kind As IconKind
 
+
+
+
+
+
+
         If request.IsVirtual Then
             ' Virtual folders keyed by canonical name.
             kind = IconKind.Virtual
@@ -40,16 +46,60 @@ Public Class IconCache
             id = request.FullPath
 
         Else
-            ' Files: prefer extension-based caching when possible.
-            Dim ext = IO.Path.GetExtension(request.FullPath)
-            If String.IsNullOrEmpty(ext) Then
+            '' Files: prefer extension-based caching when possible.
+            'Dim ext = IO.Path.GetExtension(request.FullPath)
+            'If String.IsNullOrEmpty(ext) Then
+            '    kind = IconKind.Path
+            '    id = request.FullPath
+            'Else
+            '    kind = IconKind.FileExtension
+            '    id = ext.ToLowerInvariant()
+            'End If
+
+
+            Dim ext = IO.Path.GetExtension(request.FullPath).ToLowerInvariant()
+
+            ' File types that embed their own icons → cache by path
+            Dim perFileIconTypes As String() = {
+                ".exe", ".dll", ".ico", ".lnk",
+                ".msi", ".scr", ".cpl"
+            }
+
+            If perFileIconTypes.Contains(ext) Then
                 kind = IconKind.Path
                 id = request.FullPath
             Else
+                ' Everything else → cache by extension
                 kind = IconKind.FileExtension
-                id = ext.ToLowerInvariant()
+                id = ext
             End If
+
+
+            'If ext = ".exe" OrElse ext = ".dll" OrElse ext = ".ico" OrElse ext = ".lnk" Then
+            '    ' These file types embed their own icons → cache by path
+            '    kind = IconKind.Path
+            '    id = request.FullPath
+            'Else
+            '    ' Everything else → cache by extension
+            '    kind = IconKind.FileExtension
+            '    id = ext
+            'End If
+
+
+
         End If
+
+
+
+
+
+
+
+
+
+
+
+
 
         Return New IconCacheKey With {
             .Kind = kind,

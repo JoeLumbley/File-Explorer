@@ -87,15 +87,21 @@ Public Module IconRuleHandlers
 
         Dim icon As Icon = Nothing
 
-        ' Prefer PIDL (Explorer-accurate)
-        If request.Pidl <> IntPtr.Zero Then
-            icon = ShellInterop.GetIconForPIDL(request.Pidl, request.PixelSize)
+        '' Prefer PIDL (Explorer-accurate)
+        'If request.Pidl <> IntPtr.Zero Then
+        '    icon = ShellInterop.GetIconForPIDL(request.Pidl, request.PixelSize)
 
-        ElseIf Not String.IsNullOrEmpty(request.FullPath) Then
+        'ElseIf Not String.IsNullOrEmpty(request.FullPath) Then
+        '    icon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
+        'End If
+
+
+        If Not String.IsNullOrEmpty(request.FullPath) Then
             icon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
         End If
 
-        If icon Is Nothing Then icon = IconLibrary.GenericFile
+
+        'If icon Is Nothing Then icon = IconLibrary.GenericFile
 
         ' Overlay
         If request.Overlay <> IconOverlayKind.None Then
