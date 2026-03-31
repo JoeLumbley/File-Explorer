@@ -747,6 +747,8 @@ Public Class Form1
     Private deleteCts As CancellationTokenSource
     Private deleteEngine As Explorer.Engines.DeleteEngine
 
+    Private Const ThisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+
 
     'Private Sub NavigateToVirtualFolder(shellPath As String)
 
@@ -5709,10 +5711,11 @@ Public Class Form1
 
     Private Function GetThisPCNode() As TreeNode
 
-        Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+        'Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         Dim thisPCNode As New TreeNode("This PC") With {
-            .Tag = thisPCPath
+            .Tag = ThisPCPath
         }
+
         Dim IconSize = GetScaledIconSize(Me)
         Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
 
@@ -5724,11 +5727,14 @@ Public Class Form1
 
             thisPCNode.ImageKey = "ThisPC"
             thisPCNode.SelectedImageKey = "ThisPC"
+
         Else
             ' Fallback to generic computer icon if we can't get the real one
             thisPCNode.ImageKey = "Computer"
             thisPCNode.SelectedImageKey = "Computer"
+
         End If
+
         Return thisPCNode
     End Function
 
