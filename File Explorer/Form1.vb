@@ -5759,22 +5759,23 @@ Public Class Form1
 
         'End If
 
-        SetDriveIcon(driveNode, di)
+        SetDriveIcon(driveNode, di, imgList)
 
         Return driveNode
     End Function
 
-    Private Sub SetDriveIcon(driveNode As TreeNode, di As DriveInfo)
+    Private Sub SetDriveIcon(driveNode As TreeNode, di As DriveInfo, imageList As ImageList)
         ' Get and cache the drive icon, with fallback to generic icons if necessary
 
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
-        If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+        If Not imageList.Images.ContainsKey(di.RootDirectory.FullName) Then
+
             Dim iconSize = GetScaledIconSize(Me)
             Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
             'Dim driveIcon As Icon = Nothing
 
             If driveIcon IsNot Nothing Then
-                imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
+                imageList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
                 driveNode.ImageKey = di.RootDirectory.FullName
                 driveNode.SelectedImageKey = di.RootDirectory.FullName
             Else
