@@ -5433,10 +5433,7 @@ Public Class Form1
         Dim thisPCNode As New TreeNode(ThisPCString) With {
             .Tag = ThisPCGUID
         }
-
         SetThisPCNodeIcon(thisPCNode, imgList)
-
-        ' This is a shell command to explorer so don't show an arrow.
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
 
@@ -5446,23 +5443,17 @@ Public Class Form1
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-
-                    'Dim driveNode = GetDriveNode(di)
                     Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
                         .Tag = di.RootDirectory.FullName
                     }
-
                     SetDriveNodeIcon(driveNode, di, imgList)
-
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         driveNode.Nodes.Add("Loading...")
                         driveNode.StateImageIndex = 0 ' Collapsed
                     Else
                         driveNode.StateImageIndex = 2 ' no arrow
                     End If
-
                     tvFolders.Nodes.Add(driveNode)
-
                 Catch ex As Exception
                     Debug.WriteLine($"Drive error {di.Name}: {ex.Message}")
                 End Try
@@ -5474,7 +5465,6 @@ Public Class Form1
         ' "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         ' ============================================================
         Dim recycleNode = GetRecycleNode()
-        ' This is a shell command to explorer so don't show an arrow.
         recycleNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(recycleNode)
 
