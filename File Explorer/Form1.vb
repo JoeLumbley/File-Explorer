@@ -4067,21 +4067,6 @@ Public Class Form1
 
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Private Async Function PopulateFiles(path As String) As Task
         lvFiles.BeginUpdate()
         lvFiles.Items.Clear()
@@ -4125,17 +4110,6 @@ Public Class Form1
             lvFiles.EndUpdate()
         End Try
     End Function
-
-
-
-
-
-
-
-
-
-
-
 
     Private Function IsAccessTestFile(name As String) As Boolean
         Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
@@ -5452,7 +5426,8 @@ Public Class Form1
         easyAccessNode.StateImageIndex = 1 ' Expanded
 
         ' ============================================================
-        ' This PC (virtual shell folder) "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+        ' This PC (virtual shell folder)
+        ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         ' ============================================================
         Dim thisPCNode = GetThisPCNode()
         ' This is a shell command to explorer so don't show an arrow.
@@ -5484,7 +5459,8 @@ Public Class Form1
         Next
 
         ' ============================================================
-        ' RECYCLE BIN (virtual shell folder) "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+        ' RECYCLE BIN (virtual shell folder)
+        ' "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         ' ============================================================
         Dim recycleNode = GetRecycleNode()
         ' This is a shell command to explorer so don't show an arrow.
