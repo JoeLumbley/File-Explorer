@@ -761,6 +761,10 @@ Public Class Form1
 
     Private Const OpticalKey As String = "Optical"
     Private Const DriveKey As String = "Drive"
+    Private Const FolderKey As String = "Folder"
+
+    Private Const EasyAccessString As String = "Easy Access"
+    Private Const EasyAccessKey As String = "EasyAccess"
 
 
 
@@ -5454,10 +5458,10 @@ Public Class Form1
         ' ============================================================
         ' EASY ACCESS ROOT
         ' ============================================================
-        Dim easyAccessNode As New TreeNode("Easy Access") With {
-            .ImageKey = "EasyAccess",
-            .SelectedImageKey = "EasyAccess",
-            .StateImageIndex = 0
+        Dim easyAccessNode As New TreeNode(EasyAccessString) With {
+            .ImageKey = EasyAccessKey,
+            .SelectedImageKey = EasyAccessKey,
+            .StateImageIndex = 0 ' Collapsed
         }
 
         ' Special folders
@@ -5528,10 +5532,7 @@ Public Class Form1
                 .Tag = entry.Path
             }
 
-            ' --- Real Explorer icon ---
-            'Dim icon = ShellInterop.GetIconForPath(entry.Path, ShellInterop.IconSize.Small)
             Dim icon = ShellInterop.GetIconForPath(entry.Path, IconSize)
-
 
             If icon IsNot Nothing Then
                 If Not imgList.Images.ContainsKey(entry.Path) Then
@@ -5540,15 +5541,15 @@ Public Class Form1
                 node.ImageKey = entry.Path
                 node.SelectedImageKey = entry.Path
             Else
-                node.ImageKey = "Folder"
-                node.SelectedImageKey = "Folder"
+                node.ImageKey = FolderKey
+                node.SelectedImageKey = FolderKey
             End If
 
             If HasSubdirectories(entry.Path) Then
                 node.Nodes.Add("Loading...")
-                node.StateImageIndex = 0
+                node.StateImageIndex = 0 ' Collapsed
             Else
-                node.StateImageIndex = 2
+                node.StateImageIndex = 2 ' no arrow
             End If
 
             easyAccessNode.Nodes.Add(node)
@@ -5556,63 +5557,15 @@ Public Class Form1
 
         tvFolders.Nodes.Add(easyAccessNode)
         easyAccessNode.Expand()
-        easyAccessNode.StateImageIndex = 1
-
-
-
-
-
-
-
-
-
-
+        easyAccessNode.StateImageIndex = 1 ' Expanded
 
         ' ============================================================
-        ' This PC (virtual shell folder)
+        ' This PC (virtual shell folder) "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         ' ============================================================
-
-
-        'Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
-
-        'Dim thisPCNode As New TreeNode("This PC") With {
-        '    .Tag = thisPCPath
-        '}
-
-        ''Dim pcIcon = ShellInterop.GetIconForPath(thisPCPath, IconSize)
-
-        'Dim pcIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
-
-        'If pcIcon IsNot Nothing Then
-        '    If Not imgList.Images.ContainsKey("ThisPC") Then
-        '        imgList.Images.Add("ThisPC", pcIcon.ToBitmap())
-        '    End If
-        '    thisPCNode.ImageKey = "ThisPC"
-        '    thisPCNode.SelectedImageKey = "ThisPC"
-        'Else
-        '    thisPCNode.ImageKey = "Computer"
-        '    thisPCNode.SelectedImageKey = "Computer"
-        'End If
-
-
         Dim thisPCNode = GetThisPCNode()
-
         ' This is a shell command to explorer so don't show an arrow.
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         ' ============================================================
         ' DRIVES
@@ -5620,41 +5573,6 @@ Public Class Form1
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-
-
-                    'Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
-                    'Dim used = di.TotalSize - di.AvailableFreeSpace
-                    'Dim bar = BuildUsageBar(used, di.TotalSize, 4)
-
-                    'Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
-
-                    'Dim rootNode As New TreeNode(displayText) With {
-                    '    .Tag = di.RootDirectory.FullName
-                    '}
-
-                    '' --- Real Explorer drive icon ---
-                    ''Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
-                    ''Dim sizePix1 = GetScaledIconSize(Me)
-                    'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
-
-
-
-                    'If driveIcon IsNot Nothing Then
-                    '    If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
-                    '        'imgList.Images.Add(di.RootDirectory.FullName, driveIcon)
-                    '        imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
-                    '    End If
-                    '    rootNode.ImageKey = di.RootDirectory.FullName
-                    '    rootNode.SelectedImageKey = di.RootDirectory.FullName
-                    'Else
-                    '    If di.DriveType = DriveType.CDRom Then
-                    '        rootNode.ImageKey = "Optical"
-                    '        rootNode.SelectedImageKey = "Optical"
-                    '    Else
-                    '        rootNode.ImageKey = "Drive"
-                    '        rootNode.SelectedImageKey = "Drive"
-                    '    End If
-                    'End If
 
                     Dim rootNode = GetRootNode(di)
 
@@ -5665,8 +5583,6 @@ Public Class Form1
                         rootNode.StateImageIndex = 2
                     End If
 
-                    ' Dim rootNode = GetRootNode
-
                     tvFolders.Nodes.Add(rootNode)
 
                 Catch ex As Exception
@@ -5675,47 +5591,9 @@ Public Class Form1
             End If
         Next
 
-
-
-
-
-
-
-
-
-
-
-        'IconEngine.Get
         ' ============================================================
-        ' RECYCLE BIN (virtual shell folder)
+        ' RECYCLE BIN (virtual shell folder) "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         ' ============================================================
-        'Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
-
-        'Dim recycleNode As New TreeNode("Recycle Bin") With {
-        '    .Tag = recycleBinPath
-        '}
-
-        ''Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
-
-        'Dim sizePix = GetScaledIconSize(Me)
-        'Dim rbIcon = ShellInterop.GetRecycleBinIcon(IconSize)
-
-
-        'If rbIcon IsNot Nothing Then
-        '    If Not imgList.Images.ContainsKey("RecycleBin") Then
-        '        'imgList.Images.Add("RecycleBin", rbIcon)
-        '        imgList.Images.Add("RecycleBin", rbIcon.ToBitmap())
-        '    End If
-        '    recycleNode.ImageKey = "RecycleBin"
-        '    recycleNode.SelectedImageKey = "RecycleBin"
-        'Else
-        '    recycleNode.ImageKey = "RecycleBin"
-        '    recycleNode.SelectedImageKey = "RecycleBin"
-        'End If
-
-
-
-
         Dim recycleNode = GetRecycleNode()
         ' This is a shell command to explorer so don't show an arrow.
         recycleNode.StateImageIndex = 2 ' no arrow
@@ -5727,15 +5605,12 @@ Public Class Form1
 
     Private Function GetThisPCNode() As TreeNode
 
-        'Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         Dim thisPCNode As New TreeNode(ThisPCString) With {
-            .Tag = ThisPCGUID
+            .Tag = ThisPCGUID ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         }
 
         Dim iconSize = GetScaledIconSize(Me)
         Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
-        'Dim thisPCIcon = Nothing
-
 
         If thisPCIcon IsNot Nothing Then
 
@@ -5771,7 +5646,6 @@ Public Class Form1
         ' --- drive icon ---
         Dim IconSize = GetScaledIconSize(Me)
         Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
-        'Dim driveIcon = Nothing
 
         If driveIcon IsNot Nothing Then
             If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
@@ -5793,22 +5667,14 @@ Public Class Form1
         Return rootNode
     End Function
 
-
-
-
     Private Function GetRecycleNode() As TreeNode
-        Dim sizePix = GetScaledIconSize(Me)
-        'Dim rbIcon = ShellInterop.GetRecycleBinIcon(sizePix)
-        Dim rbIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, sizePix)
 
-
-        'Dim node As New TreeNode("Recycle Bin") With {
-        '    .Tag = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
-        '}
         Dim node As New TreeNode(RecycleBinString) With {
             .Tag = RecycleBinGUID '"shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         }
 
+        Dim sizePix = GetScaledIconSize(Me)
+        Dim rbIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, sizePix)
 
         If rbIcon IsNot Nothing Then
             If Not imgList.Images.ContainsKey(RecycleBinKey) Then
@@ -5821,6 +5687,7 @@ Public Class Form1
             node.ImageKey = RecycleKey
             node.SelectedImageKey = RecycleKey
         End If
+
         Return node
     End Function
 
@@ -8538,14 +8405,14 @@ Public Class Form1
         'imgList.ImageSize = New Size(16, 16)
         imgList.ColorDepth = ColorDepth.Depth32Bit
 
-        ' Load icons 
-        imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
+        ' Load Fallback Icons (in case some fail to load, we still have the basics)
+        imgList.Images.Add(FolderKey, My.Resources.Resource1.Folder_16X16)
         imgList.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
         imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
 
         imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
         imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
-        imgList.Images.Add("EasyAccess", My.Resources.Resource1.Easy_Access_16X16)
+        imgList.Images.Add(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
 
         imgList.Images.Add("Music", My.Resources.Resource1.Music_16X16)
         imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
