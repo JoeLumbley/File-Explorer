@@ -759,6 +759,9 @@ Public Class Form1
     Private Const RecycleBinPath As String = "shell:RecycleBinFolder"
     Private Const RecycleKey As String = "Recycle"
 
+    Private Const OpticalKey As String = "Optical"
+    Private Const DriveKey As String = "Drive"
+
 
 
 
@@ -5768,6 +5771,7 @@ Public Class Form1
         ' --- drive icon ---
         Dim IconSize = GetScaledIconSize(Me)
         Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
+        'Dim driveIcon = Nothing
 
         If driveIcon IsNot Nothing Then
             If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
@@ -5778,11 +5782,11 @@ Public Class Form1
         Else
             ' Fallback generic icons
             If di.DriveType = DriveType.CDRom Then
-                rootNode.ImageKey = "Optical"
-                rootNode.SelectedImageKey = "Optical"
+                rootNode.ImageKey = OpticalKey
+                rootNode.SelectedImageKey = OpticalKey
             Else
-                rootNode.ImageKey = "Drive"
-                rootNode.SelectedImageKey = "Drive"
+                rootNode.ImageKey = DriveKey
+                rootNode.SelectedImageKey = DriveKey
             End If
         End If
 
@@ -8536,7 +8540,7 @@ Public Class Form1
 
         ' Load icons 
         imgList.Images.Add("Folder", My.Resources.Resource1.Folder_16X16)
-        imgList.Images.Add("Drive", My.Resources.Resource1.Drive_16X16)
+        imgList.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
         imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
 
         imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
@@ -8548,7 +8552,7 @@ Public Class Form1
         imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
         imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
-        imgList.Images.Add("Optical", My.Resources.Resource1.Optical_16X16)
+        imgList.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
         imgList.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
         imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
         imgList.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
