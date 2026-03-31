@@ -5431,7 +5431,7 @@ Public Class Form1
         ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         ' ============================================================
         Dim thisPCNode As New TreeNode(ThisPCString) With {
-            .Tag = ThisPCGUID ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+            .Tag = ThisPCGUID
         }
 
         SetThisPCNodeIcon(thisPCNode, imgList)
