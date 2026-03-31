@@ -5730,10 +5730,8 @@ Public Class Form1
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
         If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
             Dim iconSize = GetScaledIconSize(Me)
-            'Dim RecycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
             Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
-
-            'thisPCIcon = ShellInterop.GetIconForPath(ThisPCKey, iconSize)
+            'Dim driveIcon As Icon = Nothing
 
             If driveIcon IsNot Nothing Then
                 imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
@@ -5741,8 +5739,14 @@ Public Class Form1
                 driveNode.SelectedImageKey = di.RootDirectory.FullName
             Else
                 ' Fallback to generic drive icon if we can't get the real one
-                driveNode.ImageKey = DriveKey
-                driveNode.SelectedImageKey = DriveKey
+                If di.DriveType = DriveType.CDRom Then
+                    driveNode.ImageKey = OpticalKey
+                    driveNode.SelectedImageKey = OpticalKey
+                Else
+                    driveNode.ImageKey = DriveKey
+                    driveNode.SelectedImageKey = DriveKey
+                End If
+
             End If
 
         Else
@@ -5751,12 +5755,6 @@ Public Class Form1
             driveNode.SelectedImageKey = di.RootDirectory.FullName
 
         End If
-
-
-
-
-
-
 
         Return driveNode
     End Function
@@ -5771,8 +5769,6 @@ Public Class Form1
         If Not imgList.Images.ContainsKey(RecycleBinKey) Then
             Dim iconSize = GetScaledIconSize(Me)
             Dim RecycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
-
-            'thisPCIcon = ShellInterop.GetIconForPath(ThisPCKey, iconSize)
 
             If RecycleBinIcon IsNot Nothing Then
                 imgList.Images.Add(RecycleBinKey, RecycleBinIcon.ToBitmap())
