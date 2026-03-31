@@ -95,31 +95,31 @@ Public Class IconEngine
 
     ' Asynchronous icon retrieval (placeholder + background load).
     ' Use this for ListView/TreeView population to keep the UI snappy.
-    Public Shared Async Function GetIconAsync(
-    request As IconRequest,
-    ct As CancellationToken) As Task(Of IconResult)
+    'Public Shared Async Function GetIconAsync(
+    'request As IconRequest,
+    'ct As CancellationToken) As Task(Of IconResult)
 
-        'If request Is Nothing Then Throw New ArgumentNullException(NameOf(request))
-        If request Is Nothing Then ArgumentNullException.ThrowIfNull(NameOf(request))
+    '    'If request Is Nothing Then Throw New ArgumentNullException(NameOf(request))
+    '    If request Is Nothing Then ArgumentNullException.ThrowIfNull(NameOf(request))
 
 
-        NormalizeRequest(request)
+    '    NormalizeRequest(request)
 
-        Dim key = IconCache.BuildKey(request)
+    '    Dim key = IconCache.BuildKey(request)
 
-        Dim cached As Icon = Nothing
-        If IconCache.TryGet(key, cached) Then
-            Return New IconResult With {.Icon = cached, .Source = IconSourceKind.Cache}
-        End If
+    '    Dim cached As Icon = Nothing
+    '    If IconCache.TryGet(key, cached) Then
+    '        Return New IconResult With {.Icon = cached, .Source = IconSourceKind.Cache}
+    '    End If
 
-        ' Return placeholder immediately
-        Dim placeholder = GetPlaceholderIcon(request)
+    '    ' Return placeholder immediately
+    '    Dim placeholder = GetPlaceholderIcon(request)
 
-        ' async load
-        Await LoadInBackgroundAsync(request, key, ct)
+    '    ' async load
+    '    Await LoadInBackgroundAsync(request, key, ct)
 
-        Return New IconResult With {.Icon = placeholder, .Source = IconSourceKind.Placeholder}
-    End Function
+    '    Return New IconResult With {.Icon = placeholder, .Source = IconSourceKind.Placeholder}
+    'End Function
 
 
 
@@ -182,19 +182,19 @@ Public Class IconEngine
 
     ' Returns a placeholder icon appropriate for the request.
     ' This is what the UI shows while the real icon is loading.
-    Private Shared Function GetPlaceholderIcon(request As IconRequest) As Icon
-        If request Is Nothing Then Return IconLibrary.GenericFile
+    'Private Shared Function GetPlaceholderIcon(request As IconRequest) As Icon
+    '    If request Is Nothing Then Return IconLibrary.GenericFile
 
-        If request.IsVirtual Then
-            Return IconLibrary.GenericVirtualFolder
-        End If
+    '    If request.IsVirtual Then
+    '        Return IconLibrary.GenericVirtualFolder
+    '    End If
 
-        If request.IsFolder.GetValueOrDefault() Then
-            Return IconLibrary.GenericFolder
-        End If
+    '    If request.IsFolder.GetValueOrDefault() Then
+    '        Return IconLibrary.GenericFolder
+    '    End If
 
-        Return IconLibrary.GenericFile
-    End Function
+    '    Return IconLibrary.GenericFile
+    'End Function
 
     ' Raises the IconAvailable event.
     ' This is intentionally tiny so the event remains easy to reason about.

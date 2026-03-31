@@ -763,11 +763,14 @@ Public Class Form1
     Private Const OpticalKey As String = "Optical"
     Private Const DriveKey As String = "Drive"
     Private Const FolderKey As String = "Folder"
+    Private Const FallbackFolderKey As String = "FallbackFolder"
 
     Private Const EasyAccessString As String = "Easy Access"
     Private Const EasyAccessKey As String = "EasyAccess"
 
 
+    Private Const FallbackDocumentKey As String = "FallbackDocument"
+    Private Const FallbackExecutableKey As String = "FallbackExecutable"
 
 
 
@@ -4187,24 +4190,44 @@ Public Class Form1
         item.Tag = di.FullName
 
         ' Determine DPI-scaled icon size
-        Dim pixelSize As Integer = imgList.ImageSize.Width
+        'Dim IconSize As Integer = imgList.ImageSize.Width
 
-        ' Request DPI-aware shell icon
-        Dim icon = ShellInterop.GetIconForPath(di.FullName, pixelSize)
+        '' Request DPI-aware shell icon
+        'Dim icon = ShellInterop.GetIconForPath(di.FullName, pixelSize)
 
-        If icon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey(di.FullName) Then
-                imgList.Images.Add(di.FullName, icon)
+
+        'If icon IsNot Nothing Then
+        '    If Not imgList.Images.ContainsKey(di.FullName) Then
+        '        imgList.Images.Add(di.FullName, icon)
+        '    End If
+        '    item.ImageKey = di.FullName
+        'Else
+        '    item.ImageKey = "Folder"
+        'End If
+
+
+        If Not imgList.Images.ContainsKey(di.FullName) Then
+
+            ' Set icon, with caching in the image list to avoid duplicates and improve performance
+            If Not imgList.Images.ContainsKey(FolderKey) Then
+                Dim folderIcon As Icon
+                Dim IconSize As Integer = GetScaledIconSize(Me)
+                folderIcon = IconLibrary.GenericFolder(IconSize)
+                If folderIcon IsNot Nothing Then
+                    imgList.Images.Add(FolderKey, folderIcon.ToBitmap())
+                    item.ImageKey = FolderKey
+                Else
+                    item.ImageKey = FallbackFolderKey
+                End If
+            Else
+                item.ImageKey = FolderKey
             End If
-            item.ImageKey = di.FullName
         Else
-            item.ImageKey = "Folder"
+            item.ImageKey = di.FullName
         End If
 
         Return item
     End Function
-
-
 
     Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
         Dim item As New ListViewItem(fi.Name)
@@ -4217,19 +4240,59 @@ Public Class Form1
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
 
-        ' Determine DPI-scaled icon size
-        Dim pixelSize As Integer = imgList.ImageSize.Width
+        '' Determine DPI-scaled icon size
+        'Dim pixelSize As Integer = imgList.ImageSize.Width
 
-        ' Request DPI-aware shell icon
-        Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
+        '' Request DPI-aware shell icon
+        'Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
 
-        If icon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey(fi.FullName) Then
-                imgList.Images.Add(fi.FullName, icon)
+        'If icon IsNot Nothing Then
+        '    If Not imgList.Images.ContainsKey(fi.FullName) Then
+        '        imgList.Images.Add(fi.FullName, icon)
+        '    End If
+        '    item.ImageKey = fi.FullName
+        'Else
+        '    item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+        'End If
+
+        If Not ext = ".exe" Then
+
+            If Not imgList.Images.ContainsKey(ext) Then
+
+                Dim fileExtensionIcon As Icon
+                Dim IconSize As Integer = GetScaledIconSize(Me)
+                fileExtensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                'fileExtensionIcon = Nothing
+
+                If fileExtensionIcon IsNot Nothing Then
+                    imgList.Images.Add(ext, fileExtensionIcon.ToBitmap())
+                    item.ImageKey = ext
+                Else
+                    item.ImageKey = FallbackDocumentKey
+                End If
+            Else
+                item.ImageKey = ext
             End If
-            item.ImageKey = fi.FullName
+
         Else
-            item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
+
+            If Not imgList.Images.ContainsKey(fi.FullName) Then
+
+                Dim exeFileIcon As Icon
+                Dim IconSize As Integer = GetScaledIconSize(Me)
+                exeFileIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                'exeFileIcon = Nothing
+
+                If exeFileIcon IsNot Nothing Then
+                    imgList.Images.Add(fi.FullName, exeFileIcon.ToBitmap())
+                    item.ImageKey = fi.FullName
+                Else
+                    item.ImageKey = FallbackExecutableKey
+                End If
+            Else
+                item.ImageKey = fi.FullName
+            End If
+
         End If
 
         Return item
@@ -8512,9 +8575,9 @@ Public Class Form1
         imgList.ColorDepth = ColorDepth.Depth32Bit
 
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
-        imgList.Images.Add(FolderKey, My.Resources.Resource1.Folder_16X16)
+        imgList.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
         imgList.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
-        imgList.Images.Add("MyDocuments", My.Resources.Resource1.Documents_16X16)
+        imgList.Images.Add(FallbackDocumentKey, My.Resources.Resource1.Documents_16X16)
 
         imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
         imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
@@ -8524,7 +8587,7 @@ Public Class Form1
         imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
         imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
-        imgList.Images.Add("Executable", My.Resources.Resource1.Executable_16X16)
+        imgList.Images.Add(FallbackExecutableKey, My.Resources.Resource1.Executable_16X16)
         imgList.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
         imgList.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
         imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)

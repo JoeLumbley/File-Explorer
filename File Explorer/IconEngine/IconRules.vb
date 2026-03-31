@@ -265,35 +265,35 @@ Public Module IconRules
     Private ReadOnly _rules As List(Of IconRule)
 
     ' Static constructor: initialize rules once.
-    Sub New()
+    'Sub New()
 
-        _rules = New List(Of IconRule) From {
-            New IconRule With { ' Virtual folders (e.g., Recycle Bin)
-                .Match = Function(r) r IsNot Nothing AndAlso r.IsVirtual AndAlso
-                                     String.Equals(r.VirtualName, "RecycleBin",
-                                                   StringComparison.OrdinalIgnoreCase),
-                .Handler = AddressOf IconRuleHandlers.GetRecycleBinIcon
-            },
-            New IconRule With {' Real or virtual folders
-                .Match = Function(r) r IsNot Nothing AndAlso r.IsFolder.GetValueOrDefault(),
-                .Handler = AddressOf IconRuleHandlers.GetFolderIcon
-            },
-            New IconRule With { ' Visual Studio solution files (.sln) – special-case handler
-                .Match = Function(r)
-                             If r Is Nothing OrElse r.IsFolder.GetValueOrDefault() Then Return False
-                             Dim ext = IO.Path.GetExtension(r.FullPath)
-                             If String.IsNullOrEmpty(ext) Then Return False
-                             Return String.Equals(ext, ".sln", StringComparison.OrdinalIgnoreCase)
-                         End Function,
-                .Handler = AddressOf IconRuleHandlers.GetSolutionIcon
-            },
-            New IconRule With { ' Generic files (everything else that is not a folder)
-                .Match = Function(r) r IsNot Nothing AndAlso Not r.IsFolder.GetValueOrDefault(),
-                .Handler = AddressOf IconRuleHandlers.GetFileIcon
-            }
-        }
+    '    _rules = New List(Of IconRule) From {
+    '        New IconRule With { ' Virtual folders (e.g., Recycle Bin)
+    '            .Match = Function(r) r IsNot Nothing AndAlso r.IsVirtual AndAlso
+    '                                 String.Equals(r.VirtualName, "RecycleBin",
+    '                                               StringComparison.OrdinalIgnoreCase),
+    '            .Handler = AddressOf IconRuleHandlers.GetRecycleBinIcon
+    '        },
+    '        New IconRule With {' Real or virtual folders
+    '            .Match = Function(r) r IsNot Nothing AndAlso r.IsFolder.GetValueOrDefault(),
+    '            .Handler = AddressOf IconRuleHandlers.GetFolderIcon
+    '        },
+    '        New IconRule With { ' Visual Studio solution files (.sln) – special-case handler
+    '            .Match = Function(r)
+    '                         If r Is Nothing OrElse r.IsFolder.GetValueOrDefault() Then Return False
+    '                         Dim ext = IO.Path.GetExtension(r.FullPath)
+    '                         If String.IsNullOrEmpty(ext) Then Return False
+    '                         Return String.Equals(ext, ".sln", StringComparison.OrdinalIgnoreCase)
+    '                     End Function,
+    '            .Handler = AddressOf IconRuleHandlers.GetSolutionIcon
+    '        },
+    '        New IconRule With { ' Generic files (everything else that is not a folder)
+    '            .Match = Function(r) r IsNot Nothing AndAlso Not r.IsFolder.GetValueOrDefault(),
+    '            .Handler = AddressOf IconRuleHandlers.GetFileIcon
+    '        }
+    '    }
 
-    End Sub
+    'End Sub
 
     ' Returns the first matching handler for the given request.
     Public Function ResolveHandler(request As IconRequest) As Func(Of IconRequest, Icon)
@@ -361,31 +361,31 @@ Public Module IconRuleHandlers
         Return ShellInterop.GetRecycleBinIcon(request.PixelSize)
     End Function
 
-    Public Function GetFolderIcon(request As IconRequest) As Icon
-        If request Is Nothing Then Return IconLibrary.GenericFolder
+    'Public Function GetFolderIcon(request As IconRequest) As Icon
+    '    If request Is Nothing Then Return IconLibrary.GenericFolder
 
-        ' Virtual folder → use virtual folder icon pipeline
-        If request.IsVirtual Then
-            Dim icon = ShellInterop.GetIconForVirtualFolder(request.VirtualName, request.PixelSize)
-            If icon IsNot Nothing Then
-                Return icon
-            End If
-            Return IconLibrary.GenericFolder
-        End If
+    '    ' Virtual folder → use virtual folder icon pipeline
+    '    If request.IsVirtual Then
+    '        Dim icon = ShellInterop.GetIconForVirtualFolder(request.VirtualName, request.PixelSize)
+    '        If icon IsNot Nothing Then
+    '            Return icon
+    '        End If
+    '        Return IconLibrary.GenericFolder
+    '    End If
 
-        ' Real folder → use path-based icon extraction
-        Dim folderIcon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
-        If folderIcon Is Nothing Then
-            folderIcon = IconLibrary.GenericFolder
-        End If
+    '    ' Real folder → use path-based icon extraction
+    '    Dim folderIcon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
+    '    If folderIcon Is Nothing Then
+    '        folderIcon = IconLibrary.GenericFolder
+    '    End If
 
-        ' Overlay
-        If request.Overlay <> IconOverlayKind.None Then
-            folderIcon = IconOverlay.ApplyOverlay(folderIcon, request.Overlay)
-        End If
+    '    ' Overlay
+    '    If request.Overlay <> IconOverlayKind.None Then
+    '        folderIcon = IconOverlay.ApplyOverlay(folderIcon, request.Overlay)
+    '    End If
 
-        Return folderIcon
-    End Function
+    '    Return folderIcon
+    'End Function
 
     Public Function GetFileIcon(request As IconRequest) As Icon
         If request Is Nothing Then Return Nothing

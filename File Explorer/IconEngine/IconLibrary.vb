@@ -1,4 +1,5 @@
 ﻿Imports System.Drawing
+Imports File_Explorer.Explorer.Interop.Shell
 
 ' Central place for generic icons used as fallbacks/placeholders.
 Public Module IconLibrary
@@ -10,12 +11,19 @@ Public Module IconLibrary
         End Get
     End Property
 
-    Public ReadOnly Property GenericFolder As Icon
+    'Public ReadOnly Property GenericFolder As Icon
+    '    Get
+    '        Return SystemIcons.
+    '    End Get
+    'End Property
+    Public ReadOnly Property GenericFolder(IconSize As Integer) As Icon
         Get
-            Return SystemIcons.WinLogo
+            'Return ShellInterop.GetIconForPath("C:\Windows\System32", 32)
+
+            'Dim IconSize As Integer =  = Form.GetScaledIconSize(Form)
+            Return ShellInterop.GetIconForPath("C:\Windows\System32", IconSize)
         End Get
     End Property
-
     Public ReadOnly Property GenericVirtualFolder As Icon
         Get
             Return SystemIcons.WinLogo
