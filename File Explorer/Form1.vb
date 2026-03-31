@@ -747,7 +747,11 @@ Public Class Form1
     Private deleteCts As CancellationTokenSource
     Private deleteEngine As Explorer.Engines.DeleteEngine
 
-    Private Const ThisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+    Private Const ThisPCGUID As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+    Private Const ThisPCString As String = "This PC"
+    Private Const ThisPCKey As String = "ThisPC"
+    Private Const ComputerKey As String = "Computer"
+
 
 
     'Private Sub NavigateToVirtualFolder(shellPath As String)
@@ -5473,14 +5477,14 @@ Public Class Form1
                 'Dim size = GetScaledIconSize(Me)
                 Dim icon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
 
-                If Icon IsNot Nothing Then
+                If icon IsNot Nothing Then
 
 
                     'If Not imgList.Images.ContainsKey(specialFolderPath) Then
                     '    imgList.Images.Add(specialFolderPath, icon)
                     'End If
                     If Not imgList.Images.ContainsKey(specialFolderPath) Then
-                        imgList.Images.Add(specialFolderPath, Icon.ToBitmap())
+                        imgList.Images.Add(specialFolderPath, icon.ToBitmap())
                     End If
 
                     node.ImageKey = specialFolderPath
@@ -5712,26 +5716,28 @@ Public Class Form1
     Private Function GetThisPCNode() As TreeNode
 
         'Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
-        Dim thisPCNode As New TreeNode("This PC") With {
-            .Tag = ThisPCPath
+        Dim thisPCNode As New TreeNode(ThisPCString) With {
+            .Tag = ThisPCGUID
         }
 
-        Dim IconSize = GetScaledIconSize(Me)
-        Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
+        Dim iconSize = GetScaledIconSize(Me)
+        Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
+        'Dim thisPCIcon = Nothing
+
 
         If thisPCIcon IsNot Nothing Then
 
-            If Not imgList.Images.ContainsKey("ThisPC") Then
-                imgList.Images.Add("ThisPC", thisPCIcon.ToBitmap())
+            If Not imgList.Images.ContainsKey(ThisPCKey) Then
+                imgList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
             End If
 
-            thisPCNode.ImageKey = "ThisPC"
-            thisPCNode.SelectedImageKey = "ThisPC"
+            thisPCNode.ImageKey = ThisPCKey
+            thisPCNode.SelectedImageKey = ThisPCKey
 
         Else
             ' Fallback to generic computer icon if we can't get the real one
-            thisPCNode.ImageKey = "Computer"
-            thisPCNode.SelectedImageKey = "Computer"
+            thisPCNode.ImageKey = ComputerKey
+            thisPCNode.SelectedImageKey = ComputerKey
 
         End If
 
@@ -8529,7 +8535,7 @@ Public Class Form1
         imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
         imgList.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
-        imgList.Images.Add("Computer", My.Resources.Resource1.Computer_16X16)
+        imgList.Images.Add(ComputerKey, My.Resources.Resource1.Computer_16X16)
 
         ' Assign ImageList to controls
         tvFolders.ImageList = imgList
