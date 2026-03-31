@@ -28,6 +28,7 @@
 
 Imports System.IO
 Imports System.Text
+Imports System.Text.Json
 Imports System.Text.RegularExpressions
 Imports System.Threading
 Imports File_Explorer.Explorer.Engines
@@ -5502,7 +5503,6 @@ Public Class Form1
             End If
 
 
-            Dim specialFoldericon As Icon = Nothing
 
             If Directory.Exists(specialFolderPath) Then
                 Dim node As New TreeNode(sf.Item1) With {
@@ -5511,6 +5511,8 @@ Public Class Form1
 
                 ' Set icon, with caching in the image list to avoid duplicates and improve performance
                 If Not imgList.Images.ContainsKey(specialFolderPath) Then
+
+                    Dim specialFoldericon As Icon = Nothing
 
                     specialFoldericon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
 
@@ -5570,10 +5572,11 @@ Public Class Form1
             '    node.SelectedImageKey = FolderKey
             'End If
 
-            Dim easyAccessIcon As Icon = Nothing
 
             ' Set icon, with caching in the image list to avoid duplicates and improve performance
             If Not imgList.Images.ContainsKey(entry.Path) Then
+
+                Dim easyAccessIcon As Icon
 
                 easyAccessIcon = ShellInterop.GetIconForPath(entry.Path, IconSize)
 
@@ -5622,24 +5625,66 @@ Public Class Form1
             .Tag = ThisPCGUID ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         }
 
-        Dim iconSize = GetScaledIconSize(Me)
-        Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
+        'Dim iconSize = GetScaledIconSize(Me)
+        'Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
 
-        If thisPCIcon IsNot Nothing Then
 
-            If Not imgList.Images.ContainsKey(ThisPCKey) Then
+
+
+        'If thisPCIcon IsNot Nothing Then
+
+        '    If Not imgList.Images.ContainsKey(ThisPCKey) Then
+        '        imgList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
+        '    End If
+
+        '    thisPCNode.ImageKey = ThisPCKey
+        '    thisPCNode.SelectedImageKey = ThisPCKey
+
+        'Else
+        '    ' Fallback to generic computer icon if we can't get the real one
+        '    thisPCNode.ImageKey = ComputerKey
+        '    thisPCNode.SelectedImageKey = ComputerKey
+
+        'End If
+
+        ' Set icon, with caching in the image list to avoid duplicates and improve performance
+        If Not imgList.Images.ContainsKey(ThisPCKey) Then
+            Dim iconSize = GetScaledIconSize(Me)
+            Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
+
+            'thisPCIcon = ShellInterop.GetIconForPath(ThisPCKey, iconSize)
+
+            If thisPCIcon IsNot Nothing Then
                 imgList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
+                thisPCNode.ImageKey = ThisPCKey
+                thisPCNode.SelectedImageKey = ThisPCKey
+            Else
+                ' Fallback to generic computer icon if we can't get the real one
+                thisPCNode.ImageKey = ComputerKey
+                thisPCNode.SelectedImageKey = ComputerKey
             End If
+
+        Else
 
             thisPCNode.ImageKey = ThisPCKey
             thisPCNode.SelectedImageKey = ThisPCKey
 
-        Else
-            ' Fallback to generic computer icon if we can't get the real one
-            thisPCNode.ImageKey = ComputerKey
-            thisPCNode.SelectedImageKey = ComputerKey
-
         End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         Return thisPCNode
     End Function
@@ -5682,26 +5727,52 @@ Public Class Form1
 
     Private Function GetRecycleNode() As TreeNode
 
-        Dim node As New TreeNode(RecycleBinString) With {
+        Dim RecycleBinNode As New TreeNode(RecycleBinString) With {
             .Tag = RecycleBinGUID '"shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         }
 
-        Dim sizePix = GetScaledIconSize(Me)
-        Dim rbIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, sizePix)
+        'Dim sizePix = GetScaledIconSize(Me)
+        'Dim rbIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, sizePix)
 
-        If rbIcon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey(RecycleBinKey) Then
-                imgList.Images.Add(RecycleBinKey, rbIcon.ToBitmap())
+        'If rbIcon IsNot Nothing Then
+        '    If Not imgList.Images.ContainsKey(RecycleBinKey) Then
+        '        imgList.Images.Add(RecycleBinKey, rbIcon.ToBitmap())
+        '    End If
+        '    node.ImageKey = RecycleBinKey
+        '    node.SelectedImageKey = RecycleBinKey
+        'Else
+        '    ' Fallback generic icons
+        '    node.ImageKey = RecycleKey
+        '    node.SelectedImageKey = RecycleKey
+        'End If
+
+        ' Set icon, with caching in the image list to avoid duplicates and improve performance
+        If Not imgList.Images.ContainsKey(RecycleBinKey) Then
+            Dim iconSize = GetScaledIconSize(Me)
+            Dim RecycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
+
+            'thisPCIcon = ShellInterop.GetIconForPath(ThisPCKey, iconSize)
+
+            If RecycleBinIcon IsNot Nothing Then
+                imgList.Images.Add(RecycleBinKey, RecycleBinIcon.ToBitmap())
+                RecycleBinNode.ImageKey = RecycleBinKey
+                RecycleBinNode.SelectedImageKey = RecycleBinKey
+            Else
+                ' Fallback to generic recycle icon if we can't get the real one
+                RecycleBinNode.ImageKey = RecycleKey
+                RecycleBinNode.SelectedImageKey = RecycleKey
             End If
-            node.ImageKey = RecycleBinKey
-            node.SelectedImageKey = RecycleBinKey
+
         Else
-            ' Fallback generic icons
-            node.ImageKey = RecycleKey
-            node.SelectedImageKey = RecycleKey
+
+            RecycleBinNode.ImageKey = RecycleBinKey
+            RecycleBinNode.SelectedImageKey = RecycleBinKey
+
         End If
 
-        Return node
+
+
+        Return RecycleBinNode
     End Function
 
     Private Function GetFolderDisplayName(folderPath As String) As String
