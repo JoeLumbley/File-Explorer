@@ -5501,24 +5501,33 @@ Public Class Form1
                 specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
             End If
 
+
+            Dim specialFoldericon As Icon = Nothing
+
             If Directory.Exists(specialFolderPath) Then
                 Dim node As New TreeNode(sf.Item1) With {
                     .Tag = specialFolderPath
                 }
 
-                Dim icon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
+                ' Set icon, with caching in the image list to avoid duplicates and improve performance
+                If Not imgList.Images.ContainsKey(specialFolderPath) Then
 
-                If icon IsNot Nothing Then
+                    specialFoldericon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
 
-                    If Not imgList.Images.ContainsKey(specialFolderPath) Then
-                        imgList.Images.Add(specialFolderPath, icon.ToBitmap())
+                    If specialFoldericon IsNot Nothing Then
+                        imgList.Images.Add(specialFolderPath, specialFoldericon.ToBitmap())
+                        node.ImageKey = specialFolderPath
+                        node.SelectedImageKey = specialFolderPath
+                    Else
+                        node.ImageKey = sf.Item1
+                        node.SelectedImageKey = sf.Item1
                     End If
+
+                Else
 
                     node.ImageKey = specialFolderPath
                     node.SelectedImageKey = specialFolderPath
-                Else
-                    node.ImageKey = sf.Item1
-                    node.SelectedImageKey = sf.Item1
+
                 End If
 
                 ' Expand arrow logic
@@ -5543,18 +5552,56 @@ Public Class Form1
                 .Tag = entry.Path
             }
 
-            Dim icon = ShellInterop.GetIconForPath(entry.Path, IconSize)
 
-            If icon IsNot Nothing Then
-                If Not imgList.Images.ContainsKey(entry.Path) Then
-                    imgList.Images.Add(entry.Path, icon)
+
+
+
+
+            'Dim icon = ShellInterop.GetIconForPath(entry.Path, IconSize)
+
+            'If icon IsNot Nothing Then
+            '    If Not imgList.Images.ContainsKey(entry.Path) Then
+            '        imgList.Images.Add(entry.Path, icon)
+            '    End If
+            '    node.ImageKey = entry.Path
+            '    node.SelectedImageKey = entry.Path
+            'Else
+            '    node.ImageKey = FolderKey
+            '    node.SelectedImageKey = FolderKey
+            'End If
+
+            Dim easyAccessIcon As Icon = Nothing
+
+            ' Set icon, with caching in the image list to avoid duplicates and improve performance
+            If Not imgList.Images.ContainsKey(entry.Path) Then
+
+                easyAccessIcon = ShellInterop.GetIconForPath(entry.Path, IconSize)
+
+                If easyAccessIcon IsNot Nothing Then
+                    imgList.Images.Add(entry.Path, easyAccessIcon.ToBitmap())
+                    node.ImageKey = entry.Path
+                    node.SelectedImageKey = entry.Path
+                Else
+                    ' Fallback to generic folder icon
+                    node.ImageKey = FolderKey
+                    node.SelectedImageKey = FolderKey
                 End If
+
+            Else
+
                 node.ImageKey = entry.Path
                 node.SelectedImageKey = entry.Path
-            Else
-                node.ImageKey = FolderKey
-                node.SelectedImageKey = FolderKey
+
             End If
+
+
+
+
+
+
+
+
+
 
             If HasSubdirectories(entry.Path) Then
                 node.Nodes.Add("Loading...")
@@ -8349,7 +8396,7 @@ Public Class Form1
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
         imgList.Images.Add(FolderKey, My.Resources.Resource1.Folder_16X16)
         imgList.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
-        imgList.Images.Add("Documents", My.Resources.Resource1.Documents_16X16)
+        imgList.Images.Add("MyDocuments", My.Resources.Resource1.Documents_16X16)
 
         imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
         imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
