@@ -5430,7 +5430,12 @@ Public Class Form1
         ' This PC (virtual shell folder)
         ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
         ' ============================================================
-        Dim thisPCNode = GetThisPCNode()
+        Dim thisPCNode As New TreeNode(ThisPCString) With {
+            .Tag = ThisPCGUID ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+        }
+
+        SetThisPCNodeIcon(thisPCNode, imgList)
+
         ' This is a shell command to explorer so don't show an arrow.
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
@@ -5676,23 +5681,62 @@ Public Class Form1
 
         End If
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         Return thisPCNode
     End Function
+
+
+    Private Sub SetThisPCNodeIcon(thisPCNode As TreeNode, imageList As ImageList)
+        ' Get and cache the This PC icon, with fallback to generic icons if necessary
+
+        ' Set icon, with caching in the image list to avoid duplicates and improve performance
+        If Not imageList.Images.ContainsKey(ThisPCKey) Then
+
+            Dim iconSize = GetScaledIconSize(Me)
+            'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
+            Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
+
+            'Dim driveIcon As Icon = Nothing
+
+            If thisPCIcon IsNot Nothing Then
+                imageList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
+                thisPCNode.ImageKey = ThisPCKey
+                thisPCNode.SelectedImageKey = ThisPCKey
+            Else
+                ' Fallback to generic computer icon if we can't get the real one
+
+                thisPCNode.ImageKey = ComputerKey
+                thisPCNode.SelectedImageKey = ComputerKey
+
+            End If
+
+        Else
+
+            thisPCNode.ImageKey = ThisPCKey
+            thisPCNode.SelectedImageKey = ThisPCKey
+
+        End If
+
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     'Private Function GetDriveNode(di As DriveInfo) As TreeNode
 
@@ -5782,6 +5826,11 @@ Public Class Form1
 
         Return RecycleBinNode
     End Function
+
+
+
+
+
 
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
