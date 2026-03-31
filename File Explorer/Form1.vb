@@ -5577,39 +5577,43 @@ Public Class Form1
         For Each di In DriveInfo.GetDrives()
             If di.IsReady Then
                 Try
-                    Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
-                    Dim used = di.TotalSize - di.AvailableFreeSpace
-                    Dim bar = BuildUsageBar(used, di.TotalSize, 4)
-
-                    Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
-
-                    Dim rootNode As New TreeNode(displayText) With {
-                        .Tag = di.RootDirectory.FullName
-                    }
-
-                    ' --- Real Explorer drive icon ---
-                    'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
-                    'Dim sizePix1 = GetScaledIconSize(Me)
-                    Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
 
 
+                    'Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
+                    'Dim used = di.TotalSize - di.AvailableFreeSpace
+                    'Dim bar = BuildUsageBar(used, di.TotalSize, 4)
 
-                    If driveIcon IsNot Nothing Then
-                        If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
-                            'imgList.Images.Add(di.RootDirectory.FullName, driveIcon)
-                            imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
-                        End If
-                        rootNode.ImageKey = di.RootDirectory.FullName
-                        rootNode.SelectedImageKey = di.RootDirectory.FullName
-                    Else
-                        If di.DriveType = DriveType.CDRom Then
-                            rootNode.ImageKey = "Optical"
-                            rootNode.SelectedImageKey = "Optical"
-                        Else
-                            rootNode.ImageKey = "Drive"
-                            rootNode.SelectedImageKey = "Drive"
-                        End If
-                    End If
+                    'Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
+
+                    'Dim rootNode As New TreeNode(displayText) With {
+                    '    .Tag = di.RootDirectory.FullName
+                    '}
+
+                    '' --- Real Explorer drive icon ---
+                    ''Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, ShellInterop.IconSize.Small)
+                    ''Dim sizePix1 = GetScaledIconSize(Me)
+                    'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
+
+
+
+                    'If driveIcon IsNot Nothing Then
+                    '    If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+                    '        'imgList.Images.Add(di.RootDirectory.FullName, driveIcon)
+                    '        imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
+                    '    End If
+                    '    rootNode.ImageKey = di.RootDirectory.FullName
+                    '    rootNode.SelectedImageKey = di.RootDirectory.FullName
+                    'Else
+                    '    If di.DriveType = DriveType.CDRom Then
+                    '        rootNode.ImageKey = "Optical"
+                    '        rootNode.SelectedImageKey = "Optical"
+                    '    Else
+                    '        rootNode.ImageKey = "Drive"
+                    '        rootNode.SelectedImageKey = "Drive"
+                    '    End If
+                    'End If
+
+                    Dim rootNode = GetRootNode(di)
 
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         rootNode.Nodes.Add("Loading...")
@@ -5617,6 +5621,8 @@ Public Class Form1
                     Else
                         rootNode.StateImageIndex = 2
                     End If
+
+                    ' Dim rootNode = GetRootNode
 
                     tvFolders.Nodes.Add(rootNode)
 
@@ -5675,6 +5681,43 @@ Public Class Form1
         tvFolders.EndUpdate()
 
     End Sub
+
+    Private Function GetRootNode(di As DriveInfo) As TreeNode
+
+        Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
+        Dim used = di.TotalSize - di.AvailableFreeSpace
+        Dim bar = BuildUsageBar(used, di.TotalSize, 4)
+
+        Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
+
+        Dim rootNode As New TreeNode(displayText) With {
+            .Tag = di.RootDirectory.FullName
+        }
+
+        ' --- drive icon ---
+        Dim IconSize = GetScaledIconSize(Me)
+        Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
+
+        If driveIcon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+                imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
+            End If
+            rootNode.ImageKey = di.RootDirectory.FullName
+            rootNode.SelectedImageKey = di.RootDirectory.FullName
+        Else
+            If di.DriveType = DriveType.CDRom Then
+                rootNode.ImageKey = "Optical"
+                rootNode.SelectedImageKey = "Optical"
+            Else
+                rootNode.ImageKey = "Drive"
+                rootNode.SelectedImageKey = "Drive"
+            End If
+        End If
+
+        Return rootNode
+    End Function
+
+
 
 
     Private Function GetRecycleNode() As TreeNode
