@@ -34,29 +34,45 @@ Public Class IconCache
             id = request.VirtualName
 
         ElseIf request.IsFolder.GetValueOrDefault() Then
-            ' Folder type keyed by full path for now.
-            ' You can later refine this to a folder-type detector.
+            ' Real folders keyed by full path.
             kind = IconKind.FolderType
             id = request.FullPath
 
         Else
-            ' Files: prefer extension-based caching when possible.
-            Dim ext = IO.Path.GetExtension(request.FullPath)
+            ' -------------------------------
+            ' File logic (Explorer-accurate)
+            ' -------------------------------
+            Dim ext = IO.Path.GetExtension(request.FullPath).ToLowerInvariant()
+
+            ' File types that embed their own icons → cache by path
+            Dim perFileIconTypes As String() = {
+            ".exe", ".dll", ".ico", ".lnk",
+            ".msi", ".scr", ".cpl"
+        }
+
             If String.IsNullOrEmpty(ext) Then
+                ' Files with no extension → cache by path
                 kind = IconKind.Path
                 id = request.FullPath
+
+            ElseIf perFileIconTypes.Contains(ext) Then
+                ' Embedded-icon file types → cache by path
+                kind = IconKind.Path
+                id = request.FullPath
+
             Else
+                ' Everything else → cache by extension
                 kind = IconKind.FileExtension
-                id = ext.ToLowerInvariant()
+                id = ext
             End If
         End If
 
         Return New IconCacheKey With {
-            .Kind = kind,
-            .Identifier = id,
-            .PixelSize = request.PixelSize,
-            .Version = IconDpiManager.CacheVersion
-        }
+        .Kind = kind,
+        .Identifier = id,
+        .PixelSize = request.PixelSize,
+        .Version = IconDpiManager.CacheVersion
+    }
     End Function
 
     ' Attempts to retrieve an icon from the cache.

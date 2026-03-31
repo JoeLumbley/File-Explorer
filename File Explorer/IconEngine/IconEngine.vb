@@ -1,6 +1,7 @@
-﻿Imports System.Threading
+﻿Imports System.Diagnostics
 Imports System.Drawing
-Imports System.Diagnostics
+Imports System.Threading
+Imports File_Explorer.Explorer.Interop.Shell
 
 ' High-level entry point for icon retrieval (sync + async).
 ' This is what the rest of the app should call.
@@ -33,11 +34,21 @@ Public Class IconEngine
         Dim handler = IconRules.ResolveHandler(request)
         Dim icon = handler(request)
 
+        'If icon Is Nothing Then
+        '    icon = IconLibrary.GenericFile
+        'End If
+
+        '' Store in cache for future requests.
+        'IconCache.AddOrGetExisting(key, Function() icon)
+
         If icon Is Nothing Then
-            icon = IconLibrary.GenericFile
+            ' Do NOT cache fallback icons
+            Return New IconResult With {
+                .Icon = IconLibrary.GenericFile,
+                .Source = IconSourceKind.Fallback
+            }
         End If
 
-        ' Store in cache for future requests.
         IconCache.AddOrGetExisting(key, Function() icon)
 
         Return New IconResult With {
@@ -45,6 +56,42 @@ Public Class IconEngine
             .Source = IconSourceKind.Shell
         }
     End Function
+
+
+
+
+
+
+    Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+
+        ' Native sizes
+        If pixelSize <= 16 Then
+            Return ShellInterop.GetIconForPath(path, IconSize.Small)
+        ElseIf pixelSize = 32 Then
+            Return ShellInterop.GetIconForPath(path, IconSize.Large)
+        End If
+
+        ' Scale from 32x32
+        Dim baseIcon = ShellInterop.GetIconForPath(path, IconSize.Large)
+        If baseIcon Is Nothing Then Return Nothing
+
+        Return New Icon(baseIcon, pixelSize, pixelSize)
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ' Asynchronous icon retrieval (placeholder + background load).
     ' Use this for ListView/TreeView population to keep the UI snappy.
@@ -74,6 +121,12 @@ Public Class IconEngine
         Return New IconResult With {.Icon = placeholder, .Source = IconSourceKind.Placeholder}
     End Function
 
+
+
+
+
+
+
     Private Shared Async Function LoadInBackgroundAsync(
     request As IconRequest,
     key As IconCacheKey,
@@ -91,6 +144,21 @@ Public Class IconEngine
             Debug.WriteLine("IconEngine async load error: " & ex.Message)
         End Try
     End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ' Normalizes an IconRequest before use.
     ' This keeps callers simple and centralizes the “rules”.

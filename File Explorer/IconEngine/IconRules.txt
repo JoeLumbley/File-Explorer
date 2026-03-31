@@ -17,31 +17,6 @@ Public Module IconRules
     ' Ordered list of rules; first match wins.
     Private ReadOnly _rules As List(Of IconRule)
 
-    'Static constructor: initialize rules once.
-    'Sub New()
-    '    _rules = New List(Of IconRule) From {
-    '        New IconRule With {
-    '            .Match = Function(r) r IsNot Nothing AndAlso r.IsVirtual AndAlso
-    '                                   String.Equals(r.VirtualName, "RecycleBin",
-    '                                                 StringComparison.OrdinalIgnoreCase),
-    '            .Handler = AddressOf IconRuleHandlers.GetRecycleBinIcon
-    '        },
-    '        New IconRule With {
-    '            .Match = Function(r) r IsNot Nothing AndAlso r.IsFolder.GetValueOrDefault(),
-    '            .Handler = AddressOf IconRuleHandlers.GetFolderIcon
-    '        },
-    '        New IconRule With {
-    '            .Match = Function(r) r IsNot Nothing AndAlso Not r.IsFolder.GetValueOrDefault(),
-    '            .Handler = AddressOf IconRuleHandlers.GetFileIcon
-    '        }
-    '    }
-    'End Sub
-
-
-
-    ' Assuming this is part of a class where _rules is defined
-    'Private Shared _rules As List(Of IconRule)
-
     ' Static constructor: initialize rules once.
     Sub New()
         _rules = New List(Of IconRule) From {
@@ -87,31 +62,6 @@ Public Module IconRuleHandlers
         Return ShellInterop.GetRecycleBinIcon(request.PixelSize)
     End Function
 
-    'Folder icon(virtual Or real).
-    'Public Function GetFolderIcon(request As IconRequest) As Icon
-    '    If request Is Nothing Then Return IconLibrary.GenericFolder
-
-    '    ' Virtual folders can have their own icon; for now, generic.
-    '    If request.IsVirtual Then
-    '        Return IconLibrary.GenericVirtualFolder
-    '    End If
-
-    '    ' Real folder via Shell.
-    '    Dim icon = ShellInterop.GetFolderIcon(request.FullPath, request.PixelSize)
-    '    If icon Is Nothing Then
-    '        icon = IconLibrary.GenericFolder
-    '    End If
-
-    '    ' Apply overlay if requested.
-    '    If request.Overlay <> IconOverlayKind.None Then
-    '        icon = IconOverlay.ApplyOverlay(icon, request.Overlay)
-    '    End If
-
-    '    Return icon
-    'End Function
-
-
-
     Public Function GetFolderIcon(request As IconRequest) As Icon
         If request Is Nothing Then Return IconLibrary.GenericFolder
 
@@ -132,45 +82,26 @@ Public Module IconRuleHandlers
         Return icon
     End Function
 
-    ' File icon (by PIDL or path).
-    'Public Function GetFileIcon(request As IconRequest) As Icon
-    '    If request Is Nothing Then Return IconLibrary.GenericFile
-
-    '    Dim icon As Icon = Nothing
-
-    '    ' Prefer PIDL if available.
-    '    If request.Pidl <> IntPtr.Zero Then
-    '        icon = ShellInterop.GetIconForPIDL(request.Pidl, request.PixelSize)
-    '    ElseIf Not String.IsNullOrEmpty(request.FullPath) Then
-    '        icon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
-    '    End If
-
-    '    If icon Is Nothing Then
-    '        icon = IconLibrary.GenericFile
-    '    End If
-
-    '    ' Apply overlay if requested.
-    '    If request.Overlay <> IconOverlayKind.None Then
-    '        icon = IconOverlay.ApplyOverlay(icon, request.Overlay)
-    '    End If
-
-    '    Return icon
-    'End Function
-
     Public Function GetFileIcon(request As IconRequest) As Icon
         If request Is Nothing Then Return IconLibrary.GenericFile
 
         Dim icon As Icon = Nothing
 
-        ' Prefer PIDL (Explorer-accurate)
-        If request.Pidl <> IntPtr.Zero Then
-            icon = ShellInterop.GetIconForPIDL(request.Pidl, request.PixelSize)
+        '' Prefer PIDL (Explorer-accurate)
+        'If request.Pidl <> IntPtr.Zero Then
+        '    icon = ShellInterop.GetIconForPIDL(request.Pidl, request.PixelSize)
 
-        ElseIf Not String.IsNullOrEmpty(request.FullPath) Then
+        'ElseIf Not String.IsNullOrEmpty(request.FullPath) Then
+        '    icon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
+        'End If
+
+
+        If Not String.IsNullOrEmpty(request.FullPath) Then
             icon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
         End If
 
-        If icon Is Nothing Then icon = IconLibrary.GenericFile
+
+        'If icon Is Nothing Then icon = IconLibrary.GenericFile
 
         ' Overlay
         If request.Overlay <> IconOverlayKind.None Then
@@ -179,6 +110,37 @@ Public Module IconRuleHandlers
 
         Return icon
     End Function
+
+    Public Function GetFileIcon(request As IconRequest) As Icon
+    If request Is Nothing Then Return IconLibrary.GenericFile
+
+    Dim icon As Icon = Nothing
+
+    ' 1. Try path-based extraction (EXEs, DLLs, ICOs, etc.)
+    If Not String.IsNullOrEmpty(request.FullPath) Then
+        icon = ShellInterop.GetIconForPath(request.FullPath, request.PixelSize)
+    End If
+
+    ' 2. If path-based failed, try extension-based association (Explorer-accurate)
+    If icon Is Nothing Then
+        Dim ext = IO.Path.GetExtension(request.FullPath)
+        If Not String.IsNullOrEmpty(ext) Then
+            icon = ShellInterop.GetIconForExtension(ext, request.PixelSize)
+        End If
+    End If
+
+    ' 3. If still nothing, do NOT cache fallback
+    If icon Is Nothing OrElse icon Is IconLibrary.GenericFile Then
+        Return Nothing
+    End If
+
+    ' 4. Overlays
+    If request.Overlay <> IconOverlayKind.None Then
+        icon = IconOverlay.ApplyOverlay(icon, request.Overlay)
+    End If
+
+    Return icon
+End Function
 
 
 

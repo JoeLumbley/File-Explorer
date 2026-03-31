@@ -62,7 +62,7 @@ Public Class Form1
 
     Private lblStatus As New ToolStripStatusLabel()
 
-    Private imgList As New ImageList()
+    Public imgList As New ImageList()
 
     Private imgArrows As New ImageList()
 
@@ -4088,7 +4088,7 @@ Public Class Form1
             ' Build file items
             For Each f In files
                 Dim fi As New FileInfo(f)
-                itemsToAdd.Add(Await BuildListViewItemForFile(fi))
+                itemsToAdd.Add(BuildListViewItemForFile(fi))
             Next
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
@@ -4209,38 +4209,7 @@ Public Class Form1
 
 
 
-    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-    '    Dim item As New ListViewItem(fi.Name)
-
-    '    Dim ext = fi.Extension.ToLowerInvariant()
-    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-    '    item.SubItems.Add(category)
-    '    item.SubItems.Add(FormatSize(fi.Length))
-    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-    '    item.Tag = fi.FullName
-
-    '    ' Determine DPI-scaled icon size
-    '    Dim pixelSize As Integer = imgList.ImageSize.Width
-
-    '    ' Request DPI-aware shell icon
-    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
-
-    '    If icon IsNot Nothing Then
-    '        If Not imgList.Images.ContainsKey(fi.FullName) Then
-    '            imgList.Images.Add(fi.FullName, icon)
-    '        End If
-    '        item.ImageKey = fi.FullName
-    '    Else
-    '        item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
-    '    End If
-
-    '    Return item
-    'End Function
-
-
-
-    Private Async Function BuildListViewItemForFile(fi As FileInfo) As Task(Of ListViewItem)
+    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
         Dim item As New ListViewItem(fi.Name)
 
         Dim ext = fi.Extension.ToLowerInvariant()
@@ -4254,25 +4223,59 @@ Public Class Form1
         ' Determine DPI-scaled icon size
         Dim pixelSize As Integer = imgList.ImageSize.Width
 
-        ' Build icon request
-        Dim req As New IconRequest With {
-        .FullPath = fi.FullName,
-        .PixelSize = pixelSize
-    }
+        ' Request DPI-aware shell icon
+        Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
 
-        ' Ask IconEngine for placeholder + async load
-        Dim result = Await IconEngine.GetIconAsync(req, CancellationToken.None)
-
-        Dim key = IconCache.BuildKey(req).ToString()
-
-        ' Add placeholder to ImageList
-        If Not imgList.Images.ContainsKey(key) Then
-            imgList.Images.Add(key, result.Icon)
+        If icon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey(fi.FullName) Then
+                imgList.Images.Add(fi.FullName, icon)
+            End If
+            item.ImageKey = fi.FullName
+        Else
+            item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
         End If
 
-        item.ImageKey = key
         Return item
     End Function
+
+
+
+    'Private Async Function BuildListViewItemForFile(fi As FileInfo) As Task(Of ListViewItem)
+    '    Dim item As New ListViewItem(fi.Name)
+
+    '    Dim ext = fi.Extension.ToLowerInvariant()
+    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+    '    item.SubItems.Add(category)
+    '    item.SubItems.Add(FormatSize(fi.Length))
+    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = fi.FullName
+
+    '    ' Determine DPI-scaled icon size
+    '    Dim pixelSize As Integer = imgList.ImageSize.Width
+
+    '    ' Build icon request
+    '    Dim req As New IconRequest With {
+    '    .FullPath = fi.FullName,
+    '    .PixelSize = pixelSize
+    '}
+
+    '    ' Ask IconEngine for placeholder + async load
+    '    'Dim result = IconEngine.GetIconForPath(fi.FullName, pixelSize)
+
+    '    ' Request DPI-aware shell icon
+    '    Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
+
+    '    Dim key = IconCache.BuildKey(req).ToString()
+
+    '    ' Add placeholder to ImageList
+    '    If Not imgList.Images.ContainsKey(key) Then
+    '        imgList.Images.Add(key, icon)
+    '    End If
+
+    '    item.ImageKey = key
+    '    Return item
+    'End Function
 
 
     ' ============================================================
@@ -5624,41 +5627,74 @@ Public Class Form1
         Next
 
 
+
+
+
+
+
+
+
+
+
+        'IconEngine.Get
         ' ============================================================
         ' RECYCLE BIN (virtual shell folder)
         ' ============================================================
-        Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+        'Dim recycleBinPath As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
 
-        Dim recycleNode As New TreeNode("Recycle Bin") With {
-            .Tag = recycleBinPath
-        }
+        'Dim recycleNode As New TreeNode("Recycle Bin") With {
+        '    .Tag = recycleBinPath
+        '}
 
-        'Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
+        ''Dim rbIcon = ShellInterop.GetRecycleBinIcon(ShellInterop.IconSize.Small)
 
         'Dim sizePix = GetScaledIconSize(Me)
-        Dim rbIcon = ShellInterop.GetRecycleBinIcon(IconSize)
+        'Dim rbIcon = ShellInterop.GetRecycleBinIcon(IconSize)
 
 
-        If rbIcon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey("RecycleBin") Then
-                'imgList.Images.Add("RecycleBin", rbIcon)
-                imgList.Images.Add("RecycleBin", rbIcon.ToBitmap())
-            End If
-            recycleNode.ImageKey = "RecycleBin"
-            recycleNode.SelectedImageKey = "RecycleBin"
-        Else
-            recycleNode.ImageKey = "RecycleBin"
-            recycleNode.SelectedImageKey = "RecycleBin"
-        End If
+        'If rbIcon IsNot Nothing Then
+        '    If Not imgList.Images.ContainsKey("RecycleBin") Then
+        '        'imgList.Images.Add("RecycleBin", rbIcon)
+        '        imgList.Images.Add("RecycleBin", rbIcon.ToBitmap())
+        '    End If
+        '    recycleNode.ImageKey = "RecycleBin"
+        '    recycleNode.SelectedImageKey = "RecycleBin"
+        'Else
+        '    recycleNode.ImageKey = "RecycleBin"
+        '    recycleNode.SelectedImageKey = "RecycleBin"
+        'End If
 
-        recycleNode.StateImageIndex = 2
+
+
+
+        Dim recycleNode = GetRecycleNode()
+        ' This is a shell command to explorer so don't show an arrow.
+        recycleNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(recycleNode)
 
         tvFolders.EndUpdate()
+
     End Sub
 
 
-
+    Private Function GetRecycleNode() As TreeNode
+        Dim sizePix = GetScaledIconSize(Me)
+        Dim rbIcon = ShellInterop.GetRecycleBinIcon(sizePix)
+        Dim node As New TreeNode("Recycle Bin") With {
+            .Tag = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+        }
+        If rbIcon IsNot Nothing Then
+            If Not imgList.Images.ContainsKey("RecycleBin") Then
+                imgList.Images.Add("RecycleBin", rbIcon.ToBitmap())
+            End If
+            node.ImageKey = "RecycleBin"
+            node.SelectedImageKey = "RecycleBin"
+        Else
+            node.ImageKey = "RecycleBin"
+            node.SelectedImageKey = "RecycleBin"
+        End If
+        Return node
+    End Function
 
 
 

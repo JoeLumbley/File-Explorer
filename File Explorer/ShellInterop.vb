@@ -202,6 +202,7 @@ Namespace Explorer.Interop.Shell
         'End Function
 
         Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+
             ' Native sizes
             If pixelSize <= 16 Then
                 Return GetShellIcon(path, IconSize.Small)
@@ -265,6 +266,54 @@ Namespace Explorer.Interop.Shell
             Finally
                 CoTaskMemFree(pidl)
             End Try
+        End Function
+
+
+
+        Public Shared Function GetIconForExtension(ext As String, pixelSize As Integer) As Icon
+            If String.IsNullOrWhiteSpace(ext) Then Return Nothing
+
+            ' Ensure extension starts with dot
+            If Not ext.StartsWith(".") Then
+                ext = "." & ext
+            End If
+
+            Dim flags As UInteger =
+        SHGFI_ICON Or
+        SHGFI_USEFILEATTRIBUTES
+
+            ' Size
+            If pixelSize <= 16 Then
+                flags = flags Or SHGFI_SMALLICON
+            Else
+                flags = flags Or SHGFI_LARGEICON
+            End If
+
+            Dim shinfo As New SHFILEINFO()
+
+            ' Pretend it's a normal file so SHGetFileInfo uses the association
+            Const attrs As UInteger = FILE_ATTRIBUTE_NORMAL
+
+            Dim result = SHGetFileInfo(
+        ext,
+        attrs,
+        shinfo,
+        CUInt(Marshal.SizeOf(shinfo)),
+        flags
+    )
+
+            If result = IntPtr.Zero OrElse shinfo.hIcon = IntPtr.Zero Then
+                Return Nothing
+            End If
+
+            ' Clone the icon so we own the handle
+            Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
+            Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
+
+            ' Free shell handle
+            DestroyIcon(shinfo.hIcon)
+
+            Return cloned
         End Function
 
 
