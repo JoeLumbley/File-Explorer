@@ -750,7 +750,16 @@ Public Class Form1
     Private Const ThisPCGUID As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
     Private Const ThisPCString As String = "This PC"
     Private Const ThisPCKey As String = "ThisPC"
+    Private Const ThisPCPath As String = "shell:MyComputerFolder"
     Private Const ComputerKey As String = "Computer"
+
+    Private Const RecycleBinGUID As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+    Private Const RecycleBinString As String = "Recycle Bin"
+    Private Const RecycleBinKey As String = "RecycleBin"
+    Private Const RecycleBinPath As String = "shell:RecycleBinFolder"
+    Private Const RecycleKey As String = "Recycle"
+
+
 
 
 
@@ -5785,19 +5794,28 @@ Public Class Form1
 
     Private Function GetRecycleNode() As TreeNode
         Dim sizePix = GetScaledIconSize(Me)
-        Dim rbIcon = ShellInterop.GetRecycleBinIcon(sizePix)
-        Dim node As New TreeNode("Recycle Bin") With {
-            .Tag = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+        'Dim rbIcon = ShellInterop.GetRecycleBinIcon(sizePix)
+        Dim rbIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, sizePix)
+
+
+        'Dim node As New TreeNode("Recycle Bin") With {
+        '    .Tag = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
+        '}
+        Dim node As New TreeNode(RecycleBinString) With {
+            .Tag = RecycleBinGUID '"shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         }
+
+
         If rbIcon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey("RecycleBin") Then
-                imgList.Images.Add("RecycleBin", rbIcon.ToBitmap())
+            If Not imgList.Images.ContainsKey(RecycleBinKey) Then
+                imgList.Images.Add(RecycleBinKey, rbIcon.ToBitmap())
             End If
-            node.ImageKey = "RecycleBin"
-            node.SelectedImageKey = "RecycleBin"
+            node.ImageKey = RecycleBinKey
+            node.SelectedImageKey = RecycleBinKey
         Else
-            node.ImageKey = "RecycleBin"
-            node.SelectedImageKey = "RecycleBin"
+            ' Fallback generic icons
+            node.ImageKey = RecycleKey
+            node.SelectedImageKey = RecycleKey
         End If
         Return node
     End Function
