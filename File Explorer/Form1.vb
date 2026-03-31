@@ -5541,34 +5541,59 @@ Public Class Form1
         easyAccessNode.StateImageIndex = 1
 
 
+
+
+
+
+
+
+
+
+
         ' ============================================================
         ' This PC (virtual shell folder)
         ' ============================================================
 
 
-        Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+        'Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
 
-        Dim thisPCNode As New TreeNode("This PC") With {
-            .Tag = thisPCPath
-        }
+        'Dim thisPCNode As New TreeNode("This PC") With {
+        '    .Tag = thisPCPath
+        '}
 
-        'Dim pcIcon = ShellInterop.GetIconForPath(thisPCPath, IconSize)
+        ''Dim pcIcon = ShellInterop.GetIconForPath(thisPCPath, IconSize)
 
-        Dim pcIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
+        'Dim pcIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
 
-        If pcIcon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey("ThisPC") Then
-                imgList.Images.Add("ThisPC", pcIcon.ToBitmap())
-            End If
-            thisPCNode.ImageKey = "ThisPC"
-            thisPCNode.SelectedImageKey = "ThisPC"
-        Else
-            thisPCNode.ImageKey = "Computer"
-            thisPCNode.SelectedImageKey = "Computer"
-        End If
+        'If pcIcon IsNot Nothing Then
+        '    If Not imgList.Images.ContainsKey("ThisPC") Then
+        '        imgList.Images.Add("ThisPC", pcIcon.ToBitmap())
+        '    End If
+        '    thisPCNode.ImageKey = "ThisPC"
+        '    thisPCNode.SelectedImageKey = "ThisPC"
+        'Else
+        '    thisPCNode.ImageKey = "Computer"
+        '    thisPCNode.SelectedImageKey = "Computer"
+        'End If
 
-        thisPCNode.StateImageIndex = 2
+
+        Dim thisPCNode = GetThisPCNode()
+
+        ' This is a shell command to explorer so don't show an arrow.
+        thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         ' ============================================================
@@ -5682,6 +5707,31 @@ Public Class Form1
 
     End Sub
 
+    Private Function GetThisPCNode() As TreeNode
+
+        Dim thisPCPath As String = "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
+        Dim thisPCNode As New TreeNode("This PC") With {
+            .Tag = thisPCPath
+        }
+        Dim IconSize = GetScaledIconSize(Me)
+        Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(thisPCPath, IconSize)
+
+        If thisPCIcon IsNot Nothing Then
+
+            If Not imgList.Images.ContainsKey("ThisPC") Then
+                imgList.Images.Add("ThisPC", thisPCIcon.ToBitmap())
+            End If
+
+            thisPCNode.ImageKey = "ThisPC"
+            thisPCNode.SelectedImageKey = "ThisPC"
+        Else
+            ' Fallback to generic computer icon if we can't get the real one
+            thisPCNode.ImageKey = "Computer"
+            thisPCNode.SelectedImageKey = "Computer"
+        End If
+        Return thisPCNode
+    End Function
+
     Private Function GetRootNode(di As DriveInfo) As TreeNode
 
         Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
@@ -5705,6 +5755,7 @@ Public Class Form1
             rootNode.ImageKey = di.RootDirectory.FullName
             rootNode.SelectedImageKey = di.RootDirectory.FullName
         Else
+            ' Fallback generic icons
             If di.DriveType = DriveType.CDRom Then
                 rootNode.ImageKey = "Optical"
                 rootNode.SelectedImageKey = "Optical"
@@ -8471,6 +8522,8 @@ Public Class Form1
         imgList.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
         imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
         imgList.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+
+        imgList.Images.Add("Computer", My.Resources.Resource1.Computer_16X16)
 
         ' Assign ImageList to controls
         tvFolders.ImageList = imgList
