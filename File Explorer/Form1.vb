@@ -5442,7 +5442,7 @@ Public Class Form1
             If di.IsReady Then
                 Try
 
-                    Dim rootNode = GetRootNode(di)
+                    Dim rootNode = GetDriveNode(di)
 
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         rootNode.Nodes.Add("Loading...")
@@ -5689,18 +5689,20 @@ Public Class Form1
         Return thisPCNode
     End Function
 
-    Private Function GetRootNode(di As DriveInfo) As TreeNode
+    Private Function GetDriveNode(di As DriveInfo) As TreeNode
 
-        Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
-        Dim used = di.TotalSize - di.AvailableFreeSpace
-        Dim bar = BuildUsageBar(used, di.TotalSize, 4)
+        'Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
+        'Dim used = di.TotalSize - di.AvailableFreeSpace
+        'Dim bar = BuildUsageBar(used, di.TotalSize, 4)
 
-        Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
+        'Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
 
         'Dim rootNode As New TreeNode(displayText) With {
         '    .Tag = di.RootDirectory.FullName
         '}
-        Dim driveNode As New TreeNode(displayText) With {
+
+
+        Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
             .Tag = di.RootDirectory.FullName
         }
 
@@ -5726,6 +5728,44 @@ Public Class Form1
         '        rootNode.SelectedImageKey = DriveKey
         '    End If
         'End If
+
+        '' Get and cache the drive icon, with fallback to generic icons if necessary
+        '' Set icon, with caching in the image list to avoid duplicates and improve performance
+        'If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+        '    Dim iconSize = GetScaledIconSize(Me)
+        '    Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
+        '    'Dim driveIcon As Icon = Nothing
+
+        '    If driveIcon IsNot Nothing Then
+        '        imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
+        '        driveNode.ImageKey = di.RootDirectory.FullName
+        '        driveNode.SelectedImageKey = di.RootDirectory.FullName
+        '    Else
+        '        ' Fallback to generic drive icon if we can't get the real one
+        '        If di.DriveType = DriveType.CDRom Then
+        '            driveNode.ImageKey = OpticalKey
+        '            driveNode.SelectedImageKey = OpticalKey
+        '        Else
+        '            driveNode.ImageKey = DriveKey
+        '            driveNode.SelectedImageKey = DriveKey
+        '        End If
+
+        '    End If
+
+        'Else
+
+        '    driveNode.ImageKey = di.RootDirectory.FullName
+        '    driveNode.SelectedImageKey = di.RootDirectory.FullName
+
+        'End If
+
+        SetDriveIcon(driveNode, di)
+
+        Return driveNode
+    End Function
+
+    Private Sub SetDriveIcon(driveNode As TreeNode, di As DriveInfo)
+        ' Get and cache the drive icon, with fallback to generic icons if necessary
 
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
         If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
@@ -5756,8 +5796,19 @@ Public Class Form1
 
         End If
 
-        Return driveNode
+    End Sub
+
+
+    Private Function GetDriveNodeText(di As DriveInfo) As String
+        Dim freeSpace As String = FormatSize(di.AvailableFreeSpace)
+        Dim used = di.TotalSize - di.AvailableFreeSpace
+        Dim bar = BuildUsageBar(used, di.TotalSize, 4)
+        'node.Text = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
+
+        Return String.Format("{0} - {1} {2} {3} free", di.Name, di.VolumeLabel, bar, freeSpace)
     End Function
+
+
 
     Private Function GetRecycleNode() As TreeNode
 
