@@ -5439,133 +5439,14 @@ Public Class Form1
         Return $"{bytes} B"
     End Function
 
-
-
-
-
-
-
-
-
-
-
     Private Sub UpdateTreeRoots()
         tvFolders.BeginUpdate()
         tvFolders.Nodes.Clear()
 
-
-
         ' ============================================================
-        ' EASY ACCESS ROOT
+        ' EASY ACCESS
         ' ============================================================
-
-        'Dim easyAccessNode As New TreeNode(EasyAccessString) With {
-        '    .ImageKey = EasyAccessKey,
-        '    .SelectedImageKey = EasyAccessKey,
-        '    .StateImageIndex = 0 ' Collapsed
-        '}
-
-        '' Special folders
-        'Dim specialFolders As (String, Environment.SpecialFolder)() = {
-        '    ("Documents", Environment.SpecialFolder.MyDocuments),
-        '    ("Music", Environment.SpecialFolder.MyMusic),
-        '    ("Pictures", Environment.SpecialFolder.MyPictures),
-        '    ("Videos", Environment.SpecialFolder.MyVideos),
-        '    ("Downloads", Environment.SpecialFolder.UserProfile), ' handled manually
-        '    ("Desktop", Environment.SpecialFolder.Desktop)
-        '}
-
-        'Dim IconSize = GetScaledIconSize(Me)
-
-
-        'For Each sf In specialFolders
-        '    Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
-
-        '    ' Fix Downloads path
-        '    If sf.Item1 = "Downloads" Then
-        '        specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
-        '    End If
-
-        '    If Directory.Exists(specialFolderPath) Then
-        '        Dim node As New TreeNode(sf.Item1) With {
-        '            .Tag = specialFolderPath
-        '        }
-
-        '        ' --- Real Explorer icon ---
-        '        'Dim icon = ShellInterop.GetIconForPath(specialFolderPath, ShellInterop.IconSize.Small)
-
-        '        'Dim size = GetScaledIconSize(Me)
-        '        'Dim IconSize = GetScaledIconSize(Me)
-
-        '        Dim icon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
-
-        '        If icon IsNot Nothing Then
-
-
-        '            'If Not imgList.Images.ContainsKey(specialFolderPath) Then
-        '            '    imgList.Images.Add(specialFolderPath, icon)
-        '            'End If
-        '            If Not imgList.Images.ContainsKey(specialFolderPath) Then
-        '                imgList.Images.Add(specialFolderPath, icon.ToBitmap())
-        '            End If
-
-        '            node.ImageKey = specialFolderPath
-        '            node.SelectedImageKey = specialFolderPath
-        '        Else
-        '            node.ImageKey = sf.Item1
-        '            node.SelectedImageKey = sf.Item1
-        '        End If
-
-        '        ' Expand arrow logic
-        '        If HasSubdirectories(specialFolderPath) Then
-        '            node.Nodes.Add("Loading...")
-        '            node.StateImageIndex = 0
-        '        Else
-        '            node.StateImageIndex = 2
-        '        End If
-
-        '        easyAccessNode.Nodes.Add(node)
-        '    End If
-        'Next
-
-        '' ============================================================
-        '' USER EASY ACCESS ENTRIES
-        '' ============================================================
-        'Dim userEntries = LoadEasyAccessEntries()
-
-        'For Each entry In userEntries
-        '    Dim node As New TreeNode(entry.Name) With {
-        '        .Tag = entry.Path
-        '    }
-
-        '    Dim icon = ShellInterop.GetIconForPath(entry.Path, IconSize)
-
-        '    If icon IsNot Nothing Then
-        '        If Not imgList.Images.ContainsKey(entry.Path) Then
-        '            imgList.Images.Add(entry.Path, icon)
-        '        End If
-        '        node.ImageKey = entry.Path
-        '        node.SelectedImageKey = entry.Path
-        '    Else
-        '        node.ImageKey = FolderKey
-        '        node.SelectedImageKey = FolderKey
-        '    End If
-
-        '    If HasSubdirectories(entry.Path) Then
-        '        node.Nodes.Add("Loading...")
-        '        node.StateImageIndex = 0 ' Collapsed
-        '    Else
-        '        node.StateImageIndex = 2 ' no arrow
-        '    End If
-
-        '    easyAccessNode.Nodes.Add(node)
-        'Next
-
-
-
-
-        Dim easyAccessNode = GetEasyAccessNode() ' This node is always present, even if there are no user entries, to serve as a container for special folders and user entries.
-
+        Dim easyAccessNode = GetEasyAccessNode()
         tvFolders.Nodes.Add(easyAccessNode)
         easyAccessNode.Expand()
         easyAccessNode.StateImageIndex = 1 ' Expanded
@@ -5589,9 +5470,9 @@ Public Class Form1
 
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         rootNode.Nodes.Add("Loading...")
-                        rootNode.StateImageIndex = 0
+                        rootNode.StateImageIndex = 0 ' Collapsed
                     Else
-                        rootNode.StateImageIndex = 2
+                        rootNode.StateImageIndex = 2 ' no arrow
                     End If
 
                     tvFolders.Nodes.Add(rootNode)
@@ -5613,8 +5494,6 @@ Public Class Form1
         tvFolders.EndUpdate()
 
     End Sub
-
-
 
     Private Function GetEasyAccessNode() As TreeNode
 
@@ -5638,7 +5517,6 @@ Public Class Form1
 
         Dim IconSize = GetScaledIconSize(Me)
 
-
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
 
@@ -5652,20 +5530,10 @@ Public Class Form1
                     .Tag = specialFolderPath
                 }
 
-                ' --- Real Explorer icon ---
-                'Dim icon = ShellInterop.GetIconForPath(specialFolderPath, ShellInterop.IconSize.Small)
-
-                'Dim size = GetScaledIconSize(Me)
-                'Dim IconSize = GetScaledIconSize(Me)
-
                 Dim icon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
 
                 If icon IsNot Nothing Then
 
-
-                    'If Not imgList.Images.ContainsKey(specialFolderPath) Then
-                    '    imgList.Images.Add(specialFolderPath, icon)
-                    'End If
                     If Not imgList.Images.ContainsKey(specialFolderPath) Then
                         imgList.Images.Add(specialFolderPath, icon.ToBitmap())
                     End If
@@ -5724,9 +5592,6 @@ Public Class Form1
 
         Return easyAccessNode
     End Function
-
-
-
 
     Private Function GetThisPCNode() As TreeNode
 
@@ -5816,16 +5681,6 @@ Public Class Form1
         Return node
     End Function
 
-
-
-
-
-
-
-
-
-
-
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
 
@@ -5838,21 +5693,6 @@ Public Class Form1
 
         Return name
     End Function
-
-    'Private Function FormatBytes(bytes As Long) As String
-    '    Dim absBytes As Double = Math.Abs(bytes)
-
-    '    ' Walk upward through SizeUnits until the next unit would be too large
-    '    Dim order As Integer = 0
-    '    While order < SizeUnits.Length - 1 AndAlso absBytes >= SizeUnits(order + 1).Factor
-    '        order += 1
-    '    End While
-
-    '    Dim value As Double = absBytes / SizeUnits(order).Factor
-    '    Dim formatted = $"{value:0.##} {SizeUnits(order).Unit}"
-
-    '    Return If(bytes < 0, "-" & formatted, formatted)
-    'End Function
 
     Public Function CanonicalizePath(inputPath As String) As String
         ' ============================================================
