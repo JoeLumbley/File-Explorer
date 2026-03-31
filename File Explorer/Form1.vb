@@ -5697,32 +5697,68 @@ Public Class Form1
 
         Dim displayText As String = $"{di.Name} - {di.VolumeLabel} {bar} {freeSpace} free"
 
-        Dim rootNode As New TreeNode(displayText) With {
+        'Dim rootNode As New TreeNode(displayText) With {
+        '    .Tag = di.RootDirectory.FullName
+        '}
+        Dim driveNode As New TreeNode(displayText) With {
             .Tag = di.RootDirectory.FullName
         }
 
-        ' --- drive icon ---
-        Dim IconSize = GetScaledIconSize(Me)
-        Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
 
-        If driveIcon IsNot Nothing Then
-            If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+
+        ' --- drive icon ---
+        'Dim IconSize = GetScaledIconSize(Me)
+        'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, IconSize)
+
+        'If driveIcon IsNot Nothing Then
+        '    If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+        '        imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
+        '    End If
+        '    rootNode.ImageKey = di.RootDirectory.FullName
+        '    rootNode.SelectedImageKey = di.RootDirectory.FullName
+        'Else
+        '    ' Fallback generic icons
+        '    If di.DriveType = DriveType.CDRom Then
+        '        rootNode.ImageKey = OpticalKey
+        '        rootNode.SelectedImageKey = OpticalKey
+        '    Else
+        '        rootNode.ImageKey = DriveKey
+        '        rootNode.SelectedImageKey = DriveKey
+        '    End If
+        'End If
+
+        ' Set icon, with caching in the image list to avoid duplicates and improve performance
+        If Not imgList.Images.ContainsKey(di.RootDirectory.FullName) Then
+            Dim iconSize = GetScaledIconSize(Me)
+            'Dim RecycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
+            Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
+
+            'thisPCIcon = ShellInterop.GetIconForPath(ThisPCKey, iconSize)
+
+            If driveIcon IsNot Nothing Then
                 imgList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
-            End If
-            rootNode.ImageKey = di.RootDirectory.FullName
-            rootNode.SelectedImageKey = di.RootDirectory.FullName
-        Else
-            ' Fallback generic icons
-            If di.DriveType = DriveType.CDRom Then
-                rootNode.ImageKey = OpticalKey
-                rootNode.SelectedImageKey = OpticalKey
+                driveNode.ImageKey = di.RootDirectory.FullName
+                driveNode.SelectedImageKey = di.RootDirectory.FullName
             Else
-                rootNode.ImageKey = DriveKey
-                rootNode.SelectedImageKey = DriveKey
+                ' Fallback to generic drive icon if we can't get the real one
+                driveNode.ImageKey = DriveKey
+                driveNode.SelectedImageKey = DriveKey
             End If
+
+        Else
+
+            driveNode.ImageKey = di.RootDirectory.FullName
+            driveNode.SelectedImageKey = di.RootDirectory.FullName
+
         End If
 
-        Return rootNode
+
+
+
+
+
+
+        Return driveNode
     End Function
 
     Private Function GetRecycleNode() As TreeNode
@@ -5730,21 +5766,6 @@ Public Class Form1
         Dim RecycleBinNode As New TreeNode(RecycleBinString) With {
             .Tag = RecycleBinGUID '"shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
         }
-
-        'Dim sizePix = GetScaledIconSize(Me)
-        'Dim rbIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, sizePix)
-
-        'If rbIcon IsNot Nothing Then
-        '    If Not imgList.Images.ContainsKey(RecycleBinKey) Then
-        '        imgList.Images.Add(RecycleBinKey, rbIcon.ToBitmap())
-        '    End If
-        '    node.ImageKey = RecycleBinKey
-        '    node.SelectedImageKey = RecycleBinKey
-        'Else
-        '    ' Fallback generic icons
-        '    node.ImageKey = RecycleKey
-        '    node.SelectedImageKey = RecycleKey
-        'End If
 
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
         If Not imgList.Images.ContainsKey(RecycleBinKey) Then
@@ -5769,8 +5790,6 @@ Public Class Form1
             RecycleBinNode.SelectedImageKey = RecycleBinKey
 
         End If
-
-
 
         Return RecycleBinNode
     End Function
