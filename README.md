@@ -46,7 +46,7 @@ The entire application is built around clarity, predictability, and emotional sa
 
 
 
-<img width="1266" height="733" alt="150" src="https://github.com/user-attachments/assets/07467f0b-635a-457b-b484-97dce1ea2868" />
+<img width="1266" height="733" alt="158" src="https://github.com/user-attachments/assets/e46c1de1-08b6-45ce-85bd-6dc9f899f8aa" />
 
 
 
