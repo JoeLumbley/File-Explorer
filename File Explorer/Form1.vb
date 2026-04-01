@@ -752,7 +752,7 @@ Public Class Form1
     Private Const ThisPCString As String = "This PC"
     Private Const ThisPCKey As String = "ThisPC"
     Private Const ThisPCPath As String = "shell:MyComputerFolder"
-    Private Const ComputerKey As String = "Computer"
+    Private Const FallbackThisPCKey As String = "FallbackThisPC"
 
     Private Const RecycleBinGUID As String = "shell:::{645FF040-5081-101B-9F08-00AA002F954E}"
     Private Const RecycleBinString As String = "Recycle Bin"
@@ -4189,23 +4189,6 @@ Public Class Form1
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
 
-        ' Determine DPI-scaled icon size
-        'Dim IconSize As Integer = imgList.ImageSize.Width
-
-        '' Request DPI-aware shell icon
-        'Dim icon = ShellInterop.GetIconForPath(di.FullName, pixelSize)
-
-
-        'If icon IsNot Nothing Then
-        '    If Not imgList.Images.ContainsKey(di.FullName) Then
-        '        imgList.Images.Add(di.FullName, icon)
-        '    End If
-        '    item.ImageKey = di.FullName
-        'Else
-        '    item.ImageKey = "Folder"
-        'End If
-
-
         If Not imgList.Images.ContainsKey(di.FullName) Then
 
             ' Set icon, with caching in the image list to avoid duplicates and improve performance
@@ -4239,21 +4222,6 @@ Public Class Form1
         item.SubItems.Add(FormatSize(fi.Length))
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
-
-        '' Determine DPI-scaled icon size
-        'Dim pixelSize As Integer = imgList.ImageSize.Width
-
-        '' Request DPI-aware shell icon
-        'Dim icon = ShellInterop.GetIconForPath(fi.FullName, pixelSize)
-
-        'If icon IsNot Nothing Then
-        '    If Not imgList.Images.ContainsKey(fi.FullName) Then
-        '        imgList.Images.Add(fi.FullName, icon)
-        '    End If
-        '    item.ImageKey = fi.FullName
-        'Else
-        '    item.ImageKey = imageKeyMap.GetValueOrDefault(category, "Documents")
-        'End If
 
         If Not ext = ".exe" Then
 
@@ -5637,26 +5605,27 @@ Public Class Form1
 
 
             ' Set icon, with caching in the image list to avoid duplicates and improve performance
-            If Not imgList.Images.ContainsKey(entry.Path) Then
+            If Not imgList.Images.ContainsKey(FolderKey) Then
 
-                Dim easyAccessIcon As Icon
+                Dim userEasyAccessIcon As Icon
 
-                easyAccessIcon = ShellInterop.GetIconForPath(entry.Path, IconSize)
+                'userEasyAccessIcon = ShellInterop.GetIconForPath(entry.Path, IconSize)
+                userEasyAccessIcon = IconLibrary.GenericFolder(IconSize)
 
-                If easyAccessIcon IsNot Nothing Then
-                    imgList.Images.Add(entry.Path, easyAccessIcon.ToBitmap())
-                    node.ImageKey = entry.Path
-                    node.SelectedImageKey = entry.Path
-                Else
-                    ' Fallback to generic folder icon
+
+                If userEasyAccessIcon IsNot Nothing Then
+                    imgList.Images.Add(FolderKey, userEasyAccessIcon.ToBitmap())
                     node.ImageKey = FolderKey
                     node.SelectedImageKey = FolderKey
+                Else
+                    node.ImageKey = FallbackFolderKey
+                    node.SelectedImageKey = FallbackFolderKey
                 End If
 
             Else
 
-                node.ImageKey = entry.Path
-                node.SelectedImageKey = entry.Path
+                node.ImageKey = FolderKey
+                node.SelectedImageKey = FolderKey
 
             End If
 
@@ -5677,6 +5646,7 @@ Public Class Form1
             End If
 
             easyAccessNode.Nodes.Add(node)
+
         Next
 
         Return easyAccessNode
@@ -5722,9 +5692,8 @@ Public Class Form1
                 thisPCNode.ImageKey = ThisPCKey
                 thisPCNode.SelectedImageKey = ThisPCKey
             Else
-                ' Fallback to generic computer icon if we can't get the real one
-                thisPCNode.ImageKey = ComputerKey
-                thisPCNode.SelectedImageKey = ComputerKey
+                thisPCNode.ImageKey = FallbackThisPCKey
+                thisPCNode.SelectedImageKey = FallbackThisPCKey
             End If
 
         Else
@@ -5757,8 +5726,8 @@ Public Class Form1
             Else
                 ' Fallback to generic computer icon if we can't get the real one
 
-                thisPCNode.ImageKey = ComputerKey
-                thisPCNode.SelectedImageKey = ComputerKey
+                thisPCNode.ImageKey = FallbackThisPCKey
+                thisPCNode.SelectedImageKey = FallbackThisPCKey
 
             End If
 
@@ -8593,7 +8562,7 @@ Public Class Form1
         imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
         imgList.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
-        imgList.Images.Add(ComputerKey, My.Resources.Resource1.Computer_16X16)
+        imgList.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
 
         ' Assign ImageList to controls
         tvFolders.ImageList = imgList
