@@ -1,11 +1,11 @@
-﻿' Result of an icon request: the icon and where it came from.
-' This keeps the API honest and debuggable.
-Public Class IconResult
+﻿'' Result of an icon request: the icon and where it came from.
+'' This keeps the API honest and debuggable.
+'Public Class IconResult
 
-    ' The icon to display.
-    Public Property Icon As Icon
+'    ' The icon to display.
+'    Public Property Icon As Icon
 
-    ' The source of the icon (cache, shell, placeholder, etc.).
-    Public Property Source As IconSourceKind
+'    ' The source of the icon (cache, shell, placeholder, etc.).
+'    Public Property Source As IconSourceKind
 
-End Class
+'End Class

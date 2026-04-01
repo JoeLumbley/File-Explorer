@@ -131,7 +131,7 @@ Partial Class Form1
         ' btnPin
         ' 
         btnPin.Anchor = AnchorStyles.Right
-        btnPin.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnPin.Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnPin.Location = New Point(765, 0)
         btnPin.Name = "btnPin"
         btnPin.Size = New Size(30, 28)
@@ -143,7 +143,7 @@ Partial Class Form1
         ' btnNewTextFile
         ' 
         btnNewTextFile.Anchor = AnchorStyles.Right
-        btnNewTextFile.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnNewTextFile.Font = New Font("Segoe UI Semibold", 6.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         btnNewTextFile.Location = New Point(829, 0)
         btnNewTextFile.Name = "btnNewTextFile"
         btnNewTextFile.Size = New Size(30, 28)
@@ -155,7 +155,7 @@ Partial Class Form1
         ' btnPaste
         ' 
         btnPaste.Anchor = AnchorStyles.Right
-        btnPaste.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnPaste.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnPaste.Location = New Point(924, 0)
         btnPaste.Name = "btnPaste"
         btnPaste.Size = New Size(30, 28)
@@ -167,7 +167,7 @@ Partial Class Form1
         ' btnCut
         ' 
         btnCut.Anchor = AnchorStyles.Right
-        btnCut.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnCut.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnCut.Location = New Point(862, 0)
         btnCut.Name = "btnCut"
         btnCut.Size = New Size(30, 28)
@@ -179,7 +179,7 @@ Partial Class Form1
         ' btnCopy
         ' 
         btnCopy.Anchor = AnchorStyles.Right
-        btnCopy.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnCopy.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnCopy.Location = New Point(893, 0)
         btnCopy.Name = "btnCopy"
         btnCopy.Size = New Size(30, 28)
@@ -190,7 +190,7 @@ Partial Class Form1
         ' 
         ' btnRefresh
         ' 
-        btnRefresh.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnRefresh.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnRefresh.Location = New Point(62, 0)
         btnRefresh.Name = "btnRefresh"
         btnRefresh.Size = New Size(30, 28)
@@ -202,7 +202,7 @@ Partial Class Form1
         ' bntHome
         ' 
         bntHome.Anchor = AnchorStyles.Left
-        bntHome.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        bntHome.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         bntHome.Location = New Point(93, 0)
         bntHome.Name = "bntHome"
         bntHome.Size = New Size(30, 28)
@@ -214,7 +214,7 @@ Partial Class Form1
         ' btnNewFolder
         ' 
         btnNewFolder.Anchor = AnchorStyles.Right
-        btnNewFolder.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnNewFolder.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnNewFolder.ForeColor = Color.Orange
         btnNewFolder.Location = New Point(798, 0)
         btnNewFolder.Name = "btnNewFolder"
@@ -227,7 +227,7 @@ Partial Class Form1
         ' btnRename
         ' 
         btnRename.Anchor = AnchorStyles.Right
-        btnRename.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnRename.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnRename.ForeColor = SystemColors.ControlText
         btnRename.Location = New Point(955, 0)
         btnRename.Name = "btnRename"
@@ -240,7 +240,7 @@ Partial Class Form1
         ' btnDelete
         ' 
         btnDelete.Anchor = AnchorStyles.Right
-        btnDelete.Font = New Font("Segoe UI Symbol", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnDelete.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnDelete.ForeColor = Color.Black
         btnDelete.Location = New Point(986, 0)
         btnDelete.Name = "btnDelete"
@@ -263,7 +263,7 @@ Partial Class Form1
         ' btnForward
         ' 
         btnForward.Anchor = AnchorStyles.Left
-        btnForward.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnForward.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnForward.Location = New Point(31, 0)
         btnForward.Name = "btnForward"
         btnForward.Size = New Size(30, 28)
@@ -275,7 +275,7 @@ Partial Class Form1
         ' btnBack
         ' 
         btnBack.Anchor = AnchorStyles.Left
-        btnBack.Font = New Font("Segoe UI Symbol", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnBack.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnBack.Location = New Point(0, 0)
         btnBack.Name = "btnBack"
         btnBack.Size = New Size(30, 28)
@@ -287,7 +287,7 @@ Partial Class Form1
         ' btnGo
         ' 
         btnGo.Anchor = AnchorStyles.Right
-        btnGo.Font = New Font("Segoe UI Symbol", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        btnGo.Font = New Font("Segoe UI Semibold", 6.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         btnGo.Location = New Point(734, 0)
         btnGo.Name = "btnGo"
         btnGo.Size = New Size(30, 28)
@@ -302,6 +302,7 @@ Partial Class Form1
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1264, 701)
         Controls.Add(SplitContainer1)
+        Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Name = "Form1"
         Text = "Form1"
         SplitContainer1.Panel1.ResumeLayout(False)

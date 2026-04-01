@@ -758,7 +758,7 @@ Public Class Form1
     Private Const RecycleBinString As String = "Recycle Bin"
     Private Const RecycleBinKey As String = "RecycleBin"
     Private Const RecycleBinPath As String = "shell:RecycleBinFolder"
-    Private Const RecycleKey As String = "Recycle"
+    Private Const FallbackRecycleBinKey As String = "Recycle"
 
     Private Const OpticalKey As String = "Optical"
     Private Const DriveKey As String = "Drive"
@@ -769,8 +769,11 @@ Public Class Form1
     Private Const EasyAccessKey As String = "EasyAccess"
 
 
-    Private Const FallbackDocumentKey As String = "Documents"
-    Private Const FallbackExecutableKey As String = "FallbackExecutable"
+    Private Const FileKey As String = "File"
+    Private Const FallbackFileKey As String = "FallbackFile"
+
+    Private Const ExecutableKey As String = "FallbackExecutable"
+    'Private Const FileKey As String = "File"
 
 
 
@@ -3946,15 +3949,15 @@ Public Class Form1
     End Sub
 
 
-    Private Sub ExpandNode_LazyLoad(node As TreeNode)
+    Private Sub ExpandNode_LazyLoad(expandingNode As TreeNode)
 
         ' Only lazy-load if placeholder exists
-        If node.Nodes.Count = 1 AndAlso node.Nodes(0).Text = "Loading..." Then
+        If expandingNode.Nodes.Count = 1 AndAlso expandingNode.Nodes(0).Text = "Loading..." Then
 
             tvFolders.BeginUpdate()
-            node.Nodes.Clear()
+            expandingNode.Nodes.Clear()
 
-            Dim basePath As String = CStr(node.Tag)
+            Dim basePath As String = CStr(expandingNode.Tag)
 
             Try
                 For Each dirPath In Directory.GetDirectories(basePath)
@@ -3969,21 +3972,40 @@ Public Class Form1
                         .Tag = dirPath
                     }
 
-                    ' DPI-aware icon size
-                    Dim pixelSize As Integer = imgIconCache.ImageSize.Width
+                    '' DPI-aware icon size
+                    Dim iconSize As Integer = imgIconCache.ImageSize.Width
 
-                    ' Real Explorer icon
-                    Dim icon = ShellInterop.GetIconForPath(dirPath, pixelSize)
+                    '' Real Explorer icon
+                    'Dim icon = ShellInterop.GetIconForPath(dirPath, pixelSize)
 
-                    If icon IsNot Nothing Then
-                        If Not imgIconCache.Images.ContainsKey(dirPath) Then
-                            imgIconCache.Images.Add(dirPath, icon)
+                    'If icon IsNot Nothing Then
+                    '    If Not imgIconCache.Images.ContainsKey(dirPath) Then
+                    '        imgIconCache.Images.Add(dirPath, icon)
+                    '    End If
+                    '    child.ImageKey = dirPath
+                    '    child.SelectedImageKey = dirPath
+                    'Else
+                    '    child.ImageKey = "Folder"
+                    '    child.SelectedImageKey = "Folder"
+                    'End If
+
+
+                    ' Set icon, with caching in the image list to avoid duplicates and improve performance
+                    If Not imgIconCache.Images.ContainsKey(FolderKey) Then
+                        Dim folderIcon = IconLibrary.GenericFolder(iconSize)
+                        'Dim userEasyAccessIcon = Nothing
+
+                        If folderIcon IsNot Nothing Then
+                            imgIconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+                            child.ImageKey = FolderKey
+                            child.SelectedImageKey = FolderKey
+                        Else
+                            child.ImageKey = FallbackFolderKey
+                            child.SelectedImageKey = FallbackFolderKey
                         End If
-                        child.ImageKey = dirPath
-                        child.SelectedImageKey = dirPath
                     Else
-                        child.ImageKey = "Folder"
-                        child.SelectedImageKey = "Folder"
+                        child.ImageKey = FolderKey
+                        child.SelectedImageKey = FolderKey
                     End If
 
                     ' Expand arrow logic
@@ -3994,15 +4016,15 @@ Public Class Form1
                         child.StateImageIndex = 2   ' no arrow
                     End If
 
-                    node.Nodes.Add(child)
+                    expandingNode.Nodes.Add(child)
                 Next
 
             Catch ex As UnauthorizedAccessException
-                node.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
+                expandingNode.Nodes.Add(New TreeNode("[Access denied]") With {.ForeColor = Color.Gray})
                 Debug.WriteLine($"[Access denied]: {ex.Message}")
 
             Catch ex As IOException
-                node.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
+                expandingNode.Nodes.Add(New TreeNode("[Unavailable]") With {.ForeColor = Color.Gray})
                 Debug.WriteLine($"[Unavailable]: {ex.Message}")
 
             Catch ex As Exception
@@ -4011,7 +4033,7 @@ Public Class Form1
         End If
 
         ' Set expanded icon
-        node.StateImageIndex = 1   ' ▼ expanded
+        expandingNode.StateImageIndex = 1   ' ▼ expanded
 
         tvFolders.EndUpdate()
 
@@ -4223,12 +4245,39 @@ Public Class Form1
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
 
-        If Not ext = ".exe" Then
+        Dim IconSize As Integer = GetScaledIconSize(Me)
+
+        If ext = "" Then
+
+            'item.ImageKey = DocumentKey
+
+            If Not imgIconCache.Images.ContainsKey(FileKey) Then
+
+                'Dim fileIcon As Icon
+                'Dim IconSize As Integer = GetScaledIconSize(Me)
+                'documentIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                Dim fileIcon = IconLibrary.GenericFile(IconSize)
+                'Dim fileIcon = Nothing
+
+                'fileExtensionIcon = Nothing
+
+                If fileIcon IsNot Nothing Then
+                    imgIconCache.Images.Add(FileKey, fileIcon.ToBitmap())
+                    item.ImageKey = FileKey
+                Else
+                    item.ImageKey = FallbackFileKey
+                End If
+            Else
+                item.ImageKey = FileKey
+            End If
+
+
+        ElseIf Not ext = ".exe" Then
 
             If Not imgIconCache.Images.ContainsKey(ext) Then
 
                 Dim fileExtensionIcon As Icon
-                Dim IconSize As Integer = GetScaledIconSize(Me)
+                'Dim IconSize As Integer = GetScaledIconSize(Me)
                 fileExtensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
                 'fileExtensionIcon = Nothing
 
@@ -4236,7 +4285,7 @@ Public Class Form1
                     imgIconCache.Images.Add(ext, fileExtensionIcon.ToBitmap())
                     item.ImageKey = ext
                 Else
-                    item.ImageKey = FallbackDocumentKey
+                    item.ImageKey = FileKey
                 End If
             Else
                 item.ImageKey = ext
@@ -4247,7 +4296,7 @@ Public Class Form1
             If Not imgIconCache.Images.ContainsKey(fi.FullName) Then
 
                 Dim exeFileIcon As Icon
-                Dim IconSize As Integer = GetScaledIconSize(Me)
+                'Dim IconSize As Integer = GetScaledIconSize(Me)
                 exeFileIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
                 'exeFileIcon = Nothing
 
@@ -4255,7 +4304,7 @@ Public Class Form1
                     imgIconCache.Images.Add(fi.FullName, exeFileIcon.ToBitmap())
                     item.ImageKey = fi.FullName
                 Else
-                    item.ImageKey = FallbackExecutableKey
+                    item.ImageKey = ExecutableKey
                 End If
             Else
                 item.ImageKey = fi.FullName
@@ -5687,15 +5736,15 @@ Public Class Form1
         If Not imgIconCache.Images.ContainsKey(RecycleBinKey) Then
             Dim iconSize = GetScaledIconSize(Me)
             Dim RecycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
+            'Dim RecycleBinIcon = Nothing
 
             If RecycleBinIcon IsNot Nothing Then
                 imgIconCache.Images.Add(RecycleBinKey, RecycleBinIcon.ToBitmap())
                 RecycleBinNode.ImageKey = RecycleBinKey
                 RecycleBinNode.SelectedImageKey = RecycleBinKey
             Else
-                ' Fallback to generic recycle icon if we can't get the real one
-                RecycleBinNode.ImageKey = RecycleKey
-                RecycleBinNode.SelectedImageKey = RecycleKey
+                RecycleBinNode.ImageKey = FallbackRecycleBinKey
+                RecycleBinNode.SelectedImageKey = FallbackRecycleBinKey
             End If
 
         Else
@@ -6081,7 +6130,7 @@ Public Class Form1
 
         Me.CenterToScreen()
 
-        AddHandler IconEngine.IconAvailable, AddressOf OnIconAvailable
+        'AddHandler IconEngine.IconAvailable, AddressOf OnIconAvailable
 
         ConfigureTooltips()
 
@@ -8405,7 +8454,7 @@ Public Class Form1
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
         imgIconCache.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
         imgIconCache.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
-        imgIconCache.Images.Add(FallbackDocumentKey, My.Resources.Resource1.Documents_16X16)
+        imgIconCache.Images.Add(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
 
         imgIconCache.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
         imgIconCache.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
@@ -8415,13 +8464,15 @@ Public Class Form1
         imgIconCache.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
         imgIconCache.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
-        imgIconCache.Images.Add(FallbackExecutableKey, My.Resources.Resource1.Executable_16X16)
+        imgIconCache.Images.Add(ExecutableKey, My.Resources.Resource1.Executable_16X16)
         imgIconCache.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
         imgIconCache.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
         imgIconCache.Images.Add("Error", My.Resources.Resource1.Error_16X16)
         imgIconCache.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
         imgIconCache.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+
+        imgIconCache.Images.Add(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
 
         ' Assign ImageList to controls
         tvFolders.ImageList = imgIconCache
