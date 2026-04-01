@@ -4249,20 +4249,14 @@ Public Class Form1
 
         If ext = "" Then
 
-            'item.ImageKey = DocumentKey
-
             If Not imgIconCache.Images.ContainsKey(FileKey) Then
 
-                'Dim fileIcon As Icon
-                'Dim IconSize As Integer = GetScaledIconSize(Me)
-                'documentIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
                 Dim fileIcon = IconLibrary.GenericFile(IconSize)
                 'Dim fileIcon = Nothing
 
-                'fileExtensionIcon = Nothing
-
                 If fileIcon IsNot Nothing Then
                     imgIconCache.Images.Add(FileKey, fileIcon.ToBitmap())
+                    ' use generic file icon for no-extension files
                     item.ImageKey = FileKey
                 Else
                     item.ImageKey = FallbackFileKey
@@ -4276,13 +4270,12 @@ Public Class Form1
 
             If Not imgIconCache.Images.ContainsKey(ext) Then
 
-                Dim fileExtensionIcon As Icon
-                'Dim IconSize As Integer = GetScaledIconSize(Me)
-                fileExtensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
-                'fileExtensionIcon = Nothing
+                Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                'Dim fileExtensionIcon = Nothing
 
-                If fileExtensionIcon IsNot Nothing Then
-                    imgIconCache.Images.Add(ext, fileExtensionIcon.ToBitmap())
+                If extensionIcon IsNot Nothing Then
+                    imgIconCache.Images.Add(ext, extensionIcon.ToBitmap())
+                    ' use extension as key to group same-type files
                     item.ImageKey = ext
                 Else
                     item.ImageKey = FileKey
@@ -4295,13 +4288,12 @@ Public Class Form1
 
             If Not imgIconCache.Images.ContainsKey(fi.FullName) Then
 
-                Dim exeFileIcon As Icon
-                'Dim IconSize As Integer = GetScaledIconSize(Me)
-                exeFileIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
-                'exeFileIcon = Nothing
+                Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                'Dim exeFileIcon = Nothing
 
-                If exeFileIcon IsNot Nothing Then
-                    imgIconCache.Images.Add(fi.FullName, exeFileIcon.ToBitmap())
+                If executableIcon IsNot Nothing Then
+                    imgIconCache.Images.Add(fi.FullName, executableIcon.ToBitmap())
+                    ' use full path as key to preserve unique icons for different executables
                     item.ImageKey = fi.FullName
                 Else
                     item.ImageKey = ExecutableKey
@@ -4560,69 +4552,6 @@ Public Class Form1
     End Function
 
 
-    'Private Function ResolveDestinationPathWithAutoRename(initialPath As String, isDir As Boolean) As String
-    '    ' ------------------------------------------------------------
-    '    ' Helper: auto‑rename for files + directories
-    '    ' (pure path resolver, no IO side‑effects)
-    '    ' ------------------------------------------------------------
-
-    '    Dim folder = Path.GetDirectoryName(initialPath)
-    '    Dim baseName = Path.GetFileNameWithoutExtension(initialPath)
-    '    Dim ext = Path.GetExtension(initialPath)
-
-    '    Dim candidate = initialPath
-    '    Dim counter = 1
-
-    '    While File.Exists(candidate) OrElse Directory.Exists(candidate)
-    '        If isDir Then
-    '            candidate = Path.Combine(folder, $"{baseName} ({counter})")
-    '        Else
-    '            candidate = Path.Combine(folder, $"{baseName} ({counter}){ext}")
-    '        End If
-    '        counter += 1
-    '    End While
-
-    '    Return candidate
-
-    'End Function
-
-    'Public Async Function CopyFile(
-    '    source As String,
-    '    destination As String,
-    '    ct As CancellationToken
-    ') As Task(Of CopyResult)
-
-    '    Dim result As New CopyResult()
-
-    '    Try
-    '        ct.ThrowIfCancellationRequested()
-
-    '        Await Task.Run(Sub()
-    '                           ct.ThrowIfCancellationRequested()
-    '                           IO.File.Copy(source, destination, overwrite:=False)
-    '                       End Sub, ct)
-
-    '        result.FilesCopied = 1
-
-    '    Catch ex As OperationCanceledException
-    '        Throw   ' bubble up to orchestrator
-
-    '    Catch ex As IOException
-    '        result.FilesSkipped = 1
-    '        result.Errors.Add("I/O error copying file: " & source & " → " & destination & " - " & ex.Message)
-
-    '    Catch ex As UnauthorizedAccessException
-    '        result.FilesSkipped = 1
-    '        result.Errors.Add("Unauthorized copying file: " & source & " - " & ex.Message)
-
-    '    Catch ex As Exception
-    '        result.FilesSkipped = 1
-    '        result.Errors.Add("Copy failed for file: " & source & " - " & ex.Message)
-    '    End Try
-
-    '    Return result
-    'End Function
-
     Private Function IsFileLocked(file As FileInfo) As Boolean
         Try
             Using stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None)
@@ -4764,21 +4693,6 @@ Public Class Form1
     Private Sub RenameFileOrDirectory(sourcePath As String, newName As String)
         PerformRename(sourcePath, newName)
     End Sub
-
-    'Private Function SearchHelp(term As String) As List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-    '    term = term.Trim().ToLowerInvariant()
-    '    If term = "" Then Return CommandHelp.ToList()
-
-    '    Return CommandHelp.
-    '    Where(Function(entry)
-    '              Dim meta = entry.Value
-    '              Return entry.Key.ToLower().Contains(term) _
-    '                  OrElse meta.Aliases.Any(Function(a) a.ToLower().Contains(term)) _
-    '                  OrElse meta.Usage.ToLower().Contains(term) _
-    '                  OrElse meta.Description.ToLower().Contains(term)
-    '          End Function).
-    '    ToList()
-    'End Function
 
     Private Sub OnlySearchForFilesInCurrentFolder(searchTerm As String)
         ' =============================================================
@@ -4932,22 +4846,6 @@ Public Class Form1
     End Sub
 
 
-    'Private Sub HighlightSearchMatches()
-    '    'Dim highlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
-
-    '    lvFiles.BeginUpdate()
-
-    '    ' Apply highlight to matched items
-    '    For Each path As String In SearchResults
-    '        Dim item As ListViewItem = FindListViewItemByPath(path)
-    '        If item IsNot Nothing Then
-    '            item.BackColor = BlueHighlightColor
-    '        End If
-    '    Next
-
-    '    lvFiles.EndUpdate()
-    'End Sub
-
     Private Sub RestoreBackground()
         'lvFiles.BeginUpdate()
 
@@ -4957,22 +4855,6 @@ Public Class Form1
 
         'lvFiles.EndUpdate()
     End Sub
-
-    'Private Sub HighlightCurrentResult()
-    '    If SearchResults.Count = 0 Then Exit Sub
-
-    '    Dim currentPath As String = SearchResults(SearchIndex)
-    '    Dim item As ListViewItem = FindListViewItemByPath(currentPath)
-    '    If item Is Nothing Then Exit Sub
-
-    '    '' Orange hilite 
-    '    'Dim focusColor As Color = Color.FromArgb(255, 203, 107)
-
-    '    lvFiles.BeginUpdate()
-    '    item.BackColor = OrangeHighlightColor
-    '    lvFiles.EndUpdate()
-
-    'End Sub
 
     Private Function FindListViewItemByPath(fullPath As String) As ListViewItem
         For Each item As ListViewItem In lvFiles.Items
@@ -6170,153 +6052,6 @@ Public Class Form1
     End Sub
 
 
-
-    'Private Sub OnIconAvailable(request As IconRequest, icon As Icon)
-    '    If Me.InvokeRequired Then
-    '        Me.BeginInvoke(New Action(Of IconRequest, Icon)(AddressOf OnIconAvailable), request, icon)
-    '        Return
-    '    End If
-
-    '    Dim key = IconCache.BuildKey(request).ToString()
-
-    '    ' Update ImageList
-    '    If imgList.Images.ContainsKey(key) Then
-    '        imgList.Images(key) = icon.ToBitmap()
-    '    Else
-    '        imgList.Images.Add(key, icon)
-    '    End If
-
-    '    ' Update ListView item
-    '    For Each item As ListViewItem In lvFiles.Items
-    '        If String.Equals(item.Tag?.ToString(), request.FullPath, StringComparison.OrdinalIgnoreCase) Then
-    '            item.ImageKey = key
-    '            Exit For
-    '        End If
-    '    Next
-    'End Sub
-
-
-
-    Private Sub OnIconAvailable(request As IconRequest, icon As Icon)
-        If Me.InvokeRequired Then
-            Me.BeginInvoke(New Action(Of IconRequest, Icon)(AddressOf OnIconAvailable), request, icon)
-            Return
-        End If
-
-        Dim key = IconCache.BuildKey(request).ToString()
-
-        ' Replace icon safely
-        If imgIconCache.Images.ContainsKey(key) Then
-            imgIconCache.Images.RemoveByKey(key)
-        End If
-        imgIconCache.Images.Add(key, icon)
-
-        ' Update ListView item
-        For Each item As ListViewItem In lvFiles.Items
-            If String.Equals(item.Tag?.ToString(), request.FullPath, StringComparison.OrdinalIgnoreCase) Then
-                item.ImageKey = key
-                Exit For
-            End If
-        Next
-    End Sub
-
-
-
-    'Private Sub OnIconAvailable(request As IconRequest, icon As Icon)
-    '    If Me.InvokeRequired Then
-    '        Me.BeginInvoke(New Action(Of IconRequest, Icon)(AddressOf OnIconAvailable), request, icon)
-    '        Return
-    '    End If
-
-    '    ' Update the ImageList
-    '    Dim key = request.CacheKeyString
-    '    If Not imgList.Images.ContainsKey(key) Then
-    '        imgList.Images.Add(key, icon)
-    '    Else
-    '        imgList.Images.Add(key, icon)
-    '    End If
-
-    '    ' Refresh the ListView item that uses this icon
-    '    RefreshListViewItemForIcon(request)
-    'End Sub
-
-    'Private Sub RefreshListViewItemForIcon(request As IconRequest)
-    '    For Each item As ListViewItem In lvFiles.Items
-    '        If String.Equals(item.Tag?.ToString(), request.FullPath, StringComparison.OrdinalIgnoreCase) Then
-    '            item.ImageKey = request.CacheKeyString
-    '            Exit For
-    '        End If
-    '    Next
-    'End Sub
-    'Private Sub HandleHelpCommand(parts As String())
-    '    Try
-    '        ' Set font for help text box
-    '        HelpTextBox.Font = New Font("Segoe UI", 11, FontStyle.Regular)
-
-    '        ' Extract and clean up the terms from the command
-    '        Dim terms = parts.Skip(1).
-    '                      Select(Function(t) t.Trim()).
-    '                      Where(Function(t) t <> "").
-    '                      ToList()
-
-    '        ' Handle special case for keyboard shortcuts
-    '        If terms.Count = 1 Then
-    '            Dim t = terms(0).ToLowerInvariant()
-    '            If t = "keys" OrElse t = "shortcuts" Then
-    '                HelpHeaderLabel.Text = "Keyboard Shortcuts"
-    '                HelpTextBox.Text = BuildShortcutsHelp()
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-    '        End If
-
-    '        ' Prepare to search for help entries
-    '        Dim entries As IEnumerable(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String()))) = Nothing
-
-    '        If terms.Count > 0 Then
-    '            Dim filtered As New List(Of KeyValuePair(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())))
-
-    '            ' Search for each term and aggregate results
-    '            For Each term In terms
-    '                filtered = filtered.Union(SearchHelp(term)).ToList()
-    '            Next
-
-    '            ' Check if any results were found
-    '            If filtered.Count = 0 Then
-    '                HelpHeaderLabel.Text = $"No results for ""{String.Join(" ", terms)}"""
-    '                HelpTextBox.Text = "No matching commands were found."
-    '                ShowHelpPanelAnimated()
-    '                FocusHelpText()
-    '                RestoreAddressBar()
-    '                Return
-    '            End If
-
-    '            entries = filtered
-    '            HelpHeaderLabel.Text = $"Help: {String.Join(" ", terms)}"
-    '        Else
-    '            HelpHeaderLabel.Text = "Command Reference"
-    '        End If
-
-    '        ' Build and display the help text
-    '        Dim text As String = BuildHelpText(entries)
-    '        HelpTextBox.Text = text
-
-    '        ' Show help panel if not already visible
-    '        If Not HelpPanel.Visible Then
-    '            ShowHelpPanelAnimated()
-    '        End If
-    '        FocusHelpText()
-
-    '    Catch ex As Exception
-    '        ' Display error message if an exception occurs
-    '        ShowStatus(StatusPad & IconError & " Failed to display help information: " & ex.Message)
-    '    Finally
-    '        RestoreAddressBar()
-    '    End Try
-    'End Sub
-
     Private Sub HandleHelpCommand(parts As String())
 
         Try
@@ -6424,209 +6159,6 @@ Public Class Form1
             RestoreAddressBar()
         End Try
     End Sub
-
-
-    '    Private ReadOnly CommandHelp As New Dictionary(Of String, CommandInfo) From {
-    '    {"cd",
-    '        New CommandInfo With {
-    '            .Aliases = {"cd"},
-    '            .Usage = "cd [directory]",
-    '            .Description = "Change directory to the specified path.",
-    '            .Examples = {
-    '                "cd C:\",
-    '                "cd ""C:\My Folder"""
-    '            },
-    '            .Category = CommandCategory.Navigation
-    '        }
-    '    },
-    '    {"copy",
-    '        New CommandInfo With {
-    '            .Aliases = {"copy", "cp"},
-    '            .Usage = "copy [source] [destination]",
-    '            .Description = "Copy a file or folder to a destination folder.",
-    '            .Examples = {
-    '                "copy C:\folderA\file.doc C:\folderB",
-    '                "copy ""C:\folder A"" ""C:\folder B"""
-    '            },
-    '            .Category = CommandCategory.FileOperations
-    '        }
-    '    },
-    '    {"delete",
-    '        New CommandInfo With {
-    '            .Aliases = {"delete", "rm"},
-    '            .Usage = "delete [file_or_directory]",
-    '            .Description = "Delete a file or folder.",
-    '            .Examples = {
-    '                "delete C:\file.txt",
-    '                "delete ""C:\My Folder"""
-    '            },
-    '            .Category = CommandCategory.FileOperations
-    '        }
-    '    },
-    '    {"df",
-    '        New CommandInfo With {
-    '            .Aliases = {"df"},
-    '            .Usage = "df <drive_letter>:",
-    '            .Description = "Display the available free space on the specified drive.",
-    '            .Examples = {"df C:", "df D:", "df E:"},
-    '            .Category = CommandCategory.System
-    '        }
-    '    },
-    '    {"drives",
-    '        New CommandInfo With {
-    '            .Aliases = {"drives"},
-    '            .Usage = "drives",
-    '            .Description = "Show an overview of all drives, including free space bars.",
-    '            .Examples = {"drives"},
-    '            .Category = CommandCategory.System
-    '        }
-    '    },
-    '    {"exit",
-    '        New CommandInfo With {
-    '            .Aliases = {
-    '                "exit", "quit", "close", "stop", "halt", "end",
-    '                "signout", "poweroff", "bye", "shutdown", "logoff",
-    '                "terminate", "leave", "farewell", "adios", "ciao",
-    '                "sayonara", "goodbye", "later"
-    '            },
-    '            .Usage = "exit",
-    '            .Description = "Exit the application.",
-    '            .Examples = {"exit"},
-    '            .Category = CommandCategory.System
-    '        }
-    '    },
-    '    {"find",
-    '        New CommandInfo With {
-    '            .Aliases = {"find", "search"},
-    '            .Usage = "find [search_term]",
-    '            .Description = "Search for files and folders in the current directory.",
-    '            .Examples = {"find document"},
-    '            .Category = CommandCategory.Search
-    '        }
-    '    },
-    '    {"findnext",
-    '        New CommandInfo With {
-    '            .Aliases = {"findnext", "searchnext", "next"},
-    '            .Usage = "findnext",
-    '            .Description = "Show the next search result from the previous search.",
-    '            .Examples = {"findnext"},
-    '            .Category = CommandCategory.Search
-    '        }
-    '    },
-    '    {"help",
-    '        New CommandInfo With {
-    '            .Aliases = {"help", "commands", "?"},
-    '            .Usage = "help [search_term]",
-    '            .Description = "Show the full command list or jump to a specific command.",
-    '            .Examples = {
-    '                "help",
-    '                "help cd",
-    '                "help copy"
-    '            },
-    '            .Category = CommandCategory.Help
-    '        }
-    '    },
-    '    {"man",
-    '        New CommandInfo With {
-    '            .Aliases = {"man", "manual", "appmanual"},
-    '            .Usage = "man [section]",
-    '            .Description = "Show the full application manual or jump to a specific section.",
-    '            .Examples = {
-    '                "man",
-    '                "man help",
-    '                "man commands",
-    '                "manual",
-    '                "appmanual"
-    '            },
-    '            .Category = CommandCategory.Help
-    '        }
-    '    },
-    '    {"mkdir",
-    '        New CommandInfo With {
-    '            .Aliases = {"mkdir", "make", "md"},
-    '            .Usage = "mkdir [directory_path]",
-    '            .Description = "Create a new folder.",
-    '            .Examples = {
-    '                "mkdir C:\newfolder",
-    '                "make ""C:\My New Folder""",
-    '                "md C:\anotherfolder"
-    '            },
-    '            .Category = CommandCategory.FileOperations
-    '        }
-    '    },
-    '    {"move",
-    '        New CommandInfo With {
-    '            .Aliases = {"move", "mv"},
-    '            .Usage = "move [source] [destination]",
-    '            .Description = "Move a file or folder to a new location.",
-    '            .Examples = {
-    '                "move C:\folderA\file.doc C:\folderB\file.doc",
-    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-    '            },
-    '            .Category = CommandCategory.FileOperations
-    '        }
-    '    },
-    '    {"open",
-    '        New CommandInfo With {
-    '            .Aliases = {"open"},
-    '            .Usage = "open [file_or_directory]",
-    '            .Description = "Open a file or navigate into a folder.",
-    '            .Examples = {
-    '                "open C:\folder\file.txt",
-    '                "open ""C:\My Folder"""
-    '            },
-    '            .Category = CommandCategory.Navigation
-    '        }
-    '    },
-    '    {"pin",
-    '        New CommandInfo With {
-    '            .Aliases = {"pin"},
-    '            .Usage = "pin [folder_path]",
-    '            .Description = "Pin or unpin a folder.",
-    '            .Examples = {
-    '                "pin C:\Projects",
-    '                "pin ""C:\My Documents""",
-    '                "pin"
-    '            },
-    '            .Category = CommandCategory.Navigation
-    '        }
-    '    },
-    '    {"rename",
-    '        New CommandInfo With {
-    '            .Aliases = {"rename", "rn"},
-    '            .Usage = "rename [source_path] [new_name]",
-    '            .Description = "Rename a file or directory.",
-    '            .Examples = {
-    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-    '            },
-    '            .Category = CommandCategory.FileOperations
-    '        }
-    '    },
-    '    {"shortcuts",
-    '        New CommandInfo With {
-    '            .Aliases = {"shortcuts", "keys"},
-    '            .Usage = "shortcuts",
-    '            .Description = "Show a list of all keyboard shortcuts.",
-    '            .Examples = {
-    '                "shortcuts",
-    '                "keys"
-    '            },
-    '            .Category = CommandCategory.Shortcuts
-    '        }
-    '    },
-    '    {"text",
-    '        New CommandInfo With {
-    '            .Aliases = {"text", "txt"},
-    '            .Usage = "text [file_path]",
-    '            .Description = "Create a new text file.",
-    '            .Examples = {
-    '                "text ""C:\folder\example.txt"""
-    '            },
-    '            .Category = CommandCategory.FileOperations
-    '        }
-    '    }
-    '}
-
 
     Private Function BuildFullCategoryHelp() As String
         Dim sb As New Text.StringBuilder()
@@ -8245,43 +7777,6 @@ Public Class Form1
         e.Effect = DragDropEffects.None
     End Sub
 
-    'Private Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) _
-    'Handles lvFiles.DragDrop
-
-    '    ' 1. Handle normal filesystem drops first
-    '    If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-    '        Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-    '        For Each file In files
-    '            Dim srcItem = ShellInterop.CreateShellItemFromPath(file)
-    '            Dim destItem = ShellInterop.CreateShellItemFromPath(currentFolder)
-    '            ShellInterop.CopyShellItem(srcItem, destItem)
-    '        Next
-    '        Exit Sub
-    '    End If
-
-    'End Sub
-
-
-    'Private Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) _
-    'Handles lvFiles.DragDrop
-
-    '    ' Normal filesystem drops
-    '    If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-    '        Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-
-    '        Dim _ = RunCopyOrCutOperation(
-    '        sources:=files.ToList(),
-    '        destinationRoot:=currentFolder,
-    '        isCut:=False,
-    '        context:=CopyUIContext.Paste,
-    '        ct:=CancellationToken.None
-    '    )
-
-    '        Exit Sub
-    '    End If
-
-    'End Sub
-
     Private Async Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) _
     Handles lvFiles.DragDrop
 
@@ -8348,86 +7843,6 @@ Public Class Form1
 
         Return names
     End Function
-
-
-
-
-
-
-
-    'Private Function ParseFileGroupDescriptorW(bytes As Byte()) As List(Of String)
-    '    Dim names As New List(Of String)
-
-    '    Using ms As New MemoryStream(bytes)
-    '        Using br As New BinaryReader(ms, Encoding.Unicode)
-    '            Dim count = br.ReadInt32()
-
-    '            For i = 1 To count
-    '                ms.Position = 76 * i ' FILEDESCRIPTORW struct size
-    '                Dim nameBytes = br.ReadBytes(520) ' 260 WCHARs
-    '                Dim name = Encoding.Unicode.GetString(nameBytes).TrimEnd(ChrW(0))
-    '                names.Add(name)
-    '            Next
-    '        End Using
-    '    End Using
-
-    '    Return names
-    'End Function
-
-    '    'If e.Data.GetDataPresent("Shell IDList Array") Then
-
-    '    '    Dim pidls = ShellIDListArray.FromDataObject(e.Data)
-
-    '    '    ' Create Shell.Application COM object
-    '    '    Dim shell = CreateObject("Shell.Application")
-    '    '    Dim destFolder = shell.NameSpace(currentFolder)
-
-    '    '    For Each pidlPtr As IntPtr In pidls.Items
-
-    '    '        ' Convert PIDL → IShellItem
-    '    '        Dim srcItem = ShellInterop.CreateShellItemFromPIDL(pidlPtr)
-
-    '    '        ' Get display name (normal display)
-    '    '        Dim name = ShellInterop.GetDisplayName(srcItem, SIGDN.SIGDN_NORMALDISPLAY)
-
-    '    '        ' Get folder containing the item
-    '    '        Dim parent As IShellItem = Nothing
-    '    '        srcItem.GetParent(parent)
-
-    '    '        Dim parentPath = ShellInterop.GetDisplayName(parent, SIGDN.SIGDN_FILESYSPATH)
-    '    '        If String.IsNullOrEmpty(parentPath) Then Continue For
-
-    '    '        Dim srcFolder = shell.NameSpace(parentPath)
-    '    '        Dim srcFolderItem = srcFolder.ParseName(name)
-
-    '    '        ' THIS is the magic: Explorer's own copy engine
-    '    '        destFolder.CopyHere(srcFolderItem, 16) ' 16 = No UI
-    '    '    Next
-    '    'End If
-
-    'End Sub
-
-
-
-
-    'Private Sub lvFiles_DragDrop(sender As Object, e As DragEventArgs) Handles lvFiles.DragDrop
-    '    ' Log available data formats
-    '    For Each format As String In e.Data.GetFormats()
-    '        Debug.WriteLine(format)
-    '    Next
-
-    '    ' Check for Shell IDList Array
-    '    If e.Data.GetDataPresent("Shell IDList Array") Then
-    '        Dim pidls = ShellIDListArray.FromDataObject(e.Data)
-    '        If pidls IsNot Nothing AndAlso pidls.Items.Count > 0 Then
-    '            ' Process the pidls
-    '        Else
-    '            Debug.WriteLine("No PIDLs found.")
-    '        End If
-    '    Else
-    '        Debug.WriteLine("Shell IDList Array not present.")
-    '    End If
-    'End Sub
 
 
     Private Sub InitTreeView()
