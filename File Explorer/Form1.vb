@@ -63,7 +63,7 @@ Public Class Form1
 
     Private lblStatus As New ToolStripStatusLabel()
 
-    Public imgList As New ImageList()
+    Public imgIconCache As New ImageList()
 
     Private imgArrows As New ImageList()
 
@@ -769,7 +769,7 @@ Public Class Form1
     Private Const EasyAccessKey As String = "EasyAccess"
 
 
-    Private Const FallbackDocumentKey As String = "FallbackDocument"
+    Private Const FallbackDocumentKey As String = "Documents"
     Private Const FallbackExecutableKey As String = "FallbackExecutable"
 
 
@@ -835,10 +835,10 @@ Public Class Form1
 
     Private Sub Form1_DpiChanged(sender As Object, e As DpiChangedEventArgs) Handles Me.DpiChanged
         Dim newSize = GetScaledIconSize(Me)
-        imgList.ImageSize = New Size(newSize, newSize)
+        imgIconCache.ImageSize = New Size(newSize, newSize)
 
         ' Rebuild icons
-        imgList.Images.Clear()
+        imgIconCache.Images.Clear()
         InitImageList()
         UpdateTreeRoots()
         RefreshListView()
@@ -3970,14 +3970,14 @@ Public Class Form1
                     }
 
                     ' DPI-aware icon size
-                    Dim pixelSize As Integer = imgList.ImageSize.Width
+                    Dim pixelSize As Integer = imgIconCache.ImageSize.Width
 
                     ' Real Explorer icon
                     Dim icon = ShellInterop.GetIconForPath(dirPath, pixelSize)
 
                     If icon IsNot Nothing Then
-                        If Not imgList.Images.ContainsKey(dirPath) Then
-                            imgList.Images.Add(dirPath, icon)
+                        If Not imgIconCache.Images.ContainsKey(dirPath) Then
+                            imgIconCache.Images.Add(dirPath, icon)
                         End If
                         child.ImageKey = dirPath
                         child.SelectedImageKey = dirPath
@@ -4189,15 +4189,15 @@ Public Class Form1
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
 
-        If Not imgList.Images.ContainsKey(di.FullName) Then
+        If Not imgIconCache.Images.ContainsKey(di.FullName) Then
 
             ' Set icon, with caching in the image list to avoid duplicates and improve performance
-            If Not imgList.Images.ContainsKey(FolderKey) Then
+            If Not imgIconCache.Images.ContainsKey(FolderKey) Then
                 Dim folderIcon As Icon
                 Dim IconSize As Integer = GetScaledIconSize(Me)
                 folderIcon = IconLibrary.GenericFolder(IconSize)
                 If folderIcon IsNot Nothing Then
-                    imgList.Images.Add(FolderKey, folderIcon.ToBitmap())
+                    imgIconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
                     item.ImageKey = FolderKey
                 Else
                     item.ImageKey = FallbackFolderKey
@@ -4225,7 +4225,7 @@ Public Class Form1
 
         If Not ext = ".exe" Then
 
-            If Not imgList.Images.ContainsKey(ext) Then
+            If Not imgIconCache.Images.ContainsKey(ext) Then
 
                 Dim fileExtensionIcon As Icon
                 Dim IconSize As Integer = GetScaledIconSize(Me)
@@ -4233,7 +4233,7 @@ Public Class Form1
                 'fileExtensionIcon = Nothing
 
                 If fileExtensionIcon IsNot Nothing Then
-                    imgList.Images.Add(ext, fileExtensionIcon.ToBitmap())
+                    imgIconCache.Images.Add(ext, fileExtensionIcon.ToBitmap())
                     item.ImageKey = ext
                 Else
                     item.ImageKey = FallbackDocumentKey
@@ -4244,7 +4244,7 @@ Public Class Form1
 
         Else
 
-            If Not imgList.Images.ContainsKey(fi.FullName) Then
+            If Not imgIconCache.Images.ContainsKey(fi.FullName) Then
 
                 Dim exeFileIcon As Icon
                 Dim IconSize As Integer = GetScaledIconSize(Me)
@@ -4252,7 +4252,7 @@ Public Class Form1
                 'exeFileIcon = Nothing
 
                 If exeFileIcon IsNot Nothing Then
-                    imgList.Images.Add(fi.FullName, exeFileIcon.ToBitmap())
+                    imgIconCache.Images.Add(fi.FullName, exeFileIcon.ToBitmap())
                     item.ImageKey = fi.FullName
                 Else
                     item.ImageKey = FallbackExecutableKey
@@ -5449,10 +5449,16 @@ Public Class Form1
         tvFolders.BeginUpdate()
         tvFolders.Nodes.Clear()
 
+        Dim iconSize = GetScaledIconSize(Me)
+
         ' ============================================================
         ' EASY ACCESS
         ' ============================================================
-        Dim easyAccessNode = GetEasyAccessNode()
+        Dim easyAccessNode As New TreeNode(EasyAccessString) With {
+            .ImageKey = EasyAccessKey,
+            .SelectedImageKey = EasyAccessKey
+        }
+        easyAccessNode = GetEasyAccessNodes(easyAccessNode, imgIconCache, iconSize)
         tvFolders.Nodes.Add(easyAccessNode)
         easyAccessNode.Expand()
         easyAccessNode.StateImageIndex = 1 ' Expanded
@@ -5464,7 +5470,7 @@ Public Class Form1
         Dim thisPCNode As New TreeNode(ThisPCString) With {
             .Tag = ThisPCGUID
         }
-        SetThisPCNodeIcon(thisPCNode, imgList)
+        SetThisPCNodeIcon(thisPCNode, imgIconCache, iconSize)
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
 
@@ -5477,7 +5483,7 @@ Public Class Form1
                     Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
                         .Tag = di.RootDirectory.FullName
                     }
-                    SetDriveNodeIcon(driveNode, di, imgList)
+                    SetDriveNodeIcon(driveNode, di, imgIconCache, iconSize)
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         driveNode.Nodes.Add("Loading...")
                         driveNode.StateImageIndex = 0 ' Collapsed
@@ -5503,13 +5509,13 @@ Public Class Form1
 
     End Sub
 
-    Private Function GetEasyAccessNode() As TreeNode
+    Private Function GetEasyAccessNodes(easyAccessNode As TreeNode, imageList As ImageList, iconSize As Integer) As TreeNode
 
-        Dim easyAccessNode As New TreeNode(EasyAccessString) With {
-            .ImageKey = EasyAccessKey,
-            .SelectedImageKey = EasyAccessKey,
-            .StateImageIndex = 0 ' Collapsed
-        }
+        'Dim easyAccessNode As New TreeNode(EasyAccessString) With {
+        '    .ImageKey = EasyAccessKey,
+        '    .SelectedImageKey = EasyAccessKey,
+        '    .StateImageIndex = 0 ' Collapsed
+        '}
 
         ' ============================================================
         ' SPECIAL FOLDERS
@@ -5523,55 +5529,42 @@ Public Class Form1
             ("Desktop", Environment.SpecialFolder.Desktop)
         }
 
-        Dim IconSize = GetScaledIconSize(Me)
-
         For Each sf In specialFolders
             Dim specialFolderPath As String = Environment.GetFolderPath(sf.Item2)
-
             ' Fix Downloads path
             If sf.Item1 = "Downloads" Then
                 specialFolderPath = Path.Combine(specialFolderPath, "Downloads")
             End If
-
-
-
             If Directory.Exists(specialFolderPath) Then
-                Dim node As New TreeNode(sf.Item1) With {
+                Dim specialFolderNode As New TreeNode(sf.Item1) With {
                     .Tag = specialFolderPath
                 }
-
                 ' Set icon, with caching in the image list to avoid duplicates and improve performance
-                If Not imgList.Images.ContainsKey(specialFolderPath) Then
-
-                    Dim specialFoldericon As Icon = Nothing
-
-                    specialFoldericon = ShellInterop.GetIconForPath(specialFolderPath, IconSize)
-
+                If Not imageList.Images.ContainsKey(specialFolderPath) Then
+                    Dim specialFoldericon = ShellInterop.GetIconForPath(specialFolderPath, iconSize)
+                    'Dim specialFoldericon As Icon = Nothing
                     If specialFoldericon IsNot Nothing Then
-                        imgList.Images.Add(specialFolderPath, specialFoldericon.ToBitmap())
-                        node.ImageKey = specialFolderPath
-                        node.SelectedImageKey = specialFolderPath
+                        imageList.Images.Add(specialFolderPath, specialFoldericon.ToBitmap())
+                        specialFolderNode.ImageKey = specialFolderPath
+                        specialFolderNode.SelectedImageKey = specialFolderPath
                     Else
-                        node.ImageKey = sf.Item1
-                        node.SelectedImageKey = sf.Item1
+                        specialFolderNode.ImageKey = sf.Item1
+                        specialFolderNode.SelectedImageKey = sf.Item1
                     End If
-
                 Else
-
-                    node.ImageKey = specialFolderPath
-                    node.SelectedImageKey = specialFolderPath
-
+                    specialFolderNode.ImageKey = specialFolderPath
+                    specialFolderNode.SelectedImageKey = specialFolderPath
                 End If
 
                 ' Expand arrow logic
                 If HasSubdirectories(specialFolderPath) Then
-                    node.Nodes.Add("Loading...")
-                    node.StateImageIndex = 0
+                    specialFolderNode.Nodes.Add("Loading...")
+                    specialFolderNode.StateImageIndex = 0 ' Collapsed
                 Else
-                    node.StateImageIndex = 2
+                    specialFolderNode.StateImageIndex = 2 ' No arrow
                 End If
 
-                easyAccessNode.Nodes.Add(node)
+                easyAccessNode.Nodes.Add(specialFolderNode)
             End If
         Next
 
@@ -5581,203 +5574,73 @@ Public Class Form1
         Dim userEntries = LoadEasyAccessEntries()
 
         For Each entry In userEntries
-            Dim node As New TreeNode(entry.Name) With {
+            Dim userEntryNode As New TreeNode(entry.Name) With {
                 .Tag = entry.Path
             }
 
-
-
-
-
-
-            'Dim icon = ShellInterop.GetIconForPath(entry.Path, IconSize)
-
-            'If icon IsNot Nothing Then
-            '    If Not imgList.Images.ContainsKey(entry.Path) Then
-            '        imgList.Images.Add(entry.Path, icon)
-            '    End If
-            '    node.ImageKey = entry.Path
-            '    node.SelectedImageKey = entry.Path
-            'Else
-            '    node.ImageKey = FolderKey
-            '    node.SelectedImageKey = FolderKey
-            'End If
-
-
             ' Set icon, with caching in the image list to avoid duplicates and improve performance
-            If Not imgList.Images.ContainsKey(FolderKey) Then
-
-                Dim userEasyAccessIcon As Icon
-
-                'userEasyAccessIcon = ShellInterop.GetIconForPath(entry.Path, IconSize)
-                userEasyAccessIcon = IconLibrary.GenericFolder(IconSize)
-
+            If Not imageList.Images.ContainsKey(FolderKey) Then
+                Dim userEasyAccessIcon = IconLibrary.GenericFolder(iconSize)
+                'Dim userEasyAccessIcon = Nothing
 
                 If userEasyAccessIcon IsNot Nothing Then
-                    imgList.Images.Add(FolderKey, userEasyAccessIcon.ToBitmap())
-                    node.ImageKey = FolderKey
-                    node.SelectedImageKey = FolderKey
+                    imageList.Images.Add(FolderKey, userEasyAccessIcon.ToBitmap())
+                    userEntryNode.ImageKey = FolderKey
+                    userEntryNode.SelectedImageKey = FolderKey
                 Else
-                    node.ImageKey = FallbackFolderKey
-                    node.SelectedImageKey = FallbackFolderKey
+                    userEntryNode.ImageKey = FallbackFolderKey
+                    userEntryNode.SelectedImageKey = FallbackFolderKey
                 End If
-
             Else
-
-                node.ImageKey = FolderKey
-                node.SelectedImageKey = FolderKey
-
+                userEntryNode.ImageKey = FolderKey
+                userEntryNode.SelectedImageKey = FolderKey
             End If
-
-
-
-
-
-
-
-
-
 
             If HasSubdirectories(entry.Path) Then
-                node.Nodes.Add("Loading...")
-                node.StateImageIndex = 0 ' Collapsed
+                userEntryNode.Nodes.Add("Loading...")
+                userEntryNode.StateImageIndex = 0 ' Collapsed
             Else
-                node.StateImageIndex = 2 ' no arrow
+                userEntryNode.StateImageIndex = 2 ' no arrow
             End If
 
-            easyAccessNode.Nodes.Add(node)
+            easyAccessNode.Nodes.Add(userEntryNode)
 
         Next
 
         Return easyAccessNode
     End Function
 
-    Private Function GetThisPCNode() As TreeNode
-
-        Dim thisPCNode As New TreeNode(ThisPCString) With {
-            .Tag = ThisPCGUID ' "shell:::{20D04FE0-3AEA-1069-A2D8-08002B30309D}"
-        }
-
-        'Dim iconSize = GetScaledIconSize(Me)
-        'Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
-
-
-
-
-        'If thisPCIcon IsNot Nothing Then
-
-        '    If Not imgList.Images.ContainsKey(ThisPCKey) Then
-        '        imgList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
-        '    End If
-
-        '    thisPCNode.ImageKey = ThisPCKey
-        '    thisPCNode.SelectedImageKey = ThisPCKey
-
-        'Else
-        '    ' Fallback to generic computer icon if we can't get the real one
-        '    thisPCNode.ImageKey = ComputerKey
-        '    thisPCNode.SelectedImageKey = ComputerKey
-
-        'End If
-
-        ' Set icon, with caching in the image list to avoid duplicates and improve performance
-        If Not imgList.Images.ContainsKey(ThisPCKey) Then
-            Dim iconSize = GetScaledIconSize(Me)
-            Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
-
-            'thisPCIcon = ShellInterop.GetIconForPath(ThisPCKey, iconSize)
-
-            If thisPCIcon IsNot Nothing Then
-                imgList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
-                thisPCNode.ImageKey = ThisPCKey
-                thisPCNode.SelectedImageKey = ThisPCKey
-            Else
-                thisPCNode.ImageKey = FallbackThisPCKey
-                thisPCNode.SelectedImageKey = FallbackThisPCKey
-            End If
-
-        Else
-
-            thisPCNode.ImageKey = ThisPCKey
-            thisPCNode.SelectedImageKey = ThisPCKey
-
-        End If
-
-        Return thisPCNode
-    End Function
-
-
-    Private Sub SetThisPCNodeIcon(thisPCNode As TreeNode, imageList As ImageList)
+    Private Sub SetThisPCNodeIcon(thisPCNode As TreeNode, imageList As ImageList, iconSize As Integer)
         ' Get and cache the This PC icon, with fallback to generic icons if necessary
 
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
         If Not imageList.Images.ContainsKey(ThisPCKey) Then
-
-            Dim iconSize = GetScaledIconSize(Me)
-            'Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
+            'Dim iconSize = GetScaledIconSize(Me)
             Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
-
-            'Dim driveIcon As Icon = Nothing
+            'Dim thisPCIcon As Icon = Nothing
 
             If thisPCIcon IsNot Nothing Then
                 imageList.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
                 thisPCNode.ImageKey = ThisPCKey
                 thisPCNode.SelectedImageKey = ThisPCKey
             Else
-                ' Fallback to generic computer icon if we can't get the real one
-
                 thisPCNode.ImageKey = FallbackThisPCKey
                 thisPCNode.SelectedImageKey = FallbackThisPCKey
-
             End If
-
         Else
-
             thisPCNode.ImageKey = ThisPCKey
             thisPCNode.SelectedImageKey = ThisPCKey
-
         End If
 
     End Sub
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    'Private Function GetDriveNode(di As DriveInfo) As TreeNode
-
-    '    Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
-    '        .Tag = di.RootDirectory.FullName
-    '    }
-
-    '    'SetDriveIcon(driveNode, di, imgList)
-
-    '    Return driveNode
-    'End Function
-
-    Private Sub SetDriveNodeIcon(driveNode As TreeNode, di As DriveInfo, imageList As ImageList)
+    Private Sub SetDriveNodeIcon(driveNode As TreeNode, di As DriveInfo, imageList As ImageList, iconSize As Integer)
         ' Get and cache the drive icon, with fallback to generic icons if necessary
 
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
         If Not imageList.Images.ContainsKey(di.RootDirectory.FullName) Then
 
-            Dim iconSize = GetScaledIconSize(Me)
+            'Dim iconSize = GetScaledIconSize(Me)
             Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
             'Dim driveIcon As Icon = Nothing
 
@@ -5794,14 +5657,10 @@ Public Class Form1
                     driveNode.ImageKey = DriveKey
                     driveNode.SelectedImageKey = DriveKey
                 End If
-
             End If
-
         Else
-
             driveNode.ImageKey = di.RootDirectory.FullName
             driveNode.SelectedImageKey = di.RootDirectory.FullName
-
         End If
 
     End Sub
@@ -5825,12 +5684,12 @@ Public Class Form1
         }
 
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
-        If Not imgList.Images.ContainsKey(RecycleBinKey) Then
+        If Not imgIconCache.Images.ContainsKey(RecycleBinKey) Then
             Dim iconSize = GetScaledIconSize(Me)
             Dim RecycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
 
             If RecycleBinIcon IsNot Nothing Then
-                imgList.Images.Add(RecycleBinKey, RecycleBinIcon.ToBitmap())
+                imgIconCache.Images.Add(RecycleBinKey, RecycleBinIcon.ToBitmap())
                 RecycleBinNode.ImageKey = RecycleBinKey
                 RecycleBinNode.SelectedImageKey = RecycleBinKey
             Else
@@ -6298,10 +6157,10 @@ Public Class Form1
         Dim key = IconCache.BuildKey(request).ToString()
 
         ' Replace icon safely
-        If imgList.Images.ContainsKey(key) Then
-            imgList.Images.RemoveByKey(key)
+        If imgIconCache.Images.ContainsKey(key) Then
+            imgIconCache.Images.RemoveByKey(key)
         End If
-        imgList.Images.Add(key, icon)
+        imgIconCache.Images.Add(key, icon)
 
         ' Update ListView item
         For Each item As ListViewItem In lvFiles.Items
@@ -8538,35 +8397,35 @@ Public Class Form1
     Private Sub InitImageList()
 
         Dim size = GetScaledIconSize(Me)
-        imgList.ImageSize = New Size(size, size)
+        imgIconCache.ImageSize = New Size(size, size)
 
         'imgList.ImageSize = New Size(16, 16)
-        imgList.ColorDepth = ColorDepth.Depth32Bit
+        imgIconCache.ColorDepth = ColorDepth.Depth32Bit
 
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
-        imgList.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
-        imgList.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
-        imgList.Images.Add(FallbackDocumentKey, My.Resources.Resource1.Documents_16X16)
+        imgIconCache.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
+        imgIconCache.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
+        imgIconCache.Images.Add(FallbackDocumentKey, My.Resources.Resource1.Documents_16X16)
 
-        imgList.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
-        imgList.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
-        imgList.Images.Add(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
+        imgIconCache.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
+        imgIconCache.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
+        imgIconCache.Images.Add(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
 
-        imgList.Images.Add("Music", My.Resources.Resource1.Music_16X16)
-        imgList.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
-        imgList.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
+        imgIconCache.Images.Add("Music", My.Resources.Resource1.Music_16X16)
+        imgIconCache.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
+        imgIconCache.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
-        imgList.Images.Add(FallbackExecutableKey, My.Resources.Resource1.Executable_16X16)
-        imgList.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
-        imgList.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
-        imgList.Images.Add("Error", My.Resources.Resource1.Error_16X16)
-        imgList.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+        imgIconCache.Images.Add(FallbackExecutableKey, My.Resources.Resource1.Executable_16X16)
+        imgIconCache.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
+        imgIconCache.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
+        imgIconCache.Images.Add("Error", My.Resources.Resource1.Error_16X16)
+        imgIconCache.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
-        imgList.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+        imgIconCache.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
 
         ' Assign ImageList to controls
-        tvFolders.ImageList = imgList
-        lvFiles.SmallImageList = imgList
+        tvFolders.ImageList = imgIconCache
+        lvFiles.SmallImageList = imgIconCache
 
     End Sub
 
