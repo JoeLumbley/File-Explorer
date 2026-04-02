@@ -207,9 +207,9 @@ Public Class IconEngine
     Public Sub SetListViewItemIconForFile(item As ListViewItem, iconCache As ImageList, fi As FileInfo)
 
         Dim ext = fi.Extension.ToLowerInvariant()
-        Dim IconSize As Integer = GetScaledIconSize(UIForm)
 
-
+        ' Files with no extension get a generic file icon,
+        ' grouped under the FileKey to avoid duplicates.
         If ext = "" Then
             If Not iconCache.Images.ContainsKey(FileKey) Then
                 Dim fileIcon = IconLibrary.GenericFile(IconSize)
@@ -223,6 +223,8 @@ Public Class IconEngine
             Else
                 item.ImageKey = FileKey
             End If
+            ' Files with extensions get icons based on their extension,
+            ' grouped by extension to avoid duplicates.
         ElseIf Not ext = ".exe" Then
             If Not iconCache.Images.ContainsKey(ext) Then
                 Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
@@ -236,6 +238,8 @@ Public Class IconEngine
             Else
                 item.ImageKey = ext
             End If
+            ' Executable files get icons based on their full path to preserve unique icons
+            ' for different executables, since many .exe files have custom icons.
         Else
             If Not iconCache.Images.ContainsKey(fi.FullName) Then
                 Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
@@ -256,14 +260,12 @@ Public Class IconEngine
 
     Public Sub SetListViewItemIconForDirectory(item As ListViewItem, iconCache As ImageList, di As DirectoryInfo)
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
-        Dim folderIcon As Icon
-        Dim IconSize As Integer = GetScaledIconSize(UIForm)
 
         If Not iconCache.Images.ContainsKey(di.FullName) Then
 
             If Not iconCache.Images.ContainsKey(FolderKey) Then
 
-                folderIcon = IconLibrary.GenericFolder(IconSize)
+                Dim folderIcon = IconLibrary.GenericFolder(IconSize)
 
                 If folderIcon IsNot Nothing Then
                     iconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
