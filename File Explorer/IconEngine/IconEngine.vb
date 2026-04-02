@@ -204,6 +204,84 @@ Public Class IconEngine
 
     End Sub
 
+    Public Sub SetListViewItemIconForFile(item As ListViewItem, iconCache As ImageList, fi As FileInfo)
+
+        Dim ext = fi.Extension.ToLowerInvariant()
+        Dim IconSize As Integer = GetScaledIconSize(UIForm)
+
+
+        If ext = "" Then
+            If Not iconCache.Images.ContainsKey(FileKey) Then
+                Dim fileIcon = IconLibrary.GenericFile(IconSize)
+                If fileIcon IsNot Nothing Then
+                    iconCache.Images.Add(FileKey, fileIcon.ToBitmap())
+                    ' use generic file icon for no-extension files
+                    item.ImageKey = FileKey
+                Else
+                    item.ImageKey = FallbackFileKey
+                End If
+            Else
+                item.ImageKey = FileKey
+            End If
+        ElseIf Not ext = ".exe" Then
+            If Not iconCache.Images.ContainsKey(ext) Then
+                Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                If extensionIcon IsNot Nothing Then
+                    iconCache.Images.Add(ext, extensionIcon.ToBitmap())
+                    ' use extension as key to group same-type files
+                    item.ImageKey = ext
+                Else
+                    item.ImageKey = FileKey
+                End If
+            Else
+                item.ImageKey = ext
+            End If
+        Else
+            If Not iconCache.Images.ContainsKey(fi.FullName) Then
+                Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                If executableIcon IsNot Nothing Then
+                    iconCache.Images.Add(fi.FullName, executableIcon.ToBitmap())
+                    ' use full path as key to preserve unique icons for different executables
+                    item.ImageKey = fi.FullName
+                Else
+                    item.ImageKey = ExecutableKey
+                End If
+            Else
+                item.ImageKey = fi.FullName
+            End If
+        End If
+
+
+    End Sub
+
+    Public Sub SetListViewItemIconForDirectory(item As ListViewItem, iconCache As ImageList, di As DirectoryInfo)
+        ' Set icon, with caching in the image list to avoid duplicates and improve performance
+        Dim folderIcon As Icon
+        Dim IconSize As Integer = GetScaledIconSize(UIForm)
+
+        If Not iconCache.Images.ContainsKey(di.FullName) Then
+
+            If Not iconCache.Images.ContainsKey(FolderKey) Then
+
+                folderIcon = IconLibrary.GenericFolder(IconSize)
+
+                If folderIcon IsNot Nothing Then
+                    iconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+                    item.ImageKey = FolderKey
+                Else
+                    item.ImageKey = FallbackFolderKey
+                End If
+
+            Else
+                item.ImageKey = FolderKey
+            End If
+
+        Else
+            item.ImageKey = di.FullName
+        End If
+
+    End Sub
+
     Public Sub UpdateIconSize()
         ' Updates the icon size based on the current DPI scaling of the form.
         ' This should be called when the form's DPI changes to ensure icons are rendered at the correct size.
