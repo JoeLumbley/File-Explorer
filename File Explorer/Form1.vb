@@ -4211,38 +4211,22 @@ Public Class Form1
         item.SubItems.Add("")
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
-
-
-
-        ' SetListViewItemIcon
-
         IconEngine.SetListViewItemIconForDirectory(item, imgIconCache, di)
 
-        'If Not imgIconCache.Images.ContainsKey(di.FullName) Then
+        Return item
+    End Function
 
-        '    ' Set icon, with caching in the image list to avoid duplicates and improve performance
-        '    If Not imgIconCache.Images.ContainsKey(FolderKey) Then
-        '        Dim folderIcon As Icon
-        '        Dim IconSize As Integer = IconEngine.GetScaledIconSize(Me)
-        '        folderIcon = IconLibrary.GenericFolder(IconSize)
-        '        If folderIcon IsNot Nothing Then
-        '            imgIconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
-        '            item.ImageKey = FolderKey
-        '        Else
-        '            item.ImageKey = FallbackFolderKey
-        '        End If
-        '    Else
-        '        item.ImageKey = FolderKey
-        '    End If
-        'Else
-        '    item.ImageKey = di.FullName
-        'End If
+    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+        Dim item As New ListViewItem(fi.Name)
 
+        Dim ext = fi.Extension.ToLowerInvariant()
+        Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
 
-
-
-
-
+        item.SubItems.Add(category)
+        item.SubItems.Add(FormatSize(fi.Length))
+        item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+        item.Tag = fi.FullName
+        IconEngine.SetListViewItemIconForFile(item, imgIconCache, fi)
 
         Return item
     End Function
@@ -4277,95 +4261,6 @@ Public Class Form1
     'End Sub
 
 
-
-
-
-
-
-
-
-
-    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-        Dim item As New ListViewItem(fi.Name)
-
-        Dim ext = fi.Extension.ToLowerInvariant()
-        Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-        item.SubItems.Add(category)
-        item.SubItems.Add(FormatSize(fi.Length))
-        item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-        item.Tag = fi.FullName
-
-
-        IconEngine.SetListViewItemIconForFile(item, imgIconCache, fi)
-
-
-        ' SetListViewItemIcon
-
-        'Dim IconSize As Integer = IconEngine.GetScaledIconSize(Me)
-
-        'If ext = "" Then
-
-        '    If Not imgIconCache.Images.ContainsKey(FileKey) Then
-
-        '        Dim fileIcon = IconLibrary.GenericFile(IconSize)
-        '        'Dim fileIcon = Nothing
-
-        '        If fileIcon IsNot Nothing Then
-        '            imgIconCache.Images.Add(FileKey, fileIcon.ToBitmap())
-        '            ' use generic file icon for no-extension files
-        '            item.ImageKey = FileKey
-        '        Else
-        '            item.ImageKey = FallbackFileKey
-        '        End If
-        '    Else
-        '        item.ImageKey = FileKey
-        '    End If
-
-
-        'ElseIf Not ext = ".exe" Then
-
-        '    If Not imgIconCache.Images.ContainsKey(ext) Then
-
-        '        Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
-        '        'Dim fileExtensionIcon = Nothing
-
-        '        If extensionIcon IsNot Nothing Then
-        '            imgIconCache.Images.Add(ext, extensionIcon.ToBitmap())
-        '            ' use extension as key to group same-type files
-        '            item.ImageKey = ext
-        '        Else
-        '            item.ImageKey = FileKey
-        '        End If
-        '    Else
-        '        item.ImageKey = ext
-        '    End If
-
-        'Else
-
-        '    If Not imgIconCache.Images.ContainsKey(fi.FullName) Then
-
-        '        Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
-        '        'Dim exeFileIcon = Nothing
-
-        '        If executableIcon IsNot Nothing Then
-        '            imgIconCache.Images.Add(fi.FullName, executableIcon.ToBitmap())
-        '            ' use full path as key to preserve unique icons for different executables
-        '            item.ImageKey = fi.FullName
-        '        Else
-        '            item.ImageKey = ExecutableKey
-        '        End If
-        '    Else
-        '        item.ImageKey = fi.FullName
-        '    End If
-
-        'End If
-
-
-
-
-        Return item
-    End Function
 
 
     'Private Sub SetListViewItemIconForFile(item As ListViewItem, fi As FileInfo)
