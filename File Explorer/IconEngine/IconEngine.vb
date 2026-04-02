@@ -54,7 +54,6 @@ Public Class IconEngine
 
     Public Sub SetSpecialFolderNodeIcon(
     specialFolderNode As TreeNode,
-    iconCache As ImageList,
     iconSize As Integer,
     specialFolderPath As String,
     FallbackKey As String)
@@ -64,7 +63,7 @@ Public Class IconEngine
         ' to keep TreeView population fast and responsive.
 
         ' If the icon for this special folder is not already cached, retrieve and store it.
-        If Not iconCache.Images.ContainsKey(specialFolderPath) Then
+        If Not IconCache.Images.ContainsKey(specialFolderPath) Then
 
             ' Attempt to retrieve the Explorer-accurate icon for this folder path.
             ' This supports DPI scaling and returns the correct Windows shell icon.
@@ -75,7 +74,7 @@ Public Class IconEngine
             If specialFolderIcon IsNot Nothing Then
 
                 ' Store the icon in the ImageList using the folder path as the unique key.
-                iconCache.Images.Add(specialFolderPath, specialFolderIcon.ToBitmap())
+                IconCache.Images.Add(specialFolderPath, specialFolderIcon.ToBitmap())
 
                 ' Assign the cached icon to the TreeNode.
                 specialFolderNode.ImageKey = specialFolderPath
@@ -95,14 +94,15 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode, imageList As ImageList, iconSize As Integer)
+    Public Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode, iconSize As Integer)
 
-        If Not imageList.Images.ContainsKey(FolderKey) Then
+        If Not IconCache.Images.ContainsKey(FolderKey) Then
+
             Dim userEntryIcon = IconLibrary.GenericFolder(iconSize)
             'Dim userEasyAccessIcon = Nothing ' Uncomment to test fallback behavior.
 
             If userEntryIcon IsNot Nothing Then
-                imageList.Images.Add(FolderKey, userEntryIcon.ToBitmap())
+                IconCache.Images.Add(FolderKey, userEntryIcon.ToBitmap())
                 userEntryNode.ImageKey = FolderKey
                 userEntryNode.SelectedImageKey = FolderKey
             Else
@@ -116,15 +116,38 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetThisPCNodeIcon(thisPCNode As TreeNode, iconCache As ImageList, iconSize As Integer)
+    Public Sub SetChildNodeIcon(child As TreeNode)
 
-        If Not iconCache.Images.ContainsKey(ThisPCKey) Then
+        If Not IconCache.Images.ContainsKey(FolderKey) Then
+
+            Dim folderIcon = IconLibrary.GenericFolder(IconSize)
+            'Dim folderIcon = Nothing ' force fallback testing
+
+            If folderIcon IsNot Nothing Then
+                IconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+                child.ImageKey = FolderKey
+                child.SelectedImageKey = FolderKey
+            Else
+                child.ImageKey = FallbackFolderKey
+                child.SelectedImageKey = FallbackFolderKey
+            End If
+        Else
+            child.ImageKey = FolderKey
+            child.SelectedImageKey = FolderKey
+        End If
+
+    End Sub
+
+
+    Public Sub SetThisPCNodeIcon(thisPCNode As TreeNode, iconSize As Integer)
+
+        If Not IconCache.Images.ContainsKey(ThisPCKey) Then
 
             Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
             'Dim thisPCIcon As Icon = Nothing ' Uncomment to test fallback behavior.
 
             If thisPCIcon IsNot Nothing Then
-                iconCache.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
+                IconCache.Images.Add(ThisPCKey, thisPCIcon.ToBitmap())
                 thisPCNode.ImageKey = ThisPCKey
                 thisPCNode.SelectedImageKey = ThisPCKey
             Else
@@ -139,15 +162,15 @@ Public Class IconEngine
     End Sub
 
 
-    Public Sub SetDriveNodeIcon(driveNode As TreeNode, di As DriveInfo, imageList As ImageList, iconSize As Integer)
+    Public Sub SetDriveNodeIcon(driveNode As TreeNode, di As DriveInfo, iconSize As Integer)
 
-        If Not imageList.Images.ContainsKey(di.RootDirectory.FullName) Then
+        If Not IconCache.Images.ContainsKey(di.RootDirectory.FullName) Then
 
             Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
             'Dim driveIcon As Icon = Nothing ' Uncomment to test fallback behavior.
 
             If driveIcon IsNot Nothing Then
-                imageList.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
+                IconCache.Images.Add(di.RootDirectory.FullName, driveIcon.ToBitmap())
                 driveNode.ImageKey = di.RootDirectory.FullName
                 driveNode.SelectedImageKey = di.RootDirectory.FullName
             Else
@@ -166,12 +189,12 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetRecycleNodeIcon(recycleBinNode As TreeNode, iconCache As ImageList, iconSize As Integer)
+    Public Sub SetRecycleNodeIcon(recycleBinNode As TreeNode, iconSize As Integer)
         ' Assigns the correct Recycle Bin icon to the provided TreeNode.
         ' Icons are cached in the ImageList to avoid redundant extraction and improve performance.
 
         ' If the ImageList does not already contain the Recycle Bin icon, we need to retrieve and cache it.
-        If Not iconCache.Images.ContainsKey(RecycleBinKey) Then
+        If Not IconCache.Images.ContainsKey(RecycleBinKey) Then
 
             ' Attempt to retrieve the Recycle Bin icon from ShellInterop.
             ' This handles virtual folders and returns an Explorer-accurate icon when available.
@@ -182,7 +205,7 @@ Public Class IconEngine
             If recycleBinIcon IsNot Nothing Then
 
                 ' Store the icon in the ImageList under the canonical key.
-                iconCache.Images.Add(RecycleBinKey, recycleBinIcon.ToBitmap())
+                IconCache.Images.Add(RecycleBinKey, recycleBinIcon.ToBitmap())
 
                 ' Point the TreeNode to the cached icon so future loads do not require ShellInterop again.
                 recycleBinNode.ImageKey = RecycleBinKey
@@ -204,17 +227,17 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetListViewItemIconForFile(item As ListViewItem, iconCache As ImageList, fi As FileInfo)
+    Public Sub SetListViewItemIconForFile(item As ListViewItem, fi As FileInfo)
 
         Dim ext = fi.Extension.ToLowerInvariant()
 
         ' Files with no extension get a generic file icon,
         ' grouped under the FileKey to avoid duplicates.
         If ext = "" Then
-            If Not iconCache.Images.ContainsKey(FileKey) Then
+            If Not IconCache.Images.ContainsKey(FileKey) Then
                 Dim fileIcon = IconLibrary.GenericFile(IconSize)
                 If fileIcon IsNot Nothing Then
-                    iconCache.Images.Add(FileKey, fileIcon.ToBitmap())
+                    IconCache.Images.Add(FileKey, fileIcon.ToBitmap())
                     ' use generic file icon for no-extension files
                     item.ImageKey = FileKey
                 Else
@@ -226,10 +249,10 @@ Public Class IconEngine
             ' Files with extensions get icons based on their extension,
             ' grouped by extension to avoid duplicates.
         ElseIf Not ext = ".exe" Then
-            If Not iconCache.Images.ContainsKey(ext) Then
+            If Not IconCache.Images.ContainsKey(ext) Then
                 Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
                 If extensionIcon IsNot Nothing Then
-                    iconCache.Images.Add(ext, extensionIcon.ToBitmap())
+                    IconCache.Images.Add(ext, extensionIcon.ToBitmap())
                     ' use extension as key to group same-type files
                     item.ImageKey = ext
                 Else
@@ -241,10 +264,10 @@ Public Class IconEngine
             ' Executable files get icons based on their full path to preserve unique icons
             ' for different executables, since many .exe files have custom icons.
         Else
-            If Not iconCache.Images.ContainsKey(fi.FullName) Then
+            If Not IconCache.Images.ContainsKey(fi.FullName) Then
                 Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
                 If executableIcon IsNot Nothing Then
-                    iconCache.Images.Add(fi.FullName, executableIcon.ToBitmap())
+                    IconCache.Images.Add(fi.FullName, executableIcon.ToBitmap())
                     ' use full path as key to preserve unique icons for different executables
                     item.ImageKey = fi.FullName
                 Else
@@ -258,17 +281,17 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetListViewItemIconForDirectory(item As ListViewItem, iconCache As ImageList, di As DirectoryInfo)
+    Public Sub SetListViewItemIconForDirectory(item As ListViewItem, di As DirectoryInfo)
         ' Set icon, with caching in the image list to avoid duplicates and improve performance
 
-        If Not iconCache.Images.ContainsKey(di.FullName) Then
+        If Not IconCache.Images.ContainsKey(di.FullName) Then
 
-            If Not iconCache.Images.ContainsKey(FolderKey) Then
+            If Not IconCache.Images.ContainsKey(FolderKey) Then
 
                 Dim folderIcon = IconLibrary.GenericFolder(IconSize)
 
                 If folderIcon IsNot Nothing Then
-                    iconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+                    IconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
                     item.ImageKey = FolderKey
                 Else
                     item.ImageKey = FallbackFolderKey
@@ -337,7 +360,16 @@ Public Class IconEngine
 
     Public Function GetScaledIconSize(form As Form) As Integer
         Dim scale As Double = form.DeviceDpi / 96.0
-        Return CInt(16 * scale)
+        Dim pixelSize As Integer = CInt(16 * scale)
+
+
+
+        'If pixelSize <= 16 Then
+        '    Return 16
+        'End If
+
+        Return 16
+
     End Function
 
 

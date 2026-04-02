@@ -12,6 +12,7 @@ Namespace Explorer.Interop.Shell
     Public Enum IconSize
         Small
         Large
+        ExtraLarge
     End Enum
 
     <Flags>
@@ -197,25 +198,74 @@ Namespace Explorer.Interop.Shell
         End Function
 
 
-        'Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
-        '    Return GetShellIcon(path, size)
-        'End Function
+        Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
+            Return GetShellIcon(path, size)
+        End Function
 
         Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
 
             ' Native sizes
             If pixelSize <= 16 Then
                 Return GetShellIcon(path, IconSize.Small)
-            ElseIf pixelSize = 32 Then
-                Return GetShellIcon(path, IconSize.Large)
             End If
 
-            ' Scale from 32x32
-            Dim baseIcon = GetShellIcon(path, IconSize.Large)
-            If baseIcon Is Nothing Then Return Nothing
+            Return GetShellIcon(path, IconSize.Large)
 
-            Return New Icon(baseIcon, pixelSize, pixelSize)
+            ' Scale from 32x32
+            'Dim baseIcon = GetShellIcon(path, IconSize.Large)
+            'If baseIcon Is Nothing Then Return Nothing
+
+            'Return New Icon(baseIcon, pixelSize, pixelSize)
+            'Return ResizeIconHighQuality(baseIcon, pixelSize)
+
         End Function
+
+
+        'Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+        '    ' Native sizes
+        '    If pixelSize <= 16 Then
+        '        Return GetShellIcon(path, IconSize.Small)
+        '    ElseIf pixelSize = 32 Then
+        '        Return GetShellIcon(path, IconSize.Large)
+        '    End If
+
+        '    ' Try to get the 256px layer for high-quality downscaling
+        '    Dim baseIcon = GetShellIcon(path, IconSize.ExtraLarge) ' 48px or 256px depending on system
+        '    If baseIcon Is Nothing Then
+        '        baseIcon = GetShellIcon(path, IconSize.Large)
+        '        If baseIcon Is Nothing Then Return Nothing
+        '    End If
+
+        '    Return ResizeIconHighQuality(baseIcon, pixelSize)
+        'End Function
+
+        Private Shared Function ResizeIconHighQuality(src As Icon, size As Integer) As Icon
+            Using bmp As New Bitmap(size, size)
+                Using g = Graphics.FromImage(bmp)
+                    g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+                    g.DrawIcon(src, New Rectangle(0, 0, size, size))
+                End Using
+                Return Icon.FromHandle(bmp.GetHicon())
+            End Using
+        End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         Public Shared Function GetIconForVirtualFolder(guidString As String, pixelSize As Integer) As Icon
             Dim pidl As IntPtr = ParseDisplayName(guidString)
@@ -509,6 +559,7 @@ Namespace Explorer.Interop.Shell
         Private Const SHGFI_PIDL As UInteger = &H8UI
         Private Const SHGFI_SMALLICON As UInteger = &H1UI
         Private Const SHGFI_LARGEICON As UInteger = &H0UI
+
         Private Const SHGFI_USEFILEATTRIBUTES As UInteger = &H10UI
 
         Private Const FILE_ATTRIBUTE_NORMAL As UInteger = &H80UI

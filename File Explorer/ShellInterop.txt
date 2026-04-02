@@ -1,0 +1,776 @@
+'Imports System
+'Imports System.IO
+'Imports System.Runtime.InteropServices
+'Imports System.Text
+'Imports System.Drawing
+
+'Namespace Explorer.Interop.Shell
+
+'    ' ============================================================
+'    '   CORE ENUMS
+'    ' ============================================================
+'    Public Enum IconSize
+'        Small
+'        Large
+'        ExtraLarge
+'    End Enum
+
+'    <Flags>
+'    Public Enum FileOperationFlags As UInteger
+'        FOF_NOCONFIRMATION = &H10UI
+'        FOF_NOCONFIRMMKDIR = &H200UI
+'        FOFX_NOCOPYSECURITYATTRIBS = &H800UI
+'        FOFX_REQUIREELEVATION = &H200000UI
+'        FOFX_SHOWELEVATIONPROMPT = &H40000UI
+'    End Enum
+
+'    Public Enum SIGDN As UInteger
+'        SIGDN_NORMALDISPLAY = &H0UI
+'        SIGDN_PARENTRELATIVEPARSING = &H80018001UI
+'        SIGDN_DESKTOPABSOLUTEPARSING = &H80028000UI
+'        SIGDN_PARENTRELATIVEEDITING = &H80031001UI
+'        SIGDN_DESKTOPABSOLUTEEDITING = &H8004C000UI
+'        SIGDN_FILESYSPATH = &H80058000UI
+'        SIGDN_URL = &H80068000UI
+'    End Enum
+
+
+'    ' ============================================================
+'    '   SHELL INTERFACES
+'    ' ============================================================
+'    <ComImport, Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"),
+'     InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
+'    Public Interface IShellItem
+'        Sub BindToHandler(pbc As IntPtr, ByRef bhid As Guid, ByRef riid As Guid, ByRef ppv As IntPtr)
+'        Sub GetParent(ByRef ppsi As IShellItem)
+'        Sub GetDisplayName(sigdnName As SIGDN, ByRef ppszName As IntPtr)
+'        Sub GetAttributes(sfgaoMask As UInteger, ByRef psfgaoAttribs As UInteger)
+'        Sub Compare(psi As IShellItem, hint As UInteger, ByRef piOrder As Integer)
+'    End Interface
+
+
+'    ' ============================================================
+'    '   SHELLIDLISTARRAY (for "Shell IDList Array" drag-drop)
+'    ' ============================================================
+'    Public NotInheritable Class ShellIDListArray
+
+'        Public ReadOnly Property Items As List(Of IntPtr)
+
+'        Private Sub New(list As List(Of IntPtr))
+'            Me.Items = list
+'        End Sub
+
+'        Public Shared Function FromDataObject(data As IDataObject) As ShellIDListArray
+'            Dim raw = TryCast(data.GetData("Shell IDList Array"), Byte())
+'            If raw Is Nothing Then
+'                Return New ShellIDListArray(New List(Of IntPtr))
+'            End If
+
+'            Dim list As New List(Of IntPtr)
+'            Dim offset As Integer = 0
+
+'            ' First 4 bytes = count
+'            Dim count As Integer = BitConverter.ToInt32(raw, offset)
+'            offset += 4
+
+'            For i = 0 To count - 1
+'                Dim pidlSize As Integer = BitConverter.ToInt32(raw, offset)
+'                offset += 4
+
+'                Dim pidlPtr As IntPtr = Marshal.AllocHGlobal(pidlSize)
+'                Marshal.Copy(raw, offset, pidlPtr, pidlSize)
+'                offset += pidlSize
+
+'                list.Add(pidlPtr)
+'            Next
+
+'            Return New ShellIDListArray(list)
+'        End Function
+
+'    End Class
+
+
+'    ' ============================================================
+'    '   SHELL INTEROP
+'    ' ============================================================
+'    Public NotInheritable Class ShellInterop
+
+'        Private Sub New()
+'        End Sub
+
+
+'        ' ------------------------------------------------------------
+'        '   SHCreateItemFromParsingName (path → IShellItem)
+'        ' ------------------------------------------------------------
+'        <DllImport("shell32.dll", CharSet:=CharSet.Unicode, PreserveSig:=False)>
+'        Private Shared Function SHCreateItemFromParsingName(
+'            pszPath As String,
+'            pbc As IntPtr,
+'            ByRef riid As Guid,
+'            <MarshalAs(UnmanagedType.Interface)> ByRef ppv As Object) As Integer
+'        End Function
+
+'        Public Shared Function CreateShellItemFromPath(path As String) As IShellItem
+'            Dim iid As New Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE")
+'            Dim obj As Object = Nothing
+'            SHCreateItemFromParsingName(path, IntPtr.Zero, iid, obj)
+'            Return CType(obj, IShellItem)
+'        End Function
+
+
+'        ' ------------------------------------------------------------
+'        '   SHCreateItemFromIDList (PIDL → IShellItem)
+'        ' ------------------------------------------------------------
+'        <DllImport("shell32.dll")>
+'        Private Shared Function SHCreateItemFromIDList(
+'            pidl As IntPtr,
+'            ByRef riid As Guid,
+'            <MarshalAs(UnmanagedType.Interface)> ByRef ppv As Object) As Integer
+'        End Function
+
+'        Public Shared Function CreateShellItemFromPIDL(pidl As IntPtr) As IShellItem
+'            Dim iid As New Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE")
+'            Dim obj As Object = Nothing
+'            SHCreateItemFromIDList(pidl, iid, obj)
+'            Return CType(obj, IShellItem)
+'        End Function
+
+
+'        ' ------------------------------------------------------------
+'        '   DISPLAY NAME FROM IShellItem
+'        ' ------------------------------------------------------------
+'        Public Shared Function GetDisplayName(item As IShellItem, sigdn As SIGDN) As String
+'            Dim psz As IntPtr = IntPtr.Zero
+'            item.GetDisplayName(sigdn, psz)
+'            If psz = IntPtr.Zero Then Return Nothing
+'            Dim result As String = Marshal.PtrToStringUni(psz)
+'            CoTaskMemFree(psz)
+'            Return result
+'        End Function
+
+
+'        ' ------------------------------------------------------------
+'        '   COPY VIA SHFileOperation (Explorer-compatible)
+'        ' ------------------------------------------------------------
+'        Public Shared Sub CopyShellItem(source As IShellItem, destinationFolder As IShellItem)
+'            Dim srcPath As String = GetDisplayName(source, SIGDN.SIGDN_FILESYSPATH)
+'            Dim destPath As String = GetDisplayName(destinationFolder, SIGDN.SIGDN_FILESYSPATH)
+
+'            If String.IsNullOrEmpty(srcPath) OrElse String.IsNullOrEmpty(destPath) Then
+'                Exit Sub
+'            End If
+
+'            Dim op As New SHFILEOPSTRUCT With {
+'                .hwnd = IntPtr.Zero,
+'                .wFunc = FO_COPY,
+'                .pFrom = srcPath & vbNullChar & vbNullChar,
+'                .pTo = destPath & vbNullChar & vbNullChar,
+'                .fFlags = CShort(FOF_NOCONFIRMATION Or FOF_NOCONFIRMMKDIR)
+'            }
+
+'            SHFileOperation(op)
+'        End Sub
+
+
+'        ' ------------------------------------------------------------
+'        '   ICON EXTRACTION (path + PIDL)
+'        ' ------------------------------------------------------------
+'        <DllImport("shell32.dll", CharSet:=CharSet.Auto)>
+'        Private Shared Function SHGetFileInfo(
+'            pszPath As String,
+'            dwFileAttributes As UInteger,
+'            ByRef psfi As SHFILEINFO,
+'            cbFileInfo As UInteger,
+'            uFlags As UInteger) As IntPtr
+'        End Function
+
+'        <DllImport("shell32.dll", CharSet:=CharSet.Auto)>
+'        Private Shared Function SHGetFileInfo(
+'            pidl As IntPtr,
+'            dwFileAttributes As UInteger,
+'            ByRef psfi As SHFILEINFO,
+'            cbFileInfo As UInteger,
+'            uFlags As UInteger) As IntPtr
+'        End Function
+
+'        <DllImport("user32.dll")>
+'        Private Shared Function DestroyIcon(hIcon As IntPtr) As Boolean
+'        End Function
+
+
+'        Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
+'            Return GetShellIcon(path, size)
+'        End Function
+
+'        Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+
+'            ' Native sizes
+'            If pixelSize <= 16 Then
+'                Return GetShellIcon(path, IconSize.Small)
+'            End If
+
+'            Return GetShellIcon(path, IconSize.Large)
+
+'            ' Scale from 32x32
+'            'Dim baseIcon = GetShellIcon(path, IconSize.Large)
+'            'If baseIcon Is Nothing Then Return Nothing
+
+'            'Return New Icon(baseIcon, pixelSize, pixelSize)
+'            'Return ResizeIconHighQuality(baseIcon, pixelSize)
+
+'        End Function
+
+
+'        'Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+'        '    ' Native sizes
+'        '    If pixelSize <= 16 Then
+'        '        Return GetShellIcon(path, IconSize.Small)
+'        '    ElseIf pixelSize = 32 Then
+'        '        Return GetShellIcon(path, IconSize.Large)
+'        '    End If
+
+'        '    ' Try to get the 256px layer for high-quality downscaling
+'        '    Dim baseIcon = GetShellIcon(path, IconSize.ExtraLarge) ' 48px or 256px depending on system
+'        '    If baseIcon Is Nothing Then
+'        '        baseIcon = GetShellIcon(path, IconSize.Large)
+'        '        If baseIcon Is Nothing Then Return Nothing
+'        '    End If
+
+'        '    Return ResizeIconHighQuality(baseIcon, pixelSize)
+'        'End Function
+
+'        Private Shared Function ResizeIconHighQuality(src As Icon, size As Integer) As Icon
+'            Using bmp As New Bitmap(size, size)
+'                Using g = Graphics.FromImage(bmp)
+'                    g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+'                    g.DrawIcon(src, New Rectangle(0, 0, size, size))
+'                End Using
+'                Return Icon.FromHandle(bmp.GetHicon())
+'            End Using
+'        End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'        Public Shared Function GetIconForVirtualFolder(guidString As String, pixelSize As Integer) As Icon
+'            Dim pidl As IntPtr = ParseDisplayName(guidString)
+'            If pidl = IntPtr.Zero Then Return Nothing
+
+'            Try
+'                If pixelSize <= 16 Then
+'                    Return GetIconForPIDL(pidl, IconSize.Small)
+'                ElseIf pixelSize = 32 Then
+'                    Return GetIconForPIDL(pidl, IconSize.Large)
+'                End If
+
+'                Dim baseIcon = GetIconForPIDL(pidl, IconSize.Large)
+'                If baseIcon Is Nothing Then Return Nothing
+
+'                Return New Icon(baseIcon, pixelSize, pixelSize)
+'            Finally
+'                CoTaskMemFree(pidl)
+'            End Try
+'        End Function
+
+
+
+
+'        Public Shared Function GetRecycleBinIcon(pixelSize As Integer) As Icon
+'            ' Native sizes
+'            If pixelSize <= 16 Then
+'                Return GetRecycleBinIcon(IconSize.Small)
+'            ElseIf pixelSize = 32 Then
+'                Return GetRecycleBinIcon(IconSize.Large)
+'            End If
+
+'            ' Scale from 32x32
+'            Dim baseIcon = GetRecycleBinIcon(IconSize.Large)
+'            If baseIcon Is Nothing Then Return Nothing
+
+'            Return New Icon(baseIcon, pixelSize, pixelSize)
+'        End Function
+
+'        Public Shared Function GetRecycleBinIcon(size As IconSize) As Icon
+'            Dim pidl As IntPtr = IntPtr.Zero
+'            Dim hr = SHGetSpecialFolderLocation(IntPtr.Zero, CSIDL_BITBUCKET, pidl)
+
+'            If hr <> 0 OrElse pidl = IntPtr.Zero Then Return Nothing
+
+'            Try
+'                Return GetIconForPIDL(pidl, size)
+'            Finally
+'                CoTaskMemFree(pidl)
+'            End Try
+'        End Function
+
+
+
+'        Public Shared Function GetIconForExtension(ext As String, pixelSize As Integer) As Icon
+'            If String.IsNullOrWhiteSpace(ext) Then Return Nothing
+
+'            ' Ensure extension starts with dot
+'            If Not ext.StartsWith(".") Then
+'                ext = "." & ext
+'            End If
+
+'            Dim flags As UInteger =
+'        SHGFI_ICON Or
+'        SHGFI_USEFILEATTRIBUTES
+
+'            ' Size
+'            If pixelSize <= 16 Then
+'                flags = flags Or SHGFI_SMALLICON
+'            Else
+'                flags = flags Or SHGFI_LARGEICON
+'            End If
+
+'            Dim shinfo As New SHFILEINFO()
+
+'            ' Pretend it's a normal file so SHGetFileInfo uses the association
+'            Const attrs As UInteger = FILE_ATTRIBUTE_NORMAL
+
+'            Dim result = SHGetFileInfo(
+'        ext,
+'        attrs,
+'        shinfo,
+'        CUInt(Marshal.SizeOf(shinfo)),
+'        flags
+'    )
+
+'            If result = IntPtr.Zero OrElse shinfo.hIcon = IntPtr.Zero Then
+'                Return Nothing
+'            End If
+
+'            ' Clone the icon so we own the handle
+'            Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
+'            Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
+
+'            ' Free shell handle
+'            DestroyIcon(shinfo.hIcon)
+
+'            Return cloned
+'        End Function
+
+
+'        ' ------------------------------------------------------------
+'        '   INTERNAL HELPERS FOR ICONS & PIDLS
+'        ' ------------------------------------------------------------
+'        <DllImport("shell32.dll", CharSet:=CharSet.Unicode)>
+'        Private Shared Function SHParseDisplayName(
+'            pszName As String,
+'            pbc As IntPtr,
+'            ByRef ppidl As IntPtr,
+'            sfgaoIn As UInteger,
+'            ByRef psfgaoOut As UInteger) As Integer
+'        End Function
+
+'        Public Shared Function ParseDisplayName(path As String) As IntPtr
+'            Dim pidl As IntPtr = IntPtr.Zero
+'            Dim attrs As UInteger = 0UI
+'            Dim hr = SHParseDisplayName(path, IntPtr.Zero, pidl, 0UI, attrs)
+'            If hr <> 0 Then Return IntPtr.Zero
+'            Return pidl
+'        End Function
+
+'        <DllImport("shell32.dll")>
+'        Private Shared Function SHGetSpecialFolderLocation(
+'            hwndOwner As IntPtr,
+'            nFolder As Integer,
+'            ByRef ppidl As IntPtr) As Integer
+'        End Function
+
+'        <DllImport("ole32.dll")>
+'        Private Shared Sub CoTaskMemFree(pv As IntPtr)
+'        End Sub
+
+'        Private Const CSIDL_BITBUCKET As Integer = &HA
+
+'        'Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
+'        '    Dim flags As UInteger = SHGFI_ICON Or SHGFI_USEFILEATTRIBUTES
+
+'        '    If size = IconSize.Small Then
+'        '        flags = flags Or SHGFI_SMALLICON
+'        '    Else
+'        '        flags = flags Or SHGFI_LARGEICON
+'        '    End If
+
+'        '    Dim shinfo As New SHFILEINFO()
+'        '    Dim attrs As UInteger =
+'        '        If(Directory.Exists(path), FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL)
+
+'        '    Dim result = SHGetFileInfo(
+'        '        path,
+'        '        attrs,
+'        '        shinfo,
+'        '        CUInt(Marshal.SizeOf(shinfo)),
+'        '        flags)
+
+'        '    If result = IntPtr.Zero Then Return Nothing
+
+'        '    Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
+'        '    Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
+'        '    DestroyIcon(shinfo.hIcon)
+'        '    Return cloned
+'        'End Function
+
+'        Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
+'            Dim flags As UInteger = SHGFI_ICON
+
+'            If size = IconSize.Small Then
+'                flags = flags Or SHGFI_SMALLICON
+'            Else
+'                flags = flags Or SHGFI_LARGEICON
+'            End If
+
+'            Dim shinfo As New SHFILEINFO()
+
+'            Dim attrs As UInteger
+
+'            If IO.File.Exists(path) OrElse IO.Directory.Exists(path) Then
+'                ' Real file → do NOT use SHGFI_USEFILEATTRIBUTES
+'                attrs = 0UI
+'            Else
+'                ' Missing file → fall back to extension icon
+'                flags = flags Or SHGFI_USEFILEATTRIBUTES
+'                attrs = FILE_ATTRIBUTE_NORMAL
+'            End If
+
+'            Dim result = SHGetFileInfo(
+'        path,
+'        attrs,
+'        shinfo,
+'        CUInt(Marshal.SizeOf(shinfo)),
+'        flags)
+
+'            If result = IntPtr.Zero Then Return Nothing
+
+'            Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
+'            Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
+'            DestroyIcon(shinfo.hIcon)
+'            Return cloned
+'        End Function
+
+
+
+'        ' Public wrapper for PIDL-based icon extraction
+'        'Public Shared Function GetIconForPIDL(pidl As IntPtr, pixelSize As Integer) As Icon
+'        '    Dim size As IconSize =
+'        '    If(pixelSize <= 16, IconSize.Small, IconSize.Large)
+
+'        '    Dim baseIcon = GetIconForPIDL(pidl, size)
+'        '    If baseIcon Is Nothing Then Return Nothing
+
+'        '    ' Scale if needed
+'        '    If pixelSize = 16 OrElse pixelSize = 32 Then
+'        '        Return baseIcon
+'        '    End If
+
+'        '    Return New Icon(baseIcon, pixelSize, pixelSize)
+'        'End Function
+
+
+'        Private Shared Function GetIconForPIDL(pidl As IntPtr, size As IconSize) As Icon
+'            Dim flags As UInteger = SHGFI_ICON Or SHGFI_PIDL
+
+'            If size = IconSize.Small Then
+'                flags = flags Or SHGFI_SMALLICON
+'            Else
+'                flags = flags Or SHGFI_LARGEICON
+'            End If
+
+'            Dim shinfo As New SHFILEINFO()
+
+'            Dim result = SHGetFileInfo(
+'                pidl,
+'                0UI,
+'                shinfo,
+'                CUInt(Marshal.SizeOf(shinfo)),
+'                flags)
+
+'            If result = IntPtr.Zero Then Return Nothing
+
+'            Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
+'            Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
+'            DestroyIcon(shinfo.hIcon)
+'            Return cloned
+'        End Function
+
+
+'        ' ------------------------------------------------------------
+'        '   SHFILEOPERATION (Copy/Move/Delete)
+'        ' ------------------------------------------------------------
+'        <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
+'        Private Structure SHFILEOPSTRUCT
+'            Public hwnd As IntPtr
+'            Public wFunc As UInteger
+'            Public pFrom As String
+'            Public pTo As String
+'            Public fFlags As UShort
+'            Public fAnyOperationsAborted As Boolean
+'            Public hNameMappings As IntPtr
+'            Public lpszProgressTitle As String
+'        End Structure
+
+'        Private Const FO_COPY As UInteger = &H2UI
+'        Private Const FO_MOVE As UInteger = &H1UI
+'        Private Const FO_DELETE As UInteger = &H3UI
+'        Private Const FO_RENAME As UInteger = &H4UI
+
+'        Private Const FOF_SILENT As UShort = &H4US
+'        Private Const FOF_NOCONFIRMATION As UShort = &H10US
+'        Private Const FOF_NOCONFIRMMKDIR As UShort = &H200US
+'        Private Const FOF_ALLOWUNDO As UShort = &H40US
+
+'        <DllImport("shell32.dll", CharSet:=CharSet.Unicode)>
+'        Private Shared Function SHFileOperation(ByRef lpFileOp As SHFILEOPSTRUCT) As Integer
+'        End Function
+
+
+'        ' ------------------------------------------------------------
+'        '   SHFILEINFO STRUCT & CONSTANTS
+'        ' ------------------------------------------------------------
+'        <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)>
+'        Private Structure SHFILEINFO
+'            Public hIcon As IntPtr
+'            Public iIcon As Integer
+'            Public dwAttributes As UInteger
+'            <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)>
+'            Public szDisplayName As String
+'            <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)>
+'            Public szTypeName As String
+'        End Structure
+
+'        Private Const SHGFI_ICON As UInteger = &H100UI
+'        Private Const SHGFI_PIDL As UInteger = &H8UI
+'        Private Const SHGFI_SMALLICON As UInteger = &H1UI
+'        Private Const SHGFI_LARGEICON As UInteger = &H0UI
+
+'        Private Const SHGFI_USEFILEATTRIBUTES As UInteger = &H10UI
+
+'        Private Const FILE_ATTRIBUTE_NORMAL As UInteger = &H80UI
+'        Private Const FILE_ATTRIBUTE_DIRECTORY As UInteger = &H10UI
+
+'    End Class
+
+'End Namespace
+
+
+
+Imports System.Runtime.InteropServices
+Imports System.Drawing
+
+
+Namespace Explorer.Interop.Shell
+
+    Friend Module ShellInterop
+
+        ' --- SHGetFileInfo ---
+
+        <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
+        Private Structure SHFILEINFO
+            Public hIcon As IntPtr
+            Public iIcon As Integer
+            Public dwAttributes As UInteger
+            <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)>
+            Public szDisplayName As String
+            <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)>
+            Public szTypeName As String
+        End Structure
+
+        <Flags>
+        Private Enum SHGFI As UInteger
+            ICON = &H100UI
+            DISPLAYNAME = &H200UI
+            TYPENAME = &H400UI
+            ATTRIBUTES = &H800UI
+            ICONLOCATION = &H1000UI
+            EXETYPE = &H2000UI
+            SYSICONINDEX = &H4000UI
+            LINKOVERLAY = &H8000UI
+            SELECTED = &H10000UI
+            ATTR_SPECIFIED = &H20000UI
+            LARGEICON = &H0UI
+            SMALLICON = &H1UI
+            OPENICON = &H2UI
+            SHELLICONSIZE = &H4UI
+            PIDL = &H8UI
+            USEFILEATTRIBUTES = &H10UI
+            ADDOVERLAYS = &H20UI
+            OVERLAYINDEX = &H40UI
+        End Enum
+
+        <DllImport("shell32.dll", CharSet:=CharSet.Unicode)>
+        Private Function SHGetFileInfo(
+        pszPath As String,
+        dwFileAttributes As UInteger,
+        ByRef psfi As SHFILEINFO,
+        cbFileInfo As UInteger,
+        uFlags As SHGFI) As IntPtr
+        End Function
+
+        ' --- SHGetImageList / IImageList ---
+
+        Private Enum SHIL As Integer
+            SHIL_LARGE = 0          ' 32x32
+            SHIL_SMALL = 1          ' 16x16
+            SHIL_EXTRALARGE = 2     ' 48x48
+            SHIL_SYSSMALL = 3       ' system small
+            SHIL_JUMBO = 4          ' 256x256
+        End Enum
+
+        <Flags>
+        Private Enum ImageListDrawFlags As UInteger
+            ILD_NORMAL = &H0UI
+            ILD_TRANSPARENT = &H1UI
+        End Enum
+
+        <ComImport>
+        <Guid("46EB5926-582E-4017-9FDF-E8998DAA0950")>
+        <InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
+        Private Interface IImageList
+            <PreserveSig>
+            Function Add(hbmImage As IntPtr, hbmMask As IntPtr, ByRef pi As Integer) As Integer
+            <PreserveSig>
+            Function ReplaceIcon(i As Integer, hicon As IntPtr, ByRef pi As Integer) As Integer
+            <PreserveSig>
+            Function SetOverlayImage(iImage As Integer, iOverlay As Integer) As Integer
+            <PreserveSig>
+            Function Replace(i As Integer, hbmImage As IntPtr, hbmMask As IntPtr) As Integer
+            <PreserveSig>
+            Function AddMasked(hbmImage As IntPtr, crMask As Integer, ByRef pi As Integer) As Integer
+            <PreserveSig>
+            Function Draw(ByRef pimldp As IMAGELISTDRAWPARAMS) As Integer
+            <PreserveSig>
+            Function Remove(i As Integer) As Integer
+            <PreserveSig>
+            Function GetIcon(i As Integer, flags As ImageListDrawFlags, ByRef picon As IntPtr) As Integer
+            ' Other members omitted – not needed here
+        End Interface
+
+        <StructLayout(LayoutKind.Sequential)>
+        Private Structure IMAGELISTDRAWPARAMS
+            Public cbSize As Integer
+            Public himl As IntPtr
+            Public i As Integer
+            Public hdcDst As IntPtr
+            Public x As Integer
+            Public y As Integer
+            Public cx As Integer
+            Public cy As Integer
+            Public xBitmap As Integer
+            Public yBitmap As Integer
+            Public rgbBk As Integer
+            Public rgbFg As Integer
+            Public fStyle As ImageListDrawFlags
+            Public dwRop As Integer
+            Public fState As Integer
+            Public Frame As Integer
+            Public crEffect As Integer
+        End Structure
+
+        <DllImport("shell32.dll", EntryPoint:="#727")>
+        Private Function SHGetImageList(
+        iImageList As SHIL,
+        ByRef riid As Guid,
+        ByRef ppv As IImageList) As Integer
+        End Function
+
+        <DllImport("user32.dll", SetLastError:=True)>
+        Private Function DestroyIcon(hIcon As IntPtr) As Boolean
+        End Function
+
+        ' --- Public API: Explorer-accurate GetIconForPath ---
+
+        Public Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+            If String.IsNullOrWhiteSpace(path) Then Return Nothing
+
+            ' 1. Get system image index for this path
+            Dim index = GetSystemImageIndex(path)
+            If index < 0 Then Return Nothing
+
+            ' 2. Choose the best SHIL list for requested size
+            Dim listKind = ChooseImageListForSize(pixelSize)
+
+            ' 3. Get IImageList for that size
+            Dim imgList As IImageList = Nothing
+            Dim iidImageList As Guid = GetType(IImageList).GUID
+            Dim hr = SHGetImageList(listKind, iidImageList, imgList)
+            If hr <> 0 OrElse imgList Is Nothing Then Return Nothing
+
+            ' 4. Get icon from image list
+            Dim hIcon As IntPtr = IntPtr.Zero
+            hr = imgList.GetIcon(index, ImageListDrawFlags.ILD_TRANSPARENT, hIcon)
+            If hr <> 0 OrElse hIcon = IntPtr.Zero Then Return Nothing
+
+            ' 5. Wrap in managed Icon and clone so we can destroy the handle
+            Dim raw = Icon.FromHandle(hIcon)
+            Dim managed = CType(raw.Clone(), Icon)
+            DestroyIcon(hIcon)
+            Return managed
+        End Function
+
+        'Public Shared Function GetIconForVirtualFolder(guidString As String, pixelSize As Integer) As Icon
+        '    Dim pidl As IntPtr = ParseDisplayName(guidString)
+        '    If pidl = IntPtr.Zero Then Return Nothing
+
+        '    Try
+        '        If pixelSize <= 16 Then
+        '            Return GetIconForPIDL(pidl, IconSize.Small)
+        '        ElseIf pixelSize = 32 Then
+        '            Return GetIconForPIDL(pidl, IconSize.Large)
+        '        End If
+
+        '        Dim baseIcon = GetIconForPIDL(pidl, IconSize.Large)
+        '        If baseIcon Is Nothing Then Return Nothing
+
+        '        Return New Icon(baseIcon, pixelSize, pixelSize)
+        '    Finally
+        '        CoTaskMemFree(pidl)
+        '    End Try
+        'End Function
+
+        ' --- Helpers ---
+
+        Private Function GetSystemImageIndex(path As String) As Integer
+            Dim info As New SHFILEINFO()
+            Dim flags As SHGFI = SHGFI.SYSICONINDEX Or SHGFI.USEFILEATTRIBUTES
+
+            Dim attrs As UInteger = &H80UI ' FILE_ATTRIBUTE_NORMAL
+            Dim result = SHGetFileInfo(path, attrs, info, CUInt(Marshal.SizeOf(info)), flags)
+            If result = IntPtr.Zero Then Return -1
+            Return info.iIcon
+        End Function
+
+        Private Function ChooseImageListForSize(pixelSize As Integer) As SHIL
+            ' Map requested size to the closest Explorer image list
+            If pixelSize <= 16 Then
+                Return SHIL.SHIL_SMALL          ' 16x16
+            ElseIf pixelSize <= 32 Then
+                Return SHIL.SHIL_LARGE          ' 32x32 (20, 24, 28 map here; shell rasterizes)
+            ElseIf pixelSize <= 48 Then
+                Return SHIL.SHIL_EXTRALARGE     ' 48x48
+            Else
+                Return SHIL.SHIL_JUMBO          ' 256x256
+            End If
+        End Function
+
+    End Module
+
+
+
+End Namespace

@@ -63,7 +63,7 @@ Public Class Form1
 
     Private lblStatus As New ToolStripStatusLabel()
 
-    Public imgIconCache As New ImageList()
+    'Public imgIconCache As New ImageList()
 
     Private imgArrows As New ImageList()
 
@@ -838,11 +838,16 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_DpiChanged(sender As Object, e As DpiChangedEventArgs) Handles Me.DpiChanged
-        Dim newSize = IconEngine.GetScaledIconSize(Me)
-        imgIconCache.ImageSize = New Size(newSize, newSize)
 
-        ' Rebuild icons
-        imgIconCache.Images.Clear()
+
+        IconEngine.UpdateIconSize()
+
+
+        'Dim newSize = IconEngine.GetScaledIconSize(Me)
+        'imgIconCache.ImageSize = New Size(newSize, newSize)
+
+        '' Rebuild icons
+        'imgIconCache.Images.Clear()
         InitImageList()
         UpdateTreeRoots()
         RefreshListView()
@@ -3974,7 +3979,7 @@ Public Class Form1
                     }
 
                     '' DPI-aware icon size
-                    Dim iconSize As Integer = imgIconCache.ImageSize.Width
+                    'Dim iconSize As Integer = imgIconCache.ImageSize.Width
 
                     '' Real Explorer icon
                     'Dim icon = ShellInterop.GetIconForPath(dirPath, pixelSize)
@@ -3991,23 +3996,39 @@ Public Class Form1
                     'End If
 
 
-                    ' Set icon, with caching in the image list to avoid duplicates and improve performance
-                    If Not imgIconCache.Images.ContainsKey(FolderKey) Then
-                        Dim folderIcon = IconLibrary.GenericFolder(iconSize)
-                        'Dim userEasyAccessIcon = Nothing
 
-                        If folderIcon IsNot Nothing Then
-                            imgIconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
-                            child.ImageKey = FolderKey
-                            child.SelectedImageKey = FolderKey
-                        Else
-                            child.ImageKey = FallbackFolderKey
-                            child.SelectedImageKey = FallbackFolderKey
-                        End If
-                    Else
-                        child.ImageKey = FolderKey
-                        child.SelectedImageKey = FolderKey
-                    End If
+
+                    ' SetNodeIcon(child, dirPath, iconSize)
+                    'SetChildNodeIcon
+                    IconEngine.SetChildNodeIcon(child)
+
+
+
+                    ' Set icon, with caching in the image list to avoid duplicates and improve performance
+                    'If Not imgIconCache.Images.ContainsKey(FolderKey) Then
+                    '    Dim folderIcon = IconLibrary.GenericFolder(iconSize)
+                    '    'Dim userEasyAccessIcon = Nothing
+
+                    '    If folderIcon IsNot Nothing Then
+                    '        imgIconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+                    '        child.ImageKey = FolderKey
+                    '        child.SelectedImageKey = FolderKey
+                    '    Else
+                    '        child.ImageKey = FallbackFolderKey
+                    '        child.SelectedImageKey = FallbackFolderKey
+                    '    End If
+                    'Else
+                    '    child.ImageKey = FolderKey
+                    '    child.SelectedImageKey = FolderKey
+                    'End If
+
+
+
+
+
+
+
+
 
                     ' Expand arrow logic
                     If HasSubdirectories(dirPath) Then
@@ -4039,6 +4060,28 @@ Public Class Form1
         tvFolders.EndUpdate()
 
     End Sub
+
+
+    'Private Sub SetNodeIcon(child, dirPath, iconSize)
+
+    '    If Not imgIconCache.Images.ContainsKey(FolderKey) Then
+    '        Dim folderIcon = IconLibrary.GenericFolder(iconSize)
+    '        'Dim folderIcon = Nothing ' force fallback testing
+
+    '        If folderIcon IsNot Nothing Then
+    '            imgIconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+    '            child.ImageKey = FolderKey
+    '            child.SelectedImageKey = FolderKey
+    '        Else
+    '            child.ImageKey = FallbackFolderKey
+    '            child.SelectedImageKey = FallbackFolderKey
+    '        End If
+    '    Else
+    '        child.ImageKey = FolderKey
+    '        child.SelectedImageKey = FolderKey
+    '    End If
+
+    'End Sub
 
 
 
@@ -4138,6 +4181,48 @@ Public Class Form1
         End Try
     End Function
 
+    ' ============================================================
+    ' LISTVIEW ITEM BUILDERS
+    ' ============================================================
+
+    Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
+        Dim item As New ListViewItem(di.Name)
+
+        item.SubItems.Add("Folder")
+        item.SubItems.Add("")
+        item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+        item.Tag = di.FullName
+        IconEngine.SetListViewItemIconForDirectory(item, di)
+
+        Return item
+    End Function
+
+    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+        Dim item As New ListViewItem(fi.Name)
+
+        Dim ext = fi.Extension.ToLowerInvariant()
+        Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+
+        item.SubItems.Add(category)
+        item.SubItems.Add(FormatSize(fi.Length))
+        item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+        item.Tag = fi.FullName
+        IconEngine.SetListViewItemIconForFile(item, fi)
+
+        Return item
+    End Function
+
+
+
+
+
+
+
+
+
+
+
+
     Private Function IsAccessTestFile(name As String) As Boolean
         Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
     End Function
@@ -4200,36 +4285,6 @@ Public Class Form1
     End Function
 
 
-    ' ============================================================
-    ' LISTVIEW ITEM BUILDERS
-    ' ============================================================
-
-    Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
-        Dim item As New ListViewItem(di.Name)
-
-        item.SubItems.Add("Folder")
-        item.SubItems.Add("")
-        item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-        item.Tag = di.FullName
-        IconEngine.SetListViewItemIconForDirectory(item, imgIconCache, di)
-
-        Return item
-    End Function
-
-    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-        Dim item As New ListViewItem(fi.Name)
-
-        Dim ext = fi.Extension.ToLowerInvariant()
-        Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
-
-        item.SubItems.Add(category)
-        item.SubItems.Add(FormatSize(fi.Length))
-        item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-        item.Tag = fi.FullName
-        IconEngine.SetListViewItemIconForFile(item, imgIconCache, fi)
-
-        Return item
-    End Function
 
 
     'Private Sub SetListViewItemIconForDirectory(item As ListViewItem, di As DirectoryInfo)
@@ -5396,7 +5451,7 @@ Public Class Form1
             .ImageKey = EasyAccessKey,
             .SelectedImageKey = EasyAccessKey
         }
-        easyAccessNode = GetEasyAccessNodes(easyAccessNode, imgIconCache, iconSize)
+        easyAccessNode = GetEasyAccessNodes(easyAccessNode, iconSize)
         tvFolders.Nodes.Add(easyAccessNode)
         easyAccessNode.Expand()
         easyAccessNode.StateImageIndex = 1 ' Expanded
@@ -5408,7 +5463,7 @@ Public Class Form1
         Dim thisPCNode As New TreeNode(ThisPCString) With {
             .Tag = ThisPCGUID
         }
-        IconEngine.SetThisPCNodeIcon(thisPCNode, imgIconCache, iconSize)
+        IconEngine.SetThisPCNodeIcon(thisPCNode,  iconSize)
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
 
@@ -5421,7 +5476,7 @@ Public Class Form1
                     Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
                         .Tag = di.RootDirectory.FullName
                     }
-                    IconEngine.SetDriveNodeIcon(driveNode, di, imgIconCache, iconSize)
+                    IconEngine.SetDriveNodeIcon(driveNode, di, iconSize)
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         driveNode.Nodes.Add("Loading...")
                         driveNode.StateImageIndex = 0 ' Collapsed
@@ -5442,7 +5497,7 @@ Public Class Form1
         Dim RecycleBinNode As New TreeNode(RecycleBinString) With {
             .Tag = RecycleBinGUID
         }
-        IconEngine.SetRecycleNodeIcon(RecycleBinNode, imgIconCache, iconSize)
+        IconEngine.SetRecycleNodeIcon(RecycleBinNode, iconSize)
         RecycleBinNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(RecycleBinNode)
 
@@ -5450,7 +5505,7 @@ Public Class Form1
 
     End Sub
 
-    Private Function GetEasyAccessNodes(easyAccessNode As TreeNode, imageList As ImageList, iconSize As Integer) As TreeNode
+    Private Function GetEasyAccessNodes(easyAccessNode As TreeNode, iconSize As Integer) As TreeNode
 
         ' ============================================================
         ' SPECIAL FOLDERS
@@ -5475,7 +5530,7 @@ Public Class Form1
                     .Tag = specialFolderPath
                 }
 
-                IconEngine.SetSpecialFolderNodeIcon(specialFolderNode, imageList, iconSize, specialFolderPath, sf.Item1)
+                IconEngine.SetSpecialFolderNodeIcon(specialFolderNode, iconSize, specialFolderPath, sf.Item1)
 
                 ' Expand arrow logic
                 If HasSubdirectories(specialFolderPath) Then
@@ -5499,7 +5554,7 @@ Public Class Form1
                 .Tag = entry.Path
             }
 
-            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode, imageList, iconSize)
+            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode, iconSize)
 
             If HasSubdirectories(entry.Path) Then
                 userEntryNode.Nodes.Add("Loading...")
@@ -7913,42 +7968,66 @@ Public Class Form1
 
     Private Sub InitImageList()
 
-        Dim size = IconEngine.GetScaledIconSize(Me)
-        imgIconCache.ImageSize = New Size(size, size)
+        'Dim size = IconEngine.GetScaledIconSize(Me)
+        'imgIconCache.ImageSize = New Size(size, size)
 
-        'imgList.ImageSize = New Size(16, 16)
-        imgIconCache.ColorDepth = ColorDepth.Depth32Bit
+        ''imgList.ImageSize = New Size(16, 16)
+        'imgIconCache.ColorDepth = ColorDepth.Depth32Bit
 
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
 
         IconEngine.AddFallbackIcon(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
+        IconEngine.AddFallbackIcon(DriveKey, My.Resources.Resource1.Drive_16X16)
+        IconEngine.AddFallbackIcon(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
+
+        IconEngine.AddFallbackIcon("Downloads", My.Resources.Resource1.Downloads_16X16)
+        IconEngine.AddFallbackIcon("Desktop", My.Resources.Resource1.Desktop_16X16)
+        IconEngine.AddFallbackIcon(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
+        IconEngine.AddFallbackIcon("Music", My.Resources.Resource1.Music_16X16)
+        IconEngine.AddFallbackIcon("Pictures", My.Resources.Resource1.Pictures_16X16)
+        IconEngine.AddFallbackIcon("Videos", My.Resources.Resource1.Videos_16X16)
+
+        IconEngine.AddFallbackIcon(ExecutableKey, My.Resources.Resource1.Executable_16X16)
+        IconEngine.AddFallbackIcon(OpticalKey, My.Resources.Resource1.Optical_16X16)
+        IconEngine.AddFallbackIcon("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
+        IconEngine.AddFallbackIcon("Error", My.Resources.Resource1.Error_16X16)
+        IconEngine.AddFallbackIcon("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+
+        IconEngine.AddFallbackIcon(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+        IconEngine.AddFallbackIcon(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
 
 
-        imgIconCache.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
-        imgIconCache.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
-        imgIconCache.Images.Add(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
 
-        imgIconCache.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
-        imgIconCache.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
-        imgIconCache.Images.Add(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
 
-        imgIconCache.Images.Add("Music", My.Resources.Resource1.Music_16X16)
-        imgIconCache.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
-        imgIconCache.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
+        'imgIconCache.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
+        'imgIconCache.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
+        'imgIconCache.Images.Add(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
 
-        imgIconCache.Images.Add(ExecutableKey, My.Resources.Resource1.Executable_16X16)
-        imgIconCache.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
-        imgIconCache.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
-        imgIconCache.Images.Add("Error", My.Resources.Resource1.Error_16X16)
-        imgIconCache.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+        'imgIconCache.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
+        'imgIconCache.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
+        'imgIconCache.Images.Add(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
 
-        imgIconCache.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+        'imgIconCache.Images.Add("Music", My.Resources.Resource1.Music_16X16)
+        'imgIconCache.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
+        'imgIconCache.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
 
-        imgIconCache.Images.Add(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
+        'imgIconCache.Images.Add(ExecutableKey, My.Resources.Resource1.Executable_16X16)
+        'imgIconCache.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
+        'imgIconCache.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
+        'imgIconCache.Images.Add("Error", My.Resources.Resource1.Error_16X16)
+        'imgIconCache.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+
+        'imgIconCache.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+        'imgIconCache.Images.Add(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
 
         ' Assign ImageList to controls
-        tvFolders.ImageList = imgIconCache
-        lvFiles.SmallImageList = imgIconCache
+        'tvFolders.ImageList = imgIconCache
+        'lvFiles.SmallImageList = imgIconCache
+
+
+        tvFolders.ImageList = IconEngine.GetIconCache()
+        lvFiles.SmallImageList = IconEngine.GetIconCache()
+
 
     End Sub
 
