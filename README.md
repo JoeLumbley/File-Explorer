@@ -8,8 +8,8 @@
 
 
 
+<img width="1266" height="733" alt="157" src="https://github.com/user-attachments/assets/7eb33922-8a3f-4ef0-9d0f-d89a9ac5ad79" />
 
-<img width="1266" height="733" alt="151" src="https://github.com/user-attachments/assets/272aff36-1d2c-49e4-b53e-7d99fcd95f7d" />
 
 
 
@@ -46,7 +46,7 @@ The entire application is built around clarity, predictability, and emotional sa
 
 
 
-<img width="1266" height="733" alt="150" src="https://github.com/user-attachments/assets/07467f0b-635a-457b-b484-97dce1ea2868" />
+<img width="1266" height="733" alt="158" src="https://github.com/user-attachments/assets/e46c1de1-08b6-45ce-85bd-6dc9f899f8aa" />
 
 
 
@@ -4953,6 +4953,22 @@ For more details, check the source code and documentation within the repository.
 
 
 # YearBook
+
+
+
+
+
+
+
+
+<img width="1920" height="1080" alt="156" src="https://github.com/user-attachments/assets/c223fcaf-3ea3-4296-8bbe-67b2b15a75d1" />
+
+
+
+
+
+
+
 
 
 
