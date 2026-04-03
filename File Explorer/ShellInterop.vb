@@ -212,18 +212,23 @@ Namespace Explorer.Interop.Shell
 
 
 
+            'If iconSizePixABC <= 16 Then
+            '    Return GetShellIcon(path, IconSize.Small)
+            'ElseIf iconSizePixABC = 32 Then
+            '    Return GetShellIcon(path, IconSize.Small)
+            'End If
+
             If iconSizePixABC <= 16 Then
                 Return GetShellIcon(path, IconSize.Small)
-            ElseIf iconSizePixABC = 32 Then
-                Return GetShellIcon(path, IconSize.Small)
             End If
+
 
             Dim baseIcon = GetShellIcon(path, IconSize.Small)
 
-            If iconSizePixABC > 32 Then
-                baseIcon = GetShellIcon(path, IconSize.Small)
+            'If iconSizePixABC > 32 Then
+            '    baseIcon = GetShellIcon(path, IconSize.Small)
 
-            End If
+            'End If
 
             ' Scale from 32x32
             'Dim baseIcon = GetShellIcon(path, IconSize.Small)
@@ -286,16 +291,26 @@ Namespace Explorer.Interop.Shell
             If pidl = IntPtr.Zero Then Return Nothing
 
             Try
+
+
+
+                'If pixelSize <= 16 Then
+                '    Return GetIconForPIDL(pidl, IconSize.Small)
+                'ElseIf pixelSize = 32 Then
+                '    Return GetIconForPIDL(pidl, IconSize.Large)
+                'End If
+
                 If pixelSize <= 16 Then
                     Return GetIconForPIDL(pidl, IconSize.Small)
-                ElseIf pixelSize = 32 Then
-                    Return GetIconForPIDL(pidl, IconSize.Large)
                 End If
 
-                Dim baseIcon = GetIconForPIDL(pidl, IconSize.Large)
+                Dim baseIcon = GetIconForPIDL(pidl, IconSize.Small)
+
                 If baseIcon Is Nothing Then Return Nothing
 
-                Return New Icon(baseIcon, pixelSize, pixelSize)
+                'Return New Icon(baseIcon, pixelSize, pixelSize)
+                Return ResizeIconHighQuality(baseIcon, pixelSize)
+
             Finally
                 CoTaskMemFree(pidl)
             End Try
@@ -304,20 +319,20 @@ Namespace Explorer.Interop.Shell
 
 
 
-        Public Shared Function GetRecycleBinIcon(pixelSize As Integer) As Icon
-            ' Native sizes
-            If pixelSize <= 16 Then
-                Return GetRecycleBinIcon(IconSize.Small)
-            ElseIf pixelSize = 32 Then
-                Return GetRecycleBinIcon(IconSize.Large)
-            End If
+        'Public Shared Function GetRecycleBinIcon(pixelSize As Integer) As Icon
+        '    ' Native sizes
+        '    If pixelSize <= 16 Then
+        '        Return GetRecycleBinIcon(IconSize.Small)
+        '    ElseIf pixelSize = 32 Then
+        '        Return GetRecycleBinIcon(IconSize.Large)
+        '    End If
 
-            ' Scale from 32x32
-            Dim baseIcon = GetRecycleBinIcon(IconSize.Large)
-            If baseIcon Is Nothing Then Return Nothing
+        '    ' Scale from 32x32
+        '    Dim baseIcon = GetRecycleBinIcon(IconSize.Large)
+        '    If baseIcon Is Nothing Then Return Nothing
 
-            Return New Icon(baseIcon, pixelSize, pixelSize)
-        End Function
+        '    Return New Icon(baseIcon, pixelSize, pixelSize)
+        'End Function
 
         Public Shared Function GetRecycleBinIcon(size As IconSize) As Icon
             Dim pidl As IntPtr = IntPtr.Zero
