@@ -5442,7 +5442,7 @@ Public Class Form1
         tvFolders.BeginUpdate()
         tvFolders.Nodes.Clear()
 
-        Dim iconSize = IconEngine.GetScaledIconSize(Me)
+        'Dim iconSize = IconEngine.GetScaledIconSize(Me)
 
         ' ============================================================
         ' EASY ACCESS
@@ -5451,7 +5451,7 @@ Public Class Form1
             .ImageKey = EasyAccessKey,
             .SelectedImageKey = EasyAccessKey
         }
-        easyAccessNode = GetEasyAccessNodes(easyAccessNode, iconSize)
+        easyAccessNode = GetEasyAccessNodes(easyAccessNode)
         tvFolders.Nodes.Add(easyAccessNode)
         easyAccessNode.Expand()
         easyAccessNode.StateImageIndex = 1 ' Expanded
@@ -5463,7 +5463,7 @@ Public Class Form1
         Dim thisPCNode As New TreeNode(ThisPCString) With {
             .Tag = ThisPCGUID
         }
-        IconEngine.SetThisPCNodeIcon(thisPCNode,  iconSize)
+        IconEngine.SetThisPCNodeIcon(thisPCNode)
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
 
@@ -5476,7 +5476,7 @@ Public Class Form1
                     Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
                         .Tag = di.RootDirectory.FullName
                     }
-                    IconEngine.SetDriveNodeIcon(driveNode, di, iconSize)
+                    IconEngine.SetDriveNodeIcon(driveNode, di)
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         driveNode.Nodes.Add("Loading...")
                         driveNode.StateImageIndex = 0 ' Collapsed
@@ -5497,7 +5497,7 @@ Public Class Form1
         Dim RecycleBinNode As New TreeNode(RecycleBinString) With {
             .Tag = RecycleBinGUID
         }
-        IconEngine.SetRecycleNodeIcon(RecycleBinNode, iconSize)
+        IconEngine.SetRecycleNodeIcon(RecycleBinNode)
         RecycleBinNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(RecycleBinNode)
 
@@ -5505,7 +5505,7 @@ Public Class Form1
 
     End Sub
 
-    Private Function GetEasyAccessNodes(easyAccessNode As TreeNode, iconSize As Integer) As TreeNode
+    Private Function GetEasyAccessNodes(easyAccessNode As TreeNode) As TreeNode
 
         ' ============================================================
         ' SPECIAL FOLDERS
@@ -5530,7 +5530,7 @@ Public Class Form1
                     .Tag = specialFolderPath
                 }
 
-                IconEngine.SetSpecialFolderNodeIcon(specialFolderNode, iconSize, specialFolderPath, sf.Item1)
+                IconEngine.SetSpecialFolderNodeIcon(specialFolderNode, specialFolderPath, sf.Item1)
 
                 ' Expand arrow logic
                 If HasSubdirectories(specialFolderPath) Then
@@ -5554,7 +5554,7 @@ Public Class Form1
                 .Tag = entry.Path
             }
 
-            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode, iconSize)
+            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode)
 
             If HasSubdirectories(entry.Path) Then
                 userEntryNode.Nodes.Add("Loading...")

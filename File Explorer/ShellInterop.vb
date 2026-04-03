@@ -1,8 +1,4 @@
-﻿Imports System
-Imports System.IO
-Imports System.Runtime.InteropServices
-Imports System.Text
-Imports System.Drawing
+﻿Imports System.Runtime.InteropServices
 
 Namespace Explorer.Interop.Shell
 
@@ -198,25 +194,43 @@ Namespace Explorer.Interop.Shell
         End Function
 
 
-        Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
-            Return GetShellIcon(path, size)
-        End Function
+        'Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
+        '    Return GetShellIcon(path, size)
+        'End Function
 
-        Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
+        Public Shared Function GetIconForPath(path As String, iconSizePixABC As Integer) As Icon
 
-            ' Native sizes
-            If pixelSize <= 16 Then
+            '' Native sizes
+            'If iconSizePixABC <= 16 Then
+            '    Return GetShellIcon(path, IconSize.Small)
+
+            'Else iconSizePixABC = 32 Then
+
+            '    Return GetShellIcon(path, IconSize.Large)
+            'End If
+
+
+
+
+            If iconSizePixABC <= 16 Then
+                Return GetShellIcon(path, IconSize.Small)
+            ElseIf iconSizePixABC = 32 Then
                 Return GetShellIcon(path, IconSize.Small)
             End If
 
-            Return GetShellIcon(path, IconSize.Large)
+            Dim baseIcon = GetShellIcon(path, IconSize.Small)
+
+            If iconSizePixABC > 32 Then
+                baseIcon = GetShellIcon(path, IconSize.Small)
+
+            End If
 
             ' Scale from 32x32
-            'Dim baseIcon = GetShellIcon(path, IconSize.Large)
-            'If baseIcon Is Nothing Then Return Nothing
+            'Dim baseIcon = GetShellIcon(path, IconSize.Small)
+            If baseIcon Is Nothing Then Return Nothing
 
             'Return New Icon(baseIcon, pixelSize, pixelSize)
-            'Return ResizeIconHighQuality(baseIcon, pixelSize)
+            Return ResizeIconHighQuality(baseIcon, iconSizePixABC)
 
         End Function
 

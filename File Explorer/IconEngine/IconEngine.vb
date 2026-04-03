@@ -37,24 +37,23 @@ Public Class IconEngine
 
     Private IconCache As New ImageList()
     Private UIForm As Form
-    Private IconSize As Integer
+    Private iconSizePix As Integer
 
     Public Sub New(form As Form)
         ' Initialize the ImageList with appropriate settings for caching icons.
 
         UIForm = form
 
-        IconSize = GetScaledIconSize(UIForm)
+        iconSizePix = GetScaledIconSize(UIForm)
 
         IconCache.ColorDepth = ColorDepth.Depth32Bit
 
-        IconCache.ImageSize = New Size(IconSize, IconSize)
+        IconCache.ImageSize = New Size(iconSizePix, iconSizePix)
 
     End Sub
 
     Public Sub SetSpecialFolderNodeIcon(
     specialFolderNode As TreeNode,
-    iconSize As Integer,
     specialFolderPath As String,
     FallbackKey As String)
 
@@ -67,7 +66,7 @@ Public Class IconEngine
 
             ' Attempt to retrieve the Explorer-accurate icon for this folder path.
             ' This supports DPI scaling and returns the correct Windows shell icon.
-            Dim specialFolderIcon = ShellInterop.GetIconForPath(specialFolderPath, iconSize)
+            Dim specialFolderIcon = ShellInterop.GetIconForPath(specialFolderPath, iconSizePix)
             'Dim specialFolderIcon As Icon = Nothing ' Uncomment to test fallback behavior.
 
             ' If retrieval succeeded, cache the icon and assign it to the node.
@@ -94,11 +93,11 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode, iconSize As Integer)
+    Public Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode)
 
         If Not IconCache.Images.ContainsKey(FolderKey) Then
 
-            Dim userEntryIcon = IconLibrary.GenericFolder(iconSize)
+            Dim userEntryIcon = IconLibrary.GenericFolder(iconSizePix)
             'Dim userEasyAccessIcon = Nothing ' Uncomment to test fallback behavior.
 
             If userEntryIcon IsNot Nothing Then
@@ -120,7 +119,7 @@ Public Class IconEngine
 
         If Not IconCache.Images.ContainsKey(FolderKey) Then
 
-            Dim folderIcon = IconLibrary.GenericFolder(IconSize)
+            Dim folderIcon = IconLibrary.GenericFolder(iconSizePix)
             'Dim folderIcon = Nothing ' force fallback testing
 
             If folderIcon IsNot Nothing Then
@@ -139,11 +138,11 @@ Public Class IconEngine
     End Sub
 
 
-    Public Sub SetThisPCNodeIcon(thisPCNode As TreeNode, iconSize As Integer)
+    Public Sub SetThisPCNodeIcon(thisPCNode As TreeNode)
 
         If Not IconCache.Images.ContainsKey(ThisPCKey) Then
 
-            Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSize)
+            Dim thisPCIcon = ShellInterop.GetIconForVirtualFolder(ThisPCGUID, iconSizePix)
             'Dim thisPCIcon As Icon = Nothing ' Uncomment to test fallback behavior.
 
             If thisPCIcon IsNot Nothing Then
@@ -162,11 +161,11 @@ Public Class IconEngine
     End Sub
 
 
-    Public Sub SetDriveNodeIcon(driveNode As TreeNode, di As DriveInfo, iconSize As Integer)
+    Public Sub SetDriveNodeIcon(driveNode As TreeNode, di As DriveInfo)
 
         If Not IconCache.Images.ContainsKey(di.RootDirectory.FullName) Then
 
-            Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSize)
+            Dim driveIcon = ShellInterop.GetIconForPath(di.RootDirectory.FullName, iconSizePix)
             'Dim driveIcon As Icon = Nothing ' Uncomment to test fallback behavior.
 
             If driveIcon IsNot Nothing Then
@@ -189,7 +188,7 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetRecycleNodeIcon(recycleBinNode As TreeNode, iconSize As Integer)
+    Public Sub SetRecycleNodeIcon(recycleBinNode As TreeNode)
         ' Assigns the correct Recycle Bin icon to the provided TreeNode.
         ' Icons are cached in the ImageList to avoid redundant extraction and improve performance.
 
@@ -198,7 +197,7 @@ Public Class IconEngine
 
             ' Attempt to retrieve the Recycle Bin icon from ShellInterop.
             ' This handles virtual folders and returns an Explorer-accurate icon when available.
-            Dim recycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSize)
+            Dim recycleBinIcon = ShellInterop.GetIconForVirtualFolder(RecycleBinGUID, iconSizePix)
             'Dim recycleBinIcon = Nothing ' Uncomment to test fallback behavior.
 
             ' If ShellInterop successfully returned an icon, cache it and assign it to the node.
@@ -235,7 +234,7 @@ Public Class IconEngine
         ' grouped under the FileKey to avoid duplicates.
         If ext = "" Then
             If Not IconCache.Images.ContainsKey(FileKey) Then
-                Dim fileIcon = IconLibrary.GenericFile(IconSize)
+                Dim fileIcon = IconLibrary.GenericFile(iconSizePix)
                 If fileIcon IsNot Nothing Then
                     IconCache.Images.Add(FileKey, fileIcon.ToBitmap())
                     ' use generic file icon for no-extension files
@@ -250,7 +249,7 @@ Public Class IconEngine
             ' grouped by extension to avoid duplicates.
         ElseIf Not ext = ".exe" Then
             If Not IconCache.Images.ContainsKey(ext) Then
-                Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                Dim extensionIcon = ShellInterop.GetIconForPath(fi.FullName, iconSizePix)
                 If extensionIcon IsNot Nothing Then
                     IconCache.Images.Add(ext, extensionIcon.ToBitmap())
                     ' use extension as key to group same-type files
@@ -265,7 +264,7 @@ Public Class IconEngine
             ' for different executables, since many .exe files have custom icons.
         Else
             If Not IconCache.Images.ContainsKey(fi.FullName) Then
-                Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, IconSize)
+                Dim executableIcon = ShellInterop.GetIconForPath(fi.FullName, iconSizePix)
                 If executableIcon IsNot Nothing Then
                     IconCache.Images.Add(fi.FullName, executableIcon.ToBitmap())
                     ' use full path as key to preserve unique icons for different executables
@@ -288,7 +287,7 @@ Public Class IconEngine
 
             If Not IconCache.Images.ContainsKey(FolderKey) Then
 
-                Dim folderIcon = IconLibrary.GenericFolder(IconSize)
+                Dim folderIcon = IconLibrary.GenericFolder(iconSizePix)
 
                 If folderIcon IsNot Nothing Then
                     IconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
@@ -310,8 +309,8 @@ Public Class IconEngine
     Public Sub UpdateIconSize()
         ' Updates the icon size based on the current DPI scaling of the form.
         ' This should be called when the form's DPI changes to ensure icons are rendered at the correct size.
-        IconSize = GetScaledIconSize(UIForm)
-        IconCache.ImageSize = New Size(IconSize, IconSize)
+        iconSizePix = GetScaledIconSize(UIForm)
+        IconCache.ImageSize = New Size(iconSizePix, iconSizePix)
         ClearCache() ' Clear cache to ensure icons are reloaded at the new size.
     End Sub
 
@@ -324,7 +323,7 @@ Public Class IconEngine
         ' Retrieves an icon for a given folder path, using the cache if available.
         ' This is a convenience method that combines caching logic with ShellInterop retrieval.
         If Not IconCache.Images.ContainsKey(folderPath) Then
-            Dim icon = ShellInterop.GetIconForPath(folderPath, IconSize)
+            Dim icon = ShellInterop.GetIconForPath(folderPath, iconSizePix)
             If icon IsNot Nothing Then
                 IconCache.Images.Add(folderPath, icon.ToBitmap())
             End If
@@ -336,7 +335,7 @@ Public Class IconEngine
         ' Retrieves an icon for a given virtual folder GUID, using the cache if available.
         ' This is a convenience method that combines caching logic with ShellInterop retrieval for virtual folders.
         If Not IconCache.Images.ContainsKey(folderGUID) Then
-            Dim icon = ShellInterop.GetIconForVirtualFolder(folderGUID, IconSize)
+            Dim icon = ShellInterop.GetIconForVirtualFolder(folderGUID, iconSizePix)
             If icon IsNot Nothing Then
                 IconCache.Images.Add(folderGUID, icon.ToBitmap())
             End If
@@ -368,7 +367,7 @@ Public Class IconEngine
         '    Return 16
         'End If
 
-        Return 16
+        Return pixelSize
 
     End Function
 
