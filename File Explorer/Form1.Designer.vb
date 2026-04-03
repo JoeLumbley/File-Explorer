@@ -134,7 +134,7 @@ Partial Class Form1
         btnPin.Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnPin.Location = New Point(765, 0)
         btnPin.Name = "btnPin"
-        btnPin.Size = New Size(30, 28)
+        btnPin.Size = New Size(30, 26)
         btnPin.TabIndex = 16
         btnPin.TabStop = False
         btnPin.Text = ""
@@ -146,7 +146,7 @@ Partial Class Form1
         btnNewTextFile.Font = New Font("Segoe UI Semibold", 6.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         btnNewTextFile.Location = New Point(829, 0)
         btnNewTextFile.Name = "btnNewTextFile"
-        btnNewTextFile.Size = New Size(30, 28)
+        btnNewTextFile.Size = New Size(30, 26)
         btnNewTextFile.TabIndex = 10
         btnNewTextFile.TabStop = False
         btnNewTextFile.Text = "txt"
@@ -158,7 +158,7 @@ Partial Class Form1
         btnPaste.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnPaste.Location = New Point(924, 0)
         btnPaste.Name = "btnPaste"
-        btnPaste.Size = New Size(30, 28)
+        btnPaste.Size = New Size(30, 26)
         btnPaste.TabIndex = 13
         btnPaste.TabStop = False
         btnPaste.Text = ""
@@ -170,7 +170,7 @@ Partial Class Form1
         btnCut.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnCut.Location = New Point(862, 0)
         btnCut.Name = "btnCut"
-        btnCut.Size = New Size(30, 28)
+        btnCut.Size = New Size(30, 26)
         btnCut.TabIndex = 11
         btnCut.TabStop = False
         btnCut.Text = ""
@@ -182,7 +182,7 @@ Partial Class Form1
         btnCopy.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnCopy.Location = New Point(893, 0)
         btnCopy.Name = "btnCopy"
-        btnCopy.Size = New Size(30, 28)
+        btnCopy.Size = New Size(30, 26)
         btnCopy.TabIndex = 12
         btnCopy.TabStop = False
         btnCopy.Text = ""
@@ -193,7 +193,7 @@ Partial Class Form1
         btnRefresh.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnRefresh.Location = New Point(62, 0)
         btnRefresh.Name = "btnRefresh"
-        btnRefresh.Size = New Size(30, 28)
+        btnRefresh.Size = New Size(30, 26)
         btnRefresh.TabIndex = 7
         btnRefresh.TabStop = False
         btnRefresh.Text = ""
@@ -205,7 +205,7 @@ Partial Class Form1
         bntHome.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         bntHome.Location = New Point(93, 0)
         bntHome.Name = "bntHome"
-        bntHome.Size = New Size(30, 28)
+        bntHome.Size = New Size(30, 26)
         bntHome.TabIndex = 8
         bntHome.TabStop = False
         bntHome.Text = ""
@@ -218,7 +218,7 @@ Partial Class Form1
         btnNewFolder.ForeColor = Color.Orange
         btnNewFolder.Location = New Point(798, 0)
         btnNewFolder.Name = "btnNewFolder"
-        btnNewFolder.Size = New Size(30, 28)
+        btnNewFolder.Size = New Size(30, 26)
         btnNewFolder.TabIndex = 9
         btnNewFolder.TabStop = False
         btnNewFolder.Text = ""
@@ -231,7 +231,7 @@ Partial Class Form1
         btnRename.ForeColor = SystemColors.ControlText
         btnRename.Location = New Point(955, 0)
         btnRename.Name = "btnRename"
-        btnRename.Size = New Size(30, 28)
+        btnRename.Size = New Size(30, 26)
         btnRename.TabIndex = 14
         btnRename.TabStop = False
         btnRename.Text = ""
@@ -244,7 +244,7 @@ Partial Class Form1
         btnDelete.ForeColor = Color.Black
         btnDelete.Location = New Point(986, 0)
         btnDelete.Name = "btnDelete"
-        btnDelete.Size = New Size(30, 28)
+        btnDelete.Size = New Size(30, 26)
         btnDelete.TabIndex = 15
         btnDelete.TabStop = False
         btnDelete.Text = ""
@@ -266,7 +266,7 @@ Partial Class Form1
         btnForward.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnForward.Location = New Point(31, 0)
         btnForward.Name = "btnForward"
-        btnForward.Size = New Size(30, 28)
+        btnForward.Size = New Size(30, 26)
         btnForward.TabIndex = 6
         btnForward.TabStop = False
         btnForward.Text = ""
@@ -278,7 +278,7 @@ Partial Class Form1
         btnBack.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         btnBack.Location = New Point(0, 0)
         btnBack.Name = "btnBack"
-        btnBack.Size = New Size(30, 28)
+        btnBack.Size = New Size(30, 26)
         btnBack.TabIndex = 5
         btnBack.TabStop = False
         btnBack.Text = ""
@@ -290,7 +290,7 @@ Partial Class Form1
         btnGo.Font = New Font("Segoe UI Semibold", 6.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         btnGo.Location = New Point(734, 0)
         btnGo.Name = "btnGo"
-        btnGo.Size = New Size(30, 28)
+        btnGo.Size = New Size(30, 26)
         btnGo.TabIndex = 3
         btnGo.TabStop = False
         btnGo.Text = "Go"
