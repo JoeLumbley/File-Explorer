@@ -193,70 +193,41 @@ Namespace Explorer.Interop.Shell
         Private Shared Function DestroyIcon(hIcon As IntPtr) As Boolean
         End Function
 
+        Public Shared Function GetIconForPath(path As String, iconSize As Integer) As Icon
 
-        'Public Shared Function GetIconForPath(path As String, size As IconSize) As Icon
-        '    Return GetShellIcon(path, size)
-        'End Function
-
-        Public Shared Function GetIconForPath(path As String, iconSizePixABC As Integer) As Icon
-
-            '' Native sizes
-            'If iconSizePixABC <= 16 Then
-            '    Return GetShellIcon(path, IconSize.Small)
-
-            'Else iconSizePixABC = 32 Then
-
-            '    Return GetShellIcon(path, IconSize.Large)
-            'End If
-
-
-
-
-            'If iconSizePixABC <= 16 Then
-            '    Return GetShellIcon(path, IconSize.Small)
-            'ElseIf iconSizePixABC = 32 Then
-            '    Return GetShellIcon(path, IconSize.Small)
-            'End If
-
-            If iconSizePixABC <= 16 Then
-                Return GetShellIcon(path, IconSize.Small)
+            If iconSize <= 16 Then
+                Return GetShellIcon(path, Shell.IconSize.Small)
             End If
 
+            Dim baseIcon = GetShellIcon(path, Shell.IconSize.Small)
 
-            Dim baseIcon = GetShellIcon(path, IconSize.Small)
-
-            'If iconSizePixABC > 32 Then
-            '    baseIcon = GetShellIcon(path, IconSize.Small)
-
-            'End If
-
-            ' Scale from 32x32
-            'Dim baseIcon = GetShellIcon(path, IconSize.Small)
             If baseIcon Is Nothing Then Return Nothing
 
-            'Return New Icon(baseIcon, pixelSize, pixelSize)
-            Return ResizeIconHighQuality(baseIcon, iconSizePixABC)
+            Return ResizeIconHighQuality(baseIcon, iconSize)
 
         End Function
 
 
-        'Public Shared Function GetIconForPath(path As String, pixelSize As Integer) As Icon
-        '    ' Native sizes
-        '    If pixelSize <= 16 Then
-        '        Return GetShellIcon(path, IconSize.Small)
-        '    ElseIf pixelSize = 32 Then
-        '        Return GetShellIcon(path, IconSize.Large)
-        '    End If
+        Public Shared Function GetIconForVirtualFolder(guidString As String, iconSize As Integer) As Icon
+            Dim pidl As IntPtr = ParseDisplayName(guidString)
+            If pidl = IntPtr.Zero Then Return Nothing
 
-        '    ' Try to get the 256px layer for high-quality downscaling
-        '    Dim baseIcon = GetShellIcon(path, IconSize.ExtraLarge) ' 48px or 256px depending on system
-        '    If baseIcon Is Nothing Then
-        '        baseIcon = GetShellIcon(path, IconSize.Large)
-        '        If baseIcon Is Nothing Then Return Nothing
-        '    End If
+            Try
 
-        '    Return ResizeIconHighQuality(baseIcon, pixelSize)
-        'End Function
+                If iconSize <= 16 Then
+                    Return GetIconForPIDL(pidl, Shell.IconSize.Small)
+                End If
+
+                Dim baseIcon = GetIconForPIDL(pidl, Shell.IconSize.Small)
+
+                If baseIcon Is Nothing Then Return Nothing
+
+                Return ResizeIconHighQuality(baseIcon, iconSize)
+
+            Finally
+                CoTaskMemFree(pidl)
+            End Try
+        End Function
 
         Private Shared Function ResizeIconHighQuality(src As Icon, size As Integer) As Icon
             Using bmp As New Bitmap(size, size)
@@ -267,134 +238,6 @@ Namespace Explorer.Interop.Shell
                 Return Icon.FromHandle(bmp.GetHicon())
             End Using
         End Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        Public Shared Function GetIconForVirtualFolder(guidString As String, pixelSize As Integer) As Icon
-            Dim pidl As IntPtr = ParseDisplayName(guidString)
-            If pidl = IntPtr.Zero Then Return Nothing
-
-            Try
-
-
-
-                'If pixelSize <= 16 Then
-                '    Return GetIconForPIDL(pidl, IconSize.Small)
-                'ElseIf pixelSize = 32 Then
-                '    Return GetIconForPIDL(pidl, IconSize.Large)
-                'End If
-
-                If pixelSize <= 16 Then
-                    Return GetIconForPIDL(pidl, IconSize.Small)
-                End If
-
-                Dim baseIcon = GetIconForPIDL(pidl, IconSize.Small)
-
-                If baseIcon Is Nothing Then Return Nothing
-
-                'Return New Icon(baseIcon, pixelSize, pixelSize)
-                Return ResizeIconHighQuality(baseIcon, pixelSize)
-
-            Finally
-                CoTaskMemFree(pidl)
-            End Try
-        End Function
-
-
-
-
-        'Public Shared Function GetRecycleBinIcon(pixelSize As Integer) As Icon
-        '    ' Native sizes
-        '    If pixelSize <= 16 Then
-        '        Return GetRecycleBinIcon(IconSize.Small)
-        '    ElseIf pixelSize = 32 Then
-        '        Return GetRecycleBinIcon(IconSize.Large)
-        '    End If
-
-        '    ' Scale from 32x32
-        '    Dim baseIcon = GetRecycleBinIcon(IconSize.Large)
-        '    If baseIcon Is Nothing Then Return Nothing
-
-        '    Return New Icon(baseIcon, pixelSize, pixelSize)
-        'End Function
-
-        Public Shared Function GetRecycleBinIcon(size As IconSize) As Icon
-            Dim pidl As IntPtr = IntPtr.Zero
-            Dim hr = SHGetSpecialFolderLocation(IntPtr.Zero, CSIDL_BITBUCKET, pidl)
-
-            If hr <> 0 OrElse pidl = IntPtr.Zero Then Return Nothing
-
-            Try
-                Return GetIconForPIDL(pidl, size)
-            Finally
-                CoTaskMemFree(pidl)
-            End Try
-        End Function
-
-
-
-        Public Shared Function GetIconForExtension(ext As String, pixelSize As Integer) As Icon
-            If String.IsNullOrWhiteSpace(ext) Then Return Nothing
-
-            ' Ensure extension starts with dot
-            If Not ext.StartsWith(".") Then
-                ext = "." & ext
-            End If
-
-            Dim flags As UInteger =
-        SHGFI_ICON Or
-        SHGFI_USEFILEATTRIBUTES
-
-            ' Size
-            If pixelSize <= 16 Then
-                flags = flags Or SHGFI_SMALLICON
-            Else
-                flags = flags Or SHGFI_LARGEICON
-            End If
-
-            Dim shinfo As New SHFILEINFO()
-
-            ' Pretend it's a normal file so SHGetFileInfo uses the association
-            Const attrs As UInteger = FILE_ATTRIBUTE_NORMAL
-
-            Dim result = SHGetFileInfo(
-        ext,
-        attrs,
-        shinfo,
-        CUInt(Marshal.SizeOf(shinfo)),
-        flags
-    )
-
-            If result = IntPtr.Zero OrElse shinfo.hIcon = IntPtr.Zero Then
-                Return Nothing
-            End If
-
-            ' Clone the icon so we own the handle
-            Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
-            Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
-
-            ' Free shell handle
-            DestroyIcon(shinfo.hIcon)
-
-            Return cloned
-        End Function
-
 
         ' ------------------------------------------------------------
         '   INTERNAL HELPERS FOR ICONS & PIDLS
@@ -428,34 +271,6 @@ Namespace Explorer.Interop.Shell
         End Sub
 
         Private Const CSIDL_BITBUCKET As Integer = &HA
-
-        'Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
-        '    Dim flags As UInteger = SHGFI_ICON Or SHGFI_USEFILEATTRIBUTES
-
-        '    If size = IconSize.Small Then
-        '        flags = flags Or SHGFI_SMALLICON
-        '    Else
-        '        flags = flags Or SHGFI_LARGEICON
-        '    End If
-
-        '    Dim shinfo As New SHFILEINFO()
-        '    Dim attrs As UInteger =
-        '        If(Directory.Exists(path), FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL)
-
-        '    Dim result = SHGetFileInfo(
-        '        path,
-        '        attrs,
-        '        shinfo,
-        '        CUInt(Marshal.SizeOf(shinfo)),
-        '        flags)
-
-        '    If result = IntPtr.Zero Then Return Nothing
-
-        '    Dim rawIcon As Icon = Icon.FromHandle(shinfo.hIcon)
-        '    Dim cloned As Icon = CType(rawIcon.Clone(), Icon)
-        '    DestroyIcon(shinfo.hIcon)
-        '    Return cloned
-        'End Function
 
         Private Shared Function GetShellIcon(path As String, size As IconSize) As Icon
             Dim flags As UInteger = SHGFI_ICON
@@ -493,25 +308,6 @@ Namespace Explorer.Interop.Shell
             DestroyIcon(shinfo.hIcon)
             Return cloned
         End Function
-
-
-
-        ' Public wrapper for PIDL-based icon extraction
-        'Public Shared Function GetIconForPIDL(pidl As IntPtr, pixelSize As Integer) As Icon
-        '    Dim size As IconSize =
-        '    If(pixelSize <= 16, IconSize.Small, IconSize.Large)
-
-        '    Dim baseIcon = GetIconForPIDL(pidl, size)
-        '    If baseIcon Is Nothing Then Return Nothing
-
-        '    ' Scale if needed
-        '    If pixelSize = 16 OrElse pixelSize = 32 Then
-        '        Return baseIcon
-        '    End If
-
-        '    Return New Icon(baseIcon, pixelSize, pixelSize)
-        'End Function
-
 
         Private Shared Function GetIconForPIDL(pidl As IntPtr, size As IconSize) As Icon
             Dim flags As UInteger = SHGFI_ICON Or SHGFI_PIDL
