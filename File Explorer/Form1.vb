@@ -4156,17 +4156,41 @@ Public Class Form1
 
             Dim itemsToAdd As New List(Of ListViewItem)
 
+
+
+
+
+
+            '' Build directory items
+            'For Each d In directories
+            '    Dim di As New DirectoryInfo(d)
+            '    itemsToAdd.Add(BuildListViewItemForDirectory(di))
+            'Next
+
+            '' Build file items
+            'For Each f In files
+            '    Dim fi As New FileInfo(f)
+            '    itemsToAdd.Add(BuildListViewItemForFile(fi))
+            'Next
+
+
+
             ' Build directory items
             For Each d In directories
                 Dim di As New DirectoryInfo(d)
-                itemsToAdd.Add(BuildListViewItemForDirectory(di))
+                'itemsToAdd.Add(BuildListViewItemForDirectory(di))
+                itemsToAdd.Add(ListViewItemBuilder.ForDirectory(di, IconEngine))
             Next
 
             ' Build file items
             For Each f In files
                 Dim fi As New FileInfo(f)
-                itemsToAdd.Add(BuildListViewItemForFile(fi))
+                'itemsToAdd.Add(BuildListViewItemForFile(fi))
+                itemsToAdd.Add(ListViewItemBuilder.ForFile(fi, fileTypeMap, IconEngine))
+
             Next
+
+
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
 

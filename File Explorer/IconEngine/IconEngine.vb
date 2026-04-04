@@ -280,31 +280,66 @@ Public Class IconEngine
 
     End Sub
 
+    'Public Sub SetListViewItemIconForDirectory(item As ListViewItem, di As DirectoryInfo)
+    '    ' Set icon, with caching in the image list to avoid duplicates and improve performance
+
+    '    If Not IconCache.Images.ContainsKey(di.FullName) Then
+
+    '        If Not IconCache.Images.ContainsKey(FolderKey) Then
+
+    '            Dim folderIcon = IconLibrary.GenericFolder(iconSizePix)
+
+    '            If folderIcon IsNot Nothing Then
+    '                IconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
+    '                item.ImageKey = FolderKey
+    '            Else
+    '                item.ImageKey = FallbackFolderKey
+    '            End If
+
+    '        Else
+    '            item.ImageKey = FolderKey
+    '        End If
+
+    '    Else
+    '        item.ImageKey = di.FullName
+    '    End If
+
+    'End Sub
+
+
     Public Sub SetListViewItemIconForDirectory(item As ListViewItem, di As DirectoryInfo)
-        ' Set icon, with caching in the image list to avoid duplicates and improve performance
 
-        If Not IconCache.Images.ContainsKey(di.FullName) Then
+        Dim key As String = di.FullName
 
-            If Not IconCache.Images.ContainsKey(FolderKey) Then
-
-                Dim folderIcon = IconLibrary.GenericFolder(iconSizePix)
-
-                If folderIcon IsNot Nothing Then
-                    IconCache.Images.Add(FolderKey, folderIcon.ToBitmap())
-                    item.ImageKey = FolderKey
-                Else
-                    item.ImageKey = FallbackFolderKey
-                End If
-
-            Else
-                item.ImageKey = FolderKey
-            End If
-
-        Else
-            item.ImageKey = di.FullName
+        ' If we already have the icon cached, use it immediately
+        If IconCache.Images.ContainsKey(key) Then
+            item.ImageKey = key
+            Return
         End If
 
+        ' Try to get the real Explorer folder icon
+        Dim folderIcon = ShellInterop.GetIconForPath(di.FullName, iconSizePix)
+
+        If folderIcon IsNot Nothing Then
+            IconCache.Images.Add(key, folderIcon.ToBitmap())
+            item.ImageKey = key
+            Return
+        End If
+
+        ' Fallback: generic folder icon
+        If Not IconCache.Images.ContainsKey(FolderKey) Then
+            Dim genericIcon = IconLibrary.GenericFolder(iconSizePix)
+            If genericIcon IsNot Nothing Then
+                IconCache.Images.Add(FolderKey, genericIcon.ToBitmap())
+            End If
+        End If
+
+        item.ImageKey = If(IconCache.Images.ContainsKey(FolderKey), FolderKey, FallbackFolderKey)
+
     End Sub
+
+
+
 
     Public Sub UpdateIconSize()
         ' Updates the icon size based on the current DPI scaling of the form.
