@@ -307,6 +307,38 @@ Public Class IconEngine
     'End Sub
 
 
+    'Public Sub SetListViewItemIconForDirectory(item As ListViewItem, di As DirectoryInfo)
+
+    '    Dim key As String = di.FullName
+
+    '    ' If we already have the icon cached, use it immediately
+    '    If IconCache.Images.ContainsKey(key) Then
+    '        item.ImageKey = key
+    '        Return
+    '    End If
+
+    '    ' Try to get the real Explorer folder icon
+    '    Dim folderIcon = ShellInterop.GetIconForPath(di.FullName, iconSizePix)
+
+    '    If folderIcon IsNot Nothing Then
+    '        IconCache.Images.Add(key, folderIcon.ToBitmap())
+    '        item.ImageKey = key
+    '        Return
+    '    End If
+
+    '    ' Fallback: generic folder icon
+    '    If Not IconCache.Images.ContainsKey(FolderKey) Then
+    '        Dim genericIcon = IconLibrary.GenericFolder(iconSizePix)
+    '        If genericIcon IsNot Nothing Then
+    '            IconCache.Images.Add(FolderKey, genericIcon.ToBitmap())
+    '        End If
+    '    End If
+
+    '    item.ImageKey = If(IconCache.Images.ContainsKey(FolderKey), FolderKey, FallbackFolderKey)
+
+    'End Sub
+
+
     Public Sub SetListViewItemIconForDirectory(item As ListViewItem, di As DirectoryInfo)
 
         Dim key As String = di.FullName
@@ -326,15 +358,29 @@ Public Class IconEngine
             Return
         End If
 
-        ' Fallback: generic folder icon
+        ' Fallback: generic folder icon, but store it under THIS folder's key
+        Dim genericIcon As Icon = Nothing
+
+        ' Ensure the shared generic icon exists
         If Not IconCache.Images.ContainsKey(FolderKey) Then
-            Dim genericIcon = IconLibrary.GenericFolder(iconSizePix)
+            genericIcon = IconLibrary.GenericFolder(iconSizePix)
             If genericIcon IsNot Nothing Then
                 IconCache.Images.Add(FolderKey, genericIcon.ToBitmap())
             End If
         End If
 
-        item.ImageKey = If(IconCache.Images.ContainsKey(FolderKey), FolderKey, FallbackFolderKey)
+        ' Now assign the generic icon to THIS folder's key
+        If Not IconCache.Images.ContainsKey(key) Then
+            If genericIcon Is Nothing Then
+                genericIcon = IconLibrary.GenericFolder(iconSizePix)
+            End If
+
+            If genericIcon IsNot Nothing Then
+                IconCache.Images.Add(key, genericIcon.ToBitmap())
+            End If
+        End If
+
+        item.ImageKey = If(IconCache.Images.ContainsKey(key), key, FallbackFolderKey)
 
     End Sub
 
