@@ -2457,6 +2457,15 @@ Public Class Form1
                 CancelCopyButton.Visible = False
                 CancelCopyButton.Enabled = False
             End If
+
+            ' ------------------------------------------------------------
+            ' ALWAYS CLEAN UP THE CTS
+            ' ------------------------------------------------------------
+            If copyCts IsNot Nothing Then
+                copyCts.Dispose()
+                copyCts = Nothing
+            End If
+
         End Try
 
         ' ------------------------------------------------------------
