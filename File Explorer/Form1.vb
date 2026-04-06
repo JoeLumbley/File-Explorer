@@ -5587,7 +5587,7 @@ Public Class Form1
                 .Tag = entry.Path
             }
 
-            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode)
+            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode, entry.Path)
 
             If HasSubdirectories(entry.Path) Then
                 userEntryNode.Nodes.Add("Loading...")

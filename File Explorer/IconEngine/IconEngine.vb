@@ -93,25 +93,73 @@ Public Class IconEngine
 
     End Sub
 
-    Public Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode)
+    Public Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode, folderPath As String)
 
-        If Not IconCache.Images.ContainsKey(FolderKey) Then
+        Dim key As String = folderPath
 
-            Dim userEntryIcon = IconLibrary.GenericFolder(iconSizePix)
-            'Dim userEasyAccessIcon = Nothing ' Uncomment to test fallback behavior.
-
-            If userEntryIcon IsNot Nothing Then
-                IconCache.Images.Add(FolderKey, userEntryIcon.ToBitmap())
-                userEntryNode.ImageKey = FolderKey
-                userEntryNode.SelectedImageKey = FolderKey
-            Else
-                userEntryNode.ImageKey = FallbackFolderKey
-                userEntryNode.SelectedImageKey = FallbackFolderKey
-            End If
-        Else
-            userEntryNode.ImageKey = FolderKey
-            userEntryNode.SelectedImageKey = FolderKey
+        ' If we already have the icon cached, use it immediately
+        If IconCache.Images.ContainsKey(key) Then
+            userEntryNode.ImageKey = key
+            Return
         End If
+
+        ' Try to get the real Explorer folder icon
+        Dim folderIcon = ShellInterop.GetIconForPath(folderPath, iconSizePix)
+
+        If folderIcon IsNot Nothing Then
+            IconCache.Images.Add(key, folderIcon.ToBitmap())
+            userEntryNode.ImageKey = key
+            Return
+        End If
+
+        ' Fallback: generic folder icon, but store it under THIS folder's key
+        Dim genericIcon As Icon = Nothing
+
+        ' Ensure the shared generic icon exists
+        If Not IconCache.Images.ContainsKey(FolderKey) Then
+            genericIcon = IconLibrary.GenericFolder(iconSizePix)
+            If genericIcon IsNot Nothing Then
+                IconCache.Images.Add(FolderKey, genericIcon.ToBitmap())
+            End If
+        End If
+
+        ' Now assign the generic icon to THIS folder's key
+        If Not IconCache.Images.ContainsKey(key) Then
+            If genericIcon Is Nothing Then
+                genericIcon = IconLibrary.GenericFolder(iconSizePix)
+            End If
+
+            If genericIcon IsNot Nothing Then
+                IconCache.Images.Add(key, genericIcon.ToBitmap())
+            End If
+        End If
+
+        userEntryNode.ImageKey = If(IconCache.Images.ContainsKey(key), key, FallbackFolderKey)
+
+
+
+
+
+
+
+
+        'If Not IconCache.Images.ContainsKey(FolderKey) Then
+
+        '    Dim userEntryIcon = IconLibrary.GenericFolder(iconSizePix)
+        '    'Dim userEasyAccessIcon = Nothing ' Uncomment to test fallback behavior.
+
+        '    If userEntryIcon IsNot Nothing Then
+        '        IconCache.Images.Add(FolderKey, userEntryIcon.ToBitmap())
+        '        userEntryNode.ImageKey = FolderKey
+        '        userEntryNode.SelectedImageKey = FolderKey
+        '    Else
+        '        userEntryNode.ImageKey = FallbackFolderKey
+        '        userEntryNode.SelectedImageKey = FallbackFolderKey
+        '    End If
+        'Else
+        '    userEntryNode.ImageKey = FolderKey
+        '    userEntryNode.SelectedImageKey = FolderKey
+        'End If
 
     End Sub
 
