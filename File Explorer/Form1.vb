@@ -5603,8 +5603,6 @@ Public Class Form1
         Return easyAccessNode
     End Function
 
-
-
     'Private Sub SetEasyAccessUserEntryNodeIcon(userEntryNode As TreeNode, imageList As ImageList, iconSize As Integer)
     '    ' Set icon, with caching in the image list to avoid duplicates and improve performance
 
@@ -5624,7 +5622,6 @@ Public Class Form1
     '        userEntryNode.ImageKey = FolderKey
     '        userEntryNode.SelectedImageKey = FolderKey
     '    End If
-
 
     'End Sub
 
@@ -5780,10 +5777,6 @@ Public Class Form1
     '    End If
 
     'End Sub
-
-
-
-
 
     Private Function GetFolderDisplayName(folderPath As String) As String
         Dim name = Path.GetFileName(folderPath.TrimEnd("\"c))
