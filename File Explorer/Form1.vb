@@ -4009,7 +4009,7 @@ Public Class Form1
 
                     ' SetNodeIcon(child, dirPath, iconSize)
                     'SetChildNodeIcon
-                    IconEngine.SetChildNodeIcon(child)
+                    IconEngine.SetChildNodeIcon(child, dirPath)
 
 
 
