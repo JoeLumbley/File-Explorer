@@ -775,7 +775,7 @@ Public Class Form1
     Private Const ExecutableKey As String = "FallbackExecutable"
     'Private Const FileKey As String = "File"
 
-    Private IconEngine As New IconEngine(Me)
+    Private _Icons As New IconEngine(Me)
 
 
     'Private Sub NavigateToVirtualFolder(shellPath As String)
@@ -840,7 +840,7 @@ Public Class Form1
     Private Sub Form1_DpiChanged(sender As Object, e As DpiChangedEventArgs) Handles Me.DpiChanged
 
 
-        IconEngine.UpdateIconSize()
+        _Icons.UpdateIconSize()
 
 
         'Dim newSize = IconEngine.GetScaledIconSize(Me)
@@ -4009,7 +4009,7 @@ Public Class Form1
 
                     ' SetNodeIcon(child, dirPath, iconSize)
                     'SetChildNodeIcon
-                    IconEngine.SetChildNodeIcon(child, dirPath)
+                    _Icons.SetChildNodeIcon(child, dirPath)
 
 
 
@@ -4188,14 +4188,14 @@ Public Class Form1
             For Each d In directories
                 Dim di As New DirectoryInfo(d)
                 'itemsToAdd.Add(BuildListViewItemForDirectory(di))
-                itemsToAdd.Add(ListViewItemBuilder.ForDirectory(di, IconEngine))
+                itemsToAdd.Add(ListViewItemBuilder.ForDirectory(di, _Icons))
             Next
 
             ' Build file items
             For Each f In files
                 Dim fi As New FileInfo(f)
                 'itemsToAdd.Add(BuildListViewItemForFile(fi))
-                itemsToAdd.Add(ListViewItemBuilder.ForFile(fi, fileTypeMap, IconEngine))
+                itemsToAdd.Add(ListViewItemBuilder.ForFile(fi, fileTypeMap, _Icons))
 
             Next
 
@@ -4225,7 +4225,7 @@ Public Class Form1
         item.SubItems.Add("")
         item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = di.FullName
-        IconEngine.SetListViewItemIconForDirectory(item, di)
+        _Icons.SetListViewItemIconForDirectory(item, di)
 
         Return item
     End Function
@@ -4240,7 +4240,7 @@ Public Class Form1
         item.SubItems.Add(FormatSize(fi.Length))
         item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
         item.Tag = fi.FullName
-        IconEngine.SetListViewItemIconForFile(item, fi)
+        _Icons.SetListViewItemIconForFile(item, fi)
 
         Return item
     End Function
@@ -5496,7 +5496,7 @@ Public Class Form1
         Dim thisPCNode As New TreeNode(ThisPCString) With {
             .Tag = ThisPCGUID
         }
-        IconEngine.SetThisPCNodeIcon(thisPCNode)
+        _Icons.SetThisPCNodeIcon(thisPCNode)
         thisPCNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(thisPCNode)
 
@@ -5509,7 +5509,7 @@ Public Class Form1
                     Dim driveNode As New TreeNode(GetDriveNodeText(di)) With {
                         .Tag = di.RootDirectory.FullName
                     }
-                    IconEngine.SetDriveNodeIcon(driveNode, di)
+                    _Icons.SetDriveNodeIcon(driveNode, di)
                     If HasSubdirectories(di.RootDirectory.FullName) Then
                         driveNode.Nodes.Add("Loading...")
                         driveNode.StateImageIndex = 0 ' Collapsed
@@ -5530,7 +5530,7 @@ Public Class Form1
         Dim RecycleBinNode As New TreeNode(RecycleBinString) With {
             .Tag = RecycleBinGUID
         }
-        IconEngine.SetRecycleNodeIcon(RecycleBinNode)
+        _Icons.SetRecycleNodeIcon(RecycleBinNode)
         RecycleBinNode.StateImageIndex = 2 ' no arrow
         tvFolders.Nodes.Add(RecycleBinNode)
 
@@ -5563,7 +5563,7 @@ Public Class Form1
                     .Tag = specialFolderPath
                 }
 
-                IconEngine.SetSpecialFolderNodeIcon(specialFolderNode, specialFolderPath, sf.Item1)
+                _Icons.SetSpecialFolderNodeIcon(specialFolderNode, specialFolderPath, sf.Item1)
 
                 ' Expand arrow logic
                 If HasSubdirectories(specialFolderPath) Then
@@ -5587,7 +5587,7 @@ Public Class Form1
                 .Tag = entry.Path
             }
 
-            IconEngine.SetEasyAccessUserEntryNodeIcon(userEntryNode, entry.Path)
+            _Icons.SetEasyAccessUserEntryNodeIcon(userEntryNode, entry.Path)
 
             If HasSubdirectories(entry.Path) Then
                 userEntryNode.Nodes.Add("Loading...")
@@ -8009,25 +8009,25 @@ Public Class Form1
 
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
 
-        IconEngine.AddFallbackIcon(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
-        IconEngine.AddFallbackIcon(DriveKey, My.Resources.Resource1.Drive_16X16)
-        IconEngine.AddFallbackIcon(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
+        _Icons.AddFallbackIcon(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
+        _Icons.AddFallbackIcon(DriveKey, My.Resources.Resource1.Drive_16X16)
+        _Icons.AddFallbackIcon(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
 
-        IconEngine.AddFallbackIcon("Downloads", My.Resources.Resource1.Downloads_16X16)
-        IconEngine.AddFallbackIcon("Desktop", My.Resources.Resource1.Desktop_16X16)
-        IconEngine.AddFallbackIcon(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
-        IconEngine.AddFallbackIcon("Music", My.Resources.Resource1.Music_16X16)
-        IconEngine.AddFallbackIcon("Pictures", My.Resources.Resource1.Pictures_16X16)
-        IconEngine.AddFallbackIcon("Videos", My.Resources.Resource1.Videos_16X16)
+        _Icons.AddFallbackIcon("Downloads", My.Resources.Resource1.Downloads_16X16)
+        _Icons.AddFallbackIcon("Desktop", My.Resources.Resource1.Desktop_16X16)
+        _Icons.AddFallbackIcon(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
+        _Icons.AddFallbackIcon("Music", My.Resources.Resource1.Music_16X16)
+        _Icons.AddFallbackIcon("Pictures", My.Resources.Resource1.Pictures_16X16)
+        _Icons.AddFallbackIcon("Videos", My.Resources.Resource1.Videos_16X16)
 
-        IconEngine.AddFallbackIcon(ExecutableKey, My.Resources.Resource1.Executable_16X16)
-        IconEngine.AddFallbackIcon(OpticalKey, My.Resources.Resource1.Optical_16X16)
-        IconEngine.AddFallbackIcon("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
-        IconEngine.AddFallbackIcon("Error", My.Resources.Resource1.Error_16X16)
-        IconEngine.AddFallbackIcon("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+        _Icons.AddFallbackIcon(ExecutableKey, My.Resources.Resource1.Executable_16X16)
+        _Icons.AddFallbackIcon(OpticalKey, My.Resources.Resource1.Optical_16X16)
+        _Icons.AddFallbackIcon("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
+        _Icons.AddFallbackIcon("Error", My.Resources.Resource1.Error_16X16)
+        _Icons.AddFallbackIcon("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
-        IconEngine.AddFallbackIcon(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
-        IconEngine.AddFallbackIcon(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
+        _Icons.AddFallbackIcon(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+        _Icons.AddFallbackIcon(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
 
 
 
@@ -8058,8 +8058,8 @@ Public Class Form1
         'lvFiles.SmallImageList = imgIconCache
 
 
-        tvFolders.ImageList = IconEngine.GetIconCache()
-        lvFiles.SmallImageList = IconEngine.GetIconCache()
+        tvFolders.ImageList = _Icons.GetIconCache()
+        lvFiles.SmallImageList = _Icons.GetIconCache()
 
 
     End Sub

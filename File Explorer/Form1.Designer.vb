@@ -62,7 +62,7 @@ Partial Class Form1
         ' SplitContainer1.Panel2
         ' 
         SplitContainer1.Panel2.Controls.Add(TableLayoutPanel1)
-        SplitContainer1.Size = New Size(1264, 701)
+        SplitContainer1.Size = New Size(1264, 601)
         SplitContainer1.SplitterDistance = 238
         SplitContainer1.TabIndex = 16
         SplitContainer1.TabStop = False
@@ -74,7 +74,7 @@ Partial Class Form1
         tvFolders.Location = New Point(0, 0)
         tvFolders.Name = "tvFolders"
         tvFolders.ShowLines = False
-        tvFolders.Size = New Size(238, 701)
+        tvFolders.Size = New Size(238, 601)
         tvFolders.TabIndex = 2
         tvFolders.TabStop = False
         ' 
@@ -91,7 +91,7 @@ Partial Class Form1
         TableLayoutPanel1.RowCount = 2
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 34F))
         TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.Size = New Size(1022, 701)
+        TableLayoutPanel1.Size = New Size(1022, 601)
         TableLayoutPanel1.TabIndex = 20
         ' 
         ' lvFiles
@@ -101,7 +101,7 @@ Partial Class Form1
         lvFiles.LabelEdit = True
         lvFiles.Location = New Point(3, 37)
         lvFiles.Name = "lvFiles"
-        lvFiles.Size = New Size(1016, 661)
+        lvFiles.Size = New Size(1016, 561)
         lvFiles.TabIndex = 2
         lvFiles.TabStop = False
         lvFiles.UseCompatibleStateImageBehavior = False
@@ -300,7 +300,7 @@ Partial Class Form1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1264, 701)
+        ClientSize = New Size(1264, 601)
         Controls.Add(SplitContainer1)
         Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Name = "Form1"
