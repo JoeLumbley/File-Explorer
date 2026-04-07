@@ -57,11 +57,6 @@ The GUI and CLI share the same engines and rules, working together seamlessly so
 ---
 
 
-[The Augmentation of Douglas Engelbart](https://youtu.be/8wnS1Pls6Fc?si=rDtCF7P0fcTc8Kfj)
-
-
-https://youtu.be/8wnS1Pls6Fc?si=rDtCF7P0fcTc8Kfj
-
 
 
 
@@ -83,6 +78,9 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 <img width="1920" height="1032" alt="146" src="https://github.com/user-attachments/assets/9ab940e0-d97b-41c4-912d-f1527e0994ad" />
+
+
+[The Augmentation of Douglas Engelbart](https://youtu.be/8wnS1Pls6Fc?si=rDtCF7P0fcTc8Kfj)
 
 
 [ Table of Contents](#table-of-contents)
