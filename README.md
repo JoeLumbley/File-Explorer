@@ -65,9 +65,6 @@ The GUI and CLI share the same engines and rules, working together seamlessly so
 
 
 
-
-
-
 ## Why This Project Exists  
 File Explorer began as a simple experiment: what would happen if we rebuilt a familiar tool with the clarity, modularity, and emotional safety that modern learners deserve? Over time, it became something larger - a way to honor the lineage of humane computing that stretches from Engelbart’s 1968 demo to the mainstream interfaces of the late ’90s. This project is my contribution to that tradition. It’s a tool, yes, but also a teaching space, a design philosophy, and a small act of stewardship for the future of personal computing.
 
@@ -81,6 +78,9 @@ By rebuilding a familiar tool with clarity, modularity, and emotional safety, th
 
 
 <img width="1920" height="1032" alt="146" src="https://github.com/user-attachments/assets/9ab940e0-d97b-41c4-912d-f1527e0994ad" />
+
+
+[The Augmentation of Douglas Engelbart](https://youtu.be/8wnS1Pls6Fc?si=rDtCF7P0fcTc8Kfj)
 
 
 [ Table of Contents](#table-of-contents)
