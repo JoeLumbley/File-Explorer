@@ -39,6 +39,9 @@ Public Class IconEngine
 
         IconCache.ColorDepth = ColorDepth.Depth32Bit
         IconCache.ImageSize = New Size(iconSizePix, iconSizePix)
+
+        LoadFallbackIcons()
+
     End Sub
 
     Public Sub UpdateIconSize()
@@ -211,6 +214,8 @@ Public Class IconEngine
         End If
 
         Dim exeIcon = ShellInterop.GetIconForPath(fi.FullName, iconSizePix)
+        'exeIcon = Nothing ' Uncomment to test fallback behavior for executables
+
         If exeIcon IsNot Nothing Then
             IconCache.Images.Add(exeKey, exeIcon.ToBitmap())
             Return exeKey
@@ -306,6 +311,79 @@ Public Class IconEngine
             IconCache.Images.Add(key, icon)
         End If
     End Sub
+
+
+
+    ' Loading fallback icons at initialization
+    Private Sub LoadFallbackIcons()
+        ' Loads fallback icons into the cache. This should be called during
+        ' application initialization to ensure that fallback icons are available
+        ' for use when ShellInterop retrieval fails.
+
+        AddFallbackIcon(FallbackFolderKey, GetScaledBitmap(My.Resources.Resource1.Folder_16X16))
+        AddFallbackIcon(FallbackFileKey, GetScaledBitmap(My.Resources.Resource1.Documents_16X16))
+        AddFallbackIcon(OpticalKey, GetScaledBitmap(My.Resources.Resource1.Optical_16X16))
+        AddFallbackIcon(DriveKey, GetScaledBitmap(My.Resources.Resource1.Drive_16X16))
+
+        AddFallbackIcon("Documents", GetScaledBitmap(My.Resources.Resource1.Documents_16X16))
+        AddFallbackIcon("Downloads", GetScaledBitmap(My.Resources.Resource1.Downloads_16X16))
+        AddFallbackIcon("Desktop", GetScaledBitmap(My.Resources.Resource1.Desktop_16X16))
+        AddFallbackIcon("Pictures", GetScaledBitmap(My.Resources.Resource1.Pictures_16X16))
+        AddFallbackIcon("Music", GetScaledBitmap(My.Resources.Resource1.Music_16X16))
+        AddFallbackIcon("Videos", GetScaledBitmap(My.Resources.Resource1.Videos_16X16))
+        AddFallbackIcon("Shortcuts", GetScaledBitmap(My.Resources.Resource1.Shortcut_16X16))
+        AddFallbackIcon("EasyAccess", GetScaledBitmap(My.Resources.Resource1.Easy_Access_16X16))
+
+        AddFallbackIcon(FallbackThisPCKey, GetScaledBitmap(My.Resources.Resource1.Computer_16X16))
+        AddFallbackIcon(FallbackRecycleBinKey, GetScaledBitmap(My.Resources.Resource1.Recycle_16X16))
+
+        AddFallbackIcon(ExecutableKey, GetScaledBitmap(My.Resources.Resource1.Executable_16X16))
+
+    End Sub
+
+    Private Function GetScaledBitmap(src As Bitmap) As Bitmap
+
+        If iconSizePix <= 16 Then
+            Return src
+        End If
+
+        Dim baseIcon = src
+
+        If baseIcon Is Nothing Then Return Nothing
+
+        Return ResizeBitmapHighQuality(baseIcon, iconSizePix)
+
+    End Function
+
+
+
+
+    'Private Shared Function ResizeIconHighQuality(src As Bitmap, size As Integer) As Bitmap
+    '    Using bmp As New Bitmap(size, size)
+    '        Using g = Graphics.FromImage(bmp)
+    '            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+    '            'g.DrawIcon(src, New Rectangle(0, 0, size, size))
+    '            g.DrawImage(src, New Rectangle(0, 0, size, size), New Rectangle(0, 0, src.Width, src.Height), GraphicsUnit.Pixel)
+
+    '        End Using
+    '        'Return Icon.FromHandle(bmp.GetHicon())
+    '        Return bmp
+
+    '    End Using
+
+    'End Function
+
+
+    Private Shared Function ResizeBitmapHighQuality(src As Bitmap, size As Integer) As Bitmap
+        Dim bmp As New Bitmap(size, size)
+        Using g = Graphics.FromImage(bmp)
+            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            g.DrawImage(src, New Rectangle(0, 0, size, size),
+                        New Rectangle(0, 0, src.Width, src.Height), GraphicsUnit.Pixel)
+        End Using
+        Return bmp
+    End Function
+
 
 End Class
 

@@ -8002,25 +8002,25 @@ Public Class Form1
 
         ' Load Fallback Icons (in case some fail to load, we still have the basics)
 
-        _Icons.AddFallbackIcon(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
-        _Icons.AddFallbackIcon(DriveKey, My.Resources.Resource1.Drive_16X16)
-        _Icons.AddFallbackIcon(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
+        '_Icons.AddFallbackIcon(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
+        '_Icons.AddFallbackIcon(DriveKey, My.Resources.Resource1.Drive_16X16)
+        '_Icons.AddFallbackIcon(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
 
-        _Icons.AddFallbackIcon("Downloads", My.Resources.Resource1.Downloads_16X16)
-        _Icons.AddFallbackIcon("Desktop", My.Resources.Resource1.Desktop_16X16)
-        _Icons.AddFallbackIcon(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
-        _Icons.AddFallbackIcon("Music", My.Resources.Resource1.Music_16X16)
-        _Icons.AddFallbackIcon("Pictures", My.Resources.Resource1.Pictures_16X16)
-        _Icons.AddFallbackIcon("Videos", My.Resources.Resource1.Videos_16X16)
+        '_Icons.AddFallbackIcon("Downloads", My.Resources.Resource1.Downloads_16X16)
+        '_Icons.AddFallbackIcon("Desktop", My.Resources.Resource1.Desktop_16X16)
+        '_Icons.AddFallbackIcon(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
+        '_Icons.AddFallbackIcon("Music", My.Resources.Resource1.Music_16X16)
+        '_Icons.AddFallbackIcon("Pictures", My.Resources.Resource1.Pictures_16X16)
+        '_Icons.AddFallbackIcon("Videos", My.Resources.Resource1.Videos_16X16)
 
-        _Icons.AddFallbackIcon(ExecutableKey, My.Resources.Resource1.Executable_16X16)
-        _Icons.AddFallbackIcon(OpticalKey, My.Resources.Resource1.Optical_16X16)
-        _Icons.AddFallbackIcon("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
-        _Icons.AddFallbackIcon("Error", My.Resources.Resource1.Error_16X16)
-        _Icons.AddFallbackIcon("Shortcut", My.Resources.Resource1.Shortcut_16X16)
+        '_Icons.AddFallbackIcon(ExecutableKey, My.Resources.Resource1.Executable_16X16)
+        '_Icons.AddFallbackIcon(OpticalKey, My.Resources.Resource1.Optical_16X16)
+        '_Icons.AddFallbackIcon("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
+        '_Icons.AddFallbackIcon("Error", My.Resources.Resource1.Error_16X16)
+        '_Icons.AddFallbackIcon("Shortcut", My.Resources.Resource1.Shortcut_16X16)
 
-        _Icons.AddFallbackIcon(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
-        _Icons.AddFallbackIcon(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
+        '_Icons.AddFallbackIcon(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
+        '_Icons.AddFallbackIcon(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
 
 
 
