@@ -4183,6 +4183,8 @@ Public Class Form1
             'Next
 
 
+            'ShowStatus(StatusPad & " Building file list...")
+
 
             ' Build directory items
             For Each d In directories
@@ -4677,7 +4679,7 @@ Public Class Form1
             Return
         End If
 
-        'ShowStatus(StatusPad & IconNavigate & "  Navigating to:  " & path)
+        ShowStatus(StatusPad & IconNavigate & "  Navigating to:  " & path)
 
         currentFolder = path
         txtAddressBar.Text = path
