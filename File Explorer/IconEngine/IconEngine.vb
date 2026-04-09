@@ -355,25 +355,6 @@ Public Class IconEngine
 
     End Function
 
-
-
-
-    'Private Shared Function ResizeIconHighQuality(src As Bitmap, size As Integer) As Bitmap
-    '    Using bmp As New Bitmap(size, size)
-    '        Using g = Graphics.FromImage(bmp)
-    '            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-    '            'g.DrawIcon(src, New Rectangle(0, 0, size, size))
-    '            g.DrawImage(src, New Rectangle(0, 0, size, size), New Rectangle(0, 0, src.Width, src.Height), GraphicsUnit.Pixel)
-
-    '        End Using
-    '        'Return Icon.FromHandle(bmp.GetHicon())
-    '        Return bmp
-
-    '    End Using
-
-    'End Function
-
-
     Private Shared Function ResizeBitmapHighQuality(src As Bitmap, size As Integer) As Bitmap
         Dim bmp As New Bitmap(size, size)
         Using g = Graphics.FromImage(bmp)

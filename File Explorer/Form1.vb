@@ -4165,43 +4165,18 @@ Public Class Form1
 
             Dim itemsToAdd As New List(Of ListViewItem)
 
-
-
-
-
-
-            '' Build directory items
-            'For Each d In directories
-            '    Dim di As New DirectoryInfo(d)
-            '    itemsToAdd.Add(BuildListViewItemForDirectory(di))
-            'Next
-
-            '' Build file items
-            'For Each f In files
-            '    Dim fi As New FileInfo(f)
-            '    itemsToAdd.Add(BuildListViewItemForFile(fi))
-            'Next
-
-
-            'ShowStatus(StatusPad & " Building file list...")
-
-
             ' Build directory items
             For Each d In directories
                 Dim di As New DirectoryInfo(d)
-                'itemsToAdd.Add(BuildListViewItemForDirectory(di))
                 itemsToAdd.Add(ListViewItemBuilder.ForDirectory(di, _Icons))
             Next
 
             ' Build file items
             For Each f In files
                 Dim fi As New FileInfo(f)
-                'itemsToAdd.Add(BuildListViewItemForFile(fi))
                 itemsToAdd.Add(ListViewItemBuilder.ForFile(fi, fileTypeMap, _Icons))
 
             Next
-
-
 
             lvFiles.Items.AddRange(itemsToAdd.ToArray())
 
@@ -4216,47 +4191,36 @@ Public Class Form1
         End Try
     End Function
 
-    ' ============================================================
-    ' LISTVIEW ITEM BUILDERS
-    ' ============================================================
+    '' ============================================================
+    '' LISTVIEW ITEM BUILDERS
+    '' ============================================================
 
-    Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
-        Dim item As New ListViewItem(di.Name)
+    'Private Function BuildListViewItemForDirectory(di As DirectoryInfo) As ListViewItem
+    '    Dim item As New ListViewItem(di.Name)
 
-        item.SubItems.Add("Folder")
-        item.SubItems.Add("")
-        item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-        item.Tag = di.FullName
-        _Icons.SetListViewItemIconForDirectory(item, di)
+    '    item.SubItems.Add("Folder")
+    '    item.SubItems.Add("")
+    '    item.SubItems.Add(di.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = di.FullName
+    '    _Icons.SetListViewItemIconForDirectory(item, di)
 
-        Return item
-    End Function
+    '    Return item
+    'End Function
 
-    Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
-        Dim item As New ListViewItem(fi.Name)
+    'Private Function BuildListViewItemForFile(fi As FileInfo) As ListViewItem
+    '    Dim item As New ListViewItem(fi.Name)
 
-        Dim ext = fi.Extension.ToLowerInvariant()
-        Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
+    '    Dim ext = fi.Extension.ToLowerInvariant()
+    '    Dim category = fileTypeMap.GetValueOrDefault(ext, "Document")
 
-        item.SubItems.Add(category)
-        item.SubItems.Add(FormatSize(fi.Length))
-        item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
-        item.Tag = fi.FullName
-        _Icons.SetListViewItemIconForFile(item, fi)
+    '    item.SubItems.Add(category)
+    '    item.SubItems.Add(FormatSize(fi.Length))
+    '    item.SubItems.Add(fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"))
+    '    item.Tag = fi.FullName
+    '    _Icons.SetListViewItemIconForFile(item, fi)
 
-        Return item
-    End Function
-
-
-
-
-
-
-
-
-
-
-
+    '    Return item
+    'End Function
 
     Private Function IsAccessTestFile(name As String) As Boolean
         Return name.StartsWith(".__access_test_", StringComparison.OrdinalIgnoreCase)
