@@ -43,7 +43,6 @@ The entire application is built around clarity, predictability, and emotional sa
 • Built‑in help system with full documentation in the Help Drawer  
 
 
-[Command Line Interface](#command-line-interface)
 
 
 <img width="1266" height="633" alt="161" src="https://github.com/user-attachments/assets/3dfe0ea0-66fd-4d38-be1e-eaca16752a36" />
@@ -53,7 +52,8 @@ The entire application is built around clarity, predictability, and emotional sa
 
 The GUI and CLI share the same engines and rules, working together seamlessly so users can switch between them without friction.
 
-[ Table of Contents](#table-of-contents)
+[Command Line Interface](#command-line-interface)
+
 
 ---
 
