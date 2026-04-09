@@ -43,6 +43,7 @@ The entire application is built around clarity, predictability, and emotional sa
 • Built‑in help system with full documentation in the Help Drawer  
 
 
+[Command Line Interface](#command-line-interface)
 
 
 <img width="1266" height="633" alt="161" src="https://github.com/user-attachments/assets/3dfe0ea0-66fd-4d38-be1e-eaca16752a36" />
