@@ -106,16 +106,7 @@ Public Class Form1
     Private IconNavigate As String = ""
     Private IconSmile As String = ""
     Private IconWarning As String = "⚠"
-
-
-
-
-
-
-
     Private IconDelete As String = ""
-
-
     Private IconNewFolder As String = ""
     Private IconCut As String = "✂"
     Private IconSearch As String = ""
@@ -321,198 +312,6 @@ Public Class Form1
         {"keys", AddressOf HandleShortcutsCommand}
     }
 
-
-    'Private ReadOnly CommandHelp As New Dictionary(Of String, (Aliases As String(), Usage As String, Description As String, Examples As String())) From {
-    '    {"cd",
-    '        (
-    '            {"cd"},
-    '            "cd [directory]",
-    '            "Change directory to the specified path.",
-    '            {
-    '                "cd C:\",
-    '                "cd ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"copy",
-    '        (
-    '            {"copy", "cp"},
-    '            "copy [source] [destination]",
-    '            "Copy a file or folder to a destination folder.",
-    '            {
-    '                "copy C:\folderA\file.doc C:\folderB",
-    '                "copy ""C:\folder A"" ""C:\folder B"""
-    '            }
-    '        )
-    '    },
-    '    {"delete",
-    '        (
-    '            {"delete", "rm"},
-    '            "delete [file_or_directory]",
-    '            "Delete a file or folder.",
-    '            {
-    '                "delete C:\file.txt",
-    '                "delete ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"df",
-    '        (
-    '            {"df"},
-    '            "df <drive_letter>:",
-    '            "Display the available free space on the specified drive.",
-    '            {
-    '                "df C:",
-    '                "df D:",
-    '                "df E:"
-    '            }
-    '        )
-    '    },
-    '    {"drives",
-    '        (
-    '            {"drives"},
-    '            "drives",
-    '            "Show an overview of all drives, including free space bars.",
-    '            {
-    '                "drives"
-    '            }
-    '        )
-    '    },
-    '    {"exit",
-    '        (
-    '            {
-    '                "exit", "quit", "close", "stop", "halt", "end", "signout",
-    '                "poweroff", "bye"
-    '            },
-    '            "exit",
-    '            "Exit the application.",
-    '            {}
-    '        )
-    '    },
-    '    {"find",
-    '        (
-    '            {"find", "search"},
-    '            "find [search_term]",
-    '            "Search for files and folders in the current directory.",
-    '            {
-    '                "find document"
-    '            }
-    '        )
-    '    },
-    '    {"findnext",
-    '        (
-    '            {"findnext", "searchnext", "next"},
-    '            "findnext",
-    '            "Show the next search result from the previous search.",
-    '            {}
-    '        )
-    '    },
-    '    {"help",
-    '        (
-    '            {"help", "commands", "?"},
-    '            "help [search_term]",
-    '            $"Show the full command list or jump to a specific command.",
-    '            {
-    '                "help",
-    '                "help cd",
-    '                "help copy"
-    '            }
-    '        )
-    '    },
-    '    {"man",
-    '        (
-    '            {"man", "manual", "appmanual"},
-    '            "man [section]",
-    '            "Show the full application manual or jump to a specific section.",
-    '            {
-    '                "man",
-    '                "man help",
-    '                "man commands",
-    '                "manual",
-    '                "appmanual"
-    '            }
-    '        )
-    '    },
-    '    {"mkdir",
-    '        (
-    '            {"mkdir", "make", "md"},
-    '            "mkdir [directory_path]",
-    '            "Create a new folder.",
-    '            {
-    '                "mkdir C:\newfolder",
-    '                "make ""C:\My New Folder""",
-    '                "md C:\anotherfolder"
-    '            }
-    '        )
-    '    },
-    '    {"move",
-    '        (
-    '            {"move", "mv"},
-    '            "move [source] [destination]",
-    '            "Move a file or folder to a new location.",
-    '            {
-    '                "move C:\folderA\file.doc C:\folderB\file.doc",
-    '                "move ""C:\folder A\file.doc"" ""C:\folder B\renamed.doc"""
-    '            }
-    '        )
-    '    },
-    '    {"open",
-    '        (
-    '            {"open"},
-    '            "open [file_or_directory]",
-    '            "Open a file or navigate into a folder.",
-    '            {
-    '                "open C:\folder\file.txt",
-    '                "open ""C:\My Folder"""
-    '            }
-    '        )
-    '    },
-    '    {"pin",
-    '        (
-    '            {"pin"},
-    '            "pin [folder_path]",
-    '            "Pin or unpin a folder.",
-    '            {
-    '                "pin C:\Projects",
-    '                "pin ""C:\My Documents""",
-    '                "pin"
-    '            }
-    '        )
-    '    },
-    '    {"rename",
-    '        (
-    '            {"rename", "rn"},
-    '            "rename [source_path] [new_name]",
-    '            "Rename a file or directory.",
-    '            {
-    '                "rename ""C:\folder\oldname.txt"" ""newname.txt"""
-    '            }
-    '        )
-    '    },
-    '    {"shortcuts",
-    '        (
-    '            {"shortcuts", "keys"},
-    '            "shortcuts",
-    '            "Show a list of all keyboard shortcuts.",
-    '            {
-    '                "shortcuts",
-    '                "keys"
-    '            }
-    '        )
-    '    },
-    '    {"text",
-    '        (
-    '            {"text", "txt"},
-    '            "text [file_path]",
-    '            "Create a new text file.",
-    '            {
-    '                "text ""C:\folder\example.txt"""
-    '            }
-    '        )
-    '    }
-    '}
-
-
     Private ReadOnly CommandHelp As New Dictionary(Of String, CommandInfo) From {
     {"cd",
         New CommandInfo With {
@@ -699,16 +498,6 @@ Public Class Form1
     }
 }
 
-    'Public Enum CommandCategory
-    '    Navigation
-    '    FileOperations
-    '    Search
-    '    System
-    '    Help
-    '    Shortcuts
-    'End Enum
-
-
     Private HelpHeaderLabel As Label
     Private scrollPanel As Panel
     Private HelpTextBox As RichTextBox
@@ -720,29 +509,16 @@ Public Class Form1
     Private Const PIN_ICON As String = ""
     Private Const UNPIN_ICON As String = ""
 
-
     Private statusTimer As New System.Windows.Forms.Timer() With {.Interval = 10000}
     Private CancelCopyButton As Button
     Private CancelCopyHost As ToolStripControlHost
 
-
-    'Public Enum CopyUIContext
-    '    None
-    '    CLI
-    '    Paste
-    'End Enum
-
-    'Dim r As New LaunchRecorder
     Dim engine As New SafeLaunchEngine(Me)
 
-
     ' Hightlight color constrants for search results.
-    'Private OrangeHighlightColor As Color = Color.FromArgb(255, 203, 107)
     Private OrangeHighlightColor As Color = Color.FromArgb(255, 230, 183)
 
-    'Private BlueHighlightColor As Color = Color.FromArgb(199, 236, 255) ' soft, calm blue
     Private BlueHighlightColor As Color = Color.FromArgb(220, 243, 255) ' soft, calm blue
-
 
     ' Form1 fields
     Private deleteCts As CancellationTokenSource
@@ -773,29 +549,8 @@ Public Class Form1
     Private Const FallbackFileKey As String = "FallbackFile"
 
     Private Const ExecutableKey As String = "FallbackExecutable"
-    'Private Const FileKey As String = "File"
 
     Private _Icons As New IconEngine(Me)
-
-
-    'Private Sub NavigateToVirtualFolder(shellPath As String)
-
-    '    ' For this demo, we'll only handle the Recycle Bin virtual folder. In a full implementation,
-    '    ' you could expand this method to recognize and navigate to other virtual folders as needed.
-
-    '    Try
-    '        'Process.Start("explorer.exe", "shell:RecycleBinFolder")
-
-    '        ' Open the Recycle Bin in Windows Explorer
-    '        ShellNavigation.OpenVirtualFolder(VirtualFolder.RecycleBin)
-
-    '    Catch ex As Exception
-    '        ShowStatus("Unable to open Recycle Bin: " & ex.Message)
-    '    End Try
-
-
-    'End Sub
-
 
     Private Sub NavigateToVirtualFolder(shellPath As String)
         Try
@@ -811,8 +566,6 @@ Public Class Form1
             ShowStatus("Unable to open virtual folder: " & ex.Message)
         End Try
     End Sub
-
-
 
     Private Sub Form_Load(sender As Object, e As EventArgs) _
         Handles MyBase.Load
@@ -839,16 +592,9 @@ Public Class Form1
 
     Private Sub Form1_DpiChanged(sender As Object, e As DpiChangedEventArgs) Handles Me.DpiChanged
 
-
         _Icons.UpdateIconSize()
 
-
-        'Dim newSize = IconEngine.GetScaledIconSize(Me)
-        'imgIconCache.ImageSize = New Size(newSize, newSize)
-
-        '' Rebuild icons
-        'imgIconCache.Images.Clear()
-        InitImageList()
+        'AssignIconsToControls()
         UpdateTreeRoots()
         RefreshListView()
     End Sub
@@ -6122,7 +5868,7 @@ Public Class Form1
 
         InitContextMenu()
 
-        InitImageList()
+        AssignIconsToControls()
 
         InitArrows()
 
@@ -7958,68 +7704,11 @@ Public Class Form1
 
     End Sub
 
-    Private Sub InitImageList()
-
-        'Dim size = IconEngine.GetScaledIconSize(Me)
-        'imgIconCache.ImageSize = New Size(size, size)
-
-        ''imgList.ImageSize = New Size(16, 16)
-        'imgIconCache.ColorDepth = ColorDepth.Depth32Bit
-
-        ' Load Fallback Icons (in case some fail to load, we still have the basics)
-
-        '_Icons.AddFallbackIcon(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
-        '_Icons.AddFallbackIcon(DriveKey, My.Resources.Resource1.Drive_16X16)
-        '_Icons.AddFallbackIcon(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
-
-        '_Icons.AddFallbackIcon("Downloads", My.Resources.Resource1.Downloads_16X16)
-        '_Icons.AddFallbackIcon("Desktop", My.Resources.Resource1.Desktop_16X16)
-        '_Icons.AddFallbackIcon(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
-        '_Icons.AddFallbackIcon("Music", My.Resources.Resource1.Music_16X16)
-        '_Icons.AddFallbackIcon("Pictures", My.Resources.Resource1.Pictures_16X16)
-        '_Icons.AddFallbackIcon("Videos", My.Resources.Resource1.Videos_16X16)
-
-        '_Icons.AddFallbackIcon(ExecutableKey, My.Resources.Resource1.Executable_16X16)
-        '_Icons.AddFallbackIcon(OpticalKey, My.Resources.Resource1.Optical_16X16)
-        '_Icons.AddFallbackIcon("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
-        '_Icons.AddFallbackIcon("Error", My.Resources.Resource1.Error_16X16)
-        '_Icons.AddFallbackIcon("Shortcut", My.Resources.Resource1.Shortcut_16X16)
-
-        '_Icons.AddFallbackIcon(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
-        '_Icons.AddFallbackIcon(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
-
-
-
-
-        'imgIconCache.Images.Add(FallbackFolderKey, My.Resources.Resource1.Folder_16X16)
-        'imgIconCache.Images.Add(DriveKey, My.Resources.Resource1.Drive_16X16)
-        'imgIconCache.Images.Add(FallbackFileKey, My.Resources.Resource1.Documents_16X16)
-
-        'imgIconCache.Images.Add("Downloads", My.Resources.Resource1.Downloads_16X16)
-        'imgIconCache.Images.Add("Desktop", My.Resources.Resource1.Desktop_16X16)
-        'imgIconCache.Images.Add(EasyAccessKey, My.Resources.Resource1.Easy_Access_16X16)
-
-        'imgIconCache.Images.Add("Music", My.Resources.Resource1.Music_16X16)
-        'imgIconCache.Images.Add("Pictures", My.Resources.Resource1.Pictures_16X16)
-        'imgIconCache.Images.Add("Videos", My.Resources.Resource1.Videos_16X16)
-
-        'imgIconCache.Images.Add(ExecutableKey, My.Resources.Resource1.Executable_16X16)
-        'imgIconCache.Images.Add(OpticalKey, My.Resources.Resource1.Optical_16X16)
-        'imgIconCache.Images.Add("AccessDenied", My.Resources.Resource1.Access_Denied_16X16)
-        'imgIconCache.Images.Add("Error", My.Resources.Resource1.Error_16X16)
-        'imgIconCache.Images.Add("Shortcut", My.Resources.Resource1.Shortcut_16X16)
-
-        'imgIconCache.Images.Add(FallbackThisPCKey, My.Resources.Resource1.Computer_16X16)
-        'imgIconCache.Images.Add(FallbackRecycleBinKey, My.Resources.Resource1.Recycle_16X16)
+    Private Sub AssignIconsToControls()
 
         ' Assign ImageList to controls
-        'tvFolders.ImageList = imgIconCache
-        'lvFiles.SmallImageList = imgIconCache
-
-
         tvFolders.ImageList = _Icons.GetIconCache()
         lvFiles.SmallImageList = _Icons.GetIconCache()
-
 
     End Sub
 
