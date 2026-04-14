@@ -312,8 +312,6 @@ Public Class IconEngine
         End If
     End Sub
 
-
-
     ' Loading fallback icons at initialization
     Private Sub LoadFallbackIcons()
         ' Loads fallback icons into the cache. This should be called during
@@ -364,7 +362,6 @@ Public Class IconEngine
         End Using
         Return bmp
     End Function
-
 
 End Class
 
