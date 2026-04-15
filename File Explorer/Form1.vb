@@ -34,6 +34,7 @@ Imports System.Threading
 Imports File_Explorer.Explorer.Engines
 Imports File_Explorer.Explorer.Interop.Shell
 Imports File_Explorer.Explorer.Navigation
+Imports Windows.UI.Composition
 
 
 Public Class Form1
@@ -6478,6 +6479,7 @@ Public Class Form1
                     "  • What I Hope Learners Get From This",
                     "  • Features",
                     "  • File Operations",
+                    "  • Shell & Virtual Folders",
                     "  • Search",
                     "  • Keyboard Shortcuts",
                     "  • Command Line Interface (CLI)",
