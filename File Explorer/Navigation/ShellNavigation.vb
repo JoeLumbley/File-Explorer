@@ -1,4 +1,4 @@
-﻿Namespace Explorer.Navigation
+﻿Namespace  Explorer.Navigation
 
     Public NotInheritable Class ShellNavigation
 
